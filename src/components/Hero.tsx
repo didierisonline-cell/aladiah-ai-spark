@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Users, TrendingUp, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
-import heroImage from '@/assets/hero-image.jpg';
+import heroVideo from '@/assets/hero-video.mp4';
 
 const Hero = () => {
   const { t } = useLanguage();
@@ -116,11 +116,14 @@ const Hero = () => {
             className="relative hidden lg:block"
           >
             <div className="relative">
-              {/* Main Image */}
+              {/* Main Video */}
               <div className="relative rounded-2xl overflow-hidden shadow-large">
-                <img 
-                  src={heroImage} 
-                  alt="Professional training at Aladiah Academy" 
+                <video 
+                  src={heroVideo} 
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
                   className="w-full h-auto object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
