@@ -14,6 +14,21 @@ const Hero = () => {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-20 lg:pt-0 overflow-hidden bg-gradient-hero">
+      {/* Dominican Republic Flag Background */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-[0.08] pointer-events-none">
+        <svg viewBox="0 0 900 600" className="w-full h-full max-w-[1400px]" preserveAspectRatio="xMidYMid slice">
+          {/* Blue quarters */}
+          <rect x="0" y="0" width="450" height="300" fill="#002D62"/>
+          <rect x="450" y="300" width="450" height="300" fill="#002D62"/>
+          {/* Red quarters */}
+          <rect x="450" y="0" width="450" height="300" fill="#CE1126"/>
+          <rect x="0" y="300" width="450" height="300" fill="#CE1126"/>
+          {/* White cross */}
+          <rect x="0" y="250" width="900" height="100" fill="#FFFFFF"/>
+          <rect x="400" y="0" width="100" height="600" fill="#FFFFFF"/>
+        </svg>
+      </div>
+
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 right-10 w-72 h-72 bg-secondary/10 rounded-full blur-3xl animate-pulse" />
