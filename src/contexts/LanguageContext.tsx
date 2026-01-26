@@ -44,6 +44,7 @@ const translations: Record<Language, Record<string, string>> = {
     'programs.hybrid': 'Hybrid',
     'programs.online': 'Online',
     'programs.learnMore': 'Learn More',
+    'programs.startCourse': 'Start Course',
     
     // About
     'about.badge': 'About Us',
@@ -112,6 +113,7 @@ const translations: Record<Language, Record<string, string>> = {
     'programs.hybrid': 'Híbrido',
     'programs.online': 'En Línea',
     'programs.learnMore': 'Más Información',
+    'programs.startCourse': 'Iniciar Curso',
     
     // About
     'about.badge': 'Sobre Nosotros',

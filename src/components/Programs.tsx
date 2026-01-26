@@ -2,9 +2,11 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Clock, Monitor, Users, Brain, Target, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNavigate } from 'react-router-dom';
 
 const Programs = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   const programs = [
     {
@@ -125,8 +127,9 @@ const Programs = () => {
               <Button 
                 variant={program.featured ? 'coral' : 'outline'} 
                 className="w-full group/btn"
+                onClick={() => program.featured && navigate('/auth')}
               >
-                {t('programs.learnMore')}
+                {program.featured ? t('programs.startCourse') : t('programs.learnMore')}
                 <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
               </Button>
             </motion.div>

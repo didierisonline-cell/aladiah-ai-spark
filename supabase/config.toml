@@ -1,1 +1,10 @@
 project_id = "fsurybytsinbvdgphnwv"
+
+[functions.get-quiz-questions]
+verify_jwt = false
+
+[functions.submit-quiz]
+verify_jwt = false
+
+[functions.seed-scrum-course]
+verify_jwt = false
