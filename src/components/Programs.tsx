@@ -35,7 +35,7 @@ const Programs = () => {
       format: 'programs.online',
       color: 'accent',
       featured: false,
-      courseId: 'dddddddd-eeee-ffff-1111-222222222222',
+      hasCourse: true,
     },
   ];
 
@@ -126,17 +126,15 @@ const Programs = () => {
 
               {/* CTA */}
               <Button 
-                variant={program.featured ? 'coral' : 'outline'} 
+                variant={(program.featured || (program as any).hasCourse) ? 'coral' : 'outline'} 
                 className="w-full group/btn"
                 onClick={() => {
-                  if (program.featured) {
-                    navigate('/auth');
-                  } else if ((program as any).courseId) {
+                  if (program.featured || (program as any).hasCourse) {
                     navigate('/auth');
                   }
                 }}
               >
-                {program.featured ? t('programs.startCourse') : t('programs.learnMore')}
+                {(program.featured || (program as any).hasCourse) ? t('programs.startCourse') : t('programs.learnMore')}
                 <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
               </Button>
             </motion.div>
