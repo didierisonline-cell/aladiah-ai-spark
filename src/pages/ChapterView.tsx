@@ -13,6 +13,11 @@ import {
 import Quiz from '@/components/course/Quiz';
 import VideoPlayer from '@/components/course/VideoPlayer';
 
+interface Course {
+  id: string;
+  title: string;
+}
+
 interface Chapter {
   id: string;
   title: string;
@@ -47,6 +52,7 @@ const ChapterView = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
+  const [course, setCourse] = useState<Course | null>(null);
   const [chapter, setChapter] = useState<Chapter | null>(null);
   const [videos, setVideos] = useState<Video[]>([]);
   const [quizzes, setQuizzes] = useState<QuizData[]>([]);
@@ -69,6 +75,15 @@ const ChapterView = () => {
         navigate('/auth');
         return;
       }
+
+      // Load course
+      const { data: courseData } = await supabase
+        .from('courses')
+        .select('id, title')
+        .eq('id', courseId)
+        .single();
+      
+      setCourse(courseData);
 
       // Load chapter
       const { data: chapterData, error: chapterError } = await supabase
@@ -246,6 +261,8 @@ const ChapterView = () => {
                   orderIndex={currentVideo.order_index}
                   onComplete={handleVideoComplete}
                   isCompleted={isVideoPassed(currentVideo)}
+                  courseTitle={course?.title}
+                  chapterTitle={chapter?.title}
                 />
               ) : (
                 <Card className="overflow-hidden">
