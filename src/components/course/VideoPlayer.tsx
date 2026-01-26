@@ -52,6 +52,8 @@ interface VideoPlayerProps {
   orderIndex: number;
   onComplete: () => void;
   isCompleted: boolean;
+  courseTitle?: string;
+  chapterTitle?: string;
 }
 
 const VideoPlayer = ({ 
@@ -60,7 +62,9 @@ const VideoPlayer = ({
   description, 
   orderIndex,
   onComplete, 
-  isCompleted 
+  isCompleted,
+  courseTitle,
+  chapterTitle
 }: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -103,11 +107,12 @@ const VideoPlayer = ({
             lessonContent: {
               mainPoints: [
                 description,
-                // Add more context for better audio generation
                 `This lesson covers ${title} in detail.`
               ]
             },
-            professorIndex: orderIndex
+            professorIndex: orderIndex,
+            courseTitle: courseTitle || 'Aladiah Academy Course',
+            chapterTitle: chapterTitle || 'Module'
           }),
         }
       );
