@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -8,9 +8,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { 
   GraduationCap, ArrowLeft, Play, CheckCircle, Lock, 
-  ChevronRight, BookOpen, Trophy, AlertCircle
+  ChevronRight, Trophy, AlertCircle
 } from 'lucide-react';
 import Quiz from '@/components/course/Quiz';
+import VideoPlayer from '@/components/course/VideoPlayer';
 
 interface Chapter {
   id: string;
@@ -237,42 +238,22 @@ const ChapterView = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <Card className="overflow-hidden">
-                <div className="aspect-video bg-muted flex items-center justify-center relative">
-                  {currentVideo ? (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
-                      <BookOpen className="w-16 h-16 text-primary mb-4" />
-                      <h2 className="text-2xl font-display font-bold mb-2">{currentVideo.title}</h2>
-                      <p className="text-muted-foreground mb-6">{currentVideo.description}</p>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        (AI-generated video content will appear here)
-                      </p>
-                      <Button onClick={handleVideoComplete} variant="coral" size="lg">
-                        <Play className="w-5 h-5 mr-2" />
-                        Complete & Take Quiz
-                      </Button>
-                    </div>
-                  ) : (
+              {currentVideo ? (
+                <VideoPlayer
+                  videoId={currentVideo.id}
+                  title={currentVideo.title}
+                  description={currentVideo.description || ''}
+                  orderIndex={currentVideo.order_index}
+                  onComplete={handleVideoComplete}
+                  isCompleted={isVideoPassed(currentVideo)}
+                />
+              ) : (
+                <Card className="overflow-hidden">
+                  <div className="aspect-video bg-muted flex items-center justify-center">
                     <p className="text-muted-foreground">Select a video to begin</p>
-                  )}
-                </div>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-semibold">{currentVideo?.title}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Video {(currentVideo?.order_index || 0) + 1} of {videos.length}
-                      </p>
-                    </div>
-                    {currentVideo && isVideoPassed(currentVideo) && (
-                      <div className="flex items-center gap-2 text-green-500">
-                        <CheckCircle className="w-5 h-5" />
-                        <span className="text-sm font-medium">Completed</span>
-                      </div>
-                    )}
                   </div>
-                </CardContent>
-              </Card>
+                </Card>
+              )}
             </motion.div>
           </div>
 

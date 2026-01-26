@@ -6,886 +6,1042 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Scrum Guide based course content
+// Complete 4-Module Scrum Master Course based on the curriculum
 const courseData = {
-  title: "Professional Scrum Master Certification",
-  description: "Master the Scrum framework from the official Scrum Guide. Learn Scrum theory, team roles, events, artifacts, and how to facilitate agile teams effectively.",
+  title: "Scrum Master Profession",
+  description: "Unleash your career potential with our course on the fundamentals of the Scrum Master role. Whether you're new to Agile methodologies or seek to enhance your project management skills, this course will equip you with the knowledge and tools needed to excel as a Scrum Master.",
   chapters: [
+    // MODULE 1: The Role of the Scrum Master
     {
-      title: "Chapter 1: Introduction to Scrum",
-      description: "Understanding the fundamentals of Scrum and agile principles",
+      title: "Module 1: The Role of the Scrum Master",
+      description: "This module defines the Scrum Master's role and summarizes the Scrum Framework and the Scrum Master's involvement. It also describes how the role benefits the organization.",
       order_index: 0,
       videos: [
         {
-          title: "1.1 What is Scrum?",
-          description: "Learn the definition, purpose, and core principles of Scrum",
+          title: "1.1 Course Introduction: Scrum Master Profession",
+          description: "Welcome to the Scrum Master Profession course. Let's explore what you'll learn and how to succeed.",
           order_index: 0,
+          professorIndex: 0, // Professor Miguel
+          lessonScript: {
+            mainPoints: [
+              "Welcome to the Scrum Master Profession course! This course will transform your career and give you the skills to lead agile teams.",
+              "Throughout this course, you'll learn the essential aspects of being a Scrum Master by contrasting Scrum with traditional project management methods.",
+              "You'll understand why Scrum is a game-changer in today's dynamic business landscape.",
+              "We'll dive into practical skills required to become a highly effective Scrum Master through hands-on practice and real-life scenarios.",
+              "By the end of this course, you'll be ready to ace certification exams and prove your expertise as a Scrum Master!"
+            ]
+          },
           questions: [
             {
-              question_text: "What is the best definition of Scrum according to the Scrum Guide?",
-              scenario_context: "Your organization is considering adopting Scrum. The CEO asks you to explain what Scrum is in one sentence.",
-              options: ["A project management methodology with detailed upfront planning", "A lightweight framework that helps people, teams and organizations generate value through adaptive solutions for complex problems", "A set of rigid rules for software development", "A process for managing remote teams"],
+              question_text: "What is the primary goal of this Scrum Master Profession course?",
+              scenario_context: "You're explaining to a colleague why you enrolled in this course.",
+              options: ["To learn basic project management", "To equip learners with knowledge and tools to excel as a Scrum Master", "To become a software developer", "To learn traditional waterfall methods"],
               correct_answer_index: 1,
-              explanation: "Scrum is defined as a lightweight framework that helps people, teams and organizations generate value through adaptive solutions for complex problems."
+              explanation: "The course is designed to equip learners with the knowledge and tools needed to excel as a Scrum Master."
             },
             {
-              question_text: "What are the three pillars of empiricism that Scrum is founded upon?",
-              scenario_context: "During a Scrum training session, you need to explain the theoretical foundation of Scrum.",
-              options: ["Planning, Execution, Delivery", "Transparency, Inspection, Adaptation", "Speed, Quality, Cost", "Communication, Collaboration, Commitment"],
-              correct_answer_index: 1,
-              explanation: "Scrum is founded on empiricism and lean thinking. The three pillars are Transparency, Inspection, and Adaptation."
+              question_text: "Is prior project management experience required for this course?",
+              scenario_context: "A friend without PM experience asks if they can take this course.",
+              options: ["Yes, you need 5+ years of PM experience", "Yes, PMP certification is required", "No, it's beneficial but not essential", "No, but you need coding experience"],
+              correct_answer_index: 2,
+              explanation: "Although this course is beneficial for those already in project management, prior experience is not essential."
             },
             {
-              question_text: "How does Scrum help teams deal with complexity?",
-              scenario_context: "A project manager from a traditional background asks why Scrum works better for complex projects.",
-              options: ["By creating detailed plans at the start of the project", "Through iterative progress and continuous inspection and adaptation", "By assigning more resources to the project", "By breaking down all requirements before starting"],
+              question_text: "What type of learning experience does this course provide?",
+              scenario_context: "You're reviewing what makes this course effective.",
+              options: ["Text-only reading materials", "Engaging video content and interactive exercises", "Audio podcasts only", "In-person classroom sessions only"],
               correct_answer_index: 1,
-              explanation: "Scrum employs an iterative, incremental approach to optimize predictability and control risk through continuous inspection and adaptation."
+              explanation: "The course provides engaging video content and interactive exercises to immerse learners in the world of Scrum."
             },
             {
-              question_text: "What makes Scrum intentionally incomplete?",
-              scenario_context: "A new team member is confused why Scrum doesn't prescribe specific techniques or tools.",
-              options: ["It's still being developed and will be complete soon", "It only defines the minimum necessary, allowing teams to fill in the gaps with practices that work for them", "The creators forgot to add more rules", "Different industries need completely different versions"],
+              question_text: "What will you be prepared for after completing this course?",
+              scenario_context: "You're planning your certification path.",
+              options: ["Only entry-level positions", "Final exams designed to simulate certification exams", "Teaching Scrum to others immediately", "Managing large enterprise transformations"],
               correct_answer_index: 1,
-              explanation: "Scrum is intentionally incomplete, only defining the parts required to implement Scrum theory. Teams fill in the gaps with practices and techniques that work best for them."
+              explanation: "The course prepares you for final exams designed to simulate the certification exams you may encounter."
             },
             {
-              question_text: "What happens when the pillars of transparency, inspection, and adaptation are not upheld?",
-              scenario_context: "A Scrum Team is hiding their impediments from stakeholders and not adapting their process.",
-              options: ["The project continues as normal", "Waste and unpredictable outcomes increase, and goals are put at risk", "The team gets more freedom to work", "Sprint velocity automatically improves"],
+              question_text: "How does this course approach teaching Scrum?",
+              scenario_context: "You're comparing different Scrum courses.",
+              options: ["Purely theoretical concepts", "Hands-on practice and real-life scenarios", "Memorization of definitions only", "Reading the Scrum Guide once"],
               correct_answer_index: 1,
-              explanation: "When these pillars are not upheld, waste increases, outcomes become unpredictable, and the ability to manage risk decreases significantly."
+              explanation: "The course uses hands-on practice and real-life scenarios to develop practical abilities."
             }
           ]
         },
         {
-          title: "1.2 Scrum Values",
-          description: "Explore the five values that guide Scrum teams",
+          title: "1.2 Scrum Master Role and Benefits",
+          description: "Understanding the Scrum Master role and how it benefits the organization.",
           order_index: 1,
+          professorIndex: 1, // Professor Carmen
+          lessonScript: {
+            mainPoints: [
+              "The Scrum Master is a servant-leader for the Scrum Team. Think of them as a coach, facilitator, and protector all rolled into one.",
+              "Unlike traditional project managers, Scrum Masters don't manage people - they facilitate processes and remove impediments.",
+              "The Scrum Master helps the team stay focused on the Sprint Goal and shields them from external distractions.",
+              "Organizations benefit from Scrum Masters through improved team productivity, better product quality, and faster delivery.",
+              "The Scrum Master also helps the broader organization understand and adopt Scrum practices, creating lasting change."
+            ]
+          },
           questions: [
             {
-              question_text: "What are the five Scrum Values?",
-              scenario_context: "You are coaching a new Scrum Team and need to introduce them to the foundational values.",
-              options: ["Speed, Quality, Cost, Scope, Risk", "Commitment, Focus, Openness, Respect, Courage", "Trust, Communication, Flexibility, Innovation, Excellence", "Planning, Execution, Review, Retrospective, Delivery"],
+              question_text: "What is the primary leadership style of a Scrum Master?",
+              scenario_context: "A traditional manager asks you to explain how Scrum Masters lead.",
+              options: ["Command and control", "Servant leadership", "Autocratic leadership", "Laissez-faire leadership"],
               correct_answer_index: 1,
-              explanation: "The five Scrum Values are Commitment, Focus, Openness, Respect, and Courage."
+              explanation: "The Scrum Master is a servant-leader, focusing on serving the team's needs rather than commanding them."
             },
             {
-              question_text: "How does the value of 'Courage' manifest in a Scrum Team?",
-              scenario_context: "A team member is afraid to speak up about a technical issue that could delay the Sprint.",
-              options: ["Working overtime without asking for help", "Having the courage to do the right thing and work on tough problems", "Ignoring problems to maintain team harmony", "Following all orders from management without question"],
+              question_text: "How does the Scrum Master benefit the organization?",
+              scenario_context: "You need to justify the Scrum Master role to leadership.",
+              options: ["By managing individual team members", "By improving team productivity and product quality", "By creating detailed project plans", "By approving all technical decisions"],
               correct_answer_index: 1,
-              explanation: "Courage means team members have courage to do the right thing and work on tough problems, even when it's difficult or uncomfortable."
+              explanation: "Organizations benefit through improved team productivity, better product quality, and faster delivery."
             },
             {
-              question_text: "What does 'Focus' mean in the context of Scrum?",
-              scenario_context: "Team members are being pulled into multiple projects and meetings during a Sprint.",
-              options: ["Everyone focuses on different tasks to maximize output", "The team focuses on the work of the Sprint and its goals", "Focus means working longer hours", "Managers focus on tracking team performance"],
+              question_text: "What is one key difference between a Scrum Master and a traditional project manager?",
+              scenario_context: "You're explaining the role to someone new to Agile.",
+              options: ["Scrum Masters have more authority", "Scrum Masters facilitate processes rather than manage people", "Scrum Masters create Gantt charts", "There is no difference"],
               correct_answer_index: 1,
-              explanation: "Focus means everyone focuses on the work of the Sprint and the goals of the Scrum Team, avoiding distractions that don't contribute to the Sprint Goal."
+              explanation: "Unlike traditional project managers, Scrum Masters facilitate processes and remove impediments rather than managing people directly."
             },
             {
-              question_text: "Why is 'Openness' important for Scrum Teams?",
-              scenario_context: "A Scrum Team is hesitant to share their challenges with stakeholders.",
-              options: ["It makes reporting easier for managers", "The Scrum Team and stakeholders are open about work and challenges, enabling transparency", "It reduces the need for documentation", "Open floor plans improve communication"],
+              question_text: "How does a Scrum Master protect the team?",
+              scenario_context: "Your team keeps getting interrupted by stakeholder requests mid-Sprint.",
+              options: ["By saying no to all requests", "By shielding them from external distractions", "By hiding the team from management", "By doing all the work themselves"],
               correct_answer_index: 1,
-              explanation: "Openness enables transparency. The Scrum Team and stakeholders agree to be open about all work and the challenges with performing the work."
+              explanation: "The Scrum Master shields the team from external distractions so they can focus on the Sprint Goal."
             },
             {
-              question_text: "How do Scrum Values contribute to the success of empiricism?",
-              scenario_context: "You need to explain to leadership why values matter in an agile transformation.",
-              options: ["They don't - empiricism only requires processes", "They build trust and create an environment where the pillars of empiricism can thrive", "Values are optional nice-to-haves", "Only the Scrum Master needs to embody these values"],
+              question_text: "What broader impact does a Scrum Master have on an organization?",
+              scenario_context: "Leadership wants to understand the strategic value of Scrum Masters.",
+              options: ["Only impacts their immediate team", "Helps the organization understand and adopt Scrum practices", "Manages the budget", "Writes all requirements"],
               correct_answer_index: 1,
-              explanation: "When the values are embodied by the Scrum Team and the people they work with, the empirical Scrum pillars of transparency, inspection, and adaptation come to life building trust."
+              explanation: "The Scrum Master helps the broader organization understand and adopt Scrum practices, creating lasting change."
             }
           ]
         },
         {
-          title: "1.3 Empiricism & Lean Thinking",
-          description: "Understand the theoretical foundations of Scrum",
+          title: "1.3 Expert Viewpoints: What does the Scrum Master Do?",
+          description: "Real perspectives from experienced Scrum Masters about their daily responsibilities.",
           order_index: 2,
+          professorIndex: 2, // Professor Rafael
+          lessonScript: {
+            mainPoints: [
+              "Experienced Scrum Masters share that their primary focus is on coaching the team and facilitating Scrum events.",
+              "A typical day involves checking in with team members, removing blockers, and preparing for upcoming ceremonies.",
+              "Scrum Masters spend significant time coaching team members on Scrum values and self-organization.",
+              "They work with Product Owners to ensure the Product Backlog is well-refined and ready for Sprint Planning.",
+              "Beyond the team, Scrum Masters often work on organizational impediments and help other teams improve."
+            ]
+          },
           questions: [
             {
-              question_text: "What is empiricism in the context of Scrum?",
-              scenario_context: "A stakeholder asks why Scrum doesn't predict exactly what will be delivered in 6 months.",
-              options: ["Following a detailed plan created at the start", "Knowledge comes from experience and making decisions based on what is observed", "Using historical data to predict future outcomes", "Trusting expert opinions over actual results"],
+              question_text: "What do experienced Scrum Masters identify as their primary focus?",
+              scenario_context: "You're learning from veteran Scrum Masters.",
+              options: ["Writing code", "Coaching the team and facilitating Scrum events", "Approving time sheets", "Creating project documentation"],
               correct_answer_index: 1,
-              explanation: "Empiricism asserts that knowledge comes from experience and making decisions based on what is observed. Scrum uses this to make informed decisions based on actual progress."
+              explanation: "Experienced Scrum Masters focus primarily on coaching the team and facilitating Scrum events."
             },
             {
-              question_text: "How does lean thinking apply to Scrum?",
-              scenario_context: "Your team is trying to understand how to reduce waste in their process.",
-              options: ["Reducing team size to cut costs", "Reducing waste and focusing on the essentials", "Eliminating all meetings", "Working faster without quality checks"],
+              question_text: "What is a typical daily activity for a Scrum Master?",
+              scenario_context: "You want to understand the day-to-day of the role.",
+              options: ["Attending all technical meetings", "Removing blockers and preparing for ceremonies", "Coding features", "Approving all user stories"],
               correct_answer_index: 1,
-              explanation: "Lean thinking reduces waste and focuses on the essentials, helping teams deliver more value with less overhead."
+              explanation: "A typical day involves checking in with team members, removing blockers, and preparing for upcoming ceremonies."
             },
             {
-              question_text: "Why does Scrum employ an iterative, incremental approach?",
-              scenario_context: "The CFO wants to know why the team can't just deliver everything at once at the end.",
-              options: ["To make more meetings", "To optimize predictability and control risk", "To justify longer timelines", "To create more documentation"],
+              question_text: "What does a Scrum Master coach team members on?",
+              scenario_context: "A team member asks what kind of coaching they can expect.",
+              options: ["Technical programming skills", "Scrum values and self-organization", "Sales techniques", "Financial management"],
               correct_answer_index: 1,
-              explanation: "Scrum employs an iterative, incremental approach to optimize predictability and to control risk. It engages groups of people to deliver value incrementally."
+              explanation: "Scrum Masters spend significant time coaching team members on Scrum values and self-organization."
             },
             {
-              question_text: "What is the relationship between the three pillars of Scrum?",
-              scenario_context: "A team is inspecting their work but not making any changes based on their findings.",
-              options: ["They are independent concepts", "Inspection without adaptation is pointless; all three pillars work together", "Only transparency matters for success", "Adaptation can happen without inspection"],
+              question_text: "How do Scrum Masters work with Product Owners?",
+              scenario_context: "You need to understand the SM-PO relationship.",
+              options: ["They replace the Product Owner", "They ensure the Product Backlog is well-refined", "They write all user stories", "They approve the Product Owner's decisions"],
               correct_answer_index: 1,
-              explanation: "The three pillars are interconnected. Transparency enables inspection, and inspection without adaptation is considered pointless. All three must work together."
+              explanation: "Scrum Masters work with Product Owners to ensure the Product Backlog is well-refined and ready for Sprint Planning."
             },
             {
-              question_text: "When should inspection occur in Scrum?",
-              scenario_context: "A manager wants to schedule inspection meetings only at the end of each quarter.",
-              options: ["Only at the end of the project", "Frequently throughout the Sprint, but not so often it gets in the way of work", "Once a year during annual reviews", "Never - trust the team to self-manage"],
+              question_text: "What work do Scrum Masters do beyond their immediate team?",
+              scenario_context: "Leadership asks about the Scrum Master's organizational impact.",
+              options: ["Nothing, they only focus on their team", "Work on organizational impediments and help other teams", "Manage multiple teams directly", "Focus solely on reporting"],
               correct_answer_index: 1,
-              explanation: "Scrum artifacts and progress must be inspected frequently and diligently to detect potentially undesirable variances or problems, but not so frequently that inspection gets in the way of the work."
+              explanation: "Beyond the team, Scrum Masters often work on organizational impediments and help other teams improve."
+            }
+          ]
+        },
+        {
+          title: "1.4 Scrum Master Skill Inventory",
+          description: "The essential skills every Scrum Master needs to develop and master.",
+          order_index: 3,
+          professorIndex: 3, // Professor Lucia
+          lessonScript: {
+            mainPoints: [
+              "Facilitation is one of the most critical skills - being able to guide discussions and help teams reach decisions.",
+              "Coaching skills help Scrum Masters develop individuals and teams to reach their full potential.",
+              "Conflict resolution is essential as Scrum Masters help navigate disagreements constructively.",
+              "Teaching abilities allow Scrum Masters to help organizations understand and adopt Scrum.",
+              "Emotional intelligence enables Scrum Masters to read the room and respond appropriately to team dynamics."
+            ]
+          },
+          questions: [
+            {
+              question_text: "Why is facilitation considered a critical Scrum Master skill?",
+              scenario_context: "You're preparing for a Sprint Retrospective.",
+              options: ["To make all decisions for the team", "To guide discussions and help teams reach decisions", "To take meeting notes", "To assign tasks to team members"],
+              correct_answer_index: 1,
+              explanation: "Facilitation allows Scrum Masters to guide discussions and help teams reach decisions effectively."
+            },
+            {
+              question_text: "How do coaching skills benefit a Scrum Master?",
+              scenario_context: "A team member is struggling with self-organization.",
+              options: ["They can tell people exactly what to do", "They can develop individuals and teams to reach their full potential", "They can avoid difficult conversations", "They can delegate all their work"],
+              correct_answer_index: 1,
+              explanation: "Coaching skills help Scrum Masters develop individuals and teams to reach their full potential."
+            },
+            {
+              question_text: "Why is conflict resolution important for Scrum Masters?",
+              scenario_context: "Two team members have a disagreement about a technical approach.",
+              options: ["To avoid all conflicts", "To help navigate disagreements constructively", "To take sides in disputes", "To escalate all issues to management"],
+              correct_answer_index: 1,
+              explanation: "Conflict resolution is essential as Scrum Masters help navigate disagreements constructively."
+            },
+            {
+              question_text: "What teaching abilities should a Scrum Master possess?",
+              scenario_context: "A new department wants to adopt Scrum.",
+              options: ["College-level teaching certification", "Ability to help organizations understand and adopt Scrum", "Experience teaching programming", "Formal education credentials"],
+              correct_answer_index: 1,
+              explanation: "Teaching abilities allow Scrum Masters to help organizations understand and adopt Scrum practices."
+            },
+            {
+              question_text: "How does emotional intelligence help a Scrum Master?",
+              scenario_context: "You notice the team seems demotivated during a Sprint.",
+              options: ["It doesn't matter for this role", "It enables reading the room and responding to team dynamics", "It helps avoid all emotions", "It's only useful for therapy"],
+              correct_answer_index: 1,
+              explanation: "Emotional intelligence enables Scrum Masters to read the room and respond appropriately to team dynamics."
+            }
+          ]
+        },
+        {
+          title: "1.5 Expert Viewpoints: Scrum Master Skills",
+          description: "Industry experts share their perspectives on the most valuable Scrum Master skills.",
+          order_index: 4,
+          professorIndex: 0, // Professor Miguel
+          lessonScript: {
+            mainPoints: [
+              "Experts agree that soft skills are often more important than technical knowledge for Scrum Masters.",
+              "Active listening is highlighted as crucial - understanding what team members are really saying.",
+              "Patience is essential because change takes time and teams need room to grow.",
+              "Systems thinking helps Scrum Masters see the bigger picture and identify root causes.",
+              "Continuous learning is vital as the Agile landscape evolves constantly."
+            ]
+          },
+          questions: [
+            {
+              question_text: "What type of skills do experts consider most important for Scrum Masters?",
+              scenario_context: "You're deciding what skills to develop first.",
+              options: ["Technical programming skills", "Soft skills over technical knowledge", "Financial management skills", "Marketing expertise"],
+              correct_answer_index: 1,
+              explanation: "Experts agree that soft skills are often more important than technical knowledge for Scrum Masters."
+            },
+            {
+              question_text: "Why is active listening crucial for a Scrum Master?",
+              scenario_context: "A team member seems to be saying one thing but meaning another.",
+              options: ["To take better notes", "To understand what team members are really saying", "To interrupt with solutions", "To report to management"],
+              correct_answer_index: 1,
+              explanation: "Active listening is highlighted as crucial for understanding what team members are really saying."
+            },
+            {
+              question_text: "Why is patience considered an essential Scrum Master quality?",
+              scenario_context: "Your team is struggling to adopt new practices.",
+              options: ["To wait for others to fix problems", "Because change takes time and teams need room to grow", "To avoid taking action", "To delay difficult conversations"],
+              correct_answer_index: 1,
+              explanation: "Patience is essential because change takes time and teams need room to grow."
+            },
+            {
+              question_text: "How does systems thinking benefit a Scrum Master?",
+              scenario_context: "The same problems keep recurring in your team.",
+              options: ["It helps with IT systems", "It helps see the bigger picture and identify root causes", "It's only for architects", "It slows down decision-making"],
+              correct_answer_index: 1,
+              explanation: "Systems thinking helps Scrum Masters see the bigger picture and identify root causes."
+            },
+            {
+              question_text: "Why is continuous learning vital for Scrum Masters?",
+              scenario_context: "You've been a Scrum Master for 5 years.",
+              options: ["It's not necessary after gaining experience", "The Agile landscape evolves constantly", "Only new Scrum Masters need to learn", "Certifications never expire"],
+              correct_answer_index: 1,
+              explanation: "Continuous learning is vital as the Agile landscape evolves constantly."
+            }
+          ]
+        },
+        {
+          title: "1.6 A Day in the Life of a Scrum Master",
+          description: "Walk through a typical day for a practicing Scrum Master.",
+          order_index: 5,
+          professorIndex: 1, // Professor Carmen
+          lessonScript: {
+            mainPoints: [
+              "A typical day starts with reviewing the Sprint board and checking for any blockers that emerged overnight.",
+              "Morning often includes the Daily Scrum - a 15-minute sync where the team shares progress and plans.",
+              "Throughout the day, Scrum Masters have one-on-ones, coaching sessions, and work on removing impediments.",
+              "Afternoons might include stakeholder meetings, backlog refinement sessions, or preparing for upcoming ceremonies.",
+              "The day ends with reflection on what was accomplished and what improvements can be made tomorrow."
+            ]
+          },
+          questions: [
+            {
+              question_text: "How does a typical Scrum Master day begin?",
+              scenario_context: "You're establishing your morning routine.",
+              options: ["Writing code", "Reviewing the Sprint board and checking for blockers", "Having a two-hour planning session", "Reading emails for three hours"],
+              correct_answer_index: 1,
+              explanation: "A typical day starts with reviewing the Sprint board and checking for any blockers that emerged."
+            },
+            {
+              question_text: "How long is the Daily Scrum event?",
+              scenario_context: "You're explaining Daily Scrum to the team.",
+              options: ["30 minutes to 1 hour", "15 minutes", "As long as needed", "5 minutes maximum"],
+              correct_answer_index: 1,
+              explanation: "The Daily Scrum is a 15-minute sync where the team shares progress and plans."
+            },
+            {
+              question_text: "What activities might a Scrum Master do during the day?",
+              scenario_context: "You're planning your daily schedule.",
+              options: ["Only attend meetings", "One-on-ones, coaching sessions, and removing impediments", "Write all the user stories", "Manage the team's vacation requests"],
+              correct_answer_index: 1,
+              explanation: "Throughout the day, Scrum Masters have one-on-ones, coaching sessions, and work on removing impediments."
+            },
+            {
+              question_text: "What might a Scrum Master's afternoon include?",
+              scenario_context: "You're looking at typical afternoon activities.",
+              options: ["Mandatory coding time", "Stakeholder meetings, backlog refinement, or ceremony preparation", "Taking the afternoon off", "Detailed status reporting"],
+              correct_answer_index: 1,
+              explanation: "Afternoons might include stakeholder meetings, backlog refinement sessions, or preparing for upcoming ceremonies."
+            },
+            {
+              question_text: "How should a Scrum Master end their day?",
+              scenario_context: "You want to improve your daily practice.",
+              options: ["Rush out immediately", "Reflection on accomplishments and potential improvements", "Send a lengthy status report", "Schedule more meetings"],
+              correct_answer_index: 1,
+              explanation: "The day ends with reflection on what was accomplished and what improvements can be made tomorrow."
             }
           ]
         }
       ],
-      endQuizQuestions: [
-        // 40 questions for chapter end quiz - combining and expanding on mini video topics
-        {
-          question_text: "According to the Scrum Guide, what is Scrum?",
-          scenario_context: "You're presenting Scrum to your company's board of directors for the first time.",
-          options: ["A complete methodology for software development", "A lightweight framework that helps generate value through adaptive solutions", "A set of tools for project tracking", "A management hierarchy structure"],
-          correct_answer_index: 1,
-          explanation: "Scrum is a lightweight framework that helps people, teams and organizations generate value through adaptive solutions for complex problems."
-        },
-        {
-          question_text: "What are the three pillars of empiricism?",
-          scenario_context: "During a Scrum Master interview, you're asked about the foundation of Scrum.",
-          options: ["Planning, Doing, Checking", "Transparency, Inspection, Adaptation", "Scope, Time, Cost", "Define, Design, Develop"],
-          correct_answer_index: 1,
-          explanation: "The three pillars of empiricism are Transparency, Inspection, and Adaptation."
-        },
-        {
-          question_text: "Which Scrum value encourages team members to speak up about problems?",
-          scenario_context: "A developer notices a security flaw but is hesitant to bring it up because it might delay the Sprint.",
-          options: ["Commitment", "Focus", "Openness", "Courage"],
-          correct_answer_index: 3,
-          explanation: "Courage gives team members the confidence to do the right thing and work on tough problems."
-        },
-        {
-          question_text: "What does the Scrum value of Commitment mean?",
-          scenario_context: "A new team member thinks commitment means promising to finish all items in the Sprint Backlog.",
-          options: ["Promising to complete all Sprint Backlog items", "Committing to the goals of the Scrum Team", "Working overtime when needed", "Never changing the plan"],
-          correct_answer_index: 1,
-          explanation: "Commitment means the team commits to achieving its goals and to supporting each other, not necessarily completing every planned item."
-        },
-        {
-          question_text: "Why is Scrum described as 'simple to understand'?",
-          scenario_context: "A colleague argues that Scrum is too complicated to implement.",
-          options: ["It has very few rules", "It provides detailed instructions for every situation", "It defines only what's necessary, keeping it lightweight", "It eliminates all complexity from projects"],
-          correct_answer_index: 2,
-          explanation: "Scrum is simple because it only defines what's necessary to implement Scrum theory, leaving room for teams to add their own practices."
-        },
-        {
-          question_text: "What happens when Scrum is only partially implemented?",
-          scenario_context: "Management wants to adopt Scrum but skip the Sprint Retrospective to save time.",
-          options: ["It works just as well", "It can be used to explore other techniques and methodologies", "The benefits of Scrum may not be fully realized", "It becomes more agile"],
-          correct_answer_index: 2,
-          explanation: "While Scrum can be used as a container for other techniques, partial implementation may not provide the full benefits of the framework."
-        },
-        {
-          question_text: "What does transparency mean in Scrum?",
-          scenario_context: "Team members are keeping their work-in-progress private until it's complete.",
-          options: ["Making all code open source", "The emergent process and work must be visible to those performing and receiving the work", "Publishing all meeting notes", "Sharing salary information"],
-          correct_answer_index: 1,
-          explanation: "Transparency means the emergent process and work must be visible to those performing the work as well as those receiving the work."
-        },
-        {
-          question_text: "How often should inspection occur in Scrum?",
-          scenario_context: "A manager wants to add daily reports for each team member.",
-          options: ["Continuously, but not so often it gets in the way of work", "Only during Sprint Review", "Once per release", "As determined by management"],
-          correct_answer_index: 0,
-          explanation: "Inspection should occur frequently and diligently, but not so frequently that it gets in the way of the work."
-        },
-        {
-          question_text: "When is adaptation required in Scrum?",
-          scenario_context: "During Daily Scrum, the team discovers they're behind on the Sprint Goal.",
-          options: ["Only at the end of the Sprint", "When any aspects of a process deviate outside acceptable limits", "When management requests changes", "Adaptation is optional"],
-          correct_answer_index: 1,
-          explanation: "Adaptation must happen when any aspects of a process deviate outside acceptable limits or if the resulting product is unacceptable."
-        },
-        {
-          question_text: "What is the purpose of Scrum events?",
-          scenario_context: "A team member complains about having too many meetings.",
-          options: ["To keep everyone busy", "To create opportunities for inspection and adaptation", "To satisfy management requirements", "To document progress"],
-          correct_answer_index: 1,
-          explanation: "All Scrum events are formal opportunities to inspect and adapt Scrum artifacts."
-        },
-        {
-          question_text: "What does the Scrum value of Focus help teams achieve?",
-          scenario_context: "Team members are constantly being pulled into other projects during the Sprint.",
-          options: ["Multi-tasking efficiency", "Concentrated effort on Sprint work and goals", "Individual productivity metrics", "Faster typing speed"],
-          correct_answer_index: 1,
-          explanation: "Focus means everyone concentrates on the work of the Sprint and the goals of the Scrum Team."
-        },
-        {
-          question_text: "How does Respect manifest in a Scrum Team?",
-          scenario_context: "A senior developer dismisses a junior developer's idea without consideration.",
-          options: ["Following a strict hierarchy", "Team members respect each other as capable, independent people", "Respecting only the Scrum Master's decisions", "Never disagreeing with teammates"],
-          correct_answer_index: 1,
-          explanation: "Respect means Scrum Team members respect each other to be capable, independent people, and are respected as such by the people with whom they work."
-        },
-        {
-          question_text: "Why does Scrum emphasize small teams?",
-          scenario_context: "Your organization has 50 developers who need to work on one product.",
-          options: ["To reduce costs", "Small teams communicate better and are more productive", "To limit the scope of projects", "Because Scrum doesn't scale"],
-          correct_answer_index: 1,
-          explanation: "Small teams communicate better and are more productive. Larger teams should consider reorganizing into multiple cohesive Scrum Teams."
-        },
-        {
-          question_text: "What is the relationship between empiricism and Scrum?",
-          scenario_context: "A traditional project manager asks why Scrum doesn't follow a predictive approach.",
-          options: ["They are unrelated concepts", "Scrum is founded on empiricism - learning from experience", "Empiricism is optional in Scrum", "Scrum rejects empiricism"],
-          correct_answer_index: 1,
-          explanation: "Scrum is founded on empiricism, which asserts that knowledge comes from experience and making decisions based on what is observed."
-        },
-        {
-          question_text: "How does lean thinking contribute to Scrum?",
-          scenario_context: "The team has many processes that don't seem to add value.",
-          options: ["It doesn't - lean and Scrum are separate", "Lean thinking reduces waste and focuses on essentials", "Lean means doing less work", "Lean thinking increases documentation"],
-          correct_answer_index: 1,
-          explanation: "Lean thinking reduces waste and focuses on the essentials, which aligns with Scrum's lightweight nature."
-        },
-        {
-          question_text: "What should happen if transparency is low?",
-          scenario_context: "Stakeholders don't have visibility into what the team is working on.",
-          options: ["Continue working as usual", "Decisions become risky as they're based on incomplete information", "Increase the Sprint length", "Add more documentation requirements"],
-          correct_answer_index: 1,
-          explanation: "Low transparency makes decisions risky because they may be based on incomplete or inaccurate information."
-        },
-        {
-          question_text: "What makes Scrum difficult to master?",
-          scenario_context: "A team has been doing Scrum for 6 months but isn't seeing improvements.",
-          options: ["The rules are too complex", "Truly embodying the values and principles requires practice", "There isn't enough documentation", "Scrum tools are expensive"],
-          correct_answer_index: 1,
-          explanation: "While Scrum is simple to understand, it is difficult to master because it requires deeply understanding and living the values and principles."
-        },
-        {
-          question_text: "What is the purpose of the iterative approach in Scrum?",
-          scenario_context: "A stakeholder asks why you deliver in Sprints instead of all at once.",
-          options: ["To extend the project timeline", "To optimize predictability and control risk", "To create more meetings", "To increase costs"],
-          correct_answer_index: 1,
-          explanation: "The iterative approach optimizes predictability and controls risk by delivering value incrementally."
-        },
-        {
-          question_text: "Who is responsible for upholding Scrum values?",
-          scenario_context: "A team member says values are only the Scrum Master's concern.",
-          options: ["Only the Scrum Master", "Only management", "The entire Scrum Team", "Values are not important"],
-          correct_answer_index: 2,
-          explanation: "The entire Scrum Team is responsible for embodying the Scrum values in their work and interactions."
-        },
-        {
-          question_text: "When values are embodied, what develops within the team?",
-          scenario_context: "A new team is struggling to work together effectively.",
-          options: ["Competition", "Trust", "Bureaucracy", "Hierarchy"],
-          correct_answer_index: 1,
-          explanation: "When the values are embodied, the empirical Scrum pillars come to life, building trust among team members."
-        },
-        {
-          question_text: "What does Scrum NOT prescribe?",
-          scenario_context: "A manager asks which programming methodology Scrum requires.",
-          options: ["Having a Product Owner", "Specific techniques or technologies to use", "Sprint events", "A Definition of Done"],
-          correct_answer_index: 1,
-          explanation: "Scrum does not prescribe specific techniques, practices, or technologies to use. It only provides the framework."
-        },
-        {
-          question_text: "Why is adaptation essential in Scrum?",
-          scenario_context: "The team learned something new about customer needs mid-Sprint.",
-          options: ["It isn't - plans should not change", "It allows teams to respond to change and deliver value", "It makes reporting easier", "It reduces accountability"],
-          correct_answer_index: 1,
-          explanation: "Adaptation allows teams to respond to new information and changing requirements, ensuring they continue to deliver value."
-        },
-        {
-          question_text: "What happens when a team lacks courage?",
-          scenario_context: "Team members avoid bringing up problems in meetings.",
-          options: ["The team works more harmoniously", "Important issues go unaddressed, affecting quality", "Sprint velocity increases", "Stakeholders are happier"],
-          correct_answer_index: 1,
-          explanation: "Without courage, team members may not speak up about problems, leading to unaddressed issues that affect quality and outcomes."
-        },
-        {
-          question_text: "How should Scrum Teams handle complex problems?",
-          scenario_context: "The team faces an uncertain technical challenge with no clear solution.",
-          options: ["Wait for management guidance", "Use empiricism - try solutions and learn from results", "Avoid the problem", "Hire external consultants immediately"],
-          correct_answer_index: 1,
-          explanation: "Scrum uses empiricism to handle complexity - teams experiment, observe results, and adapt based on what they learn."
-        },
-        {
-          question_text: "What is the benefit of inspection in Scrum?",
-          scenario_context: "The team rarely looks at their Sprint progress during the Sprint.",
-          options: ["It creates documentation", "It detects potentially undesirable variances early", "It satisfies auditors", "It reduces the need for planning"],
-          correct_answer_index: 1,
-          explanation: "Inspection helps detect potentially undesirable variances or problems early, when they're easier to address."
-        },
-        {
-          question_text: "What role does Openness play in transparency?",
-          scenario_context: "A team member is hesitant to share that they're struggling with a task.",
-          options: ["They are unrelated", "Openness enables transparency by encouraging honest communication", "Openness replaces transparency", "Only managers need to be open"],
-          correct_answer_index: 1,
-          explanation: "Openness enables transparency. When team members are open about work and challenges, the team can inspect and adapt effectively."
-        },
-        {
-          question_text: "What should guide decisions in Scrum?",
-          scenario_context: "A stakeholder wants to make a decision based on a prediction made 6 months ago.",
-          options: ["Original project plans", "What is observed and experienced (empiricism)", "Management preferences", "Industry best practices only"],
-          correct_answer_index: 1,
-          explanation: "Decisions should be based on what is observed and experienced, which is the essence of empiricism."
-        },
-        {
-          question_text: "How does Scrum view self-management?",
-          scenario_context: "A manager wants to assign specific tasks to each team member.",
-          options: ["Teams should be told what to do", "Teams internally decide who does what, when, and how", "Only senior members self-manage", "Self-management creates chaos"],
-          correct_answer_index: 1,
-          explanation: "Scrum Teams are self-managing, meaning they internally decide who does what, when, and how."
-        },
-        {
-          question_text: "What is the danger of low transparency?",
-          scenario_context: "The team reports everything is on track but the actual work is behind schedule.",
-          options: ["There is no danger", "Risk increases because decisions are made on incomplete information", "It speeds up development", "It protects the team from criticism"],
-          correct_answer_index: 1,
-          explanation: "Low transparency leads to decisions made on incomplete information, which increases risk and unpredictability."
-        },
-        {
-          question_text: "Why does Scrum limit what it defines?",
-          scenario_context: "A new team asks why Scrum doesn't tell them exactly how to do their work.",
-          options: ["The creators didn't finish the framework", "To allow various processes, techniques and methods within it", "To reduce training costs", "To make certification easier"],
-          correct_answer_index: 1,
-          explanation: "Scrum is intentionally incomplete to allow various processes, techniques, and methods to be employed within the framework."
-        },
-        {
-          question_text: "What is the key to building trust in Scrum?",
-          scenario_context: "A new team is struggling to trust each other's judgments.",
-          options: ["Strict oversight", "Embodying the Scrum values", "Detailed contracts", "Performance reviews"],
-          correct_answer_index: 1,
-          explanation: "When the values are embodied by the Scrum Team, trust is built among team members."
-        },
-        {
-          question_text: "How should a Scrum Team respond to unexpected findings during inspection?",
-          scenario_context: "The Sprint Review reveals the product doesn't meet user expectations.",
-          options: ["Continue as planned", "Adapt the plan or approach as soon as possible", "Blame the team", "Cancel the project"],
-          correct_answer_index: 1,
-          explanation: "When something is learned through inspection, the team should adapt as soon as possible to minimize further deviation."
-        },
-        {
-          question_text: "What mindset does Scrum require for success?",
-          scenario_context: "Leadership wants guarantees about what will be delivered in the next 6 months.",
-          options: ["Predictive planning mindset", "Empirical mindset accepting uncertainty", "Fixed scope mindset", "Command-and-control mindset"],
-          correct_answer_index: 1,
-          explanation: "Scrum requires an empirical mindset that accepts uncertainty and makes decisions based on what is observed rather than predicted."
-        },
-        {
-          question_text: "What enables the Scrum Team to create value?",
-          scenario_context: "A team is producing features but stakeholders are not satisfied.",
-          options: ["Working faster", "The combination of the framework and Scrum values", "More detailed requirements", "Stricter deadlines"],
-          correct_answer_index: 1,
-          explanation: "The combination of the Scrum framework and Scrum values enables teams to create value by addressing complex problems effectively."
-        },
-        {
-          question_text: "What should happen when the Sprint Goal becomes obsolete?",
-          scenario_context: "Major market changes make the current Sprint Goal irrelevant.",
-          options: ["Continue working on the Sprint Goal anyway", "The Sprint may be cancelled", "Wait until the next Sprint", "Ignore the market changes"],
-          correct_answer_index: 1,
-          explanation: "A Sprint may be cancelled if the Sprint Goal becomes obsolete, which is an example of adaptation."
-        },
-        {
-          question_text: "Why is the Definition of Done important for transparency?",
-          scenario_context: "Different team members have different ideas of what 'done' means.",
-          options: ["It's not related to transparency", "It creates a shared understanding of work completion", "It reduces the need for testing", "It speeds up development"],
-          correct_answer_index: 1,
-          explanation: "The Definition of Done creates transparency by providing a shared understanding of what work being complete means."
-        },
-        {
-          question_text: "What is the relationship between inspection and transparency?",
-          scenario_context: "The team wants to inspect their progress but not everyone has access to the information.",
-          options: ["They are unrelated", "Inspection is only possible with transparency", "Inspection creates transparency", "Neither is important"],
-          correct_answer_index: 1,
-          explanation: "Transparency is required for inspection. Without transparency, inspection becomes misleading and wasteful."
-        },
-        {
-          question_text: "How does Scrum handle the need for experimentation?",
-          scenario_context: "The team wants to try a new technology but isn't sure it will work.",
-          options: ["Experimentation is not allowed", "The empirical nature of Scrum supports experimentation and learning", "All experiments require approval", "Only proven technologies should be used"],
-          correct_answer_index: 1,
-          explanation: "Scrum's empirical nature supports experimentation. Teams can try approaches, observe results, and adapt based on what they learn."
-        },
-        {
-          question_text: "What happens when Scrum is implemented without understanding its values?",
-          scenario_context: "A team follows all Scrum events and artifacts but team members don't trust each other.",
-          options: ["Scrum works perfectly fine", "The team may not achieve the full benefits of Scrum", "Values are optional additions", "The team becomes more efficient"],
-          correct_answer_index: 1,
-          explanation: "Without embodying the values, teams may follow the mechanics of Scrum but not achieve its full benefits."
-        },
-        {
-          question_text: "What is the ultimate goal of Scrum?",
-          scenario_context: "Someone asks you to summarize why organizations should use Scrum.",
-          options: ["To reduce costs", "To generate value through adaptive solutions for complex problems", "To create more meetings", "To produce more documentation"],
-          correct_answer_index: 1,
-          explanation: "The ultimate goal of Scrum is to help people, teams, and organizations generate value through adaptive solutions for complex problems."
-        }
-      ]
+      endQuizQuestions: generateModule1EndQuiz()
     },
+    // MODULE 2: Scrum Master Opportunities
     {
-      title: "Chapter 2: The Scrum Team",
-      description: "Learn about the Scrum Team roles and responsibilities",
+      title: "Module 2: Scrum Master Opportunities",
+      description: "This module compares traditional project management with a Scrum Master role and explores opportunities in the current work environment.",
       order_index: 1,
       videos: [
         {
-          title: "2.1 The Scrum Team Structure",
-          description: "Understanding the composition and characteristics of Scrum Teams",
+          title: "2.1 Scrum Master and Traditional Project Manager Comparison",
+          description: "Understanding the key differences between Scrum Masters and traditional project managers.",
           order_index: 0,
+          professorIndex: 2, // Professor Rafael
+          lessonScript: {
+            mainPoints: [
+              "Traditional project managers focus on planning, scheduling, and controlling. Scrum Masters focus on facilitating, coaching, and removing impediments.",
+              "Project managers often have direct authority over team members. Scrum Masters influence through servant leadership.",
+              "Traditional PM uses detailed upfront planning. Scrum uses iterative planning that adapts to change.",
+              "Project managers track progress against a baseline plan. Scrum Masters help teams inspect and adapt continuously.",
+              "Both roles aim for project success, but through fundamentally different approaches to leadership and change."
+            ]
+          },
           questions: [
             {
-              question_text: "What is the fundamental unit of Scrum?",
-              scenario_context: "Your organization is restructuring and wants to know how to organize people for Scrum.",
-              options: ["The Project Manager", "The Scrum Team", "The Development Department", "The Product Owner"],
+              question_text: "What is the primary focus of a traditional project manager?",
+              scenario_context: "You're comparing PM and SM roles.",
+              options: ["Facilitating and coaching", "Planning, scheduling, and controlling", "Removing impediments only", "Writing code"],
               correct_answer_index: 1,
-              explanation: "The fundamental unit of Scrum is a small team of people, called the Scrum Team."
+              explanation: "Traditional project managers focus on planning, scheduling, and controlling project activities."
             },
             {
-              question_text: "What is the recommended size of a Scrum Team?",
-              scenario_context: "You're forming a new Scrum Team and need to decide how many people to include.",
-              options: ["3-5 people", "5 or fewer people", "10 or fewer people, typically smaller", "15-20 people"],
-              correct_answer_index: 2,
-              explanation: "The Scrum Team is typically 10 or fewer people, and in general, smaller teams communicate better and are more productive."
-            },
-            {
-              question_text: "How many sub-teams or hierarchies exist within a Scrum Team?",
-              scenario_context: "A manager wants to create a QA sub-team and a Development sub-team within the Scrum Team.",
-              options: ["Two (technical and non-technical)", "As many as needed for efficiency", "None - there are no sub-teams or hierarchies", "One for each discipline"],
-              correct_answer_index: 2,
-              explanation: "Within a Scrum Team, there are no sub-teams or hierarchies. It is a cohesive unit of professionals."
-            },
-            {
-              question_text: "What three roles exist within a Scrum Team?",
-              scenario_context: "You're explaining Scrum roles to a new hire.",
-              options: ["Manager, Developer, Tester", "Scrum Master, Product Owner, Developers", "Technical Lead, Business Analyst, Team Members", "Project Manager, Team Lead, Staff"],
+              question_text: "How do Scrum Masters typically influence their teams?",
+              scenario_context: "You need to explain your leadership approach.",
+              options: ["Through direct authority", "Through servant leadership", "Through financial incentives", "Through threat of termination"],
               correct_answer_index: 1,
-              explanation: "A Scrum Team consists of one Scrum Master, one Product Owner, and Developers."
+              explanation: "Scrum Masters influence through servant leadership rather than direct authority."
             },
             {
-              question_text: "What does it mean that a Scrum Team is self-managing?",
-              scenario_context: "A manager is confused about who assigns tasks to the team.",
-              options: ["They don't need any management at all", "They internally decide who does what, when, and how", "Each person manages themselves individually", "The Scrum Master manages all tasks"],
+              question_text: "How does Scrum approach planning compared to traditional PM?",
+              scenario_context: "Stakeholders want a detailed 12-month plan.",
+              options: ["Detailed upfront planning", "Iterative planning that adapts to change", "No planning at all", "Planning only at the end"],
               correct_answer_index: 1,
-              explanation: "Self-managing means the team internally decides who does what, when, and how to accomplish their work."
+              explanation: "Scrum uses iterative planning that adapts to change rather than detailed upfront planning."
+            },
+            {
+              question_text: "How do project managers typically track progress?",
+              scenario_context: "You're comparing tracking methods.",
+              options: ["Daily standups only", "Against a baseline plan", "No tracking needed", "Through Scrum events"],
+              correct_answer_index: 1,
+              explanation: "Project managers track progress against a baseline plan created at the start."
+            },
+            {
+              question_text: "What common goal do both PMs and Scrum Masters share?",
+              scenario_context: "You're explaining why both roles matter.",
+              options: ["Following identical processes", "Project success through their respective approaches", "Maximizing team size", "Creating documentation"],
+              correct_answer_index: 1,
+              explanation: "Both roles aim for project success, but through fundamentally different approaches."
             }
           ]
         },
         {
-          title: "2.2 The Product Owner",
-          description: "The role responsible for maximizing the value of the product",
+          title: "2.2 Expert Viewpoints: Scrum Master Opportunities",
+          description: "Industry experts share insights on career opportunities for Scrum Masters.",
           order_index: 1,
+          professorIndex: 3, // Professor Lucia
+          lessonScript: {
+            mainPoints: [
+              "The demand for Scrum Masters continues to grow as more organizations adopt Agile practices.",
+              "Opportunities exist across all industries - tech, healthcare, finance, manufacturing, and more.",
+              "Remote work has expanded opportunities, allowing Scrum Masters to work with global teams.",
+              "Many organizations are looking for Scrum Masters who can also coach at the enterprise level.",
+              "Career paths can lead to Agile Coach, Release Train Engineer, or organizational transformation roles."
+            ]
+          },
           questions: [
             {
-              question_text: "What is the Product Owner's primary accountability?",
-              scenario_context: "A new Product Owner asks what their main focus should be.",
-              options: ["Managing the development team", "Maximizing the value of the product resulting from the Scrum Team's work", "Writing all user stories", "Attending all Daily Scrums"],
+              question_text: "What is the trend for Scrum Master demand?",
+              scenario_context: "You're considering a career as a Scrum Master.",
+              options: ["Decreasing significantly", "Continues to grow as organizations adopt Agile", "Staying exactly the same", "Only growing in tech"],
               correct_answer_index: 1,
-              explanation: "The Product Owner is accountable for maximizing the value of the product resulting from the work of the Scrum Team."
+              explanation: "The demand for Scrum Masters continues to grow as more organizations adopt Agile practices."
             },
             {
-              question_text: "Who manages the Product Backlog?",
-              scenario_context: "Multiple people want to add items to the Product Backlog.",
-              options: ["The entire Scrum Team collaboratively", "The Product Owner", "The Scrum Master", "Stakeholders"],
-              correct_answer_index: 1,
-              explanation: "The Product Owner is responsible for effective Product Backlog management."
+              question_text: "In which industries can Scrum Masters find opportunities?",
+              scenario_context: "You're exploring different sectors.",
+              options: ["Only software development", "Only startups", "Across all industries including tech, healthcare, finance", "Only Fortune 500 companies"],
+              correct_answer_index: 2,
+              explanation: "Opportunities exist across all industries including tech, healthcare, finance, manufacturing, and more."
             },
             {
-              question_text: "Can the Product Owner delegate Product Backlog work to others?",
-              scenario_context: "The Product Owner wants developers to help write Product Backlog items.",
-              options: ["No, only the Product Owner can do this work", "Yes, but the Product Owner remains accountable", "Yes, and accountability transfers too", "Only the Scrum Master can help"],
+              question_text: "How has remote work affected Scrum Master opportunities?",
+              scenario_context: "You're considering remote work options.",
+              options: ["Eliminated all opportunities", "Expanded opportunities for global team work", "Had no impact", "Reduced salary potential"],
               correct_answer_index: 1,
-              explanation: "The Product Owner may delegate work to others, but they remain accountable for the outcome."
+              explanation: "Remote work has expanded opportunities, allowing Scrum Masters to work with global teams."
             },
             {
-              question_text: "How many people represent the Product Owner role?",
-              scenario_context: "Two managers both want to be the Product Owner for one product.",
-              options: ["As many as needed", "One person, not a committee", "Two, for backup", "It depends on the product"],
+              question_text: "What additional skill are many organizations seeking?",
+              scenario_context: "You want to make yourself more marketable.",
+              options: ["Programming expertise", "Enterprise-level coaching capabilities", "Marketing skills", "Legal expertise"],
               correct_answer_index: 1,
-              explanation: "The Product Owner is one person, not a committee. They may represent the needs of many stakeholders, but one person is accountable."
+              explanation: "Many organizations are looking for Scrum Masters who can also coach at the enterprise level."
             },
             {
-              question_text: "What must happen for a Product Owner's decisions to be respected?",
-              scenario_context: "Stakeholders keep bypassing the Product Owner to request features directly from developers.",
-              options: ["Nothing - stakeholders can request directly", "The entire organization must respect the Product Owner's decisions", "Developers must ignore stakeholders", "The Scrum Master must enforce it"],
+              question_text: "What career paths can Scrum Masters pursue?",
+              scenario_context: "You're planning your long-term career.",
+              options: ["Only staying as Scrum Master forever", "Agile Coach, RTE, or organizational transformation roles", "Only becoming a developer", "Only moving to sales"],
               correct_answer_index: 1,
-              explanation: "For Product Owners to succeed, the entire organization must respect their decisions. These decisions are visible in the content and ordering of the Product Backlog."
+              explanation: "Career paths can lead to Agile Coach, Release Train Engineer, or organizational transformation roles."
             }
           ]
         },
         {
-          title: "2.3 The Scrum Master",
-          description: "The servant leader who helps everyone understand Scrum",
+          title: "2.3 Developing Scrum Master Skills",
+          description: "How to develop and strengthen the skills needed to succeed as a Scrum Master.",
           order_index: 2,
+          professorIndex: 0, // Professor Miguel
+          lessonScript: {
+            mainPoints: [
+              "Start with the basics - read and deeply understand the Scrum Guide. It's the foundation of everything.",
+              "Practice facilitation in any setting - team meetings, community groups, family gatherings!",
+              "Seek mentorship from experienced Scrum Masters or Agile Coaches.",
+              "Join Scrum communities and attend meetups to learn from peers and stay current.",
+              "Get certified to validate your knowledge, but remember certification is just the beginning of your journey."
+            ]
+          },
           questions: [
             {
-              question_text: "What is the Scrum Master accountable for?",
-              scenario_context: "A hiring manager asks what a Scrum Master actually does.",
-              options: ["Managing the development team", "Establishing Scrum as defined in the Scrum Guide", "Delivering the product on time", "Writing code and tests"],
+              question_text: "What foundational document should you master first?",
+              scenario_context: "You're starting your Scrum Master journey.",
+              options: ["PMBOK Guide", "The Scrum Guide", "Company policies", "Technical documentation"],
               correct_answer_index: 1,
-              explanation: "The Scrum Master is accountable for establishing Scrum as defined in the Scrum Guide."
+              explanation: "Start with the basics - read and deeply understand the Scrum Guide. It's the foundation."
             },
             {
-              question_text: "How does the Scrum Master help establish Scrum?",
-              scenario_context: "A Scrum Master wonders how to best support their team and organization.",
-              options: ["By enforcing rules and punishing violations", "By helping everyone understand Scrum theory and practice, both within the Team and the organization", "By doing all the planning", "By attending meetings on behalf of the team"],
+              question_text: "Where can you practice facilitation skills?",
+              scenario_context: "You want to improve your facilitation.",
+              options: ["Only in professional settings", "Any setting - team meetings, community groups, anywhere", "Only during Scrum events", "Only with certification training"],
               correct_answer_index: 1,
-              explanation: "Scrum Masters help everyone understand Scrum theory and practice, both within the Scrum Team and the organization."
+              explanation: "Practice facilitation in any setting - team meetings, community groups, even family gatherings."
             },
             {
-              question_text: "What is the Scrum Master's relationship to the team's effectiveness?",
-              scenario_context: "The team is struggling to improve their processes.",
-              options: ["Not their concern", "They are accountable for the Scrum Team's effectiveness", "They measure but don't influence", "Only technical effectiveness matters"],
+              question_text: "What is a recommended way to accelerate your growth?",
+              scenario_context: "You want to develop faster as a Scrum Master.",
+              options: ["Work alone and figure it out", "Seek mentorship from experienced Scrum Masters", "Avoid asking for help", "Only read books"],
               correct_answer_index: 1,
-              explanation: "The Scrum Master is accountable for the Scrum Team's effectiveness."
+              explanation: "Seek mentorship from experienced Scrum Masters or Agile Coaches to accelerate your growth."
             },
             {
-              question_text: "How does the Scrum Master serve the Product Owner?",
-              scenario_context: "The Product Owner is struggling with backlog management.",
-              options: ["By taking over backlog management", "By helping find techniques for effective Product Goal definition and Backlog management", "By disagreeing with their priorities", "By writing user stories for them"],
+              question_text: "Why should you join Scrum communities?",
+              scenario_context: "You're wondering if networking is worth your time.",
+              options: ["To find a new job", "To learn from peers and stay current", "To complain about your team", "To avoid doing real work"],
               correct_answer_index: 1,
-              explanation: "The Scrum Master helps the Product Owner find techniques for effective Product Goal definition and Product Backlog management, among other things."
+              explanation: "Join Scrum communities and attend meetups to learn from peers and stay current."
             },
             {
-              question_text: "What leadership style does a Scrum Master embody?",
-              scenario_context: "Someone asks if the Scrum Master is a traditional manager.",
-              options: ["Command and control", "Servant leadership for the Scrum Team and organization", "Laissez-faire", "Authoritarian"],
+              question_text: "What is the role of certification in becoming a Scrum Master?",
+              scenario_context: "You're deciding whether to get certified.",
+              options: ["It's not needed at all", "It validates knowledge but is just the beginning of the journey", "It guarantees job success", "It replaces practical experience"],
               correct_answer_index: 1,
-              explanation: "Scrum Masters are true leaders who serve the Scrum Team and the larger organization."
+              explanation: "Get certified to validate your knowledge, but remember certification is just the beginning of your journey."
             }
           ]
         },
         {
-          title: "2.4 The Developers",
-          description: "The professionals who create the product Increment",
+          title: "2.4 Scrum Master Employment Opportunities",
+          description: "Exploring the job market and employment opportunities for Scrum Masters.",
           order_index: 3,
+          professorIndex: 1, // Professor Carmen
+          lessonScript: {
+            mainPoints: [
+              "Job postings for Scrum Masters have increased significantly in recent years.",
+              "Many companies seek Scrum Masters with industry-specific experience in their domain.",
+              "Contract and consulting opportunities allow flexibility and variety in your career.",
+              "Some organizations combine Scrum Master with other roles - be aware of the expectations.",
+              "Building a strong LinkedIn presence and portfolio can significantly boost your job search."
+            ]
+          },
           questions: [
             {
-              question_text: "Who are the Developers in a Scrum Team?",
-              scenario_context: "A tester asks if they are considered a Developer in Scrum.",
-              options: ["Only software programmers", "People committed to creating any aspect of a usable Increment each Sprint", "Anyone who writes code", "External contractors only"],
+              question_text: "What trend exists in Scrum Master job postings?",
+              scenario_context: "You're analyzing the job market.",
+              options: ["Significant decrease", "Significant increase in recent years", "No change", "Jobs only for seniors"],
               correct_answer_index: 1,
-              explanation: "Developers are the people in the Scrum Team committed to creating any aspect of a usable Increment each Sprint."
+              explanation: "Job postings for Scrum Masters have increased significantly in recent years."
             },
             {
-              question_text: "What are Developers accountable for?",
-              scenario_context: "Developers are unsure about their responsibilities beyond writing code.",
-              options: ["Just writing code", "Creating a plan for the Sprint (Sprint Backlog), adhering to Definition of Done, adapting daily toward Sprint Goal, and holding each other accountable as professionals", "Following the Product Owner's exact instructions", "Reporting to the Scrum Master"],
+              question_text: "What type of experience do many companies value?",
+              scenario_context: "You're tailoring your resume.",
+              options: ["Any random experience", "Industry-specific experience in their domain", "Only technical experience", "Only educational degrees"],
               correct_answer_index: 1,
-              explanation: "Developers are accountable for creating a plan for the Sprint, instilling quality through the Definition of Done, adapting daily, and holding each other accountable."
+              explanation: "Many companies seek Scrum Masters with industry-specific experience in their domain."
             },
             {
-              question_text: "Who creates the Sprint Backlog?",
-              scenario_context: "The Product Owner wants to assign specific Sprint Backlog items to developers.",
-              options: ["The Product Owner", "The Scrum Master", "The Developers", "Management"],
-              correct_answer_index: 2,
-              explanation: "The Developers create a plan for the Sprint, which is the Sprint Backlog."
-            },
-            {
-              question_text: "What skills should Developers have?",
-              scenario_context: "You're hiring developers for a Scrum Team and wondering about skill requirements.",
-              options: ["All the same skills", "Only coding skills", "The skills needed to create a usable Increment, often broad and varied", "Only the Scrum Master needs varied skills"],
-              correct_answer_index: 2,
-              explanation: "The specific skills needed by the Developers are often broad and will vary with the domain of work."
-            },
-            {
-              question_text: "How do Developers adapt their plan during the Sprint?",
-              scenario_context: "The team discovers new information mid-Sprint.",
-              options: ["They wait until the next Sprint", "They adapt their plan daily toward the Sprint Goal", "They ask the Scrum Master for permission", "They stop working until the plan is updated"],
+              question_text: "What alternative to full-time employment exists for Scrum Masters?",
+              scenario_context: "You're exploring different work arrangements.",
+              options: ["None available", "Contract and consulting opportunities", "Only volunteer work", "Only government positions"],
               correct_answer_index: 1,
-              explanation: "Developers are accountable for adapting their plan each day toward the Sprint Goal."
+              explanation: "Contract and consulting opportunities allow flexibility and variety in your career."
+            },
+            {
+              question_text: "What should you be aware of in some job postings?",
+              scenario_context: "You're reviewing a job description.",
+              options: ["All jobs are identical", "Some organizations combine Scrum Master with other roles", "Salaries are always the same", "Experience never matters"],
+              correct_answer_index: 1,
+              explanation: "Some organizations combine Scrum Master with other roles - be aware of the expectations."
+            },
+            {
+              question_text: "What can significantly boost your job search?",
+              scenario_context: "You're preparing for your job search.",
+              options: ["Avoiding social media", "Building a strong LinkedIn presence and portfolio", "Waiting for jobs to find you", "Hiding your experience"],
+              correct_answer_index: 1,
+              explanation: "Building a strong LinkedIn presence and portfolio can significantly boost your job search."
+            }
+          ]
+        },
+        {
+          title: "2.5 Scrum Master Levels",
+          description: "Understanding the different levels of Scrum Master experience and expertise.",
+          order_index: 4,
+          professorIndex: 2, // Professor Rafael
+          lessonScript: {
+            mainPoints: [
+              "Entry-level Scrum Masters focus on learning the framework and facilitating basic Scrum events.",
+              "Mid-level Scrum Masters can effectively coach teams and handle complex impediments.",
+              "Senior Scrum Masters work across multiple teams and influence organizational change.",
+              "Principal or Staff Scrum Masters shape Agile strategy and mentor other Scrum Masters.",
+              "Each level requires developing deeper coaching skills and broader organizational influence."
+            ]
+          },
+          questions: [
+            {
+              question_text: "What is the focus of entry-level Scrum Masters?",
+              scenario_context: "You're just starting your SM career.",
+              options: ["Organizational transformation", "Learning the framework and facilitating basic events", "Mentoring other SMs", "Enterprise coaching"],
+              correct_answer_index: 1,
+              explanation: "Entry-level Scrum Masters focus on learning the framework and facilitating basic Scrum events."
+            },
+            {
+              question_text: "What can mid-level Scrum Masters handle effectively?",
+              scenario_context: "You've been a SM for 2 years.",
+              options: ["Only simple problems", "Coaching teams and complex impediments", "Only administrative tasks", "Only single team facilitation"],
+              correct_answer_index: 1,
+              explanation: "Mid-level Scrum Masters can effectively coach teams and handle complex impediments."
+            },
+            {
+              question_text: "What do senior Scrum Masters typically do?",
+              scenario_context: "You're aspiring to senior level.",
+              options: ["Focus only on one team", "Work across multiple teams and influence organizational change", "Avoid organizational politics", "Only attend meetings"],
+              correct_answer_index: 1,
+              explanation: "Senior Scrum Masters work across multiple teams and influence organizational change."
+            },
+            {
+              question_text: "What is a Principal Scrum Master's responsibility?",
+              scenario_context: "You're learning about the highest SM levels.",
+              options: ["Just facilitating ceremonies", "Shaping Agile strategy and mentoring other Scrum Masters", "Only technical work", "Writing code"],
+              correct_answer_index: 1,
+              explanation: "Principal or Staff Scrum Masters shape Agile strategy and mentor other Scrum Masters."
+            },
+            {
+              question_text: "What is required to advance to higher Scrum Master levels?",
+              scenario_context: "You want to grow in your career.",
+              options: ["Just more years of experience", "Deeper coaching skills and broader organizational influence", "Only more certifications", "Switching companies frequently"],
+              correct_answer_index: 1,
+              explanation: "Each level requires developing deeper coaching skills and broader organizational influence."
+            }
+          ]
+        },
+        {
+          title: "2.6 Expert Viewpoints: Why Become a Scrum Master",
+          description: "Experts share their personal journeys and reasons for choosing the Scrum Master path.",
+          order_index: 5,
+          professorIndex: 3, // Professor Lucia
+          lessonScript: {
+            mainPoints: [
+              "Many Scrum Masters love the role because they can make a real difference in people's work lives.",
+              "The variety of challenges keeps the role engaging - no two days are exactly alike.",
+              "Scrum Masters often report high job satisfaction from helping teams succeed.",
+              "The role offers a unique blend of people skills, problem-solving, and continuous learning.",
+              "For those who love coaching and development, being a Scrum Master is incredibly fulfilling."
+            ]
+          },
+          questions: [
+            {
+              question_text: "Why do many Scrum Masters love their role?",
+              scenario_context: "You're considering becoming a Scrum Master.",
+              options: ["High salary only", "Making a real difference in people's work lives", "Easy work", "No meetings required"],
+              correct_answer_index: 1,
+              explanation: "Many Scrum Masters love the role because they can make a real difference in people's work lives."
+            },
+            {
+              question_text: "What keeps the Scrum Master role engaging?",
+              scenario_context: "You worry about getting bored.",
+              options: ["Repetitive tasks", "The variety of challenges - no two days are alike", "Following the same routine", "Avoiding problems"],
+              correct_answer_index: 1,
+              explanation: "The variety of challenges keeps the role engaging - no two days are exactly alike."
+            },
+            {
+              question_text: "What is a common source of job satisfaction for Scrum Masters?",
+              scenario_context: "You're evaluating career happiness.",
+              options: ["Avoiding all team interaction", "Helping teams succeed", "Working alone", "Minimizing meetings"],
+              correct_answer_index: 1,
+              explanation: "Scrum Masters often report high job satisfaction from helping teams succeed."
+            },
+            {
+              question_text: "What unique blend does the Scrum Master role offer?",
+              scenario_context: "You're comparing different career paths.",
+              options: ["Only technical skills", "People skills, problem-solving, and continuous learning", "Only administrative tasks", "Only management duties"],
+              correct_answer_index: 1,
+              explanation: "The role offers a unique blend of people skills, problem-solving, and continuous learning."
+            },
+            {
+              question_text: "Who might find the Scrum Master role incredibly fulfilling?",
+              scenario_context: "You're assessing your fit for the role.",
+              options: ["Those who avoid people", "Those who love coaching and development", "Those who want to work alone", "Those who dislike change"],
+              correct_answer_index: 1,
+              explanation: "For those who love coaching and development, being a Scrum Master is incredibly fulfilling."
             }
           ]
         }
       ],
-      endQuizQuestions: [
+      endQuizQuestions: generateModule2EndQuiz()
+    },
+    // MODULE 3: Scrum Master Job Overview and Opportunities
+    {
+      title: "Module 3: Scrum Master Job Overview and Opportunities",
+      description: "A comprehensive overview of Scrum Master roles, certification paths, and the job environment.",
+      order_index: 2,
+      videos: [
         {
-          question_text: "What is the fundamental unit of Scrum?",
-          scenario_context: "You're explaining Scrum structure to new team members.",
-          options: ["The Sprint", "The Scrum Team", "The Product Backlog", "The Scrum Master"],
-          correct_answer_index: 1,
-          explanation: "The Scrum Team is the fundamental unit of Scrum."
+          title: "3.1 Expert Viewpoints: Scrum Master Employment",
+          description: "Industry experts discuss the current state of Scrum Master employment.",
+          order_index: 0,
+          professorIndex: 0, // Professor Miguel
+          lessonScript: {
+            mainPoints: [
+              "The Scrum Master job market remains strong with continuous growth in demand.",
+              "Companies are increasingly looking for experienced Scrum Masters who can hit the ground running.",
+              "Remote and hybrid work options have become standard in many Scrum Master positions.",
+              "Industry experience combined with Scrum expertise creates particularly attractive candidates.",
+              "Networking and community involvement often lead to the best job opportunities."
+            ]
+          },
+          questions: [
+            {
+              question_text: "What is the current state of the Scrum Master job market?",
+              scenario_context: "You're evaluating career stability.",
+              options: ["Declining rapidly", "Strong with continuous growth", "Completely saturated", "Only entry-level available"],
+              correct_answer_index: 1,
+              explanation: "The Scrum Master job market remains strong with continuous growth in demand."
+            },
+            {
+              question_text: "What are companies increasingly looking for?",
+              scenario_context: "You're preparing for job interviews.",
+              options: ["Only new graduates", "Experienced Scrum Masters who can hit the ground running", "Only project managers converting", "Only those with MBAs"],
+              correct_answer_index: 1,
+              explanation: "Companies are increasingly looking for experienced Scrum Masters who can hit the ground running."
+            },
+            {
+              question_text: "What work arrangements have become standard for Scrum Masters?",
+              scenario_context: "You're considering work-life balance options.",
+              options: ["Only on-site full-time", "Remote and hybrid work options", "Only contract work", "No flexibility available"],
+              correct_answer_index: 1,
+              explanation: "Remote and hybrid work options have become standard in many Scrum Master positions."
+            },
+            {
+              question_text: "What combination creates particularly attractive candidates?",
+              scenario_context: "You want to stand out in applications.",
+              options: ["Only certifications", "Industry experience combined with Scrum expertise", "Only educational degrees", "Only years of experience"],
+              correct_answer_index: 1,
+              explanation: "Industry experience combined with Scrum expertise creates particularly attractive candidates."
+            },
+            {
+              question_text: "What often leads to the best job opportunities?",
+              scenario_context: "You're strategizing your job search.",
+              options: ["Only applying online", "Networking and community involvement", "Waiting for recruiters", "Avoiding social media"],
+              correct_answer_index: 1,
+              explanation: "Networking and community involvement often lead to the best job opportunities."
+            }
+          ]
         },
         {
-          question_text: "How many roles exist within a Scrum Team?",
-          scenario_context: "A manager is trying to map traditional roles to Scrum.",
-          options: ["One: Team Members", "Two: Leaders and Workers", "Three: Scrum Master, Product Owner, Developers", "Four: including Project Manager"],
-          correct_answer_index: 2,
-          explanation: "There are three roles: Scrum Master, Product Owner, and Developers."
+          title: "3.2 The Path to Certification: PMI-ACP, PMI-DASM, and CSM",
+          description: "Understanding the major Scrum Master certifications and how to achieve them.",
+          order_index: 1,
+          professorIndex: 1, // Professor Carmen
+          lessonScript: {
+            mainPoints: [
+              "The Certified Scrum Master (CSM) from Scrum Alliance is one of the most recognized certifications.",
+              "PMI-ACP (Agile Certified Practitioner) covers multiple Agile frameworks, not just Scrum.",
+              "PMI-DASM (Disciplined Agile Scrum Master) focuses on practical application in various contexts.",
+              "Each certification has different prerequisites - some require experience, others just training.",
+              "Choose your certification path based on your career goals and the preferences of your target employers."
+            ]
+          },
+          questions: [
+            {
+              question_text: "Which certification is one of the most recognized for Scrum Masters?",
+              scenario_context: "You're choosing your first certification.",
+              options: ["PMP", "Certified Scrum Master (CSM) from Scrum Alliance", "Six Sigma Black Belt", "ITIL Foundation"],
+              correct_answer_index: 1,
+              explanation: "The Certified Scrum Master (CSM) from Scrum Alliance is one of the most recognized certifications."
+            },
+            {
+              question_text: "What does the PMI-ACP certification cover?",
+              scenario_context: "You're comparing different certifications.",
+              options: ["Only Scrum", "Multiple Agile frameworks, not just Scrum", "Only Kanban", "Only traditional PM"],
+              correct_answer_index: 1,
+              explanation: "PMI-ACP (Agile Certified Practitioner) covers multiple Agile frameworks, not just Scrum."
+            },
+            {
+              question_text: "What does PMI-DASM focus on?",
+              scenario_context: "You're evaluating PMI certifications.",
+              options: ["Only theory", "Practical application in various contexts", "Only one methodology", "Only large enterprises"],
+              correct_answer_index: 1,
+              explanation: "PMI-DASM (Disciplined Agile Scrum Master) focuses on practical application in various contexts."
+            },
+            {
+              question_text: "What differs between certifications regarding prerequisites?",
+              scenario_context: "You're checking if you qualify.",
+              options: ["All are identical", "Some require experience, others just training", "None require training", "All require 10+ years experience"],
+              correct_answer_index: 1,
+              explanation: "Each certification has different prerequisites - some require experience, others just training."
+            },
+            {
+              question_text: "How should you choose your certification path?",
+              scenario_context: "You're planning your professional development.",
+              options: ["Pick the cheapest one", "Based on career goals and target employer preferences", "Get all of them at once", "Avoid certifications entirely"],
+              correct_answer_index: 1,
+              explanation: "Choose your certification path based on your career goals and the preferences of your target employers."
+            }
+          ]
         },
         {
-          question_text: "What size should a Scrum Team be?",
-          scenario_context: "Your organization wants to form Scrum Teams from a 30-person department.",
-          options: ["15-20 people", "10 or fewer people", "Exactly 7 people", "As large as needed"],
-          correct_answer_index: 1,
-          explanation: "Scrum Teams are typically 10 or fewer people. Smaller teams communicate better and are more productive."
-        },
-        {
-          question_text: "Are there sub-teams or hierarchies within a Scrum Team?",
-          scenario_context: "A manager wants to create a test team within the Scrum Team.",
-          options: ["Yes, for efficiency", "Only if needed", "No, there are none", "Yes, always"],
-          correct_answer_index: 2,
-          explanation: "Within a Scrum Team, there are no sub-teams or hierarchies."
-        },
-        {
-          question_text: "What does it mean for a Scrum Team to be cross-functional?",
-          scenario_context: "The team says they need to wait for a separate QA team to test their work.",
-          options: ["Everyone does the same work", "Members have all skills necessary to create value each Sprint", "They work across departments", "They function in multiple time zones"],
-          correct_answer_index: 1,
-          explanation: "Cross-functional means team members have all the skills necessary to create value each Sprint."
-        },
-        {
-          question_text: "What is the Product Owner's main accountability?",
-          scenario_context: "A new Product Owner asks what success looks like in their role.",
-          options: ["Completing sprints on time", "Maximizing the value of the product", "Managing developers", "Writing code"],
-          correct_answer_index: 1,
-          explanation: "The Product Owner is accountable for maximizing the value of the product."
-        },
-        {
-          question_text: "Who owns the Product Backlog?",
-          scenario_context: "Multiple stakeholders want control over backlog priorities.",
-          options: ["The Scrum Master", "Stakeholders collectively", "The Product Owner", "The Development team"],
-          correct_answer_index: 2,
-          explanation: "The Product Owner is responsible for effective Product Backlog management."
-        },
-        {
-          question_text: "Can Product Backlog management work be delegated?",
-          scenario_context: "The Product Owner wants developers to help refine backlog items.",
-          options: ["No, never", "Yes, but accountability remains with the Product Owner", "Yes, and accountability transfers too", "Only to the Scrum Master"],
-          correct_answer_index: 1,
-          explanation: "The Product Owner may delegate work to others, but remains accountable."
-        },
-        {
-          question_text: "How many Product Owners should a product have?",
-          scenario_context: "Two departments each want their own Product Owner for the same product.",
-          options: ["One per department", "One person, not a committee", "Two for redundancy", "As many as needed"],
-          correct_answer_index: 1,
-          explanation: "The Product Owner is one person, not a committee."
-        },
-        {
-          question_text: "What must stakeholders respect regarding the Product Owner?",
-          scenario_context: "A VP wants to override the Product Owner's backlog ordering.",
-          options: ["Nothing specific", "The Product Owner's decisions as shown in the Backlog", "Only the Sprint Goal", "Their technical expertise"],
-          correct_answer_index: 1,
-          explanation: "The entire organization must respect the Product Owner's decisions, visible in the Product Backlog."
-        },
-        {
-          question_text: "What is the Scrum Master accountable for?",
-          scenario_context: "Someone confuses the Scrum Master with a traditional project manager.",
-          options: ["Project delivery", "Establishing Scrum as defined in the Scrum Guide", "Team performance metrics", "Budget management"],
-          correct_answer_index: 1,
-          explanation: "The Scrum Master is accountable for establishing Scrum as defined in the Scrum Guide."
-        },
-        {
-          question_text: "How does the Scrum Master help the organization?",
-          scenario_context: "Leadership wonders what the Scrum Master does outside the team.",
-          options: ["Nothing outside the team", "Leading, training, and coaching the organization in Scrum adoption", "Managing other Scrum Teams", "Reporting team performance"],
-          correct_answer_index: 1,
-          explanation: "The Scrum Master serves the organization by leading, training, and coaching in Scrum adoption."
-        },
-        {
-          question_text: "What type of leader is the Scrum Master?",
-          scenario_context: "A Scrum Master is unsure about their leadership style.",
-          options: ["Authoritarian", "Servant leader", "Manager", "Director"],
-          correct_answer_index: 1,
-          explanation: "Scrum Masters are servant leaders who serve the Scrum Team and organization."
-        },
-        {
-          question_text: "How does the Scrum Master help the Product Owner?",
-          scenario_context: "The Product Owner struggles with backlog management.",
-          options: ["Takes over backlog duties", "Helps find techniques for effective Product Goal definition and Backlog management", "Makes decisions for them", "Writes user stories"],
-          correct_answer_index: 1,
-          explanation: "The Scrum Master helps the Product Owner find techniques for effective management."
-        },
-        {
-          question_text: "What does the Scrum Master do for impediments?",
-          scenario_context: "The team is blocked by an organizational policy.",
-          options: ["Nothing - that's management's job", "Causes removal of impediments to the Scrum Team's progress", "Documents them for review", "Escalates everything to management"],
-          correct_answer_index: 1,
-          explanation: "The Scrum Master causes the removal of impediments to the Scrum Team's progress."
-        },
-        {
-          question_text: "Who are the Developers in Scrum?",
-          scenario_context: "A designer asks if they're considered a Developer.",
-          options: ["Only programmers", "People committed to creating any aspect of a usable Increment", "External contractors", "Anyone who writes code"],
-          correct_answer_index: 1,
-          explanation: "Developers are people committed to creating any aspect of a usable Increment each Sprint."
-        },
-        {
-          question_text: "What do Developers create for the Sprint?",
-          scenario_context: "The team is starting Sprint Planning.",
-          options: ["A Gantt chart", "The Sprint Backlog (a plan for the Sprint)", "A project charter", "A requirements document"],
-          correct_answer_index: 1,
-          explanation: "Developers create a plan for the Sprint, which is the Sprint Backlog."
-        },
-        {
-          question_text: "How do Developers ensure quality?",
-          scenario_context: "There's debate about when and how to ensure quality.",
-          options: ["Wait for QA phase", "Instilling quality by adhering to a Definition of Done", "Only test at the end", "Let the Scrum Master handle it"],
-          correct_answer_index: 1,
-          explanation: "Developers instill quality by adhering to a Definition of Done."
-        },
-        {
-          question_text: "How often should Developers adapt toward the Sprint Goal?",
-          scenario_context: "The team wants to know when to make adjustments.",
-          options: ["Weekly", "Each day", "Only during Sprint Review", "Never during a Sprint"],
-          correct_answer_index: 1,
-          explanation: "Developers adapt their plan each day toward the Sprint Goal."
-        },
-        {
-          question_text: "What accountability do Developers have to each other?",
-          scenario_context: "A developer is consistently missing commitments but no one says anything.",
-          options: ["None", "Holding each other accountable as professionals", "Only the Scrum Master holds them accountable", "Only for their own work"],
-          correct_answer_index: 1,
-          explanation: "Developers hold each other accountable as professionals."
-        },
-        {
-          question_text: "What happens if the Scrum Team is too large?",
-          scenario_context: "Your 15-person team is experiencing communication problems.",
-          options: ["Add more meetings", "Consider reorganizing into multiple cohesive Scrum Teams", "Remove the least productive members", "Add a project manager"],
-          correct_answer_index: 1,
-          explanation: "If a team becomes too large, consider reorganizing into multiple cohesive Scrum Teams."
-        },
-        {
-          question_text: "Who is responsible for all product-related activities?",
-          scenario_context: "Stakeholders are confused about who to go to for product decisions.",
-          options: ["The Project Manager", "The Scrum Team as a whole", "Only the Product Owner", "Only the Developers"],
-          correct_answer_index: 1,
-          explanation: "The Scrum Team is responsible for all product-related activities."
-        },
-        {
-          question_text: "What does self-managing mean for a Scrum Team?",
-          scenario_context: "A manager wants to know who assigns work to the team.",
-          options: ["No management is needed", "They internally decide who does what, when, and how", "Each person works independently", "The Scrum Master manages everything"],
-          correct_answer_index: 1,
-          explanation: "Self-managing means the team internally decides who does what, when, and how."
-        },
-        {
-          question_text: "What skills should be present in a Scrum Team?",
-          scenario_context: "You're forming a team and deciding what expertise is needed.",
-          options: ["Only development skills", "Only the most common skills", "All skills needed to create value each Sprint", "Skills determined by management"],
-          correct_answer_index: 2,
-          explanation: "Scrum Teams are cross-functional, having all skills needed to create value each Sprint."
-        },
-        {
-          question_text: "How should multiple Scrum Teams on the same product coordinate?",
-          scenario_context: "Three Scrum Teams are working on one product.",
-          options: ["They should have separate Product Backlogs", "They share one Product Backlog and one Product Owner", "Each should have their own Product Owner", "Coordination isn't needed"],
-          correct_answer_index: 1,
-          explanation: "Multiple Scrum Teams working on the same product share one Product Backlog and one Product Owner."
-        },
-        {
-          question_text: "What is NOT a responsibility of the Product Owner?",
-          scenario_context: "A Product Owner is unsure what's outside their role.",
-          options: ["Developing and communicating the Product Goal", "Ordering the Product Backlog", "Managing the development team's daily work", "Ensuring the Product Backlog is transparent"],
-          correct_answer_index: 2,
-          explanation: "The Product Owner manages the Product Backlog, not the development team's daily work."
-        },
-        {
-          question_text: "How should the Product Goal be communicated?",
-          scenario_context: "Stakeholders don't understand where the product is heading.",
-          options: ["Keep it confidential", "Developing and explicitly communicating the Product Goal", "Only tell the Developers", "Post it once and forget about it"],
-          correct_answer_index: 1,
-          explanation: "The Product Owner is responsible for developing and explicitly communicating the Product Goal."
-        },
-        {
-          question_text: "What does the Scrum Master do for the Developers?",
-          scenario_context: "Developers are struggling to self-manage effectively.",
-          options: ["Manages them directly", "Coaches them in self-management and cross-functionality", "Does their work for them", "Reports their problems to management"],
-          correct_answer_index: 1,
-          explanation: "The Scrum Master coaches the team members in self-management and cross-functionality."
-        },
-        {
-          question_text: "What is the Scrum Master's role regarding the Definition of Done?",
-          scenario_context: "The team doesn't have a clear Definition of Done.",
-          options: ["Writes it for the team", "Helps the Scrum Team focus on creating high-value Increments that meet the Definition of Done", "It's not their concern", "Enforces it strictly"],
-          correct_answer_index: 1,
-          explanation: "The Scrum Master helps the Scrum Team focus on creating high-value Increments that meet the Definition of Done."
-        },
-        {
-          question_text: "How does the Scrum Master serve stakeholders?",
-          scenario_context: "Stakeholders don't understand how to interact with the Scrum Team.",
-          options: ["Acts as a buffer to prevent all contact", "Helps stakeholders understand and enact an empirical approach for complex work", "Takes stakeholder requirements directly", "Manages stakeholder expectations through status reports"],
-          correct_answer_index: 1,
-          explanation: "The Scrum Master helps stakeholders understand and enact an empirical approach for complex work."
-        },
-        {
-          question_text: "Who ensures that Scrum events are positive and productive?",
-          scenario_context: "Team meetings are running long and unproductive.",
-          options: ["The Product Owner", "The Scrum Master", "Each attendee", "Management"],
-          correct_answer_index: 1,
-          explanation: "The Scrum Master ensures that all Scrum events take place and are positive, productive, and kept within the timebox."
-        },
-        {
-          question_text: "What should Developers do if the Sprint Goal becomes unreachable?",
-          scenario_context: "Mid-Sprint, the team realizes they can't meet the Sprint Goal.",
-          options: ["Work overtime to complete everything", "Communicate with the Product Owner about scope negotiation", "Wait until Sprint Review to mention it", "Cancel the Sprint immediately"],
-          correct_answer_index: 1,
-          explanation: "Developers should communicate with the Product Owner to negotiate the scope of the Sprint Backlog."
-        },
-        {
-          question_text: "How do Developers demonstrate their professionalism?",
-          scenario_context: "A developer wants to know how to act professionally in Scrum.",
-          options: ["By following orders without question", "By holding each other accountable as professionals", "By working independently", "By reporting only good news"],
-          correct_answer_index: 1,
-          explanation: "Developers hold each other accountable as professionals."
-        },
-        {
-          question_text: "What makes a Scrum Team effective?",
-          scenario_context: "Leadership wants to understand what contributes to team success.",
-          options: ["Strict management oversight", "The Scrum Master is accountable for the Scrum Team's effectiveness", "Having the most experienced developers", "Working longer hours"],
-          correct_answer_index: 1,
-          explanation: "The Scrum Master is accountable for the Scrum Team's effectiveness."
-        },
-        {
-          question_text: "Who decides the ordering of the Product Backlog?",
-          scenario_context: "Multiple stakeholders are arguing about priorities.",
-          options: ["The Scrum Master", "Stakeholders by voting", "The Product Owner", "The Developers"],
-          correct_answer_index: 2,
-          explanation: "Ordering the Product Backlog is a responsibility of the Product Owner."
-        },
-        {
-          question_text: "Can someone outside the Scrum Team change the Product Backlog?",
-          scenario_context: "An executive wants to add items directly to the Product Backlog.",
-          options: ["Yes, anyone can modify it", "No, they must convince the Product Owner", "Only the CEO can", "The Scrum Master decides"],
-          correct_answer_index: 1,
-          explanation: "No one can force changes to the Scrum Team's backlog. Those wanting changes must convince the Product Owner."
-        },
-        {
-          question_text: "What collaborative approach does the Scrum Team take?",
-          scenario_context: "A new team member wants to understand teamwork expectations.",
-          options: ["Each person works alone", "Stakeholders tell them exactly what to do", "They work together with stakeholders on a Sprint", "Only during meetings"],
-          correct_answer_index: 2,
-          explanation: "The Scrum Team works with stakeholders to understand and solve complex problems together."
-        },
-        {
-          question_text: "How does the Scrum Master help remove barriers?",
-          scenario_context: "The team keeps running into organizational obstacles.",
-          options: ["Escalates everything immediately", "Removes barriers between stakeholders and Scrum Teams", "Ignores organizational issues", "Only handles technical barriers"],
-          correct_answer_index: 1,
-          explanation: "The Scrum Master removes barriers between stakeholders and Scrum Teams."
-        },
-        {
-          question_text: "What focus should Developers have during a Sprint?",
-          scenario_context: "Team members are being pulled in multiple directions.",
-          options: ["Whatever management needs", "Creating any aspect of a usable Increment", "Only their assigned tasks", "Personal development goals"],
-          correct_answer_index: 1,
-          explanation: "Developers are committed to creating any aspect of a usable Increment each Sprint."
-        },
-        {
-          question_text: "What defines whether a Scrum Team member is a Developer?",
-          scenario_context: "A business analyst wants to know their role on the Scrum Team.",
-          options: ["Their job title", "Their commitment to creating aspects of a usable Increment", "Whether they write code", "Their years of experience"],
-          correct_answer_index: 1,
-          explanation: "Developers are defined by their commitment to creating any aspect of a usable Increment each Sprint."
+          title: "3.3 Expert Viewpoints: Scrum Master Job Environment",
+          description: "Experts share insights about working as a Scrum Master in different environments.",
+          order_index: 2,
+          professorIndex: 2, // Professor Rafael
+          lessonScript: {
+            mainPoints: [
+              "Scrum Masters work in diverse environments from startups to large enterprises.",
+              "The culture of an organization significantly impacts how the Scrum Master role is perceived and utilized.",
+              "Some environments are more Agile-mature than others - this affects your daily challenges.",
+              "Scrum Masters outside IT are growing in areas like HR, marketing, and operations.",
+              "Finding the right organizational fit is crucial for job satisfaction and effectiveness."
+            ]
+          },
+          questions: [
+            {
+              question_text: "In what environments do Scrum Masters work?",
+              scenario_context: "You're exploring different company types.",
+              options: ["Only large corporations", "Diverse environments from startups to large enterprises", "Only tech companies", "Only consulting firms"],
+              correct_answer_index: 1,
+              explanation: "Scrum Masters work in diverse environments from startups to large enterprises."
+            },
+            {
+              question_text: "What significantly impacts how the Scrum Master role is perceived?",
+              scenario_context: "You're evaluating potential employers.",
+              options: ["Only salary levels", "The culture of an organization", "Office location only", "Company age only"],
+              correct_answer_index: 1,
+              explanation: "The culture of an organization significantly impacts how the Scrum Master role is perceived and utilized."
+            },
+            {
+              question_text: "What affects your daily challenges as a Scrum Master?",
+              scenario_context: "You're preparing for different scenarios.",
+              options: ["Only your skills", "The Agile maturity of the environment", "Only team size", "Only the product type"],
+              correct_answer_index: 1,
+              explanation: "Some environments are more Agile-mature than others - this affects your daily challenges."
+            },
+            {
+              question_text: "Where are Scrum Masters growing outside of IT?",
+              scenario_context: "You're exploring non-traditional SM opportunities.",
+              options: ["Nowhere", "HR, marketing, and operations", "Only manufacturing", "Only healthcare"],
+              correct_answer_index: 1,
+              explanation: "Scrum Masters outside IT are growing in areas like HR, marketing, and operations."
+            },
+            {
+              question_text: "What is crucial for job satisfaction and effectiveness?",
+              scenario_context: "You're considering job offers.",
+              options: ["Only salary", "Finding the right organizational fit", "Only title", "Only team size"],
+              correct_answer_index: 1,
+              explanation: "Finding the right organizational fit is crucial for job satisfaction and effectiveness."
+            }
+          ]
         }
-      ]
+      ],
+      endQuizQuestions: generateModule3EndQuiz()
+    },
+    // MODULE 4: Final Project
+    {
+      title: "Module 4: Final Project",
+      description: "In this project you will be challenged to perform a SWOT analysis on the Scrum Master role to determine potential opportunities and threats.",
+      order_index: 3,
+      videos: [
+        {
+          title: "4.1 Expert Viewpoints: Advice for Aspiring Scrum Masters",
+          description: "Final advice and guidance from experienced Scrum Masters for those starting their journey.",
+          order_index: 0,
+          professorIndex: 3, // Professor Lucia
+          lessonScript: {
+            mainPoints: [
+              "Start by observing experienced Scrum Masters and learning from their approaches.",
+              "Be patient with yourself and your teams - mastery takes time and practice.",
+              "Build strong relationships with Product Owners, developers, and stakeholders.",
+              "Never stop learning - the Agile world evolves constantly and so should you.",
+              "Remember that your job is to make others successful, not to be the hero yourself."
+            ]
+          },
+          questions: [
+            {
+              question_text: "How should aspiring Scrum Masters begin their journey?",
+              scenario_context: "You're just starting out.",
+              options: ["Immediately take charge", "Observe experienced Scrum Masters and learn from them", "Avoid all senior SMs", "Only read books"],
+              correct_answer_index: 1,
+              explanation: "Start by observing experienced Scrum Masters and learning from their approaches."
+            },
+            {
+              question_text: "What should you understand about developing mastery?",
+              scenario_context: "You feel frustrated with your progress.",
+              options: ["It happens instantly", "Mastery takes time and practice", "Some people never learn", "It requires no effort"],
+              correct_answer_index: 1,
+              explanation: "Be patient with yourself and your teams - mastery takes time and practice."
+            },
+            {
+              question_text: "What relationships should Scrum Masters prioritize building?",
+              scenario_context: "You're planning your stakeholder engagement.",
+              options: ["Only with management", "With Product Owners, developers, and stakeholders", "Only with other Scrum Masters", "Only with customers"],
+              correct_answer_index: 1,
+              explanation: "Build strong relationships with Product Owners, developers, and stakeholders."
+            },
+            {
+              question_text: "Why should you never stop learning as a Scrum Master?",
+              scenario_context: "You have 10 years of experience.",
+              options: ["Learning isn't necessary", "The Agile world evolves constantly", "Only new SMs need to learn", "Experience replaces learning"],
+              correct_answer_index: 1,
+              explanation: "Never stop learning - the Agile world evolves constantly and so should you."
+            },
+            {
+              question_text: "What is the core purpose of a Scrum Master's job?",
+              scenario_context: "You're reflecting on your role.",
+              options: ["To be the hero", "To make others successful", "To take credit for success", "To manage every decision"],
+              correct_answer_index: 1,
+              explanation: "Remember that your job is to make others successful, not to be the hero yourself."
+            }
+          ]
+        }
+      ],
+      endQuizQuestions: generateModule4EndQuiz()
     }
   ]
 };
+
+function generateModule1EndQuiz(): any[] {
+  return [
+    {
+      question_text: "What is the primary goal of the Scrum Master Profession course?",
+      scenario_context: "You're recommending this course to a colleague.",
+      options: ["To learn coding", "To equip learners with knowledge to excel as Scrum Masters", "To become a project manager", "To learn waterfall methodology"],
+      correct_answer_index: 1,
+      explanation: "The course equips learners with knowledge and tools needed to excel as a Scrum Master."
+    },
+    {
+      question_text: "How does a Scrum Master lead their team?",
+      scenario_context: "You're explaining your leadership approach.",
+      options: ["Through command and control", "Through servant leadership", "Through micromanagement", "Through delegation only"],
+      correct_answer_index: 1,
+      explanation: "Scrum Masters lead through servant leadership, focusing on serving the team's needs."
+    },
+    // Add more comprehensive questions...
+    {
+      question_text: "What is the Scrum Master's role in Daily Scrum?",
+      scenario_context: "You're facilitating your first Daily Scrum.",
+      options: ["To give status updates", "To facilitate the 15-minute sync", "To assign tasks", "To take meeting notes"],
+      correct_answer_index: 1,
+      explanation: "The Scrum Master facilitates the Daily Scrum but doesn't run or direct it."
+    },
+    {
+      question_text: "Why is emotional intelligence important for Scrum Masters?",
+      scenario_context: "You notice team tension during a Sprint.",
+      options: ["It's not important", "To read and respond to team dynamics", "To avoid all emotions", "To manipulate team members"],
+      correct_answer_index: 1,
+      explanation: "Emotional intelligence enables Scrum Masters to read the room and respond appropriately."
+    },
+    {
+      question_text: "What should a Scrum Master do when they identify an impediment?",
+      scenario_context: "A team member can't access needed resources.",
+      options: ["Ignore it", "Work to remove it", "Report it to HR", "Blame the team member"],
+      correct_answer_index: 1,
+      explanation: "Scrum Masters work actively to remove impediments that block team progress."
+    }
+  ];
+}
+
+function generateModule2EndQuiz(): any[] {
+  return [
+    {
+      question_text: "What is the main difference between a PM and Scrum Master's planning approach?",
+      scenario_context: "You're comparing methodologies.",
+      options: ["No difference", "PMs use detailed upfront planning, SMs use iterative planning", "SMs plan more", "PMs never plan"],
+      correct_answer_index: 1,
+      explanation: "Traditional PMs use detailed upfront planning while Scrum uses iterative, adaptive planning."
+    },
+    {
+      question_text: "What career paths are available for experienced Scrum Masters?",
+      scenario_context: "You're planning your career growth.",
+      options: ["Only staying as SM", "Agile Coach, RTE, or transformation roles", "Only becoming a PM", "No growth paths exist"],
+      correct_answer_index: 1,
+      explanation: "Career paths can lead to Agile Coach, Release Train Engineer, or organizational transformation roles."
+    },
+    {
+      question_text: "Why is certification important but not sufficient?",
+      scenario_context: "You just passed your CSM exam.",
+      options: ["Certification guarantees success", "It validates knowledge but is just the beginning", "It replaces experience", "It's not important"],
+      correct_answer_index: 1,
+      explanation: "Certification validates knowledge but practical experience and continuous learning are essential."
+    },
+    {
+      question_text: "What level focuses on organizational change?",
+      scenario_context: "You want to have broader impact.",
+      options: ["Entry-level", "Senior Scrum Master", "Junior only", "None of them"],
+      correct_answer_index: 1,
+      explanation: "Senior Scrum Masters work across multiple teams and influence organizational change."
+    },
+    {
+      question_text: "What makes Scrum Master roles engaging according to experts?",
+      scenario_context: "You want to understand job satisfaction.",
+      options: ["Repetitive work", "Variety of challenges", "Easy problems", "No challenges"],
+      correct_answer_index: 1,
+      explanation: "The variety of challenges keeps the role engaging - no two days are exactly alike."
+    }
+  ];
+}
+
+function generateModule3EndQuiz(): any[] {
+  return [
+    {
+      question_text: "Which certification covers multiple Agile frameworks?",
+      scenario_context: "You want broad Agile knowledge.",
+      options: ["CSM", "PMI-ACP", "PSM", "SAFe only"],
+      correct_answer_index: 1,
+      explanation: "PMI-ACP (Agile Certified Practitioner) covers multiple Agile frameworks, not just Scrum."
+    },
+    {
+      question_text: "What often leads to the best job opportunities for Scrum Masters?",
+      scenario_context: "You're job hunting.",
+      options: ["Mass applying online", "Networking and community involvement", "Waiting passively", "Avoiding LinkedIn"],
+      correct_answer_index: 1,
+      explanation: "Networking and community involvement often lead to the best job opportunities."
+    },
+    {
+      question_text: "Where are Scrum Masters increasingly finding opportunities outside IT?",
+      scenario_context: "You're exploring diverse industries.",
+      options: ["Nowhere", "HR, marketing, and operations", "Only manufacturing", "Only retail"],
+      correct_answer_index: 1,
+      explanation: "Scrum Masters are growing in areas like HR, marketing, and operations outside IT."
+    },
+    {
+      question_text: "What is crucial when evaluating potential employers?",
+      scenario_context: "You have multiple job offers.",
+      options: ["Only salary", "Organizational culture and fit", "Only location", "Only company size"],
+      correct_answer_index: 1,
+      explanation: "Finding the right organizational fit is crucial for job satisfaction and effectiveness."
+    },
+    {
+      question_text: "What work arrangements have become standard for Scrum Masters?",
+      scenario_context: "You value flexibility.",
+      options: ["Only on-site", "Remote and hybrid options", "Only full-time", "Only contract"],
+      correct_answer_index: 1,
+      explanation: "Remote and hybrid work options have become standard in many Scrum Master positions."
+    }
+  ];
+}
+
+function generateModule4EndQuiz(): any[] {
+  return [
+    {
+      question_text: "What is the purpose of a SWOT analysis for the Scrum Master role?",
+      scenario_context: "You're starting the final project.",
+      options: ["To criticize the role", "To identify opportunities and threats for the organization", "To avoid problems", "To create documentation only"],
+      correct_answer_index: 1,
+      explanation: "SWOT analysis helps determine potential opportunities if done well or threats if not conducted successfully."
+    },
+    {
+      question_text: "What is the core job of a Scrum Master according to experts?",
+      scenario_context: "You're reflecting on your purpose.",
+      options: ["To be the hero", "To make others successful", "To take all credit", "To manage everyone"],
+      correct_answer_index: 1,
+      explanation: "The Scrum Master's job is to make others successful, not to be the hero themselves."
+    },
+    {
+      question_text: "Why should experienced Scrum Masters continue learning?",
+      scenario_context: "You have many years of experience.",
+      options: ["They shouldn't", "The Agile world evolves constantly", "Learning stops after certification", "Experience is enough"],
+      correct_answer_index: 1,
+      explanation: "The Agile world evolves constantly and Scrum Masters should evolve with it."
+    },
+    {
+      question_text: "What relationships are essential for Scrum Master success?",
+      scenario_context: "You're building your network.",
+      options: ["Only with managers", "With POs, developers, and stakeholders", "Only with customers", "None needed"],
+      correct_answer_index: 1,
+      explanation: "Building strong relationships with Product Owners, developers, and stakeholders is essential."
+    },
+    {
+      question_text: "How should aspiring Scrum Masters approach their development?",
+      scenario_context: "You're just starting your journey.",
+      options: ["Rush to lead", "Be patient - mastery takes time", "Avoid all mentors", "Skip observation"],
+      correct_answer_index: 1,
+      explanation: "Be patient with yourself and your teams - mastery takes time and practice."
+    }
+  ];
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -893,13 +1049,12 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Check if course already exists
-    const { data: existingCourse } = await supabaseAdmin
+    const { data: existingCourse } = await supabase
       .from("courses")
       .select("id")
       .eq("title", courseData.title)
@@ -912,8 +1067,8 @@ serve(async (req) => {
       );
     }
 
-    // Create course
-    const { data: course, error: courseError } = await supabaseAdmin
+    // Create the course
+    const { data: course, error: courseError } = await supabase
       .from("courses")
       .insert({
         title: courseData.title,
@@ -925,9 +1080,9 @@ serve(async (req) => {
 
     if (courseError) throw courseError;
 
-    // Create chapters, videos, quizzes, and questions
+    // Create chapters and videos
     for (const chapterData of courseData.chapters) {
-      const { data: chapter, error: chapterError } = await supabaseAdmin
+      const { data: chapter, error: chapterError } = await supabase
         .from("chapters")
         .insert({
           course_id: course.id,
@@ -942,7 +1097,7 @@ serve(async (req) => {
 
       // Create videos for this chapter
       for (const videoData of chapterData.videos) {
-        const { data: video, error: videoError } = await supabaseAdmin
+        const { data: video, error: videoError } = await supabase
           .from("videos")
           .insert({
             chapter_id: chapter.id,
@@ -956,7 +1111,7 @@ serve(async (req) => {
         if (videoError) throw videoError;
 
         // Create mini quiz for this video
-        const { data: miniQuiz, error: quizError } = await supabaseAdmin
+        const { data: quiz, error: quizError } = await supabase
           .from("quizzes")
           .insert({
             video_id: video.id,
@@ -969,13 +1124,13 @@ serve(async (req) => {
 
         if (quizError) throw quizError;
 
-        // Create questions for mini quiz
+        // Create questions for this quiz
         for (let i = 0; i < videoData.questions.length; i++) {
           const q = videoData.questions[i];
-          await supabaseAdmin
+          const { error: questionError } = await supabase
             .from("quiz_questions")
             .insert({
-              quiz_id: miniQuiz.id,
+              quiz_id: quiz.id,
               question_text: q.question_text,
               scenario_context: q.scenario_context,
               options: q.options,
@@ -983,11 +1138,13 @@ serve(async (req) => {
               explanation: q.explanation,
               order_index: i,
             });
+
+          if (questionError) throw questionError;
         }
       }
 
       // Create chapter end quiz
-      const { data: endQuiz, error: endQuizError } = await supabaseAdmin
+      const { data: endQuiz, error: endQuizError } = await supabase
         .from("quizzes")
         .insert({
           chapter_id: chapter.id,
@@ -999,10 +1156,10 @@ serve(async (req) => {
 
       if (endQuizError) throw endQuizError;
 
-      // Create questions for chapter end quiz
+      // Create chapter end quiz questions
       for (let i = 0; i < chapterData.endQuizQuestions.length; i++) {
         const q = chapterData.endQuizQuestions[i];
-        await supabaseAdmin
+        const { error: questionError } = await supabase
           .from("quiz_questions")
           .insert({
             quiz_id: endQuiz.id,
@@ -1013,21 +1170,24 @@ serve(async (req) => {
             explanation: q.explanation,
             order_index: i,
           });
+
+        if (questionError) throw questionError;
       }
     }
 
     return new Response(
-      JSON.stringify({ 
-        message: "Course created successfully", 
+      JSON.stringify({
+        message: "Course created successfully",
         courseId: course.id,
-        chapters: courseData.chapters.length
+        chapters: courseData.chapters.length,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-  } catch (error) {
-    console.error("Error:", error);
+  } catch (error: unknown) {
+    console.error("Error seeding course:", error);
+    const message = error instanceof Error ? error.message : "Unknown error";
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: message }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
