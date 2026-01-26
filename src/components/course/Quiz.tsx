@@ -69,8 +69,14 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
       const data = await response.json();
       if (data.error) throw new Error(data.error);
 
-      setQuestions(data.questions);
-      setAnswers(new Array(data.questions.length).fill(null));
+      // Parse options if they're stored as JSON strings
+      const parsedQuestions = (data.questions || []).map((q: any) => ({
+        ...q,
+        options: typeof q.options === 'string' ? JSON.parse(q.options) : (Array.isArray(q.options) ? q.options : [])
+      }));
+      
+      setQuestions(parsedQuestions);
+      setAnswers(new Array(parsedQuestions.length).fill(null));
     } catch (error: any) {
       toast({
         title: 'Error loading questions',
@@ -274,7 +280,7 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3 mb-6">
-                    {currentQuestion?.options.map((option, idx) => (
+                    {(Array.isArray(currentQuestion?.options) ? currentQuestion.options : []).map((option, idx) => (
                       <div
                         key={idx}
                         className={`p-4 rounded-lg border-2 transition-colors ${
@@ -415,7 +421,7 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
                   onValueChange={(value) => handleAnswer(parseInt(value))}
                 >
                   <div className="space-y-3">
-                    {currentQuestion?.options.map((option, idx) => (
+                    {(Array.isArray(currentQuestion?.options) ? currentQuestion.options : []).map((option, idx) => (
                       <div
                         key={idx}
                         className={`flex items-center space-x-3 p-4 rounded-lg border-2 transition-colors cursor-pointer hover:bg-muted/50 ${
