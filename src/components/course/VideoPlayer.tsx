@@ -75,6 +75,8 @@ const VideoPlayer = ({
   const [isMuted, setIsMuted] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const [script, setScript] = useState<string>('');
+  const [isTextOnlyMode, setIsTextOnlyMode] = useState(false);
+  const [readingProgress, setReadingProgress] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
 
@@ -123,7 +125,22 @@ const VideoPlayer = ({
         throw new Error(data.error);
       }
 
-      // Convert base64 to audio blob
+      setScript(data.script);
+      setHasStarted(true);
+
+      // Check if we got audio or text-only mode
+      if (data.mode === 'text' || !data.audioBase64) {
+        // Text-only mode
+        setIsTextOnlyMode(true);
+        setReadingProgress(0);
+        toast({
+          title: 'Text Lesson Mode',
+          description: 'Audio is temporarily unavailable. Please read the lesson below.',
+        });
+        return;
+      }
+
+      // Audio mode - convert base64 to audio blob
       const binaryString = atob(data.audioBase64);
       const bytes = new Uint8Array(binaryString.length);
       for (let i = 0; i < binaryString.length; i++) {
@@ -133,8 +150,7 @@ const VideoPlayer = ({
       const url = URL.createObjectURL(audioBlob);
       
       setAudioUrl(url);
-      setScript(data.script);
-      setHasStarted(true);
+      setIsTextOnlyMode(false);
 
       // Create and play audio
       const audio = new Audio(url);
@@ -158,15 +174,20 @@ const VideoPlayer = ({
       setIsPlaying(true);
 
     } catch (error: any) {
-      console.error('Error generating audio:', error);
+      console.error('Error generating lesson:', error);
       toast({
-        title: 'Audio Generation Error',
-        description: error.message || 'Failed to generate lesson audio. Please try again.',
+        title: 'Lesson Generation Error',
+        description: error.message || 'Failed to generate lesson. Please try again.',
         variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const markTextLessonComplete = () => {
+    setReadingProgress(100);
+    setProgress(100);
   };
 
   const togglePlayPause = () => {
@@ -284,7 +305,55 @@ const VideoPlayer = ({
 
       {/* Controls */}
       <CardContent className="p-4">
-        {hasStarted && (
+        {hasStarted && isTextOnlyMode && (
+          <>
+            {/* Text-Only Mode Content */}
+            <div className="mb-4 p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
+              <div className="flex items-center gap-2 mb-2">
+                <BookOpen className="w-5 h-5 text-primary" />
+                <span className="font-medium text-sm">Text Lesson Mode</span>
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">
+                Audio is temporarily unavailable. Please read the lesson below and mark it as complete when finished.
+              </p>
+            </div>
+            
+            {/* Text Lesson Content */}
+            <div className="mb-4 p-4 bg-background rounded-lg border max-h-64 overflow-y-auto">
+              <div className="prose prose-sm dark:prose-invert max-w-none">
+                {script.split('\n\n').map((paragraph, idx) => (
+                  <p key={idx} className="mb-3 text-sm leading-relaxed">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </div>
+
+            {/* Reading Progress */}
+            <div className="mb-4">
+              <Progress value={readingProgress} className="h-2" />
+              <p className="text-xs text-muted-foreground mt-1 text-center">
+                {readingProgress >= 100 ? 'Reading Complete!' : 'Read the lesson above and mark as complete'}
+              </p>
+            </div>
+
+            {/* Mark Complete Button */}
+            <div className="flex justify-center mb-4">
+              <Button
+                variant="coral"
+                size="lg"
+                onClick={markTextLessonComplete}
+                disabled={readingProgress >= 100}
+                className="gap-2"
+              >
+                <CheckCircle className="w-5 h-5" />
+                {readingProgress >= 100 ? 'Lesson Read' : 'Mark Lesson as Read'}
+              </Button>
+            </div>
+          </>
+        )}
+
+        {hasStarted && !isTextOnlyMode && (
           <>
             {/* Progress Bar */}
             <div className="mb-4">
@@ -354,8 +423,8 @@ const VideoPlayer = ({
           )}
         </div>
 
-        {/* Transcript (collapsible) */}
-        {script && (
+        {/* Transcript (collapsible) - only show in audio mode */}
+        {script && !isTextOnlyMode && (
           <details className="mt-4">
             <summary className="text-sm text-muted-foreground cursor-pointer hover:text-foreground">
               View Transcript
