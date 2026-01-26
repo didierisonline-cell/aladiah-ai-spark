@@ -35,6 +35,7 @@ const Programs = () => {
       format: 'programs.online',
       color: 'accent',
       featured: false,
+      courseId: 'dddddddd-eeee-ffff-1111-222222222222',
     },
   ];
 
@@ -127,7 +128,13 @@ const Programs = () => {
               <Button 
                 variant={program.featured ? 'coral' : 'outline'} 
                 className="w-full group/btn"
-                onClick={() => program.featured && navigate('/auth')}
+                onClick={() => {
+                  if (program.featured) {
+                    navigate('/auth');
+                  } else if ((program as any).courseId) {
+                    navigate('/auth');
+                  }
+                }}
               >
                 {program.featured ? t('programs.startCourse') : t('programs.learnMore')}
                 <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
