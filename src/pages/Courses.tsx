@@ -30,6 +30,13 @@ interface Video {
   order_index: number;
 }
 
+interface Quiz {
+  id: string;
+  video_id: string | null;
+  chapter_id: string;
+  quiz_type: string;
+}
+
 interface UserProgress {
   quiz_id: string | null;
   video_id: string | null;
@@ -39,7 +46,8 @@ const Courses = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [videos, setVideos] = useState<Video[]>([]);
-  const [progress, setProgress] = useState<UserProgress[]>([]);
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const [passedQuizzes, setPassedQuizzes] = useState<string[]>([]);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [seeding, setSeeding] = useState(false);
@@ -94,12 +102,20 @@ const Courses = () => {
       
       setVideos(videosData || []);
 
-      // Load user progress
+      // Load quizzes
+      const { data: quizzesData } = await supabase
+        .from('quizzes')
+        .select('*');
+      
+      setQuizzes(quizzesData || []);
+
+      // Load passed quizzes from user progress
       const { data: progressData } = await supabase
         .from('user_progress')
-        .select('quiz_id, video_id');
+        .select('quiz_id')
+        .not('quiz_id', 'is', null);
       
-      setProgress(progressData || []);
+      setPassedQuizzes((progressData || []).map(p => p.quiz_id as string));
     } catch (error: any) {
       toast({
         title: 'Error loading courses',
@@ -152,12 +168,29 @@ const Courses = () => {
 
   const getChapterProgress = (chapterId: string) => {
     const chapterVideos = videos.filter(v => v.chapter_id === chapterId);
-    const completedVideos = chapterVideos.filter(v => 
-      progress.some(p => p.video_id === v.id || p.quiz_id)
+    const chapterQuizzes = quizzes.filter(q => 
+      chapterVideos.some(v => v.id === q.video_id) && q.quiz_type === 'mini_video'
     );
-    return chapterVideos.length > 0 
-      ? Math.round((completedVideos.length / chapterVideos.length) * 100) 
+    const completedQuizzes = chapterQuizzes.filter(q => passedQuizzes.includes(q.id));
+    return chapterQuizzes.length > 0 
+      ? Math.round((completedQuizzes.length / chapterQuizzes.length) * 100) 
       : 0;
+  };
+
+  // Check if a chapter is accessible (first chapter always, others require previous chapter 100%)
+  const isChapterAccessible = (chapter: Chapter, courseChapters: Chapter[]) => {
+    if (chapter.order_index === 0) return true;
+    
+    const prevChapter = courseChapters.find(c => c.order_index === chapter.order_index - 1);
+    if (!prevChapter) return false;
+    
+    // Check if previous chapter has a chapter_end quiz that was passed
+    const prevChapterEndQuiz = quizzes.find(
+      q => q.chapter_id === prevChapter.id && q.quiz_type === 'chapter_end'
+    );
+    
+    if (!prevChapterEndQuiz) return false;
+    return passedQuizzes.includes(prevChapterEndQuiz.id);
   };
 
   if (loading || seeding) {
@@ -225,14 +258,14 @@ const Courses = () => {
               </CardHeader>
               <CardContent className="p-6">
                 <div className="space-y-4">
-                  {chapters
-                    .filter(ch => ch.course_id === course.id)
-                    .sort((a, b) => a.order_index - b.order_index)
-                    .map((chapter, idx) => {
+                  {(() => {
+                    const courseChapters = chapters
+                      .filter(ch => ch.course_id === course.id)
+                      .sort((a, b) => a.order_index - b.order_index);
+                    
+                    return courseChapters.map((chapter) => {
                       const chapterProgress = getChapterProgress(chapter.id);
-                      const isLocked = idx > 0 && getChapterProgress(
-                        chapters.filter(c => c.course_id === course.id)[idx - 1]?.id
-                      ) < 100;
+                      const isLocked = !isChapterAccessible(chapter, courseChapters);
 
                       return (
                         <div
@@ -266,7 +299,8 @@ const Courses = () => {
                           </p>
                         </div>
                       );
-                    })}
+                    });
+                  })()}
                 </div>
               </CardContent>
             </Card>

@@ -136,13 +136,22 @@ const ChapterView = () => {
   };
 
   const isVideoAccessible = (video: Video) => {
+    // First video of the chapter is always accessible
     if (video.order_index === 0) return true;
     
+    // Find the previous video
     const prevVideo = videos.find(v => v.order_index === video.order_index - 1);
-    if (!prevVideo) return true;
-
+    if (!prevVideo) return false; // No previous video found, lock it
+    
+    // Check if previous video has a quiz that was passed
     const prevQuiz = quizzes.find(q => q.video_id === prevVideo.id);
-    return prevQuiz ? passedQuizzes.includes(prevQuiz.id) : true;
+    
+    // STRICT MASTERY: If previous video has no quiz, video is LOCKED
+    // This enforces that quizzes must exist for progression
+    if (!prevQuiz) return false;
+    
+    // Check if the previous video's quiz was passed
+    return passedQuizzes.includes(prevQuiz.id);
   };
 
   const isVideoPassed = (video: Video) => {
@@ -162,6 +171,13 @@ const ChapterView = () => {
     if (quiz) {
       setCurrentQuiz(quiz);
       setShowQuiz(true);
+    } else {
+      // No quiz exists - show message to user
+      toast({
+        title: 'Quiz Not Available',
+        description: 'The quiz for this lesson is being prepared. Please check back soon.',
+        variant: 'default',
+      });
     }
   };
 
