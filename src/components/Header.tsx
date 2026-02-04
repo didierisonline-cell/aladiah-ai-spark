@@ -1,8 +1,16 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Globe } from 'lucide-react';
+import { Menu, X, Globe, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage, languageNames } from '@/contexts/LanguageContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+type Language = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,9 +23,6 @@ const Header = () => {
     { key: 'nav.contact', href: '#contact' },
   ];
 
-  const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'es' : 'en');
-  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-md border-b border-border/50">
@@ -58,17 +63,33 @@ const Header = () => {
 
           {/* Right Actions */}
           <div className="flex items-center gap-3">
-            {/* Language Switcher */}
-            <motion.button
-              onClick={toggleLanguage}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm font-medium text-muted-foreground hover:text-foreground"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <Globe className="w-4 h-4" />
-              <span className="uppercase">{language}</span>
-            </motion.button>
+            {/* Language Switcher Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <motion.button
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm font-medium text-muted-foreground hover:text-foreground"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                >
+                  <Globe className="w-4 h-4" />
+                  <span className="uppercase">{language}</span>
+                  <ChevronDown className="w-3 h-3" />
+                </motion.button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[140px]">
+                {(Object.keys(languageNames) as Language[]).map((lang) => (
+                  <DropdownMenuItem
+                    key={lang}
+                    onClick={() => setLanguage(lang)}
+                    className={language === lang ? 'bg-muted' : ''}
+                  >
+                    <span className="uppercase mr-2 text-xs font-mono">{lang}</span>
+                    <span>{languageNames[lang]}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* CTA Button */}
             <motion.div
