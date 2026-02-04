@@ -6,7 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { GraduationCap, BookOpen, ChevronRight, LogOut, Play, CheckCircle, Lock } from 'lucide-react';
+
+type CourseLanguage = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja';
 
 interface Course {
   id: string;
@@ -42,6 +45,106 @@ interface UserProgress {
   video_id: string | null;
 }
 
+interface TranslationData {
+  loading: string;
+  settingUp: string;
+  myCourses: string;
+  subtitle: string;
+  logout: string;
+  complete: string;
+  courseReady: string;
+  courseReadyDesc: string;
+  errorLoading: string;
+  errorSetup: string;
+}
+
+const translations: Record<CourseLanguage, TranslationData> = {
+  en: {
+    loading: 'Loading courses...',
+    settingUp: 'Setting up your course...',
+    myCourses: 'My Courses',
+    subtitle: 'Continue your learning journey and earn your certification',
+    logout: 'Logout',
+    complete: 'complete',
+    courseReady: 'Course ready!',
+    courseReadyDesc: 'The Scrum Master course has been set up.',
+    errorLoading: 'Error loading courses',
+    errorSetup: 'Error setting up course',
+  },
+  es: {
+    loading: 'Cargando cursos...',
+    settingUp: 'Configurando tu curso...',
+    myCourses: 'Mis Cursos',
+    subtitle: 'Continúa tu viaje de aprendizaje y obtén tu certificación',
+    logout: 'Cerrar Sesión',
+    complete: 'completado',
+    courseReady: '¡Curso listo!',
+    courseReadyDesc: 'El curso de Scrum Master ha sido configurado.',
+    errorLoading: 'Error al cargar cursos',
+    errorSetup: 'Error al configurar el curso',
+  },
+  zh: {
+    loading: '加载课程中...',
+    settingUp: '正在设置您的课程...',
+    myCourses: '我的课程',
+    subtitle: '继续您的学习之旅并获得认证',
+    logout: '退出登录',
+    complete: '已完成',
+    courseReady: '课程已准备就绪！',
+    courseReadyDesc: 'Scrum Master课程已设置完成。',
+    errorLoading: '加载课程时出错',
+    errorSetup: '设置课程时出错',
+  },
+  ar: {
+    loading: 'جاري تحميل الدورات...',
+    settingUp: 'جاري إعداد دورتك...',
+    myCourses: 'دوراتي',
+    subtitle: 'استمر في رحلة التعلم واحصل على شهادتك',
+    logout: 'تسجيل الخروج',
+    complete: 'مكتمل',
+    courseReady: 'الدورة جاهزة!',
+    courseReadyDesc: 'تم إعداد دورة Scrum Master.',
+    errorLoading: 'خطأ في تحميل الدورات',
+    errorSetup: 'خطأ في إعداد الدورة',
+  },
+  fr: {
+    loading: 'Chargement des cours...',
+    settingUp: 'Configuration de votre cours...',
+    myCourses: 'Mes Cours',
+    subtitle: 'Continuez votre parcours d\'apprentissage et obtenez votre certification',
+    logout: 'Déconnexion',
+    complete: 'terminé',
+    courseReady: 'Cours prêt !',
+    courseReadyDesc: 'Le cours Scrum Master a été configuré.',
+    errorLoading: 'Erreur lors du chargement des cours',
+    errorSetup: 'Erreur lors de la configuration du cours',
+  },
+  de: {
+    loading: 'Kurse werden geladen...',
+    settingUp: 'Ihr Kurs wird eingerichtet...',
+    myCourses: 'Meine Kurse',
+    subtitle: 'Setzen Sie Ihre Lernreise fort und erhalten Sie Ihre Zertifizierung',
+    logout: 'Abmelden',
+    complete: 'abgeschlossen',
+    courseReady: 'Kurs bereit!',
+    courseReadyDesc: 'Der Scrum Master Kurs wurde eingerichtet.',
+    errorLoading: 'Fehler beim Laden der Kurse',
+    errorSetup: 'Fehler beim Einrichten des Kurses',
+  },
+  ja: {
+    loading: 'コースを読み込み中...',
+    settingUp: 'コースを設定中...',
+    myCourses: 'マイコース',
+    subtitle: '学習の旅を続けて認定資格を取得しましょう',
+    logout: 'ログアウト',
+    complete: '完了',
+    courseReady: 'コース準備完了！',
+    courseReadyDesc: 'スクラムマスターコースが設定されました。',
+    errorLoading: 'コースの読み込みエラー',
+    errorSetup: 'コースの設定エラー',
+  },
+};
+
 const Courses = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [chapters, setChapters] = useState<Chapter[]>([]);
@@ -53,6 +156,12 @@ const Courses = () => {
   const [seeding, setSeeding] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { language } = useLanguage();
+
+  // Get translations with fallback to English
+  const supportedLanguages: CourseLanguage[] = ['en', 'es', 'zh', 'ar', 'fr', 'de', 'ja'];
+  const currentLang = supportedLanguages.includes(language as CourseLanguage) ? (language as CourseLanguage) : 'en';
+  const t = translations[currentLang];
 
   useEffect(() => {
     checkAuth();
@@ -118,7 +227,7 @@ const Courses = () => {
       setPassedQuizzes((progressData || []).map(p => p.quiz_id as string));
     } catch (error: any) {
       toast({
-        title: 'Error loading courses',
+        title: t.errorLoading,
         description: error.message,
         variant: 'destructive',
       });
@@ -145,14 +254,14 @@ const Courses = () => {
       if (result.error) throw new Error(result.error);
       
       toast({
-        title: 'Course ready!',
-        description: 'The Scrum Master course has been set up.',
+        title: t.courseReady,
+        description: t.courseReadyDesc,
       });
       
       loadData();
     } catch (error: any) {
       toast({
-        title: 'Error setting up course',
+        title: t.errorSetup,
         description: error.message,
         variant: 'destructive',
       });
@@ -199,7 +308,7 @@ const Courses = () => {
         <div className="text-center">
           <GraduationCap className="w-12 h-12 text-primary animate-pulse mx-auto mb-4" />
           <p className="text-muted-foreground">
-            {seeding ? 'Setting up your course...' : 'Loading courses...'}
+            {seeding ? t.settingUp : t.loading}
           </p>
         </div>
       </div>
@@ -219,7 +328,7 @@ const Courses = () => {
             <span className="text-sm text-muted-foreground">{user?.email}</span>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="w-4 h-4 mr-2" />
-              Logout
+              {t.logout}
             </Button>
           </div>
         </div>
@@ -232,10 +341,10 @@ const Courses = () => {
           className="mb-8"
         >
           <h1 className="text-3xl font-display font-bold text-foreground mb-2">
-            My Courses
+            {t.myCourses}
           </h1>
           <p className="text-muted-foreground">
-            Continue your learning journey and earn your certification
+            {t.subtitle}
           </p>
         </motion.div>
 
@@ -295,7 +404,7 @@ const Courses = () => {
                           </div>
                           <Progress value={chapterProgress} className="h-2" />
                           <p className="text-xs text-muted-foreground mt-1">
-                            {chapterProgress}% complete
+                            {chapterProgress}% {t.complete}
                           </p>
                         </div>
                       );
