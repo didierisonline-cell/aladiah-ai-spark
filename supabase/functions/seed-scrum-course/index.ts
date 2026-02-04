@@ -1067,21 +1067,87 @@ serve(async (req) => {
       );
     }
 
-    // Create the course
+    // Create the course with translations
+    const courseTranslations = {
+      es: {
+        title: "Profesión de Scrum Master",
+        description: "Libera tu potencial profesional con nuestro curso sobre los fundamentos del rol de Scrum Master."
+      },
+      zh: {
+        title: "Scrum Master 职业",
+        description: "通过我们关于Scrum Master角色基础知识的课程释放您的职业潜力。"
+      },
+      ar: {
+        title: "مهنة Scrum Master",
+        description: "أطلق العنان لإمكانياتك المهنية من خلال دورتنا حول أساسيات دور Scrum Master."
+      },
+      fr: {
+        title: "Profession Scrum Master",
+        description: "Libérez votre potentiel de carrière avec notre cours sur les fondamentaux du rôle de Scrum Master."
+      },
+      de: {
+        title: "Scrum Master Beruf",
+        description: "Entfesseln Sie Ihr Karrierepotenzial mit unserem Kurs über die Grundlagen der Scrum Master Rolle."
+      },
+      ja: {
+        title: "スクラムマスター職",
+        description: "スクラムマスターの役割の基礎に関するコースで、キャリアの可能性を解き放ちましょう。"
+      }
+    };
+
     const { data: course, error: courseError } = await supabase
       .from("courses")
       .insert({
         title: courseData.title,
         description: courseData.description,
         is_published: true,
+        translations: courseTranslations,
       })
       .select()
       .single();
 
     if (courseError) throw courseError;
 
+    // Chapter translations mapping
+    const chapterTranslationsMap: Record<number, Record<string, { title: string; description: string }>> = {
+      0: {
+        es: { title: "Módulo 1: El Rol del Scrum Master", description: "Este módulo define el rol del Scrum Master y resume el Marco de Scrum." },
+        zh: { title: "模块1：Scrum Master的角色", description: "本模块定义了Scrum Master的角色，总结了Scrum框架。" },
+        ar: { title: "الوحدة 1: دور Scrum Master", description: "تحدد هذه الوحدة دور Scrum Master وتلخص إطار عمل Scrum." },
+        fr: { title: "Module 1 : Le Rôle du Scrum Master", description: "Ce module définit le rôle du Scrum Master et résume le Framework Scrum." },
+        de: { title: "Modul 1: Die Rolle des Scrum Masters", description: "Dieses Modul definiert die Rolle des Scrum Masters." },
+        ja: { title: "モジュール1：スクラムマスターの役割", description: "このモジュールでは、スクラムマスターの役割を定義します。" }
+      },
+      1: {
+        es: { title: "Módulo 2: Fundamentos de Scrum", description: "Este módulo proporciona una inmersión profunda en el Marco de Scrum." },
+        zh: { title: "模块2：Scrum基础", description: "本模块深入介绍Scrum框架。" },
+        ar: { title: "الوحدة 2: أساسيات Scrum", description: "توفر هذه الوحدة نظرة معمقة في إطار عمل Scrum." },
+        fr: { title: "Module 2 : Fondamentaux de Scrum", description: "Ce module offre une plongée approfondie dans le Framework Scrum." },
+        de: { title: "Modul 2: Scrum Grundlagen", description: "Dieses Modul bietet einen tiefen Einblick in das Scrum Framework." },
+        ja: { title: "モジュール2：スクラムの基礎", description: "このモジュールでは、スクラムフレームワークを深く掘り下げます。" }
+      },
+      2: {
+        es: { title: "Módulo 3: Eventos de Scrum", description: "Domina los cinco eventos de Scrum." },
+        zh: { title: "模块3：Scrum事件", description: "掌握五个Scrum事件。" },
+        ar: { title: "الوحدة 3: أحداث Scrum", description: "أتقن أحداث Scrum الخمسة." },
+        fr: { title: "Module 3 : Événements Scrum", description: "Maîtrisez les cinq événements Scrum." },
+        de: { title: "Modul 3: Scrum Events", description: "Meistern Sie die fünf Scrum Events." },
+        ja: { title: "モジュール3：スクラムイベント", description: "5つのスクラムイベントをマスターする。" }
+      },
+      3: {
+        es: { title: "Módulo 4: Dominio Avanzado de Scrum", description: "Técnicas avanzadas para escalar Scrum." },
+        zh: { title: "模块4：高级Scrum精通", description: "扩展Scrum的高级技术。" },
+        ar: { title: "الوحدة 4: إتقان Scrum المتقدم", description: "تقنيات متقدمة لتوسيع نطاق Scrum." },
+        fr: { title: "Module 4 : Maîtrise Avancée de Scrum", description: "Techniques avancées pour l'échelle Scrum." },
+        de: { title: "Modul 4: Fortgeschrittene Scrum-Meisterschaft", description: "Fortgeschrittene Techniken zur Skalierung von Scrum." },
+        ja: { title: "モジュール4：上級スクラムマスタリー", description: "スクラムのスケーリングのための高度なテクニック。" }
+      }
+    };
+
     // Create chapters and videos
     for (const chapterData of courseData.chapters) {
+      const chapterTranslations = chapterTranslationsMap[chapterData.order_index] || {};
+      
       const { data: chapter, error: chapterError } = await supabase
         .from("chapters")
         .insert({
@@ -1089,6 +1155,7 @@ serve(async (req) => {
           title: chapterData.title,
           description: chapterData.description,
           order_index: chapterData.order_index,
+          translations: chapterTranslations,
         })
         .select()
         .single();
@@ -1097,6 +1164,17 @@ serve(async (req) => {
 
       // Create videos for this chapter
       for (const videoData of chapterData.videos) {
+        // Generate video translations based on lesson number
+        const lessonNum = `${chapterData.order_index + 1}.${videoData.order_index + 1}`;
+        const videoTranslations = {
+          es: { title: `${lessonNum} ${videoData.title.split(': ')[1] || videoData.title}`, description: videoData.description },
+          zh: { title: `${lessonNum} 课程`, description: videoData.description },
+          ar: { title: `${lessonNum} الدرس`, description: videoData.description },
+          fr: { title: `${lessonNum} Leçon`, description: videoData.description },
+          de: { title: `${lessonNum} Lektion`, description: videoData.description },
+          ja: { title: `${lessonNum} レッスン`, description: videoData.description }
+        };
+        
         const { data: video, error: videoError } = await supabase
           .from("videos")
           .insert({
@@ -1104,6 +1182,7 @@ serve(async (req) => {
             title: videoData.title,
             description: videoData.description,
             order_index: videoData.order_index,
+            translations: videoTranslations,
           })
           .select()
           .single();

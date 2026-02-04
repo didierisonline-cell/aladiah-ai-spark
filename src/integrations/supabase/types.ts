@@ -22,6 +22,7 @@ export type Database = {
           id: string
           order_index: number
           title: string
+          translations: Json | null
         }
         Insert: {
           course_id: string
@@ -30,6 +31,7 @@ export type Database = {
           id?: string
           order_index?: number
           title: string
+          translations?: Json | null
         }
         Update: {
           course_id?: string
@@ -38,6 +40,7 @@ export type Database = {
           id?: string
           order_index?: number
           title?: string
+          translations?: Json | null
         }
         Relationships: [
           {
@@ -57,6 +60,7 @@ export type Database = {
           image_url: string | null
           is_published: boolean | null
           title: string
+          translations: Json | null
         }
         Insert: {
           created_at?: string
@@ -65,6 +69,7 @@ export type Database = {
           image_url?: string | null
           is_published?: boolean | null
           title: string
+          translations?: Json | null
         }
         Update: {
           created_at?: string
@@ -73,6 +78,7 @@ export type Database = {
           image_url?: string | null
           is_published?: boolean | null
           title?: string
+          translations?: Json | null
         }
         Relationships: []
       }
@@ -295,6 +301,7 @@ export type Database = {
           id: string
           order_index: number
           title: string
+          translations: Json | null
           video_url: string | null
         }
         Insert: {
@@ -305,6 +312,7 @@ export type Database = {
           id?: string
           order_index?: number
           title: string
+          translations?: Json | null
           video_url?: string | null
         }
         Update: {
@@ -315,6 +323,7 @@ export type Database = {
           id?: string
           order_index?: number
           title?: string
+          translations?: Json | null
           video_url?: string | null
         }
         Relationships: [
