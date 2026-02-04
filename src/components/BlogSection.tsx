@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 
-type Language = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja';
+type BlogLanguage = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja';
 
 interface ContentData {
   badge: string;
@@ -36,7 +36,7 @@ const BlogSection = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
 
-  const content: Record<Language, ContentData> = {
+  const content: Record<BlogLanguage, ContentData> = {
     en: {
       badge: 'Industry Insights',
       title: 'The Rise of Scrum in the Dominican Republic',
@@ -284,7 +284,10 @@ const BlogSection = () => {
     },
   };
 
-  const t = content[language as Language] || content.en;
+  // Safely get content with fallback to English
+  const supportedLanguages: BlogLanguage[] = ['en', 'es', 'zh', 'ar', 'fr', 'de', 'ja'];
+  const currentLang = supportedLanguages.includes(language as BlogLanguage) ? (language as BlogLanguage) : 'en';
+  const t = content[currentLang];
 
   const stats = [
     { icon: TrendingUp, value: '71%', label: t.statsLabels.agile },
