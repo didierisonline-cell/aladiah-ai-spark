@@ -8,14 +8,18 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GraduationCap, BookOpen, ChevronRight, LogOut, Play, CheckCircle, Lock } from 'lucide-react';
-
-type CourseLanguage = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja';
+import { 
+  courseUITranslations, 
+  getTranslatedContent,
+  type SupportedLanguage 
+} from '@/utils/courseTranslations';
 
 interface Course {
   id: string;
   title: string;
   description: string;
   image_url: string | null;
+  translations: Record<string, { title?: string; description?: string }> | null;
 }
 
 interface Chapter {
@@ -24,6 +28,7 @@ interface Chapter {
   description: string;
   order_index: number;
   course_id: string;
+  translations: Record<string, { title?: string; description?: string }> | null;
 }
 
 interface Video {
@@ -40,111 +45,6 @@ interface Quiz {
   quiz_type: string;
 }
 
-interface UserProgress {
-  quiz_id: string | null;
-  video_id: string | null;
-}
-
-interface TranslationData {
-  loading: string;
-  settingUp: string;
-  myCourses: string;
-  subtitle: string;
-  logout: string;
-  complete: string;
-  courseReady: string;
-  courseReadyDesc: string;
-  errorLoading: string;
-  errorSetup: string;
-}
-
-const translations: Record<CourseLanguage, TranslationData> = {
-  en: {
-    loading: 'Loading courses...',
-    settingUp: 'Setting up your course...',
-    myCourses: 'My Courses',
-    subtitle: 'Continue your learning journey and earn your certification',
-    logout: 'Logout',
-    complete: 'complete',
-    courseReady: 'Course ready!',
-    courseReadyDesc: 'The Scrum Master course has been set up.',
-    errorLoading: 'Error loading courses',
-    errorSetup: 'Error setting up course',
-  },
-  es: {
-    loading: 'Cargando cursos...',
-    settingUp: 'Configurando tu curso...',
-    myCourses: 'Mis Cursos',
-    subtitle: 'Continúa tu viaje de aprendizaje y obtén tu certificación',
-    logout: 'Cerrar Sesión',
-    complete: 'completado',
-    courseReady: '¡Curso listo!',
-    courseReadyDesc: 'El curso de Scrum Master ha sido configurado.',
-    errorLoading: 'Error al cargar cursos',
-    errorSetup: 'Error al configurar el curso',
-  },
-  zh: {
-    loading: '加载课程中...',
-    settingUp: '正在设置您的课程...',
-    myCourses: '我的课程',
-    subtitle: '继续您的学习之旅并获得认证',
-    logout: '退出登录',
-    complete: '已完成',
-    courseReady: '课程已准备就绪！',
-    courseReadyDesc: 'Scrum Master课程已设置完成。',
-    errorLoading: '加载课程时出错',
-    errorSetup: '设置课程时出错',
-  },
-  ar: {
-    loading: 'جاري تحميل الدورات...',
-    settingUp: 'جاري إعداد دورتك...',
-    myCourses: 'دوراتي',
-    subtitle: 'استمر في رحلة التعلم واحصل على شهادتك',
-    logout: 'تسجيل الخروج',
-    complete: 'مكتمل',
-    courseReady: 'الدورة جاهزة!',
-    courseReadyDesc: 'تم إعداد دورة Scrum Master.',
-    errorLoading: 'خطأ في تحميل الدورات',
-    errorSetup: 'خطأ في إعداد الدورة',
-  },
-  fr: {
-    loading: 'Chargement des cours...',
-    settingUp: 'Configuration de votre cours...',
-    myCourses: 'Mes Cours',
-    subtitle: 'Continuez votre parcours d\'apprentissage et obtenez votre certification',
-    logout: 'Déconnexion',
-    complete: 'terminé',
-    courseReady: 'Cours prêt !',
-    courseReadyDesc: 'Le cours Scrum Master a été configuré.',
-    errorLoading: 'Erreur lors du chargement des cours',
-    errorSetup: 'Erreur lors de la configuration du cours',
-  },
-  de: {
-    loading: 'Kurse werden geladen...',
-    settingUp: 'Ihr Kurs wird eingerichtet...',
-    myCourses: 'Meine Kurse',
-    subtitle: 'Setzen Sie Ihre Lernreise fort und erhalten Sie Ihre Zertifizierung',
-    logout: 'Abmelden',
-    complete: 'abgeschlossen',
-    courseReady: 'Kurs bereit!',
-    courseReadyDesc: 'Der Scrum Master Kurs wurde eingerichtet.',
-    errorLoading: 'Fehler beim Laden der Kurse',
-    errorSetup: 'Fehler beim Einrichten des Kurses',
-  },
-  ja: {
-    loading: 'コースを読み込み中...',
-    settingUp: 'コースを設定中...',
-    myCourses: 'マイコース',
-    subtitle: '学習の旅を続けて認定資格を取得しましょう',
-    logout: 'ログアウト',
-    complete: '完了',
-    courseReady: 'コース準備完了！',
-    courseReadyDesc: 'スクラムマスターコースが設定されました。',
-    errorLoading: 'コースの読み込みエラー',
-    errorSetup: 'コースの設定エラー',
-  },
-};
-
 const Courses = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [chapters, setChapters] = useState<Chapter[]>([]);
@@ -159,9 +59,11 @@ const Courses = () => {
   const { language } = useLanguage();
 
   // Get translations with fallback to English
-  const supportedLanguages: CourseLanguage[] = ['en', 'es', 'zh', 'ar', 'fr', 'de', 'ja'];
-  const currentLang = supportedLanguages.includes(language as CourseLanguage) ? (language as CourseLanguage) : 'en';
-  const t = translations[currentLang];
+  const supportedLanguages: SupportedLanguage[] = ['en', 'es', 'zh', 'ar', 'fr', 'de', 'ja'];
+  const currentLang = supportedLanguages.includes(language as SupportedLanguage) 
+    ? (language as SupportedLanguage) 
+    : 'en';
+  const t = courseUITranslations[currentLang];
 
   useEffect(() => {
     checkAuth();
@@ -179,10 +81,10 @@ const Courses = () => {
 
   const loadData = async () => {
     try {
-      // Load courses
+      // Load courses with translations
       const { data: coursesData, error: coursesError } = await supabase
         .from('courses')
-        .select('*')
+        .select('id, title, description, image_url, translations, is_published')
         .eq('is_published', true);
       
       if (coursesError) throw coursesError;
@@ -193,15 +95,15 @@ const Courses = () => {
         return;
       }
 
-      setCourses(coursesData);
+      setCourses(coursesData as Course[]);
 
-      // Load chapters
+      // Load chapters with translations
       const { data: chaptersData } = await supabase
         .from('chapters')
-        .select('*')
+        .select('id, title, description, order_index, course_id, translations')
         .order('order_index');
       
-      setChapters(chaptersData || []);
+      setChapters((chaptersData || []) as Chapter[]);
 
       // Load videos
       const { data: videosData } = await supabase
@@ -302,6 +204,26 @@ const Courses = () => {
     return passedQuizzes.includes(prevChapterEndQuiz.id);
   };
 
+  // Get translated content for course
+  const getCourseContent = (course: Course) => {
+    return getTranslatedContent(
+      course.translations,
+      currentLang,
+      course.title,
+      course.description || ''
+    );
+  };
+
+  // Get translated content for chapter
+  const getChapterContent = (chapter: Chapter) => {
+    return getTranslatedContent(
+      chapter.translations,
+      currentLang,
+      chapter.title,
+      chapter.description || ''
+    );
+  };
+
   if (loading || seeding) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -348,73 +270,78 @@ const Courses = () => {
           </p>
         </motion.div>
 
-        {courses.map((course, courseIndex) => (
-          <motion.div
-            key={course.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: courseIndex * 0.1 }}
-          >
-            <Card className="mb-6 overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-2xl font-display">{course.title}</CardTitle>
-                    <CardDescription className="mt-2">{course.description}</CardDescription>
+        {courses.map((course, courseIndex) => {
+          const courseContent = getCourseContent(course);
+          
+          return (
+            <motion.div
+              key={course.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: courseIndex * 0.1 }}
+            >
+              <Card className="mb-6 overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <CardTitle className="text-2xl font-display">{courseContent.title}</CardTitle>
+                      <CardDescription className="mt-2">{courseContent.description}</CardDescription>
+                    </div>
+                    <BookOpen className="w-8 h-8 text-primary" />
                   </div>
-                  <BookOpen className="w-8 h-8 text-primary" />
-                </div>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  {(() => {
-                    const courseChapters = chapters
-                      .filter(ch => ch.course_id === course.id)
-                      .sort((a, b) => a.order_index - b.order_index);
-                    
-                    return courseChapters.map((chapter) => {
-                      const chapterProgress = getChapterProgress(chapter.id);
-                      const isLocked = !isChapterAccessible(chapter, courseChapters);
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    {(() => {
+                      const courseChapters = chapters
+                        .filter(ch => ch.course_id === course.id)
+                        .sort((a, b) => a.order_index - b.order_index);
+                      
+                      return courseChapters.map((chapter) => {
+                        const chapterProgress = getChapterProgress(chapter.id);
+                        const isLocked = !isChapterAccessible(chapter, courseChapters);
+                        const chapterContent = getChapterContent(chapter);
 
-                      return (
-                        <div
-                          key={chapter.id}
-                          className={`border rounded-lg p-4 transition-all ${
-                            isLocked 
-                              ? 'opacity-50 bg-muted/30' 
-                              : 'hover:border-primary/50 hover:shadow-md cursor-pointer'
-                          }`}
-                          onClick={() => !isLocked && navigate(`/course/${course.id}/chapter/${chapter.id}`)}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-3">
-                              {chapterProgress === 100 ? (
-                                <CheckCircle className="w-5 h-5 text-green-500" />
-                              ) : isLocked ? (
-                                <Lock className="w-5 h-5 text-muted-foreground" />
-                              ) : (
-                                <Play className="w-5 h-5 text-primary" />
-                              )}
-                              <div>
-                                <h3 className="font-semibold">{chapter.title}</h3>
-                                <p className="text-sm text-muted-foreground">{chapter.description}</p>
+                        return (
+                          <div
+                            key={chapter.id}
+                            className={`border rounded-lg p-4 transition-all ${
+                              isLocked 
+                                ? 'opacity-50 bg-muted/30' 
+                                : 'hover:border-primary/50 hover:shadow-md cursor-pointer'
+                            }`}
+                            onClick={() => !isLocked && navigate(`/course/${course.id}/chapter/${chapter.id}`)}
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-3">
+                                {chapterProgress === 100 ? (
+                                  <CheckCircle className="w-5 h-5 text-green-500" />
+                                ) : isLocked ? (
+                                  <Lock className="w-5 h-5 text-muted-foreground" />
+                                ) : (
+                                  <Play className="w-5 h-5 text-primary" />
+                                )}
+                                <div>
+                                  <h3 className="font-semibold">{chapterContent.title}</h3>
+                                  <p className="text-sm text-muted-foreground">{chapterContent.description}</p>
+                                </div>
                               </div>
+                              <ChevronRight className="w-5 h-5 text-muted-foreground" />
                             </div>
-                            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                            <Progress value={chapterProgress} className="h-2" />
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {chapterProgress}% {t.complete}
+                            </p>
                           </div>
-                          <Progress value={chapterProgress} className="h-2" />
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {chapterProgress}% {t.complete}
-                          </p>
-                        </div>
-                      );
-                    });
-                  })()}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+                        );
+                      });
+                    })()}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          );
+        })}
       </main>
     </div>
   );

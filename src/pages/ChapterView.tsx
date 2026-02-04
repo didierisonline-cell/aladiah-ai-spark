@@ -1,21 +1,27 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { 
   GraduationCap, ArrowLeft, Play, CheckCircle, Lock, 
   ChevronRight, Trophy, AlertCircle
 } from 'lucide-react';
 import Quiz from '@/components/course/Quiz';
 import VideoPlayer from '@/components/course/VideoPlayer';
+import { 
+  courseUITranslations, 
+  getTranslatedContent,
+  type SupportedLanguage 
+} from '@/utils/courseTranslations';
 
 interface Course {
   id: string;
   title: string;
+  translations: Record<string, { title?: string; description?: string }> | null;
 }
 
 interface Chapter {
@@ -24,6 +30,7 @@ interface Chapter {
   description: string;
   order_index: number;
   course_id: string;
+  translations: Record<string, { title?: string; description?: string }> | null;
 }
 
 interface Video {
@@ -33,6 +40,7 @@ interface Video {
   chapter_id: string;
   order_index: number;
   video_url: string | null;
+  translations: Record<string, { title?: string; description?: string }> | null;
 }
 
 interface QuizData {
@@ -51,6 +59,7 @@ const ChapterView = () => {
   const { courseId, chapterId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { language } = useLanguage();
   
   const [course, setCourse] = useState<Course | null>(null);
   const [chapter, setChapter] = useState<Chapter | null>(null);
@@ -62,6 +71,13 @@ const ChapterView = () => {
   const [currentQuiz, setCurrentQuiz] = useState<QuizData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showChapterQuiz, setShowChapterQuiz] = useState(false);
+
+  // Get translations with fallback to English
+  const supportedLanguages: SupportedLanguage[] = ['en', 'es', 'zh', 'ar', 'fr', 'de', 'ja'];
+  const currentLang = supportedLanguages.includes(language as SupportedLanguage) 
+    ? (language as SupportedLanguage) 
+    : 'en';
+  const t = courseUITranslations[currentLang];
 
   useEffect(() => {
     loadChapterData();
@@ -76,33 +92,33 @@ const ChapterView = () => {
         return;
       }
 
-      // Load course
+      // Load course with translations
       const { data: courseData } = await supabase
         .from('courses')
-        .select('id, title')
+        .select('id, title, translations')
         .eq('id', courseId)
         .single();
       
-      setCourse(courseData);
+      setCourse(courseData as Course);
 
-      // Load chapter
+      // Load chapter with translations
       const { data: chapterData, error: chapterError } = await supabase
         .from('chapters')
-        .select('*')
+        .select('id, title, description, order_index, course_id, translations')
         .eq('id', chapterId)
         .single();
       
       if (chapterError) throw chapterError;
-      setChapter(chapterData);
+      setChapter(chapterData as Chapter);
 
-      // Load videos
+      // Load videos with translations
       const { data: videosData } = await supabase
         .from('videos')
-        .select('*')
+        .select('id, title, description, chapter_id, order_index, video_url, translations')
         .eq('chapter_id', chapterId)
         .order('order_index');
       
-      setVideos(videosData || []);
+      setVideos((videosData || []) as Video[]);
 
       // Load quizzes
       const { data: quizzesData } = await supabase
@@ -122,17 +138,47 @@ const ChapterView = () => {
 
       // Set first accessible video
       if (videosData && videosData.length > 0) {
-        setCurrentVideo(videosData[0]);
+        setCurrentVideo(videosData[0] as Video);
       }
     } catch (error: any) {
       toast({
-        title: 'Error loading chapter',
+        title: t.errorLoading,
         description: error.message,
         variant: 'destructive',
       });
     } finally {
       setLoading(false);
     }
+  };
+
+  // Get translated content helpers
+  const getVideoContent = (video: Video) => {
+    return getTranslatedContent(
+      video.translations,
+      currentLang,
+      video.title,
+      video.description || ''
+    );
+  };
+
+  const getChapterContent = () => {
+    if (!chapter) return { title: '', description: '' };
+    return getTranslatedContent(
+      chapter.translations,
+      currentLang,
+      chapter.title,
+      chapter.description || ''
+    );
+  };
+
+  const getCourseContent = () => {
+    if (!course) return { title: '', description: '' };
+    return getTranslatedContent(
+      course.translations,
+      currentLang,
+      course.title,
+      ''
+    );
   };
 
   const isVideoAccessible = (video: Video) => {
@@ -174,8 +220,8 @@ const ChapterView = () => {
     } else {
       // No quiz exists - show message to user
       toast({
-        title: 'Quiz Not Available',
-        description: 'The quiz for this lesson is being prepared. Please check back soon.',
+        title: t.quizNotAvailable,
+        description: t.quizPreparing,
         variant: 'default',
       });
     }
@@ -203,8 +249,8 @@ const ChapterView = () => {
   const handleChapterQuizComplete = (passed: boolean) => {
     if (passed) {
       toast({
-        title: '🎉 Chapter Complete!',
-        description: 'Congratulations! You can now proceed to the next chapter.',
+        title: t.chapterComplete,
+        description: t.congratsNextChapter,
       });
       setTimeout(() => navigate('/courses'), 2000);
     }
@@ -245,6 +291,9 @@ const ChapterView = () => {
     ? Math.round((videos.filter(v => isVideoPassed(v)).length / videos.length) * 100)
     : 0;
 
+  const chapterContent = getChapterContent();
+  const courseContent = getCourseContent();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -252,7 +301,7 @@ const ChapterView = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/courses" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="w-4 h-4" />
-            Back to Courses
+            {t.backToCourses}
           </Link>
           <div className="flex items-center gap-2">
             <GraduationCap className="w-6 h-6 text-primary" />
@@ -272,18 +321,18 @@ const ChapterView = () => {
               {currentVideo ? (
                 <VideoPlayer
                   videoId={currentVideo.id}
-                  title={currentVideo.title}
-                  description={currentVideo.description || ''}
+                  title={getVideoContent(currentVideo).title}
+                  description={getVideoContent(currentVideo).description}
                   orderIndex={currentVideo.order_index}
                   onComplete={handleVideoComplete}
                   isCompleted={isVideoPassed(currentVideo)}
-                  courseTitle={course?.title}
-                  chapterTitle={chapter?.title}
+                  courseTitle={courseContent.title}
+                  chapterTitle={chapterContent.title}
                 />
               ) : (
                 <Card className="overflow-hidden">
                   <div className="aspect-video bg-muted flex items-center justify-center">
-                    <p className="text-muted-foreground">Select a video to begin</p>
+                    <p className="text-muted-foreground">{t.selectVideo}</p>
                   </div>
                 </Card>
               )}
@@ -294,7 +343,7 @@ const ChapterView = () => {
           <div className="lg:col-span-1">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">{chapter?.title}</CardTitle>
+                <CardTitle className="text-lg">{chapterContent.title}</CardTitle>
                 <div className="flex items-center gap-2 mt-2">
                   <Progress value={progress} className="h-2 flex-1" />
                   <span className="text-sm text-muted-foreground">{progress}%</span>
@@ -305,6 +354,7 @@ const ChapterView = () => {
                   const accessible = isVideoAccessible(video);
                   const passed = isVideoPassed(video);
                   const isCurrent = currentVideo?.id === video.id;
+                  const videoContent = getVideoContent(video);
 
                   return (
                     <div
@@ -327,8 +377,8 @@ const ChapterView = () => {
                           <Lock className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                         )}
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm truncate">{video.title}</p>
-                          <p className="text-xs text-muted-foreground">5 questions</p>
+                          <p className="font-medium text-sm truncate">{videoContent.title}</p>
+                          <p className="text-xs text-muted-foreground">5 {t.questions}</p>
                         </div>
                         <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                       </div>
@@ -355,16 +405,16 @@ const ChapterView = () => {
                         <Lock className="w-6 h-6 text-muted-foreground" />
                       )}
                       <div>
-                        <p className="font-semibold">Chapter Final Quiz</p>
+                        <p className="font-semibold">{t.chapterFinalQuiz}</p>
                         <p className="text-xs text-muted-foreground">
-                          40 questions • 100% required
+                          40 {t.questions} • 100% {t.required}
                         </p>
                       </div>
                     </div>
                     {!allMiniQuizzesPassed() && (
                       <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                         <AlertCircle className="w-4 h-4" />
-                        Complete all video quizzes first
+                        {t.completeAllVideos}
                       </div>
                     )}
                   </div>
