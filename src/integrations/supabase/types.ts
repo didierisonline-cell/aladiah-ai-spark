@@ -52,6 +52,45 @@ export type Database = {
           },
         ]
       }
+      course_prerequisites: {
+        Row: {
+          course_id: string
+          created_at: string
+          id: string
+          prerequisite_course_id: string
+          prerequisite_group: number
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          id?: string
+          prerequisite_course_id: string
+          prerequisite_group?: number
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          id?: string
+          prerequisite_course_id?: string
+          prerequisite_group?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_prerequisites_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_prerequisites_prerequisite_course_id_fkey"
+            columns: ["prerequisite_course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           created_at: string
