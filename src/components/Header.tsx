@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Globe, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage, languageNames } from '@/contexts/LanguageContext';
+import { useNavigate } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +16,7 @@ type Language = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
+  const navigate = useNavigate();
 
   const navItems = [
     { key: 'nav.home', href: '#home' },
@@ -97,7 +99,7 @@ const Header = () => {
               transition={{ duration: 0.5, delay: 0.4 }}
               className="hidden sm:block"
             >
-              <Button variant="hero" size="sm">
+              <Button variant="hero" size="sm" onClick={() => navigate('/enroll?course=scrum')}>
                 {t('nav.enroll')}
               </Button>
             </motion.div>
@@ -133,7 +135,7 @@ const Header = () => {
                   {t(item.key)}
                 </a>
               ))}
-              <Button variant="hero" size="lg" className="mt-4">
+              <Button variant="hero" size="lg" className="mt-4" onClick={() => { setIsMenuOpen(false); navigate('/enroll?course=scrum'); }}>
                 {t('nav.enroll')}
               </Button>
             </nav>
