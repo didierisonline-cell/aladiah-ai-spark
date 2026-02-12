@@ -271,6 +271,8 @@ export const courseUITranslations: Record<SupportedLanguage, {
   quizNotAvailable: string;
   quizPreparing: string;
   prerequisitesRequired: string;
+  projectsAndSimulations: string;
+  projectsSubtitle: string;
 }> = {
   en: {
     loading: 'Loading courses...',
@@ -294,6 +296,8 @@ export const courseUITranslations: Record<SupportedLanguage, {
     quizNotAvailable: 'Quiz Not Available',
     quizPreparing: 'The quiz for this lesson is being prepared. Please check back soon.',
     prerequisitesRequired: 'Complete required courses to unlock',
+    projectsAndSimulations: 'Projects & Simulations',
+    projectsSubtitle: 'Apply your knowledge in real-world interactive scenarios',
   },
   es: {
     loading: 'Cargando cursos...',
@@ -317,6 +321,8 @@ export const courseUITranslations: Record<SupportedLanguage, {
     quizNotAvailable: 'Cuestionario No Disponible',
     quizPreparing: 'El cuestionario para esta lección está siendo preparado. Por favor vuelve pronto.',
     prerequisitesRequired: 'Completa los cursos requeridos para desbloquear',
+    projectsAndSimulations: 'Proyectos y Simulaciones',
+    projectsSubtitle: 'Aplica tus conocimientos en escenarios interactivos del mundo real',
   },
   zh: {
     loading: '加载课程中...',
@@ -340,6 +346,8 @@ export const courseUITranslations: Record<SupportedLanguage, {
     quizNotAvailable: '测验不可用',
     quizPreparing: '本课程的测验正在准备中。请稍后再来。',
     prerequisitesRequired: '完成必修课程以解锁',
+    projectsAndSimulations: '项目与模拟',
+    projectsSubtitle: '在真实世界的互动场景中应用您的知识',
   },
   ar: {
     loading: 'جاري تحميل الدورات...',
@@ -363,6 +371,8 @@ export const courseUITranslations: Record<SupportedLanguage, {
     quizNotAvailable: 'الاختبار غير متوفر',
     quizPreparing: 'يتم إعداد الاختبار لهذا الدرس. يرجى العودة قريباً.',
     prerequisitesRequired: 'أكمل الدورات المطلوبة للفتح',
+    projectsAndSimulations: 'المشاريع والمحاكاة',
+    projectsSubtitle: 'طبق معرفتك في سيناريوهات تفاعلية واقعية',
   },
   fr: {
     loading: 'Chargement des cours...',
@@ -386,6 +396,8 @@ export const courseUITranslations: Record<SupportedLanguage, {
     quizNotAvailable: 'Quiz Non Disponible',
     quizPreparing: 'Le quiz pour cette leçon est en préparation. Veuillez revenir bientôt.',
     prerequisitesRequired: 'Complétez les cours requis pour débloquer',
+    projectsAndSimulations: 'Projets et Simulations',
+    projectsSubtitle: 'Appliquez vos connaissances dans des scénarios interactifs réels',
   },
   de: {
     loading: 'Kurse werden geladen...',
@@ -409,6 +421,8 @@ export const courseUITranslations: Record<SupportedLanguage, {
     quizNotAvailable: 'Quiz Nicht Verfügbar',
     quizPreparing: 'Das Quiz für diese Lektion wird vorbereitet. Bitte kommen Sie bald wieder.',
     prerequisitesRequired: 'Schließen Sie die erforderlichen Kurse ab',
+    projectsAndSimulations: 'Projekte & Simulationen',
+    projectsSubtitle: 'Wenden Sie Ihr Wissen in interaktiven realen Szenarien an',
   },
   ja: {
     loading: 'コースを読み込み中...',
@@ -432,5 +446,7 @@ export const courseUITranslations: Record<SupportedLanguage, {
     quizNotAvailable: 'クイズは利用できません',
     quizPreparing: 'このレッスンのクイズは準備中です。後でもう一度確認してください。',
     prerequisitesRequired: '必要なコースを完了してロック解除',
+    projectsAndSimulations: 'プロジェクトとシミュレーション',
+    projectsSubtitle: '実際のインタラクティブなシナリオで知識を応用する',
   },
 };
