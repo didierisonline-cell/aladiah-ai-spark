@@ -96,7 +96,7 @@ const Enroll = () => {
             <span className="text-sm font-medium">Back to Home</span>
           </button>
           <h1 className="text-2xl sm:text-3xl font-display font-bold">
-            {isScrum ? 'Scrum Master Certification' : 'Project Management Professional'}
+            {isScrum ? 'Scrum Master Certification Course' : 'Project Management Professional'}
           </h1>
           <p className="text-primary-foreground/80 mt-1">Enrollment Application</p>
         </div>
@@ -221,7 +221,7 @@ const Enroll = () => {
             {/* Course Summary */}
             <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
               <h3 className="font-display font-bold text-foreground mb-4">
-                {isScrum ? 'Scrum Master Certification' : 'Project Management Professional'}
+                {isScrum ? 'Scrum Master Certification Course' : 'Project Management Professional'}
               </h3>
 
               <div className="space-y-3 text-sm">
