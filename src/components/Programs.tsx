@@ -100,7 +100,7 @@ const Programs = () => {
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/3 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-primary/5 transition-colors duration-500" />
               
               {program.featured && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-secondary text-secondary-foreground text-xs font-bold rounded-full shadow-glow tracking-wide uppercase">
+                <div className="px-4 py-1.5 bg-secondary text-secondary-foreground text-xs font-bold rounded-full shadow-glow tracking-wide uppercase w-fit mx-auto mb-4">
                   Most Popular
                 </div>
               )}
