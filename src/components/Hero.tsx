@@ -9,16 +9,15 @@ import scene3 from '@/assets/story-scene3.mp4';
 import scene4 from '@/assets/story-scene4.mp4';
 import scene5 from '@/assets/story-scene5.mp4';
 
-const scenes = [
-  { src: scene1, caption: "María works long hours at a restaurant in Santo Domingo…" },
-  { src: scene2, caption: "One night, she sees an ad on Instagram — Aladiah Academy. A chance to change everything." },
-  { src: scene3, caption: "She enrolls, studies late into the night, and earns her Scrum Master certification." },
-  { src: scene4, caption: "6 months later — she leads a professional team, earning $60,000 a year." },
-  { src: scene5, caption: "She moves to a beautiful apartment. Her life is forever changed." },
-];
+const sceneSources = [scene1, scene2, scene3, scene4, scene5];
 
 const Hero = () => {
   const { t } = useLanguage();
+
+  const scenes = sceneSources.map((src, i) => ({
+    src,
+    caption: t(`hero.scene${i + 1}`),
+  }));
   const [currentScene, setCurrentScene] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
