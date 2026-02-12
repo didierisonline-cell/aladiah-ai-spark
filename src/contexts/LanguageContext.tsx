@@ -59,6 +59,11 @@ const translations: Record<Language, Record<string, string>> = {
     'programs.liveProject.desc': 'Experience a realistic two-week sprint with all Scrum ceremonies in sequence — daily standups, sprint planning, backlog refinement, sprint review, and retrospective through interactive real-world scenarios.',
     'programs.liveProject.prereq': 'Requires completion of specific courses to unlock',
     'programs.liveProject.duration': '2-week sprint',
+    'programs.rogersProject.title': 'IT Merger Project: Rogers-Shaw Network Integration',
+    'programs.rogersProject.desc': 'Lead a real-world IT integration project inspired by the Rogers-Shaw $26B telecommunications merger. Manage 3 cross-domain Scrum teams over 4 sprints as they consolidate cable, wireless, and enterprise systems across Canada.',
+    'programs.rogersProject.prereq': 'Requires completion of specific courses to unlock',
+    'programs.rogersProject.duration': '2-month project (4 sprints)',
+    'programs.rogersProject.teams': '3 Scrum Teams',
     
     // About
     'about.badge': 'About Us',
@@ -155,6 +160,11 @@ const translations: Record<Language, Record<string, string>> = {
     'programs.liveProject.desc': 'Experimenta un sprint realista de dos semanas con todas las ceremonias Scrum en secuencia — standups diarios, planificación del sprint, refinamiento del backlog, revisión del sprint y retrospectiva.',
     'programs.liveProject.prereq': 'Requiere completar cursos específicos para desbloquear',
     'programs.liveProject.duration': 'Sprint de 2 semanas',
+    'programs.rogersProject.title': 'Proyecto de Fusión IT: Integración de Red Rogers-Shaw',
+    'programs.rogersProject.desc': 'Lidera un proyecto de integración IT del mundo real inspirado en la fusión de $26B de Rogers-Shaw. Gestiona 3 equipos Scrum durante 4 sprints consolidando sistemas de cable, inalámbricos y empresariales.',
+    'programs.rogersProject.prereq': 'Requiere completar cursos específicos para desbloquear',
+    'programs.rogersProject.duration': 'Proyecto de 2 meses (4 sprints)',
+    'programs.rogersProject.teams': '3 Equipos Scrum',
     
     // About
     'about.badge': 'Sobre Nosotros',
@@ -251,6 +261,11 @@ const translations: Record<Language, Record<string, string>> = {
     'programs.liveProject.desc': '体验一个真实的两周冲刺，按顺序完成所有Scrum仪式——每日站会、冲刺计划、待办精化、冲刺评审和回顾。',
     'programs.liveProject.prereq': '需要完成特定课程才能解锁',
     'programs.liveProject.duration': '两周冲刺',
+    'programs.rogersProject.title': 'IT合并项目：Rogers-Shaw网络整合',
+    'programs.rogersProject.desc': '领导一个以Rogers-Shaw 260亿美元电信合并为灵感的真实IT整合项目。在4个冲刺中管理3个跨领域Scrum团队，整合加拿大各地的有线、无线和企业系统。',
+    'programs.rogersProject.prereq': '需要完成特定课程才能解锁',
+    'programs.rogersProject.duration': '2个月项目（4个冲刺）',
+    'programs.rogersProject.teams': '3个Scrum团队',
     
     // About
     'about.badge': '关于我们',
@@ -347,6 +362,11 @@ const translations: Record<Language, Record<string, string>> = {
     'programs.liveProject.desc': 'عش تجربة سبرنت واقعية لمدة أسبوعين مع جميع احتفالات سكرم بالتسلسل — الاجتماعات اليومية وتخطيط السبرنت وتنقيح الباكلوج ومراجعة السبرنت والاسترجاع.',
     'programs.liveProject.prereq': 'يتطلب إكمال دورات محددة للفتح',
     'programs.liveProject.duration': 'سبرنت أسبوعين',
+    'programs.rogersProject.title': 'مشروع دمج تقنية المعلومات: تكامل شبكة Rogers-Shaw',
+    'programs.rogersProject.desc': 'قُد مشروع تكامل تقنية معلومات حقيقي مستوحى من اندماج Rogers-Shaw بقيمة 26 مليار دولار. أدِر 3 فرق سكرم عبر 4 سبرنتات لدمج أنظمة الكابل واللاسلكي والمؤسسات.',
+    'programs.rogersProject.prereq': 'يتطلب إكمال دورات محددة للفتح',
+    'programs.rogersProject.duration': 'مشروع شهرين (4 سبرنتات)',
+    'programs.rogersProject.teams': '3 فرق سكرم',
     
     // About
     'about.badge': 'من نحن',
@@ -443,6 +463,11 @@ const translations: Record<Language, Record<string, string>> = {
     'programs.liveProject.desc': 'Vivez un sprint réaliste de deux semaines avec toutes les cérémonies Scrum en séquence — standups quotidiens, planification du sprint, affinage du backlog, revue du sprint et rétrospective.',
     'programs.liveProject.prereq': 'Nécessite de compléter des cours spécifiques pour débloquer',
     'programs.liveProject.duration': 'Sprint de 2 semaines',
+    'programs.rogersProject.title': 'Projet de Fusion IT : Intégration Réseau Rogers-Shaw',
+    'programs.rogersProject.desc': 'Dirigez un projet d\'intégration IT réel inspiré de la fusion Rogers-Shaw à 26 milliards $. Gérez 3 équipes Scrum sur 4 sprints pour consolider câble, sans-fil et systèmes d\'entreprise.',
+    'programs.rogersProject.prereq': 'Nécessite de compléter des cours spécifiques pour débloquer',
+    'programs.rogersProject.duration': 'Projet de 2 mois (4 sprints)',
+    'programs.rogersProject.teams': '3 Équipes Scrum',
     
     // About
     'about.badge': 'À Propos de Nous',
@@ -539,6 +564,11 @@ const translations: Record<Language, Record<string, string>> = {
     'programs.liveProject.desc': 'Erleben Sie einen realistischen zweiwöchigen Sprint mit allen Scrum-Zeremonien in der richtigen Reihenfolge — tägliche Standups, Sprint-Planung, Backlog-Verfeinerung, Sprint-Review und Retrospektive.',
     'programs.liveProject.prereq': 'Erfordert den Abschluss bestimmter Kurse zum Freischalten',
     'programs.liveProject.duration': '2-Wochen-Sprint',
+    'programs.rogersProject.title': 'IT-Fusionsprojekt: Rogers-Shaw Netzwerkintegration',
+    'programs.rogersProject.desc': 'Leiten Sie ein reales IT-Integrationsprojekt, inspiriert von der Rogers-Shaw 26-Milliarden-Dollar-Fusion. Verwalten Sie 3 Scrum-Teams über 4 Sprints zur Konsolidierung von Kabel-, Funk- und Unternehmenssystemen.',
+    'programs.rogersProject.prereq': 'Erfordert den Abschluss bestimmter Kurse zum Freischalten',
+    'programs.rogersProject.duration': '2-Monats-Projekt (4 Sprints)',
+    'programs.rogersProject.teams': '3 Scrum-Teams',
     
     // About
     'about.badge': 'Über Uns',
@@ -635,6 +665,11 @@ const translations: Record<Language, Record<string, string>> = {
     'programs.liveProject.desc': 'すべてのスクラムセレモニーを順番に体験する、リアルな2週間スプリント——デイリースタンドアップ、スプリント計画、バックログリファインメント、スプリントレビュー、レトロスペクティブ。',
     'programs.liveProject.prereq': '特定のコースを完了してロック解除が必要',
     'programs.liveProject.duration': '2週間スプリント',
+    'programs.rogersProject.title': 'IT合併プロジェクト：Rogers-Shawネットワーク統合',
+    'programs.rogersProject.desc': 'Rogers-Shawの260億ドル通信合併に触発された実際のIT統合プロジェクトをリード。4スプリントにわたり3つのスクラムチームを管理し、ケーブル、ワイヤレス、企業システムを統合。',
+    'programs.rogersProject.prereq': '特定のコースを完了してロック解除が必要',
+    'programs.rogersProject.duration': '2ヶ月プロジェクト（4スプリント）',
+    'programs.rogersProject.teams': '3つのスクラムチーム',
     
     // About
     'about.badge': '私たちについて',
