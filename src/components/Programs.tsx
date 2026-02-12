@@ -142,12 +142,14 @@ const Programs = () => {
                   onClick={() => {
                     if (program.isWaitlist) {
                       setWaitlistOpen(true);
+                    } else if (program.featured) {
+                      navigate('/enroll?course=scrum');
                     } else {
                       navigate('/auth');
                     }
                   }}
                 >
-                  {program.isWaitlist ? t('programs.comingSoon') || 'Join Waitlist' : (program.featured || program.hasCourse) ? t('programs.startCourse') : t('programs.learnMore')}
+                  {program.isWaitlist ? t('programs.comingSoon') || 'Join Waitlist' : program.featured ? t('nav.enroll') || 'Enroll Now' : (program.hasCourse ? t('programs.startCourse') : t('programs.learnMore'))}
                   <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                 </Button>
               </div>

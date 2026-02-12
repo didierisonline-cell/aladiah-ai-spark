@@ -11,3 +11,9 @@ verify_jwt = false
 
 [functions.generate-lesson-audio]
 verify_jwt = false
+
+[functions.create-checkout]
+verify_jwt = false
+
+[functions.handle-payment-webhook]
+verify_jwt = false
