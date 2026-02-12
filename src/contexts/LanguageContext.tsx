@@ -37,6 +37,11 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.stats.students': 'Students Trained',
     'hero.stats.rate': 'Success Rate',
     'hero.stats.partners': 'Corporate Partners',
+    'hero.scene1': 'María works long hours at a restaurant in Santo Domingo…',
+    'hero.scene2': 'One night, she sees an ad on Instagram — Aladiah Academy. A chance to change everything.',
+    'hero.scene3': 'She enrolls, studies late into the night, and earns her Scrum Master certification.',
+    'hero.scene4': '6 months later — she leads a professional team, earning $60,000 a year.',
+    'hero.scene5': 'She moves to a beautiful apartment. Her life is forever changed.',
     
     // Programs
     'programs.badge': 'Our Programs',
@@ -138,6 +143,11 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.stats.students': 'Estudiantes Formados',
     'hero.stats.rate': 'Tasa de Éxito',
     'hero.stats.partners': 'Socios Corporativos',
+    'hero.scene1': 'María trabaja largas horas en un restaurante en Santo Domingo…',
+    'hero.scene2': 'Una noche, ve un anuncio en Instagram — Aladiah Academy. Una oportunidad para cambiarlo todo.',
+    'hero.scene3': 'Se inscribe, estudia hasta altas horas de la noche y obtiene su certificación de Scrum Master.',
+    'hero.scene4': '6 meses después — lidera un equipo profesional, ganando $60,000 al año.',
+    'hero.scene5': 'Se muda a un hermoso apartamento. Su vida cambió para siempre.',
     
     // Programs
     'programs.badge': 'Nuestros Programas',
@@ -239,6 +249,11 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.stats.students': '培训学员',
     'hero.stats.rate': '成功率',
     'hero.stats.partners': '企业合作伙伴',
+    'hero.scene1': 'María在圣多明各的一家餐厅辛苦工作…',
+    'hero.scene2': '一天晚上，她在Instagram上看到一则广告——Aladiah Academy。一个改变一切的机会。',
+    'hero.scene3': '她报名了，深夜学习，并获得了Scrum Master认证。',
+    'hero.scene4': '6个月后——她领导一个专业团队，年收入60,000美元。',
+    'hero.scene5': '她搬进了一套漂亮的公寓。她的生活从此改变。',
     
     // Programs
     'programs.badge': '我们的课程',
@@ -340,6 +355,11 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.stats.students': 'متدربون',
     'hero.stats.rate': 'معدل النجاح',
     'hero.stats.partners': 'شركاء مؤسسيون',
+    'hero.scene1': 'ماريا تعمل ساعات طويلة في مطعم في سانتو دومينغو…',
+    'hero.scene2': 'ذات ليلة، ترى إعلانًا على إنستغرام — أكاديمية علاديا. فرصة لتغيير كل شيء.',
+    'hero.scene3': 'تسجل، تدرس حتى وقت متأخر من الليل، وتحصل على شهادة Scrum Master.',
+    'hero.scene4': 'بعد 6 أشهر — تقود فريقًا محترفًا، وتكسب 60,000 دولار سنويًا.',
+    'hero.scene5': 'تنتقل إلى شقة جميلة. حياتها تغيرت إلى الأبد.',
     
     // Programs
     'programs.badge': 'برامجنا',
@@ -441,6 +461,11 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.stats.students': 'Étudiants Formés',
     'hero.stats.rate': 'Taux de Réussite',
     'hero.stats.partners': 'Partenaires Corporatifs',
+    'hero.scene1': 'María travaille de longues heures dans un restaurant à Saint-Domingue…',
+    'hero.scene2': 'Un soir, elle voit une publicité sur Instagram — Aladiah Academy. Une chance de tout changer.',
+    'hero.scene3': 'Elle s\'inscrit, étudie tard dans la nuit et obtient sa certification Scrum Master.',
+    'hero.scene4': '6 mois plus tard — elle dirige une équipe professionnelle, gagnant 60 000 $ par an.',
+    'hero.scene5': 'Elle emménage dans un bel appartement. Sa vie est changée à jamais.',
     
     // Programs
     'programs.badge': 'Nos Programmes',
@@ -542,6 +567,11 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.stats.students': 'Ausgebildete Studenten',
     'hero.stats.rate': 'Erfolgsquote',
     'hero.stats.partners': 'Unternehmenspartner',
+    'hero.scene1': 'María arbeitet lange Stunden in einem Restaurant in Santo Domingo…',
+    'hero.scene2': 'Eines Nachts sieht sie eine Anzeige auf Instagram — Aladiah Academy. Eine Chance, alles zu ändern.',
+    'hero.scene3': 'Sie schreibt sich ein, lernt bis spät in die Nacht und erhält ihre Scrum Master-Zertifizierung.',
+    'hero.scene4': '6 Monate später — sie leitet ein professionelles Team und verdient 60.000 $ pro Jahr.',
+    'hero.scene5': 'Sie zieht in eine schöne Wohnung. Ihr Leben hat sich für immer verändert.',
     
     // Programs
     'programs.badge': 'Unsere Programme',
@@ -643,6 +673,11 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.stats.students': '受講生',
     'hero.stats.rate': '成功率',
     'hero.stats.partners': '法人パートナー',
+    'hero.scene1': 'マリアはサントドミンゴのレストランで長時間働いています…',
+    'hero.scene2': 'ある夜、Instagramで広告を見ます——Aladiah Academy。すべてを変えるチャンス。',
+    'hero.scene3': '入学し、夜遅くまで勉強し、スクラムマスター認定を取得します。',
+    'hero.scene4': '6ヶ月後——プロフェッショナルチームをリードし、年収60,000ドルを稼いでいます。',
+    'hero.scene5': '美しいアパートに引っ越します。彼女の人生は永遠に変わりました。',
     
     // Programs
     'programs.badge': '私たちのプログラム',
