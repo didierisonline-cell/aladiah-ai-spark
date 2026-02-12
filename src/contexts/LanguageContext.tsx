@@ -87,7 +87,7 @@ const translations: Record<Language, Record<string, string>> = {
     'founder.credential2': 'Certified Scrum Master (CSM), PMP, and SAFe Agilist with 15+ years in enterprise IT',
     'founder.credential3': 'AI & Education innovator — pioneering AI-powered curriculum design for professional training',
     'founder.credential4': 'Multilingual leader fluent in 4 languages, building a global academy across 7 languages',
-    'founder.quote': 'I believe every professional deserves access to world-class training, regardless of where they were born. AI is the equalizer — and Aladiah Academy is the bridge.',
+    'founder.quote': 'I believe in the power of "automate the automation" in a sophisticated way.',
     'founder.teaching.caption': 'Didier Boumtje delivering hands-on Scrum training to the next generation of Agile leaders',
 
     // Features
@@ -204,7 +204,7 @@ const translations: Record<Language, Record<string, string>> = {
     'founder.credential2': 'Scrum Master Certificado (CSM), PMP y SAFe Agilist con 15+ años en TI empresarial',
     'founder.credential3': 'Innovador en IA y Educación — pionero en diseño curricular con IA para formación profesional',
     'founder.credential4': 'Líder multilingüe fluido en 4 idiomas, construyendo una academia global en 7 idiomas',
-    'founder.quote': 'Creo que todo profesional merece acceso a formación de clase mundial, sin importar dónde nació. La IA es el ecualizador — y Aladiah Academy es el puente.',
+    'founder.quote': 'Creo en el poder de "automatizar la automatización" de manera sofisticada.',
     'founder.teaching.caption': 'Didier Boumtje impartiendo formación práctica en Scrum a la próxima generación de líderes Agile',
 
     // Features
@@ -321,7 +321,7 @@ const translations: Record<Language, Record<string, string>> = {
     'founder.credential2': '认证Scrum Master (CSM)、PMP和SAFe敏捷师，15年以上企业IT经验',
     'founder.credential3': 'AI与教育创新者——开创AI驱动的专业培训课程设计',
     'founder.credential4': '精通4种语言的多语言领导者，正在构建一所覆盖7种语言的全球学院',
-    'founder.quote': '我相信每位专业人士都应该享有世界一流的培训，无论他们出生在哪里。AI是均衡器——Aladiah Academy就是那座桥梁。',
+    'founder.quote': '我相信以精密方式"自动化自动化"的力量。',
     'founder.teaching.caption': 'Didier Boumtje为下一代敏捷领导者提供实战Scrum培训',
 
     // Features
@@ -438,7 +438,7 @@ const translations: Record<Language, Record<string, string>> = {
     'founder.credential2': 'Scrum Master معتمد (CSM)، PMP وSAFe Agilist مع أكثر من 15 عامًا في تقنية المعلومات المؤسسية',
     'founder.credential3': 'مبتكر في الذكاء الاصطناعي والتعليم — رائد في تصميم المناهج المدعومة بالذكاء الاصطناعي للتدريب المهني',
     'founder.credential4': 'قائد متعدد اللغات يتحدث 4 لغات بطلاقة، يبني أكاديمية عالمية بـ 7 لغات',
-    'founder.quote': 'أؤمن أن كل محترف يستحق الوصول إلى تدريب عالمي المستوى، بغض النظر عن مكان ولادته. الذكاء الاصطناعي هو الموازن — وأكاديمية علاديا هي الجسر.',
+    'founder.quote': 'أؤمن بقوة "أتمتة الأتمتة" بطريقة متطورة.',
     'founder.teaching.caption': 'ديدييه بومتجي يقدم تدريب Scrum عملي للجيل القادم من قادة Agile',
 
     // Features
@@ -555,7 +555,7 @@ const translations: Record<Language, Record<string, string>> = {
     'founder.credential2': 'Scrum Master Certifié (CSM), PMP et SAFe Agilist avec 15+ ans en IT d\'entreprise',
     'founder.credential3': 'Innovateur en IA et Éducation — pionnier de la conception curriculaire par IA pour la formation professionnelle',
     'founder.credential4': 'Leader multilingue parlant couramment 4 langues, construisant une académie mondiale en 7 langues',
-    'founder.quote': 'Je crois que chaque professionnel mérite d\'accéder à une formation de classe mondiale, peu importe où il est né. L\'IA est l\'égaliseur — et Aladiah Academy est le pont.',
+    'founder.quote': 'Je crois au pouvoir d\'«automatiser l\'automatisation» de manière sophistiquée.',
     'founder.teaching.caption': 'Didier Boumtje dispensant une formation Scrum pratique à la prochaine génération de leaders Agile',
 
     // Features
@@ -672,7 +672,7 @@ const translations: Record<Language, Record<string, string>> = {
     'founder.credential2': 'Zertifizierter Scrum Master (CSM), PMP und SAFe Agilist mit 15+ Jahren in Unternehmens-IT',
     'founder.credential3': 'KI & Bildungsinnovator — Pionier im KI-gestützten Curriculumdesign für Berufsausbildung',
     'founder.credential4': 'Mehrsprachiger Leader fließend in 4 Sprachen, baut eine globale Akademie in 7 Sprachen auf',
-    'founder.quote': 'Ich glaube, dass jeder Fachmann Zugang zu erstklassiger Ausbildung verdient, unabhängig davon, wo er geboren wurde. KI ist der Ausgleicher — und die Aladiah Academy ist die Brücke.',
+    'founder.quote': 'Ich glaube an die Kraft, „die Automatisierung zu automatisieren" auf eine raffinierte Weise.',
     'founder.teaching.caption': 'Didier Boumtje bei der praxisnahen Scrum-Schulung der nächsten Generation agiler Führungskräfte',
 
     // Features
@@ -789,7 +789,7 @@ const translations: Record<Language, Record<string, string>> = {
     'founder.credential2': '認定スクラムマスター（CSM）、PMP、SAFe Agilist、エンタープライズIT15年以上の経験',
     'founder.credential3': 'AI＆教育イノベーター——専門研修のためのAI駆動カリキュラムデザインのパイオニア',
     'founder.credential4': '4言語に堪能な多言語リーダー、7言語でグローバルアカデミーを構築中',
-    'founder.quote': 'すべてのプロフェッショナルは、生まれた場所に関係なく、世界クラスのトレーニングを受ける権利があると信じています。AIはイコライザーであり、Aladiah Academyはその架け橋です。',
+    'founder.quote': '「自動化を自動化する」力を、洗練された方法で信じています。',
     'founder.teaching.caption': 'Didier Boumtjeが次世代のアジャイルリーダーに実践的なスクラム研修を提供',
 
     // Features
