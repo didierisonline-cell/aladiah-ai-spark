@@ -19,7 +19,7 @@ const Programs = () => {
       duration: 8,
       format: 'programs.hybrid',
       color: 'primary' as const,
-      featured: true,
+      featured: false,
     },
     {
       icon: Target,
