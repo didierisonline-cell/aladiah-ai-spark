@@ -216,7 +216,7 @@ const Programs = () => {
           </div>
         </motion.div>
 
-        {/* Rogers IT Merger Project */}
+        {/* Rogers IT Merger Project - Coming Soon */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -224,10 +224,19 @@ const Programs = () => {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="mt-8"
         >
-          <div className="relative bg-card rounded-2xl p-8 lg:p-10 shadow-soft hover:shadow-large transition-all duration-500 ring-1 ring-secondary/15 overflow-hidden">
+          <div className="relative bg-card rounded-2xl p-8 lg:p-10 shadow-soft ring-1 ring-border/30 overflow-hidden select-none">
+            {/* Greyed-out overlay */}
+            <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] z-20 flex items-center justify-center">
+              <div className="text-center">
+                <span className="inline-block px-8 py-3 rounded-full bg-muted border-2 border-border text-lg sm:text-2xl font-display font-bold text-muted-foreground tracking-widest uppercase shadow-soft">
+                  Coming Soon
+                </span>
+              </div>
+            </div>
+
             <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-secondary/5 to-transparent rounded-bl-full pointer-events-none" />
             
-            <div className="relative flex flex-col lg:flex-row lg:items-center gap-8">
+            <div className="relative flex flex-col lg:flex-row lg:items-center gap-8 opacity-40">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-secondary/10 text-secondary">
@@ -268,11 +277,11 @@ const Programs = () => {
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="w-full lg:w-auto group/btn"
-                  onClick={() => navigate('/auth')}
+                  className="w-full lg:w-auto"
+                  disabled
                 >
                   {t('programs.learnMore')}
-                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4" />
                 </Button>
               </div>
             </div>
