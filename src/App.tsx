@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Courses from "./pages/Courses";
 import ChapterView from "./pages/ChapterView";
+import Enroll from "./pages/Enroll";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/course/:courseId/chapter/:chapterId" element={<ChapterView />} />
+            <Route path="/enroll" element={<Enroll />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
