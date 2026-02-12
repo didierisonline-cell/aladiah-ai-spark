@@ -81,14 +81,14 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'Visionary Leader in Agile & AI Education',
-    'founder.bio.p1': 'Miguel Santos is a seasoned IT executive and Agile transformation leader with over 15 years of experience driving large-scale technology initiatives across the cruise, hospitality, and enterprise sectors. As a former Senior Project Manager at Royal Caribbean International, he orchestrated multi-million-dollar digital transformation programs spanning global operations.',
-    'founder.bio.p2': 'Passionate about democratizing professional education, Miguel founded Aladiah Academy to bring world-class Scrum Master and Project Management training to emerging markets — powered by cutting-edge AI tools that personalize the learning journey for every student.',
+    'founder.bio.p1': 'Didier Boumtje is a seasoned IT executive and Agile transformation leader with over 15 years of experience driving large-scale technology initiatives across the cruise, hospitality, and enterprise sectors. As a former Senior Project Manager at Royal Caribbean International, he orchestrated multi-million-dollar digital transformation programs spanning global operations.',
+    'founder.bio.p2': 'Passionate about democratizing professional education, Didier founded Aladiah Academy to bring world-class Scrum Master and Project Management training to emerging markets — powered by cutting-edge AI tools that personalize the learning journey for every student.',
     'founder.credential1': 'Former Senior PM at Royal Caribbean International — led cross-functional teams across 5 countries',
     'founder.credential2': 'Certified Scrum Master (CSM), PMP, and SAFe Agilist with 15+ years in enterprise IT',
     'founder.credential3': 'AI & Education innovator — pioneering AI-powered curriculum design for professional training',
     'founder.credential4': 'Multilingual leader fluent in 4 languages, building a global academy across 7 languages',
     'founder.quote': 'I believe every professional deserves access to world-class training, regardless of where they were born. AI is the equalizer — and Aladiah Academy is the bridge.',
-    'founder.teaching.caption': 'Miguel Santos delivering hands-on Scrum training to the next generation of Agile leaders',
+    'founder.teaching.caption': 'Didier Boumtje delivering hands-on Scrum training to the next generation of Agile leaders',
 
     // Features
     'features.ai.title': 'AI-Enhanced Learning',
@@ -198,14 +198,14 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'Líder Visionario en Educación Agile e IA',
-    'founder.bio.p1': 'Miguel Santos es un ejecutivo de TI experimentado y líder en transformación Agile con más de 15 años de experiencia impulsando iniciativas tecnológicas a gran escala en los sectores de cruceros, hospitalidad y empresarial. Como exgerente senior de proyectos en Royal Caribbean International, orquestó programas de transformación digital multimillonarios a nivel global.',
-    'founder.bio.p2': 'Apasionado por democratizar la educación profesional, Miguel fundó Aladiah Academy para llevar formación de clase mundial en Scrum Master y Gestión de Proyectos a mercados emergentes — impulsada por herramientas de IA de vanguardia que personalizan el viaje de aprendizaje de cada estudiante.',
+    'founder.bio.p1': 'Didier Boumtje es un ejecutivo de TI experimentado y líder en transformación Agile con más de 15 años de experiencia impulsando iniciativas tecnológicas a gran escala en los sectores de cruceros, hospitalidad y empresarial. Como exgerente senior de proyectos en Royal Caribbean International, orquestó programas de transformación digital multimillonarios a nivel global.',
+    'founder.bio.p2': 'Apasionado por democratizar la educación profesional, Didier fundó Aladiah Academy para llevar formación de clase mundial en Scrum Master y Gestión de Proyectos a mercados emergentes — impulsada por herramientas de IA de vanguardia que personalizan el viaje de aprendizaje de cada estudiante.',
     'founder.credential1': 'Ex PM Senior en Royal Caribbean International — lideró equipos multifuncionales en 5 países',
     'founder.credential2': 'Scrum Master Certificado (CSM), PMP y SAFe Agilist con 15+ años en TI empresarial',
     'founder.credential3': 'Innovador en IA y Educación — pionero en diseño curricular con IA para formación profesional',
     'founder.credential4': 'Líder multilingüe fluido en 4 idiomas, construyendo una academia global en 7 idiomas',
     'founder.quote': 'Creo que todo profesional merece acceso a formación de clase mundial, sin importar dónde nació. La IA es el ecualizador — y Aladiah Academy es el puente.',
-    'founder.teaching.caption': 'Miguel Santos impartiendo formación práctica en Scrum a la próxima generación de líderes Agile',
+    'founder.teaching.caption': 'Didier Boumtje impartiendo formación práctica en Scrum a la próxima generación de líderes Agile',
 
     // Features
     'features.ai.title': 'Aprendizaje con IA',
@@ -315,14 +315,14 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': '敏捷与AI教育的远见领导者',
-    'founder.bio.p1': 'Miguel Santos是一位经验丰富的IT高管和敏捷转型领导者，拥有超过15年推动邮轮、酒店和企业领域大规模技术计划的经验。作为皇家加勒比国际公司前高级项目经理，他策划了跨全球运营的数百万美元数字化转型项目。',
-    'founder.bio.p2': 'Miguel热衷于教育民主化，创立了Aladiah Academy，旨在将世界一流的Scrum Master和项目管理培训带到新兴市场——借助前沿AI工具为每位学员个性化学习旅程。',
+    'founder.bio.p1': 'Didier Boumtje是一位经验丰富的IT高管和敏捷转型领导者，拥有超过15年推动邮轮、酒店和企业领域大规模技术计划的经验。作为皇家加勒比国际公司前高级项目经理，他策划了跨全球运营的数百万美元数字化转型项目。',
+    'founder.bio.p2': 'Didier热衷于教育民主化，创立了Aladiah Academy，旨在将世界一流的Scrum Master和项目管理培训带到新兴市场——借助前沿AI工具为每位学员个性化学习旅程。',
     'founder.credential1': '前皇家加勒比国际高级项目经理——在5个国家领导跨职能团队',
     'founder.credential2': '认证Scrum Master (CSM)、PMP和SAFe敏捷师，15年以上企业IT经验',
     'founder.credential3': 'AI与教育创新者——开创AI驱动的专业培训课程设计',
     'founder.credential4': '精通4种语言的多语言领导者，正在构建一所覆盖7种语言的全球学院',
     'founder.quote': '我相信每位专业人士都应该享有世界一流的培训，无论他们出生在哪里。AI是均衡器——Aladiah Academy就是那座桥梁。',
-    'founder.teaching.caption': 'Miguel Santos为下一代敏捷领导者提供实战Scrum培训',
+    'founder.teaching.caption': 'Didier Boumtje为下一代敏捷领导者提供实战Scrum培训',
 
     // Features
     'features.ai.title': 'AI增强学习',
@@ -432,14 +432,14 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'قائد صاحب رؤية في تعليم Agile والذكاء الاصطناعي',
-    'founder.bio.p1': 'ميغيل سانتوس هو مدير تنفيذي متمرس في تقنية المعلومات وقائد في التحول الرشيق مع أكثر من 15 عامًا من الخبرة في قيادة مبادرات التكنولوجيا واسعة النطاق في قطاعات الرحلات البحرية والضيافة والمؤسسات. بصفته مدير مشاريع أول سابق في Royal Caribbean International، نظم برامج تحول رقمي بملايين الدولارات عبر العمليات العالمية.',
-    'founder.bio.p2': 'شغوف بديمقراطية التعليم المهني، أسس ميغيل أكاديمية علاديا لتقديم تدريب عالمي المستوى في Scrum Master وإدارة المشاريع للأسواق الناشئة — مدعومة بأدوات ذكاء اصطناعي متطورة تخصص رحلة التعلم لكل طالب.',
+    'founder.bio.p1': 'ديدييه بومتجي هو مدير تنفيذي متمرس في تقنية المعلومات وقائد في التحول الرشيق مع أكثر من 15 عامًا من الخبرة في قيادة مبادرات التكنولوجيا واسعة النطاق في قطاعات الرحلات البحرية والضيافة والمؤسسات. بصفته مدير مشاريع أول سابق في Royal Caribbean International، نظم برامج تحول رقمي بملايين الدولارات عبر العمليات العالمية.',
+    'founder.bio.p2': 'شغوف بديمقراطية التعليم المهني، أسس ديدييه أكاديمية علاديا لتقديم تدريب عالمي المستوى في Scrum Master وإدارة المشاريع للأسواق الناشئة — مدعومة بأدوات ذكاء اصطناعي متطورة تخصص رحلة التعلم لكل طالب.',
     'founder.credential1': 'مدير مشاريع أول سابق في Royal Caribbean International — قاد فرقًا متعددة الوظائف في 5 دول',
     'founder.credential2': 'Scrum Master معتمد (CSM)، PMP وSAFe Agilist مع أكثر من 15 عامًا في تقنية المعلومات المؤسسية',
     'founder.credential3': 'مبتكر في الذكاء الاصطناعي والتعليم — رائد في تصميم المناهج المدعومة بالذكاء الاصطناعي للتدريب المهني',
     'founder.credential4': 'قائد متعدد اللغات يتحدث 4 لغات بطلاقة، يبني أكاديمية عالمية بـ 7 لغات',
     'founder.quote': 'أؤمن أن كل محترف يستحق الوصول إلى تدريب عالمي المستوى، بغض النظر عن مكان ولادته. الذكاء الاصطناعي هو الموازن — وأكاديمية علاديا هي الجسر.',
-    'founder.teaching.caption': 'ميغيل سانتوس يقدم تدريب Scrum عملي للجيل القادم من قادة Agile',
+    'founder.teaching.caption': 'ديدييه بومتجي يقدم تدريب Scrum عملي للجيل القادم من قادة Agile',
 
     // Features
     'features.ai.title': 'تعلم معزز بالذكاء الاصطناعي',
@@ -549,14 +549,14 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'Leader Visionnaire en Éducation Agile et IA',
-    'founder.bio.p1': 'Miguel Santos est un cadre IT chevronné et leader de la transformation Agile avec plus de 15 ans d\'expérience dans la conduite d\'initiatives technologiques à grande échelle dans les secteurs des croisières, de l\'hôtellerie et de l\'entreprise. En tant qu\'ancien Chef de Projet Senior chez Royal Caribbean International, il a orchestré des programmes de transformation numérique de plusieurs millions de dollars à travers les opérations mondiales.',
-    'founder.bio.p2': 'Passionné par la démocratisation de l\'éducation professionnelle, Miguel a fondé Aladiah Academy pour apporter une formation de classe mondiale en Scrum Master et Gestion de Projet aux marchés émergents — propulsée par des outils IA de pointe qui personnalisent le parcours d\'apprentissage de chaque étudiant.',
+    'founder.bio.p1': 'Didier Boumtje est un cadre IT chevronné et leader de la transformation Agile avec plus de 15 ans d\'expérience dans la conduite d\'initiatives technologiques à grande échelle dans les secteurs des croisières, de l\'hôtellerie et de l\'entreprise. En tant qu\'ancien Chef de Projet Senior chez Royal Caribbean International, il a orchestré des programmes de transformation numérique de plusieurs millions de dollars à travers les opérations mondiales.',
+    'founder.bio.p2': 'Passionné par la démocratisation de l\'éducation professionnelle, Didier a fondé Aladiah Academy pour apporter une formation de classe mondiale en Scrum Master et Gestion de Projet aux marchés émergents — propulsée par des outils IA de pointe qui personnalisent le parcours d\'apprentissage de chaque étudiant.',
     'founder.credential1': 'Ancien PM Senior chez Royal Caribbean International — a dirigé des équipes pluridisciplinaires dans 5 pays',
     'founder.credential2': 'Scrum Master Certifié (CSM), PMP et SAFe Agilist avec 15+ ans en IT d\'entreprise',
     'founder.credential3': 'Innovateur en IA et Éducation — pionnier de la conception curriculaire par IA pour la formation professionnelle',
     'founder.credential4': 'Leader multilingue parlant couramment 4 langues, construisant une académie mondiale en 7 langues',
     'founder.quote': 'Je crois que chaque professionnel mérite d\'accéder à une formation de classe mondiale, peu importe où il est né. L\'IA est l\'égaliseur — et Aladiah Academy est le pont.',
-    'founder.teaching.caption': 'Miguel Santos dispensant une formation Scrum pratique à la prochaine génération de leaders Agile',
+    'founder.teaching.caption': 'Didier Boumtje dispensant une formation Scrum pratique à la prochaine génération de leaders Agile',
 
     // Features
     'features.ai.title': 'Apprentissage Amélioré par l\'IA',
@@ -666,14 +666,14 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'Visionärer Führer in Agile & KI-Bildung',
-    'founder.bio.p1': 'Miguel Santos ist ein erfahrener IT-Führungskraft und Agile-Transformationsleiter mit über 15 Jahren Erfahrung in der Leitung großer Technologieinitiativen in der Kreuzfahrt-, Gastgewerbe- und Unternehmensbranche. Als ehemaliger Senior-Projektmanager bei Royal Caribbean International orchestrierte er millionenschwere digitale Transformationsprogramme über globale Operationen hinweg.',
-    'founder.bio.p2': 'Leidenschaftlich für die Demokratisierung der Berufsausbildung gründete Miguel die Aladiah Academy, um erstklassige Scrum Master und Projektmanagement-Ausbildung in aufstrebende Märkte zu bringen — angetrieben von modernsten KI-Tools, die den Lernweg jedes Studenten personalisieren.',
+    'founder.bio.p1': 'Didier Boumtje ist ein erfahrener IT-Führungskraft und Agile-Transformationsleiter mit über 15 Jahren Erfahrung in der Leitung großer Technologieinitiativen in der Kreuzfahrt-, Gastgewerbe- und Unternehmensbranche. Als ehemaliger Senior-Projektmanager bei Royal Caribbean International orchestrierte er millionenschwere digitale Transformationsprogramme über globale Operationen hinweg.',
+    'founder.bio.p2': 'Leidenschaftlich für die Demokratisierung der Berufsausbildung gründete Didier die Aladiah Academy, um erstklassige Scrum Master und Projektmanagement-Ausbildung in aufstrebende Märkte zu bringen — angetrieben von modernsten KI-Tools, die den Lernweg jedes Studenten personalisieren.',
     'founder.credential1': 'Ehemaliger Senior PM bei Royal Caribbean International — leitete funktionsübergreifende Teams in 5 Ländern',
     'founder.credential2': 'Zertifizierter Scrum Master (CSM), PMP und SAFe Agilist mit 15+ Jahren in Unternehmens-IT',
     'founder.credential3': 'KI & Bildungsinnovator — Pionier im KI-gestützten Curriculumdesign für Berufsausbildung',
     'founder.credential4': 'Mehrsprachiger Leader fließend in 4 Sprachen, baut eine globale Akademie in 7 Sprachen auf',
     'founder.quote': 'Ich glaube, dass jeder Fachmann Zugang zu erstklassiger Ausbildung verdient, unabhängig davon, wo er geboren wurde. KI ist der Ausgleicher — und die Aladiah Academy ist die Brücke.',
-    'founder.teaching.caption': 'Miguel Santos bei der praxisnahen Scrum-Schulung der nächsten Generation agiler Führungskräfte',
+    'founder.teaching.caption': 'Didier Boumtje bei der praxisnahen Scrum-Schulung der nächsten Generation agiler Führungskräfte',
 
     // Features
     'features.ai.title': 'KI-erweitertes Lernen',
@@ -783,14 +783,14 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'アジャイル＆AI教育の先見的リーダー',
-    'founder.bio.p1': 'Miguel Santosは、クルーズ、ホスピタリティ、エンタープライズセクターにおいて大規模なテクノロジーイニシアチブを推進してきた15年以上の経験を持つ熟練したITエグゼクティブ兼アジャイル変革リーダーです。Royal Caribbean Internationalの元シニアプロジェクトマネージャーとして、グローバルオペレーション全体で数百万ドル規模のデジタルトランスフォーメーションプログラムを統括しました。',
-    'founder.bio.p2': 'プロフェッショナル教育の民主化に情熱を持ち、MiguelはAladiah Academyを設立し、世界クラスのスクラムマスターおよびプロジェクトマネジメント研修を新興市場に届けています——最先端のAIツールが各学生の学習旅路をパーソナライズします。',
+    'founder.bio.p1': 'Didier Boumtjeは、クルーズ、ホスピタリティ、エンタープライズセクターにおいて大規模なテクノロジーイニシアチブを推進してきた15年以上の経験を持つ熟練したITエグゼクティブ兼アジャイル変革リーダーです。Royal Caribbean Internationalの元シニアプロジェクトマネージャーとして、グローバルオペレーション全体で数百万ドル規模のデジタルトランスフォーメーションプログラムを統括しました。',
+    'founder.bio.p2': 'プロフェッショナル教育の民主化に情熱を持ち、DidierはAladiah Academyを設立し、世界クラスのスクラムマスターおよびプロジェクトマネジメント研修を新興市場に届けています——最先端のAIツールが各学生の学習旅路をパーソナライズします。',
     'founder.credential1': 'Royal Caribbean International元シニアPM——5カ国でクロスファンクショナルチームをリード',
     'founder.credential2': '認定スクラムマスター（CSM）、PMP、SAFe Agilist、エンタープライズIT15年以上の経験',
     'founder.credential3': 'AI＆教育イノベーター——専門研修のためのAI駆動カリキュラムデザインのパイオニア',
     'founder.credential4': '4言語に堪能な多言語リーダー、7言語でグローバルアカデミーを構築中',
     'founder.quote': 'すべてのプロフェッショナルは、生まれた場所に関係なく、世界クラスのトレーニングを受ける権利があると信じています。AIはイコライザーであり、Aladiah Academyはその架け橋です。',
-    'founder.teaching.caption': 'Miguel Santosが次世代のアジャイルリーダーに実践的なスクラム研修を提供',
+    'founder.teaching.caption': 'Didier Boumtjeが次世代のアジャイルリーダーに実践的なスクラム研修を提供',
 
     // Features
     'features.ai.title': 'AI強化学習',

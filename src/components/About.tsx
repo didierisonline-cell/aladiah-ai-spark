@@ -70,19 +70,19 @@ const About = () => {
             {/* Left: Photo + Name */}
             <div className="lg:col-span-2 relative bg-gradient-ocean p-8 lg:p-10 flex flex-col items-center justify-center text-center">
               <div className="relative mb-6">
-                <div className="w-40 h-40 lg:w-48 lg:h-48 rounded-full overflow-hidden border-4 border-primary-foreground/30 shadow-xl">
+              <div className="w-44 h-56 lg:w-52 lg:h-64 rounded-2xl overflow-hidden border-4 border-primary-foreground/30 shadow-xl">
                   <img 
                     src={founderPhoto} 
-                    alt="Miguel Santos - Founder & CEO" 
-                    className="w-full h-full object-cover"
+                    alt="Didier Boumtje - Founder & CEO" 
+                    className="w-full h-full object-cover object-top"
                   />
                 </div>
                 <div className="absolute -bottom-2 -right-2 w-12 h-12 rounded-full bg-secondary flex items-center justify-center shadow-lg">
                   <Award className="w-6 h-6 text-secondary-foreground" />
                 </div>
               </div>
-              <h3 className="text-2xl lg:text-3xl font-display font-bold text-primary-foreground mb-1">
-                Miguel Santos
+                <h3 className="text-2xl lg:text-3xl font-display font-bold text-primary-foreground mb-1">
+                Didier Boumtje
               </h3>
               <p className="text-primary-foreground/80 font-medium mb-3">{t('about.founder')}</p>
               <p className="text-primary-foreground/60 text-sm mb-4">Aladiah Management</p>
@@ -134,7 +134,7 @@ const About = () => {
                 <p className="text-sm italic text-muted-foreground">
                   "{t('founder.quote')}"
                 </p>
-                <p className="text-xs text-secondary mt-2 font-medium">— Miguel Santos</p>
+                <p className="text-xs text-secondary mt-2 font-medium">— Didier Boumtje</p>
               </div>
             </div>
           </div>
