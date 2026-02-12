@@ -10,11 +10,11 @@ import scene4 from '@/assets/story-scene4.mp4';
 import scene5 from '@/assets/story-scene5.mp4';
 
 const scenes = [
-  { src: scene1, caption: "María works long hours at a restaurant in Zona Colonial, Santo Domingo…" },
+  { src: scene1, caption: "María works long hours at a restaurant in Santo Domingo…" },
   { src: scene2, caption: "One night, she sees an ad on Instagram — Aladiah Academy. A chance to change everything." },
   { src: scene3, caption: "She enrolls, studies late into the night, and earns her Scrum Master certification." },
   { src: scene4, caption: "6 months later — she leads a professional team, earning $60,000 a year." },
-  { src: scene5, caption: "She moves to a beautiful apartment on Avenida España. Her life is forever changed." },
+  { src: scene5, caption: "She moves to a beautiful apartment. Her life is forever changed." },
 ];
 
 const Hero = () => {
