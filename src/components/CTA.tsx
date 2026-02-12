@@ -2,9 +2,11 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNavigate } from 'react-router-dom';
 
 const CTA = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   return (
     <section id="contact" className="py-24 lg:py-32 relative overflow-hidden">
@@ -60,7 +62,7 @@ const CTA = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <Button variant="coral" size="xl" className="group shadow-large text-lg px-12">
+            <Button variant="coral" size="xl" className="group shadow-large text-lg px-12" onClick={() => navigate('/enroll?course=scrum')}>
               {t('cta.button')}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
