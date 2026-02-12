@@ -12,8 +12,8 @@ import {
 // 4 Dominican professors with distinct personalities
 const professors = [
   {
-    id: "professor_miguel",
-    name: "Professor Miguel Santos",
+    id: "professor_didier",
+    name: "Professor Didier Boumtje",
     avatar: "👨‍🏫",
     color: "from-blue-500 to-cyan-500",
     specialty: "Scrum Fundamentals",
