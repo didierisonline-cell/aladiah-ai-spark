@@ -1,4 +1,4 @@
-import { Mail, MapPin, Phone } from 'lucide-react';
+import { Mail, MapPin, Phone, Linkedin, ArrowUpRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Footer = () => {
@@ -12,69 +12,95 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-foreground text-background py-16">
-      <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
-          {/* Brand */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-ocean flex items-center justify-center">
-                <span className="font-display font-bold text-lg text-white">A</span>
+    <footer className="bg-foreground text-background relative overflow-hidden">
+      {/* Subtle gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20 pointer-events-none" />
+      
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="py-16 lg:py-20">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
+            {/* Brand */}
+            <div className="lg:col-span-2">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-11 h-11 rounded-xl bg-gradient-ocean flex items-center justify-center">
+                  <span className="font-display font-bold text-lg text-white">A</span>
+                </div>
+                <div>
+                  <span className="font-display font-bold text-xl text-white tracking-tight">Aladiah</span>
+                  <span className="font-display font-medium text-xl text-secondary ml-1.5">Academy</span>
+                </div>
               </div>
-              <div>
-                <span className="font-display font-bold text-lg text-white">Aladiah</span>
-                <span className="font-display font-medium text-lg text-secondary ml-1">Academy</span>
+              <p className="text-white/60 max-w-md mb-6 leading-relaxed">
+                {t('footer.description')}
+              </p>
+              <p className="text-sm text-white/40 mb-6">
+                {t('footer.company')}
+              </p>
+              {/* Social */}
+              <div className="flex items-center gap-3">
+                <a 
+                  href="https://linkedin.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110"
+                >
+                  <Linkedin className="w-4 h-4 text-white/70" />
+                </a>
               </div>
             </div>
-            <p className="text-white/70 max-w-md mb-4">
-              {t('footer.description')}
-            </p>
-            <p className="text-sm text-white/50">
-              {t('footer.company')}
-            </p>
-          </div>
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="font-display font-bold text-white mb-4">{t('footer.quickLinks')}</h4>
-            <ul className="space-y-3">
-              {links.map((link) => (
-                <li key={link.key}>
-                  <a
-                    href={link.href}
-                    className="text-white/70 hover:text-white transition-colors"
-                  >
-                    {t(link.key)}
-                  </a>
+            {/* Quick Links */}
+            <div>
+              <h4 className="font-display font-bold text-white mb-6 text-sm uppercase tracking-wider">{t('footer.quickLinks')}</h4>
+              <ul className="space-y-3">
+                {links.map((link) => (
+                  <li key={link.key}>
+                    <a
+                      href={link.href}
+                      className="text-white/60 hover:text-white transition-colors flex items-center gap-1 group"
+                    >
+                      {t(link.key)}
+                      <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <h4 className="font-display font-bold text-white mb-6 text-sm uppercase tracking-wider">{t('footer.contact')}</h4>
+              <ul className="space-y-4">
+                <li className="flex items-center gap-3 text-white/60">
+                  <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                    <MapPin className="w-4 h-4 text-secondary" />
+                  </div>
+                  <span className="text-sm">{t('footer.location')}</span>
                 </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h4 className="font-display font-bold text-white mb-4">{t('footer.contact')}</h4>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-2 text-white/70">
-                <MapPin className="w-4 h-4 text-secondary" />
-                <span>{t('footer.location')}</span>
-              </li>
-              <li className="flex items-center gap-2 text-white/70">
-                <Mail className="w-4 h-4 text-secondary" />
-                <span>info@aladiahacademy.com</span>
-              </li>
-              <li className="flex items-center gap-2 text-white/70">
-                <Phone className="w-4 h-4 text-secondary" />
-                <span>+1 (809) 555-0123</span>
-              </li>
-            </ul>
+                <li className="flex items-center gap-3 text-white/60">
+                  <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                    <Mail className="w-4 h-4 text-secondary" />
+                  </div>
+                  <span className="text-sm">info@aladiahacademy.com</span>
+                </li>
+                <li className="flex items-center gap-3 text-white/60">
+                  <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                    <Phone className="w-4 h-4 text-secondary" />
+                  </div>
+                  <span className="text-sm">+1 (809) 555-0123</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-white/10 mt-12 pt-8 text-center">
-          <p className="text-white/50 text-sm">
+        <div className="border-t border-white/10 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-white/40 text-sm">
             © {new Date().getFullYear()} Aladiah Academy. {t('footer.rights')}
+          </p>
+          <p className="text-white/30 text-xs">
+            Powered by AI Innovation
           </p>
         </div>
       </div>

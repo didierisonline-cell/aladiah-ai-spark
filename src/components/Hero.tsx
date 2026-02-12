@@ -34,7 +34,7 @@ const Hero = () => {
     if (currentScene < scenes.length - 1) {
       setCurrentScene(prev => prev + 1);
     } else {
-      setCurrentScene(0); // loop
+      setCurrentScene(0);
     }
   }, [currentScene]);
 
@@ -77,32 +77,32 @@ const Hero = () => {
         </svg>
       </div>
 
-      {/* Background Elements */}
+      {/* Background Elements — more dramatic */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 right-10 w-72 h-72 bg-secondary/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 left-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/5 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-10 w-96 h-96 bg-secondary/8 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 left-10 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/3 left-1/3 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4 py-12 lg:py-0 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Content */}
           <div className="space-y-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-secondary/10 border border-secondary/20 backdrop-blur-sm"
             >
               <Sparkles className="w-4 h-4 text-secondary" />
-              <span className="text-sm font-medium text-secondary">{t('hero.badge')}</span>
+              <span className="text-sm font-semibold text-secondary tracking-wide">{t('hero.badge')}</span>
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-tight"
+              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-[1.1]"
             >
               <span className="text-foreground">{t('hero.title.line1')}</span>
               <br />
@@ -124,7 +124,7 @@ const Hero = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-4"
             >
-              <Button variant="hero" size="xl">
+              <Button variant="hero" size="xl" className="shadow-large">
                 {t('hero.cta.primary')}
                 <ArrowRight className="w-5 h-5" />
               </Button>
@@ -137,7 +137,7 @@ const Hero = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="grid grid-cols-3 gap-6 pt-8 border-t border-border/50"
+              className="grid grid-cols-3 gap-8 pt-10 border-t border-border/50"
             >
               {stats.map((stat, index) => (
                 <div key={index} className="text-center sm:text-left">
@@ -151,7 +151,7 @@ const Hero = () => {
             </motion.div>
           </div>
 
-          {/* Cinematic Story Video */}
+          {/* Cinematic Story Video — elevated */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, x: 50 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -160,7 +160,7 @@ const Hero = () => {
             onMouseEnter={() => setShowControls(true)}
             onMouseLeave={() => setShowControls(false)}
           >
-            <div className="relative rounded-2xl overflow-hidden shadow-large">
+            <div className="relative rounded-3xl overflow-hidden shadow-large ring-1 ring-border/20">
               {/* Video */}
               <video
                 ref={videoRef}
@@ -183,7 +183,7 @@ const Hero = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.6 }}
-                  className="absolute bottom-16 left-4 right-4"
+                  className="absolute bottom-16 left-5 right-5"
                 >
                   <p className="text-white text-sm md:text-base font-medium leading-relaxed drop-shadow-lg">
                     {scenes[currentScene].caption}
@@ -192,7 +192,7 @@ const Hero = () => {
               </AnimatePresence>
 
               {/* Scene progress dots */}
-              <div className="absolute bottom-4 left-4 right-4 flex items-center gap-2">
+              <div className="absolute bottom-4 left-5 right-5 flex items-center gap-2">
                 {scenes.map((_, i) => (
                   <button
                     key={i}
@@ -215,13 +215,13 @@ const Hero = () => {
                   >
                     <button
                       onClick={togglePause}
-                      className="p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+                      className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
                     >
                       {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
                     </button>
                     <button
                       onClick={toggleMute}
-                      className="p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+                      className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
                     >
                       {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                     </button>
@@ -230,11 +230,11 @@ const Hero = () => {
               </AnimatePresence>
             </div>
 
-            {/* Floating Elements */}
-            <div className="absolute -top-4 -right-4 p-4 bg-card rounded-xl shadow-medium animate-float">
+            {/* Floating Elements — refined */}
+            <div className="absolute -top-4 -right-4 p-4 bg-card rounded-2xl shadow-medium animate-float border border-border/30">
               <Sparkles className="w-6 h-6 text-secondary" />
             </div>
-            <div className="absolute -bottom-4 -left-4 p-4 bg-card rounded-xl shadow-medium animate-float" style={{ animationDelay: '1s' }}>
+            <div className="absolute -bottom-4 -left-4 p-4 bg-card rounded-2xl shadow-medium animate-float border border-border/30" style={{ animationDelay: '1s' }}>
               <TrendingUp className="w-6 h-6 text-primary" />
             </div>
           </motion.div>

@@ -23,15 +23,14 @@ const Header = () => {
     { key: 'nav.contact', href: '#contact' },
   ];
 
-
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-md border-b border-border/50">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-card/70 backdrop-blur-xl border-b border-border/30">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <motion.a
             href="#home"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2.5"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
@@ -40,18 +39,18 @@ const Header = () => {
               <span className="text-primary-foreground font-display font-bold text-lg">A</span>
             </div>
             <div className="hidden sm:block">
-              <span className="font-display font-bold text-lg text-foreground">Aladiah</span>
-              <span className="font-display font-medium text-lg text-secondary ml-1">Academy</span>
+              <span className="font-display font-bold text-lg text-foreground tracking-tight">Aladiah</span>
+              <span className="font-display font-medium text-lg text-secondary ml-1.5">Academy</span>
             </div>
           </motion.a>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-1">
             {navItems.map((item, index) => (
               <motion.a
                 key={item.key}
                 href={item.href}
-                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+                className="px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 font-medium text-sm"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -62,29 +61,29 @@ const Header = () => {
           </nav>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-3">
-            {/* Language Switcher Dropdown */}
+          <div className="flex items-center gap-2">
+            {/* Language Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <motion.button
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm font-medium text-muted-foreground hover:text-foreground"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors text-sm font-medium text-muted-foreground hover:text-foreground"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
                 >
                   <Globe className="w-4 h-4" />
-                  <span className="uppercase">{language}</span>
+                  <span className="uppercase text-xs font-semibold">{language}</span>
                   <ChevronDown className="w-3 h-3" />
                 </motion.button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="min-w-[140px]">
+              <DropdownMenuContent align="end" className="min-w-[160px] backdrop-blur-xl">
                 {(Object.keys(languageNames) as Language[]).map((lang) => (
                   <DropdownMenuItem
                     key={lang}
                     onClick={() => setLanguage(lang)}
-                    className={language === lang ? 'bg-muted' : ''}
+                    className={language === lang ? 'bg-primary/10 text-primary font-semibold' : ''}
                   >
-                    <span className="uppercase mr-2 text-xs font-mono">{lang}</span>
+                    <span className="uppercase mr-2 text-xs font-mono opacity-50">{lang}</span>
                     <span>{languageNames[lang]}</span>
                   </DropdownMenuItem>
                 ))}
@@ -121,14 +120,14 @@ const Header = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-card border-t border-border/50"
+            className="lg:hidden bg-card/95 backdrop-blur-xl border-t border-border/30"
           >
-            <nav className="container mx-auto px-4 py-4 flex flex-col gap-2">
+            <nav className="container mx-auto px-4 py-4 flex flex-col gap-1">
               {navItems.map((item) => (
                 <a
                   key={item.key}
                   href={item.href}
-                  className="py-3 px-4 text-foreground hover:bg-muted rounded-lg transition-colors font-medium"
+                  className="py-3 px-4 text-foreground hover:bg-muted/50 rounded-xl transition-colors font-medium"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {t(item.key)}

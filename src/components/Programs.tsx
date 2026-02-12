@@ -15,7 +15,7 @@ const Programs = () => {
       descKey: 'programs.scrum.desc',
       duration: 8,
       format: 'programs.hybrid',
-      color: 'primary',
+      color: 'primary' as const,
       featured: true,
     },
     {
@@ -24,7 +24,7 @@ const Programs = () => {
       descKey: 'programs.pm.desc',
       duration: 12,
       format: 'programs.hybrid',
-      color: 'secondary',
+      color: 'secondary' as const,
       featured: false,
     },
     {
@@ -33,15 +33,18 @@ const Programs = () => {
       descKey: 'programs.ai.desc',
       duration: 6,
       format: 'programs.online',
-      color: 'accent',
+      color: 'accent' as const,
       featured: false,
       hasCourse: true,
     },
   ];
 
   return (
-    <section id="programs" className="py-24 lg:py-32 bg-muted/30">
-      <div className="container mx-auto px-4">
+    <section id="programs" className="py-24 lg:py-32 bg-muted/20 relative overflow-hidden">
+      {/* Subtle pattern */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--primary)/0.04),transparent_50%)]" />
+      
+      <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <motion.div
@@ -49,10 +52,10 @@ const Programs = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/20 mb-6"
           >
             <Zap className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">{t('programs.badge')}</span>
+            <span className="text-sm font-semibold text-primary">{t('programs.badge')}</span>
           </motion.div>
 
           <motion.h2
@@ -70,7 +73,7 @@ const Programs = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg text-muted-foreground"
+            className="text-lg text-muted-foreground leading-relaxed"
           >
             {t('programs.subtitle')}
           </motion.p>
@@ -85,63 +88,68 @@ const Programs = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className={`group relative bg-card rounded-2xl p-8 shadow-soft hover:shadow-large transition-all duration-500 ${
-                program.featured ? 'lg:scale-105 ring-2 ring-secondary/30' : ''
+              className={`group relative bg-card rounded-2xl p-8 shadow-soft hover:shadow-large transition-all duration-500 border border-border/50 overflow-hidden ${
+                program.featured ? 'lg:scale-105 ring-2 ring-secondary/30' : 'hover:border-primary/20'
               }`}
             >
+              {/* Decorative corner */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/3 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-primary/5 transition-colors duration-500" />
+              
               {program.featured && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-secondary text-secondary-foreground text-xs font-semibold rounded-full">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-secondary text-secondary-foreground text-xs font-bold rounded-full shadow-glow tracking-wide uppercase">
                   Most Popular
                 </div>
               )}
 
-              {/* Icon */}
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-6 ${
-                program.color === 'primary' ? 'bg-primary/10 text-primary' :
-                program.color === 'secondary' ? 'bg-secondary/10 text-secondary' :
-                'bg-accent/20 text-accent-foreground'
-              }`}>
-                <program.icon className="w-7 h-7" />
-              </div>
-
-              {/* Content */}
-              <h3 className="text-xl font-display font-bold text-foreground mb-3">
-                {t(program.titleKey)}
-              </h3>
-              <p className="text-muted-foreground mb-6 leading-relaxed">
-                {t(program.descKey)}
-              </p>
-
-              {/* Meta */}
-              <div className="flex items-center gap-6 mb-6 text-sm">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Clock className="w-4 h-4" />
-                  <span>{program.duration} {t('programs.weeks')}</span>
+              <div className="relative z-10">
+                {/* Icon */}
+                <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110 ${
+                  program.color === 'primary' ? 'bg-primary/10 text-primary' :
+                  program.color === 'secondary' ? 'bg-secondary/10 text-secondary' :
+                  'bg-accent/20 text-accent-foreground'
+                }`}>
+                  <program.icon className="w-7 h-7" />
                 </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Monitor className="w-4 h-4" />
-                  <span>{t(program.format)}</span>
-                </div>
-              </div>
 
-              {/* CTA */}
-              <Button 
-                variant={(program.featured || (program as any).hasCourse) ? 'coral' : 'outline'} 
-                className="w-full group/btn"
-                onClick={() => {
-                  if (program.featured || (program as any).hasCourse) {
-                    navigate('/auth');
-                  }
-                }}
-              >
-                {(program.featured || (program as any).hasCourse) ? t('programs.startCourse') : t('programs.learnMore')}
-                <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-              </Button>
+                {/* Content */}
+                <h3 className="text-xl font-display font-bold text-foreground mb-3">
+                  {t(program.titleKey)}
+                </h3>
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  {t(program.descKey)}
+                </p>
+
+                {/* Meta */}
+                <div className="flex items-center gap-6 mb-6 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Clock className="w-4 h-4" />
+                    <span>{program.duration} {t('programs.weeks')}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Monitor className="w-4 h-4" />
+                    <span>{t(program.format)}</span>
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <Button 
+                  variant={(program.featured || program.hasCourse) ? 'coral' : 'outline'} 
+                  className="w-full group/btn"
+                  onClick={() => {
+                    if (program.featured || program.hasCourse) {
+                      navigate('/auth');
+                    }
+                  }}
+                >
+                  {(program.featured || program.hasCourse) ? t('programs.startCourse') : t('programs.learnMore')}
+                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                </Button>
+              </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Live Scrum Project - Standalone Card */}
+        {/* Live Scrum Project */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -149,12 +157,10 @@ const Programs = () => {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-12"
         >
-          <div className="relative bg-card rounded-2xl p-8 shadow-soft hover:shadow-large transition-all duration-500 ring-2 ring-primary/20 overflow-hidden">
-            {/* Background accent */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-full pointer-events-none" />
+          <div className="relative bg-card rounded-2xl p-8 lg:p-10 shadow-soft hover:shadow-large transition-all duration-500 ring-1 ring-primary/15 overflow-hidden">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-full pointer-events-none" />
             
             <div className="relative flex flex-col lg:flex-row lg:items-center gap-8">
-              {/* Icon & Content */}
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-primary/10 text-primary">
@@ -162,7 +168,7 @@ const Programs = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Lock className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                    <span className="text-xs font-medium text-muted-foreground bg-muted px-3 py-1 rounded-full">
                       {t('programs.liveProject.prereq')}
                     </span>
                   </div>
@@ -175,7 +181,6 @@ const Programs = () => {
                   {t('programs.liveProject.desc')}
                 </p>
 
-                {/* Meta */}
                 <div className="flex items-center gap-6 text-sm">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <CalendarDays className="w-4 h-4" />
@@ -188,7 +193,6 @@ const Programs = () => {
                 </div>
               </div>
 
-              {/* CTA */}
               <div className="lg:flex-shrink-0">
                 <Button 
                   variant="outline" 
@@ -204,7 +208,7 @@ const Programs = () => {
           </div>
         </motion.div>
 
-        {/* Rogers IT Merger Project - Standalone Card */}
+        {/* Rogers IT Merger Project */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -212,8 +216,8 @@ const Programs = () => {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="mt-8"
         >
-          <div className="relative bg-card rounded-2xl p-8 shadow-soft hover:shadow-large transition-all duration-500 ring-2 ring-secondary/20 overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-secondary/5 to-transparent rounded-bl-full pointer-events-none" />
+          <div className="relative bg-card rounded-2xl p-8 lg:p-10 shadow-soft hover:shadow-large transition-all duration-500 ring-1 ring-secondary/15 overflow-hidden">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-secondary/5 to-transparent rounded-bl-full pointer-events-none" />
             
             <div className="relative flex flex-col lg:flex-row lg:items-center gap-8">
               <div className="flex-1">
@@ -223,7 +227,7 @@ const Programs = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Lock className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                    <span className="text-xs font-medium text-muted-foreground bg-muted px-3 py-1 rounded-full">
                       {t('programs.rogersProject.prereq')}
                     </span>
                   </div>
