@@ -135,11 +135,7 @@ const Programs = () => {
                 <Button 
                   variant={(program.featured || program.hasCourse) ? 'coral' : 'outline'} 
                   className="w-full group/btn"
-                  onClick={() => {
-                    if (program.featured || program.hasCourse) {
-                      navigate('/auth');
-                    }
-                  }}
+                  onClick={() => navigate('/auth')}
                 >
                   {(program.featured || program.hasCourse) ? t('programs.startCourse') : t('programs.learnMore')}
                   <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
