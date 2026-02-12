@@ -231,7 +231,7 @@ const Enroll = () => {
                 </div>
                 <div className="flex items-center gap-3 text-muted-foreground">
                   <Users className="w-4 h-4 flex-shrink-0" />
-                  <span>Hybrid learning format</span>
+                  <span>100% online learning</span>
                 </div>
               </div>
 
