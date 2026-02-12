@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Clock, Monitor, Users, Brain, Target, Zap, Rocket, Lock, CalendarDays } from 'lucide-react';
+import { ArrowRight, Clock, Monitor, Users, Brain, Target, Zap, Rocket, Lock, CalendarDays, Network } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
@@ -189,6 +189,69 @@ const Programs = () => {
               </div>
 
               {/* CTA */}
+              <div className="lg:flex-shrink-0">
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  className="w-full lg:w-auto group/btn"
+                  onClick={() => navigate('/auth')}
+                >
+                  {t('programs.learnMore')}
+                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Rogers IT Merger Project - Standalone Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="mt-8"
+        >
+          <div className="relative bg-card rounded-2xl p-8 shadow-soft hover:shadow-large transition-all duration-500 ring-2 ring-secondary/20 overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-secondary/5 to-transparent rounded-bl-full pointer-events-none" />
+            
+            <div className="relative flex flex-col lg:flex-row lg:items-center gap-8">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-secondary/10 text-secondary">
+                    <Network className="w-7 h-7" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Lock className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                      {t('programs.rogersProject.prereq')}
+                    </span>
+                  </div>
+                </div>
+
+                <h3 className="text-2xl font-display font-bold text-foreground mb-3">
+                  {t('programs.rogersProject.title')}
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-4 max-w-2xl">
+                  {t('programs.rogersProject.desc')}
+                </p>
+
+                <div className="flex flex-wrap items-center gap-4 text-sm mb-4">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <CalendarDays className="w-4 h-4" />
+                    <span>{t('programs.rogersProject.duration')}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Monitor className="w-4 h-4" />
+                    <span>{t('programs.online')}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Users className="w-4 h-4" />
+                    <span>{t('programs.rogersProject.teams')}</span>
+                  </div>
+                </div>
+              </div>
+
               <div className="lg:flex-shrink-0">
                 <Button 
                   variant="outline" 
