@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { GraduationCap, BookOpen, ChevronRight, LogOut, Play, CheckCircle, Lock, ShieldCheck } from 'lucide-react';
+import { GraduationCap, BookOpen, ChevronRight, LogOut, Play, CheckCircle, Lock, ShieldCheck, FlaskConical } from 'lucide-react';
 import { 
   courseUITranslations, 
   getTranslatedContent,
@@ -50,6 +50,11 @@ interface Prerequisite {
   prerequisite_group: number;
   prerequisite_course_id: string;
 }
+
+const SIMULATION_IDS = [
+  'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+  'b2c3d4e5-f6a7-8901-bcde-fa2345678901',
+];
 
 const Courses = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -311,7 +316,8 @@ const Courses = () => {
           </p>
         </motion.div>
 
-        {courses.map((course, courseIndex) => {
+        {/* Regular Courses */}
+        {courses.filter(c => !SIMULATION_IDS.includes(c.id)).map((course, courseIndex) => {
           const courseContent = getCourseContent(course);
           const locked = !isCourseUnlocked(course.id);
           const prereqGroups = getPrerequisiteNames(course.id);
@@ -404,6 +410,121 @@ const Courses = () => {
             </motion.div>
           );
         })}
+
+        {/* Projects & Simulations Section */}
+        {courses.some(c => SIMULATION_IDS.includes(c.id)) && (
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8 mt-16"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <FlaskConical className="w-8 h-8 text-primary" />
+                <h2 className="text-3xl font-display font-bold text-foreground">
+                  {t.projectsAndSimulations}
+                </h2>
+              </div>
+              <p className="text-muted-foreground">
+                {t.projectsSubtitle}
+              </p>
+            </motion.div>
+
+            {courses.filter(c => SIMULATION_IDS.includes(c.id)).map((course, courseIndex) => {
+              const courseContent = getCourseContent(course);
+              const locked = !isCourseUnlocked(course.id);
+              const prereqGroups = getPrerequisiteNames(course.id);
+              
+              return (
+                <motion.div
+                  key={course.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: courseIndex * 0.1 }}
+                >
+                  <Card className={`mb-6 overflow-hidden ${locked ? 'opacity-70' : ''}`}>
+                    <CardHeader className={`bg-gradient-to-r ${locked ? 'from-muted/50 to-muted/30' : 'from-accent/20 to-primary/10'}`}>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <CardTitle className="text-2xl font-display flex items-center gap-2">
+                            {locked && <Lock className="w-5 h-5 text-muted-foreground" />}
+                            {courseContent.title}
+                          </CardTitle>
+                          <CardDescription className="mt-2">{courseContent.description}</CardDescription>
+                          {locked && prereqGroups.length > 0 && (
+                            <div className="mt-3 space-y-1">
+                              <p className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+                                <ShieldCheck className="w-4 h-4" />
+                                {t.prerequisitesRequired}:
+                              </p>
+                              {prereqGroups.map((group, i) => (
+                                <p key={i} className="text-xs text-muted-foreground pl-5">
+                                  {i > 0 && <span className="font-semibold">OR </span>}
+                                  {group.join(' + ')}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <FlaskConical className={`w-8 h-8 ${locked ? 'text-muted-foreground' : 'text-primary'}`} />
+                      </div>
+                    </CardHeader>
+                    {!locked && (
+                      <CardContent className="p-6">
+                        <div className="space-y-4">
+                          {(() => {
+                            const courseChapters = chapters
+                              .filter(ch => ch.course_id === course.id)
+                              .sort((a, b) => a.order_index - b.order_index);
+                            
+                            return courseChapters.map((chapter) => {
+                              const chapterProgress = getChapterProgress(chapter.id);
+                              const isLocked = !isChapterAccessible(chapter, courseChapters);
+                              const chapterContent = getChapterContent(chapter);
+
+                              return (
+                                <div
+                                  key={chapter.id}
+                                  className={`border rounded-lg p-4 transition-all ${
+                                    isLocked 
+                                      ? 'opacity-50 bg-muted/30' 
+                                      : 'hover:border-primary/50 hover:shadow-md cursor-pointer'
+                                  }`}
+                                  onClick={() => !isLocked && navigate(`/course/${course.id}/chapter/${chapter.id}`)}
+                                >
+                                  <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-3">
+                                      {chapterProgress === 100 ? (
+                                        <CheckCircle className="w-5 h-5 text-green-500" />
+                                      ) : isLocked ? (
+                                        <Lock className="w-5 h-5 text-muted-foreground" />
+                                      ) : (
+                                        <Play className="w-5 h-5 text-primary" />
+                                      )}
+                                      <div>
+                                        <h3 className="font-semibold">{chapterContent.title}</h3>
+                                        <p className="text-sm text-muted-foreground">{chapterContent.description}</p>
+                                      </div>
+                                    </div>
+                                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                                  </div>
+                                  <Progress value={chapterProgress} className="h-2" />
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {chapterProgress}% {t.complete}
+                                  </p>
+                                </div>
+                              );
+                            });
+                          })()}
+                        </div>
+                      </CardContent>
+                    )}
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </>
+        )}
       </main>
     </div>
   );
