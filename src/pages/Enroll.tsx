@@ -251,7 +251,6 @@ const Enroll = () => {
               {[
                 'Full course access & materials',
                 'Live project simulations',
-                'Industry-recognized certification',
                 'AI-powered learning tools',
                 'Lifetime community access',
               ].map((item, i) => (

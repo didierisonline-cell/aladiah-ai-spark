@@ -9,7 +9,6 @@ const About = () => {
   const features = [
     { icon: Sparkles, titleKey: 'features.ai.title', descKey: 'features.ai.desc' },
     { icon: Award, titleKey: 'features.expert.title', descKey: 'features.expert.desc' },
-    { icon: Shield, titleKey: 'features.cert.title', descKey: 'features.cert.desc' },
     { icon: Users, titleKey: 'features.network.title', descKey: 'features.network.desc' },
   ];
 

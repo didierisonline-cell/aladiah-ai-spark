@@ -96,8 +96,6 @@ const translations: Record<Language, Record<string, string>> = {
     'features.ai.desc': 'Cutting-edge AI tools integrated into our curriculum',
     'features.expert.title': 'Industry Experts',
     'features.expert.desc': 'Learn from professionals with real-world experience',
-    'features.cert.title': 'Recognized Certifications',
-    'features.cert.desc': 'Globally recognized credentials for your career',
     'features.network.title': 'Professional Network',
     'features.network.desc': 'Connect with industry leaders and peers',
     
@@ -214,8 +212,6 @@ const translations: Record<Language, Record<string, string>> = {
     'features.ai.desc': 'Herramientas de IA de vanguardia integradas en nuestro currículo',
     'features.expert.title': 'Expertos de la Industria',
     'features.expert.desc': 'Aprende de profesionales con experiencia real',
-    'features.cert.title': 'Certificaciones Reconocidas',
-    'features.cert.desc': 'Credenciales reconocidas globalmente para tu carrera',
     'features.network.title': 'Red Profesional',
     'features.network.desc': 'Conecta con líderes de la industria y colegas',
     
@@ -332,8 +328,6 @@ const translations: Record<Language, Record<string, string>> = {
     'features.ai.desc': '尖端AI工具融入我们的课程',
     'features.expert.title': '行业专家',
     'features.expert.desc': '向具有实战经验的专业人士学习',
-    'features.cert.title': '认可的认证',
-    'features.cert.desc': '全球认可的职业证书',
     'features.network.title': '专业网络',
     'features.network.desc': '与行业领袖和同行建立联系',
     
@@ -450,8 +444,6 @@ const translations: Record<Language, Record<string, string>> = {
     'features.ai.desc': 'أدوات ذكاء اصطناعي متطورة مدمجة في مناهجنا',
     'features.expert.title': 'خبراء الصناعة',
     'features.expert.desc': 'تعلم من محترفين ذوي خبرة حقيقية',
-    'features.cert.title': 'شهادات معترف بها',
-    'features.cert.desc': 'مؤهلات معترف بها عالميًا لمسيرتك المهنية',
     'features.network.title': 'شبكة مهنية',
     'features.network.desc': 'تواصل مع قادة الصناعة والأقران',
     
@@ -568,8 +560,6 @@ const translations: Record<Language, Record<string, string>> = {
     'features.ai.desc': 'Outils IA de pointe intégrés dans notre programme',
     'features.expert.title': 'Experts de l\'Industrie',
     'features.expert.desc': 'Apprenez de professionnels avec une expérience réelle',
-    'features.cert.title': 'Certifications Reconnues',
-    'features.cert.desc': 'Accréditations reconnues mondialement pour votre carrière',
     'features.network.title': 'Réseau Professionnel',
     'features.network.desc': 'Connectez-vous avec les leaders de l\'industrie et vos pairs',
     
@@ -686,8 +676,6 @@ const translations: Record<Language, Record<string, string>> = {
     'features.ai.desc': 'Modernste KI-Tools in unseren Lehrplan integriert',
     'features.expert.title': 'Branchenexperten',
     'features.expert.desc': 'Lerne von Profis mit praktischer Erfahrung',
-    'features.cert.title': 'Anerkannte Zertifizierungen',
-    'features.cert.desc': 'Weltweit anerkannte Qualifikationen für deine Karriere',
     'features.network.title': 'Professionelles Netzwerk',
     'features.network.desc': 'Vernetze dich mit Branchenführern und Kollegen',
     
@@ -804,8 +792,6 @@ const translations: Record<Language, Record<string, string>> = {
     'features.ai.desc': '最先端のAIツールがカリキュラムに統合',
     'features.expert.title': '業界エキスパート',
     'features.expert.desc': '実務経験を持つプロフェッショナルから学ぶ',
-    'features.cert.title': '認定資格',
-    'features.cert.desc': 'キャリアのためのグローバルに認められた資格',
     'features.network.title': 'プロフェッショナルネットワーク',
     'features.network.desc': '業界リーダーや同僚とつながる',
     
