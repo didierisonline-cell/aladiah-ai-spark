@@ -91,6 +91,30 @@ export type Database = {
           },
         ]
       }
+      course_waitlist: {
+        Row: {
+          course_interest: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+        }
+        Insert: {
+          course_interest?: string
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+        }
+        Update: {
+          course_interest?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+        }
+        Relationships: []
+      }
       courses: {
         Row: {
           created_at: string

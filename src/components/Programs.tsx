@@ -1,12 +1,15 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Clock, Monitor, Users, Brain, Target, Zap, Rocket, Lock, CalendarDays, Network } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
+import WaitlistModal from './WaitlistModal';
 
 const Programs = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
 
   const programs = [
     {
@@ -26,6 +29,7 @@ const Programs = () => {
       format: 'programs.hybrid',
       color: 'secondary' as const,
       featured: false,
+      isWaitlist: true,
     },
     {
       icon: Brain,
@@ -135,9 +139,15 @@ const Programs = () => {
                 <Button 
                   variant={(program.featured || program.hasCourse) ? 'coral' : 'outline'} 
                   className="w-full group/btn"
-                  onClick={() => navigate('/auth')}
+                  onClick={() => {
+                    if (program.isWaitlist) {
+                      setWaitlistOpen(true);
+                    } else {
+                      navigate('/auth');
+                    }
+                  }}
                 >
-                  {(program.featured || program.hasCourse) ? t('programs.startCourse') : t('programs.learnMore')}
+                  {program.isWaitlist ? t('programs.comingSoon') || 'Join Waitlist' : (program.featured || program.hasCourse) ? t('programs.startCourse') : t('programs.learnMore')}
                   <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                 </Button>
               </div>
@@ -267,6 +277,7 @@ const Programs = () => {
           </div>
         </motion.div>
       </div>
+      <WaitlistModal open={waitlistOpen} onOpenChange={setWaitlistOpen} />
     </section>
   );
 };
