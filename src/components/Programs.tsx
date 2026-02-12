@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Clock, Monitor, Users, Brain, Target, Zap } from 'lucide-react';
+import { ArrowRight, Clock, Monitor, Users, Brain, Target, Zap, Rocket, Lock, CalendarDays } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
@@ -140,6 +140,69 @@ const Programs = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* Live Scrum Project - Standalone Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="mt-12"
+        >
+          <div className="relative bg-card rounded-2xl p-8 shadow-soft hover:shadow-large transition-all duration-500 ring-2 ring-primary/20 overflow-hidden">
+            {/* Background accent */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-full pointer-events-none" />
+            
+            <div className="relative flex flex-col lg:flex-row lg:items-center gap-8">
+              {/* Icon & Content */}
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-primary/10 text-primary">
+                    <Rocket className="w-7 h-7" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Lock className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                      {t('programs.liveProject.prereq')}
+                    </span>
+                  </div>
+                </div>
+
+                <h3 className="text-2xl font-display font-bold text-foreground mb-3">
+                  {t('programs.liveProject.title')}
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-4 max-w-2xl">
+                  {t('programs.liveProject.desc')}
+                </p>
+
+                {/* Meta */}
+                <div className="flex items-center gap-6 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <CalendarDays className="w-4 h-4" />
+                    <span>{t('programs.liveProject.duration')}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Monitor className="w-4 h-4" />
+                    <span>{t('programs.online')}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* CTA */}
+              <div className="lg:flex-shrink-0">
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  className="w-full lg:w-auto group/btn"
+                  onClick={() => navigate('/auth')}
+                >
+                  {t('programs.learnMore')}
+                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
