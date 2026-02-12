@@ -54,6 +54,7 @@ interface Prerequisite {
 const SIMULATION_IDS = [
   'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
   'b2c3d4e5-f6a7-8901-bcde-fa2345678901',
+  'dddddddd-eeee-ffff-1111-222222222222',
 ];
 
 const Courses = () => {
