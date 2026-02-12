@@ -270,6 +270,7 @@ export const courseUITranslations: Record<SupportedLanguage, {
   congratsNextChapter: string;
   quizNotAvailable: string;
   quizPreparing: string;
+  prerequisitesRequired: string;
 }> = {
   en: {
     loading: 'Loading courses...',
@@ -292,6 +293,7 @@ export const courseUITranslations: Record<SupportedLanguage, {
     congratsNextChapter: 'Congratulations! You can now proceed to the next chapter.',
     quizNotAvailable: 'Quiz Not Available',
     quizPreparing: 'The quiz for this lesson is being prepared. Please check back soon.',
+    prerequisitesRequired: 'Complete required courses to unlock',
   },
   es: {
     loading: 'Cargando cursos...',
@@ -314,6 +316,7 @@ export const courseUITranslations: Record<SupportedLanguage, {
     congratsNextChapter: '¡Felicitaciones! Ahora puedes continuar al siguiente capítulo.',
     quizNotAvailable: 'Cuestionario No Disponible',
     quizPreparing: 'El cuestionario para esta lección está siendo preparado. Por favor vuelve pronto.',
+    prerequisitesRequired: 'Completa los cursos requeridos para desbloquear',
   },
   zh: {
     loading: '加载课程中...',
@@ -336,6 +339,7 @@ export const courseUITranslations: Record<SupportedLanguage, {
     congratsNextChapter: '恭喜！您现在可以继续下一章。',
     quizNotAvailable: '测验不可用',
     quizPreparing: '本课程的测验正在准备中。请稍后再来。',
+    prerequisitesRequired: '完成必修课程以解锁',
   },
   ar: {
     loading: 'جاري تحميل الدورات...',
@@ -358,6 +362,7 @@ export const courseUITranslations: Record<SupportedLanguage, {
     congratsNextChapter: 'تهانينا! يمكنك الآن المتابعة إلى الفصل التالي.',
     quizNotAvailable: 'الاختبار غير متوفر',
     quizPreparing: 'يتم إعداد الاختبار لهذا الدرس. يرجى العودة قريباً.',
+    prerequisitesRequired: 'أكمل الدورات المطلوبة للفتح',
   },
   fr: {
     loading: 'Chargement des cours...',
@@ -380,6 +385,7 @@ export const courseUITranslations: Record<SupportedLanguage, {
     congratsNextChapter: 'Félicitations ! Vous pouvez maintenant passer au chapitre suivant.',
     quizNotAvailable: 'Quiz Non Disponible',
     quizPreparing: 'Le quiz pour cette leçon est en préparation. Veuillez revenir bientôt.',
+    prerequisitesRequired: 'Complétez les cours requis pour débloquer',
   },
   de: {
     loading: 'Kurse werden geladen...',
@@ -402,6 +408,7 @@ export const courseUITranslations: Record<SupportedLanguage, {
     congratsNextChapter: 'Herzlichen Glückwunsch! Sie können jetzt zum nächsten Kapitel übergehen.',
     quizNotAvailable: 'Quiz Nicht Verfügbar',
     quizPreparing: 'Das Quiz für diese Lektion wird vorbereitet. Bitte kommen Sie bald wieder.',
+    prerequisitesRequired: 'Schließen Sie die erforderlichen Kurse ab',
   },
   ja: {
     loading: 'コースを読み込み中...',
@@ -424,5 +431,6 @@ export const courseUITranslations: Record<SupportedLanguage, {
     congratsNextChapter: 'おめでとうございます！次のチャプターに進むことができます。',
     quizNotAvailable: 'クイズは利用できません',
     quizPreparing: 'このレッスンのクイズは準備中です。後でもう一度確認してください。',
+    prerequisitesRequired: '必要なコースを完了してロック解除',
   },
 };

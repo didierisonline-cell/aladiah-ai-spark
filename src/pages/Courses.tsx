@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { GraduationCap, BookOpen, ChevronRight, LogOut, Play, CheckCircle, Lock } from 'lucide-react';
+import { GraduationCap, BookOpen, ChevronRight, LogOut, Play, CheckCircle, Lock, ShieldCheck } from 'lucide-react';
 import { 
   courseUITranslations, 
   getTranslatedContent,
@@ -45,12 +45,19 @@ interface Quiz {
   quiz_type: string;
 }
 
+interface Prerequisite {
+  course_id: string;
+  prerequisite_group: number;
+  prerequisite_course_id: string;
+}
+
 const Courses = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [videos, setVideos] = useState<Video[]>([]);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [passedQuizzes, setPassedQuizzes] = useState<string[]>([]);
+  const [prerequisites, setPrerequisites] = useState<Prerequisite[]>([]);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [seeding, setSeeding] = useState(false);
@@ -58,7 +65,6 @@ const Courses = () => {
   const { toast } = useToast();
   const { language } = useLanguage();
 
-  // Get translations with fallback to English
   const supportedLanguages: SupportedLanguage[] = ['en', 'es', 'zh', 'ar', 'fr', 'de', 'ja'];
   const currentLang = supportedLanguages.includes(language as SupportedLanguage) 
     ? (language as SupportedLanguage) 
@@ -81,7 +87,6 @@ const Courses = () => {
 
   const loadData = async () => {
     try {
-      // Load courses with translations
       const { data: coursesData, error: coursesError } = await supabase
         .from('courses')
         .select('id, title, description, image_url, translations, is_published')
@@ -89,7 +94,6 @@ const Courses = () => {
       
       if (coursesError) throw coursesError;
 
-      // If no courses, seed them
       if (!coursesData || coursesData.length === 0) {
         await seedCourse();
         return;
@@ -97,7 +101,6 @@ const Courses = () => {
 
       setCourses(coursesData as Course[]);
 
-      // Load chapters with translations
       const { data: chaptersData } = await supabase
         .from('chapters')
         .select('id, title, description, order_index, course_id, translations')
@@ -105,7 +108,6 @@ const Courses = () => {
       
       setChapters((chaptersData || []) as Chapter[]);
 
-      // Load videos
       const { data: videosData } = await supabase
         .from('videos')
         .select('*')
@@ -113,20 +115,25 @@ const Courses = () => {
       
       setVideos(videosData || []);
 
-      // Load quizzes
       const { data: quizzesData } = await supabase
         .from('quizzes')
         .select('*');
       
       setQuizzes(quizzesData || []);
 
-      // Load passed quizzes from user progress
       const { data: progressData } = await supabase
         .from('user_progress')
         .select('quiz_id')
         .not('quiz_id', 'is', null);
       
       setPassedQuizzes((progressData || []).map(p => p.quiz_id as string));
+
+      // Load prerequisites
+      const { data: prereqData } = await supabase
+        .from('course_prerequisites')
+        .select('course_id, prerequisite_group, prerequisite_course_id');
+      
+      setPrerequisites((prereqData || []) as Prerequisite[]);
     } catch (error: any) {
       toast({
         title: t.errorLoading,
@@ -188,14 +195,12 @@ const Courses = () => {
       : 0;
   };
 
-  // Check if a chapter is accessible (first chapter always, others require previous chapter 100%)
   const isChapterAccessible = (chapter: Chapter, courseChapters: Chapter[]) => {
     if (chapter.order_index === 0) return true;
     
     const prevChapter = courseChapters.find(c => c.order_index === chapter.order_index - 1);
     if (!prevChapter) return false;
     
-    // Check if previous chapter has a chapter_end quiz that was passed
     const prevChapterEndQuiz = quizzes.find(
       q => q.chapter_id === prevChapter.id && q.quiz_type === 'chapter_end'
     );
@@ -204,7 +209,45 @@ const Courses = () => {
     return passedQuizzes.includes(prevChapterEndQuiz.id);
   };
 
-  // Get translated content for course
+  // Check if a course is completed (all chapter_end quizzes passed)
+  const isCourseCompleted = (courseId: string) => {
+    const courseChapters = chapters.filter(ch => ch.course_id === courseId);
+    const chapterEndQuizzes = quizzes.filter(q => 
+      courseChapters.some(ch => ch.id === q.chapter_id) && q.quiz_type === 'chapter_end'
+    );
+    if (chapterEndQuizzes.length === 0) return false;
+    return chapterEndQuizzes.every(q => passedQuizzes.includes(q.id));
+  };
+
+  // Check if a course's prerequisites are met (any one prerequisite group fully completed)
+  const isCourseUnlocked = (courseId: string) => {
+    const coursePrereqs = prerequisites.filter(p => p.course_id === courseId);
+    if (coursePrereqs.length === 0) return true; // No prerequisites
+
+    const groups = [...new Set(coursePrereqs.map(p => p.prerequisite_group))];
+    return groups.some(group => {
+      const groupPrereqs = coursePrereqs.filter(p => p.prerequisite_group === group);
+      return groupPrereqs.every(p => isCourseCompleted(p.prerequisite_course_id));
+    });
+  };
+
+  // Get prerequisite course names for display
+  const getPrerequisiteNames = (courseId: string) => {
+    const coursePrereqs = prerequisites.filter(p => p.course_id === courseId);
+    if (coursePrereqs.length === 0) return [];
+
+    const groups = [...new Set(coursePrereqs.map(p => p.prerequisite_group))];
+    return groups.map(group => {
+      const groupPrereqs = coursePrereqs.filter(p => p.prerequisite_group === group);
+      return groupPrereqs.map(p => {
+        const course = courses.find(c => c.id === p.prerequisite_course_id);
+        if (!course) return '';
+        const content = getCourseContent(course);
+        return content.title;
+      }).filter(Boolean);
+    });
+  };
+
   const getCourseContent = (course: Course) => {
     return getTranslatedContent(
       course.translations,
@@ -214,7 +257,6 @@ const Courses = () => {
     );
   };
 
-  // Get translated content for chapter
   const getChapterContent = (chapter: Chapter) => {
     return getTranslatedContent(
       chapter.translations,
@@ -239,7 +281,6 @@ const Courses = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
@@ -272,6 +313,8 @@ const Courses = () => {
 
         {courses.map((course, courseIndex) => {
           const courseContent = getCourseContent(course);
+          const locked = !isCourseUnlocked(course.id);
+          const prereqGroups = getPrerequisiteNames(course.id);
           
           return (
             <motion.div
@@ -280,64 +323,83 @@ const Courses = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: courseIndex * 0.1 }}
             >
-              <Card className="mb-6 overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10">
+              <Card className={`mb-6 overflow-hidden ${locked ? 'opacity-70' : ''}`}>
+                <CardHeader className={`bg-gradient-to-r ${locked ? 'from-muted/50 to-muted/30' : 'from-primary/10 to-secondary/10'}`}>
                   <div className="flex items-start justify-between">
                     <div>
-                      <CardTitle className="text-2xl font-display">{courseContent.title}</CardTitle>
+                      <CardTitle className="text-2xl font-display flex items-center gap-2">
+                        {locked && <Lock className="w-5 h-5 text-muted-foreground" />}
+                        {courseContent.title}
+                      </CardTitle>
                       <CardDescription className="mt-2">{courseContent.description}</CardDescription>
+                      {locked && prereqGroups.length > 0 && (
+                        <div className="mt-3 space-y-1">
+                          <p className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+                            <ShieldCheck className="w-4 h-4" />
+                            {t.prerequisitesRequired}:
+                          </p>
+                          {prereqGroups.map((group, i) => (
+                            <p key={i} className="text-xs text-muted-foreground pl-5">
+                              {i > 0 && <span className="font-semibold">OR </span>}
+                              {group.join(' + ')}
+                            </p>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    <BookOpen className="w-8 h-8 text-primary" />
+                    <BookOpen className={`w-8 h-8 ${locked ? 'text-muted-foreground' : 'text-primary'}`} />
                   </div>
                 </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    {(() => {
-                      const courseChapters = chapters
-                        .filter(ch => ch.course_id === course.id)
-                        .sort((a, b) => a.order_index - b.order_index);
-                      
-                      return courseChapters.map((chapter) => {
-                        const chapterProgress = getChapterProgress(chapter.id);
-                        const isLocked = !isChapterAccessible(chapter, courseChapters);
-                        const chapterContent = getChapterContent(chapter);
+                {!locked && (
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      {(() => {
+                        const courseChapters = chapters
+                          .filter(ch => ch.course_id === course.id)
+                          .sort((a, b) => a.order_index - b.order_index);
+                        
+                        return courseChapters.map((chapter) => {
+                          const chapterProgress = getChapterProgress(chapter.id);
+                          const isLocked = !isChapterAccessible(chapter, courseChapters);
+                          const chapterContent = getChapterContent(chapter);
 
-                        return (
-                          <div
-                            key={chapter.id}
-                            className={`border rounded-lg p-4 transition-all ${
-                              isLocked 
-                                ? 'opacity-50 bg-muted/30' 
-                                : 'hover:border-primary/50 hover:shadow-md cursor-pointer'
-                            }`}
-                            onClick={() => !isLocked && navigate(`/course/${course.id}/chapter/${chapter.id}`)}
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-3">
-                                {chapterProgress === 100 ? (
-                                  <CheckCircle className="w-5 h-5 text-green-500" />
-                                ) : isLocked ? (
-                                  <Lock className="w-5 h-5 text-muted-foreground" />
-                                ) : (
-                                  <Play className="w-5 h-5 text-primary" />
-                                )}
-                                <div>
-                                  <h3 className="font-semibold">{chapterContent.title}</h3>
-                                  <p className="text-sm text-muted-foreground">{chapterContent.description}</p>
+                          return (
+                            <div
+                              key={chapter.id}
+                              className={`border rounded-lg p-4 transition-all ${
+                                isLocked 
+                                  ? 'opacity-50 bg-muted/30' 
+                                  : 'hover:border-primary/50 hover:shadow-md cursor-pointer'
+                              }`}
+                              onClick={() => !isLocked && navigate(`/course/${course.id}/chapter/${chapter.id}`)}
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-3">
+                                  {chapterProgress === 100 ? (
+                                    <CheckCircle className="w-5 h-5 text-green-500" />
+                                  ) : isLocked ? (
+                                    <Lock className="w-5 h-5 text-muted-foreground" />
+                                  ) : (
+                                    <Play className="w-5 h-5 text-primary" />
+                                  )}
+                                  <div>
+                                    <h3 className="font-semibold">{chapterContent.title}</h3>
+                                    <p className="text-sm text-muted-foreground">{chapterContent.description}</p>
+                                  </div>
                                 </div>
+                                <ChevronRight className="w-5 h-5 text-muted-foreground" />
                               </div>
-                              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                              <Progress value={chapterProgress} className="h-2" />
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {chapterProgress}% {t.complete}
+                              </p>
                             </div>
-                            <Progress value={chapterProgress} className="h-2" />
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {chapterProgress}% {t.complete}
-                            </p>
-                          </div>
-                        );
-                      });
-                    })()}
-                  </div>
-                </CardContent>
+                          );
+                        });
+                      })()}
+                    </div>
+                  </CardContent>
+                )}
               </Card>
             </motion.div>
           );
