@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { useCartSync } from "@/hooks/useCartSync";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Courses from "./pages/Courses";
@@ -11,9 +12,29 @@ import ChapterView from "./pages/ChapterView";
 import Enroll from "./pages/Enroll";
 import Community from "./pages/Community";
 import Feedback from "./pages/Feedback";
+import Store from "./pages/Store";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+const AppContent = () => {
+  useCartSync();
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/courses" element={<Courses />} />
+        <Route path="/course/:courseId/chapter/:chapterId" element={<ChapterView />} />
+        <Route path="/enroll" element={<Enroll />} />
+        <Route path="/community" element={<Community />} />
+        <Route path="/feedback" element={<Feedback />} />
+        <Route path="/store" element={<Store />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -21,18 +42,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/course/:courseId/chapter/:chapterId" element={<ChapterView />} />
-            <Route path="/enroll" element={<Enroll />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/feedback" element={<Feedback />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <AppContent />
       </TooltipProvider>
     </LanguageProvider>
   </QueryClientProvider>

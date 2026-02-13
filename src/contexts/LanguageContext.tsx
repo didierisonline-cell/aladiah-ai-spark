@@ -28,6 +28,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.enroll': 'Enroll Now',
     'nav.community': 'Community',
     'nav.feedback': 'Feedback',
+    'nav.store': 'Store',
     
     // Hero
     'hero.badge': 'AI-Powered Professional Training',
@@ -157,6 +158,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.enroll': 'Inscríbete',
     'nav.community': 'Comunidad',
     'nav.feedback': 'Comentarios',
+    'nav.store': 'Tienda',
     
     // Hero
     'hero.badge': 'Formación Profesional con IA',
@@ -286,6 +288,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.enroll': '立即报名',
     'nav.community': '社区',
     'nav.feedback': '反馈',
+    'nav.store': '商店',
     
     // Hero
     'hero.badge': 'AI驱动的专业培训',
@@ -415,6 +418,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.enroll': 'سجل الآن',
     'nav.community': 'المجتمع',
     'nav.feedback': 'ملاحظات',
+    'nav.store': 'المتجر',
     
     // Hero
     'hero.badge': 'تدريب مهني مدعوم بالذكاء الاصطناعي',
@@ -544,6 +548,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.enroll': 'S\'inscrire',
     'nav.community': 'Communauté',
     'nav.feedback': 'Avis',
+    'nav.store': 'Boutique',
     
     // Hero
     'hero.badge': 'Formation Professionnelle Alimentée par l\'IA',
@@ -673,6 +678,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.enroll': 'Jetzt anmelden',
     'nav.community': 'Gemeinschaft',
     'nav.feedback': 'Feedback',
+    'nav.store': 'Shop',
     
     // Hero
     'hero.badge': 'KI-gestützte Berufsausbildung',
@@ -802,6 +808,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.enroll': '今すぐ登録',
     'nav.community': 'コミュニティ',
     'nav.feedback': 'フィードバック',
+    'nav.store': 'ストア',
     
     // Hero
     'hero.badge': 'AI駆動のプロフェッショナルトレーニング',
