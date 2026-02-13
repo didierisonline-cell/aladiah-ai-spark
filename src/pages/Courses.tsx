@@ -58,8 +58,8 @@ const SIMULATION_IDS = [
   'dddddddd-eeee-ffff-1111-222222222222',
 ];
 
-// Courses that should appear BEFORE the Projects & Simulations section
-const BEFORE_SIMULATIONS_IDS = [
+// Courses that should appear between certification and simulations
+const BETWEEN_CERT_AND_SIM_IDS = [
   'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', // Jira SCRUM Project
 ];
 
@@ -140,7 +140,6 @@ const Courses = () => {
       
       setPassedQuizzes((progressData || []).map(p => p.quiz_id as string));
 
-      // Load prerequisites
       const { data: prereqData } = await supabase
         .from('course_prerequisites')
         .select('course_id, prerequisite_group, prerequisite_course_id');
@@ -209,19 +208,15 @@ const Courses = () => {
 
   const isChapterAccessible = (chapter: Chapter, courseChapters: Chapter[]) => {
     if (chapter.order_index === 0) return true;
-    
     const prevChapter = courseChapters.find(c => c.order_index === chapter.order_index - 1);
     if (!prevChapter) return false;
-    
     const prevChapterEndQuiz = quizzes.find(
       q => q.chapter_id === prevChapter.id && q.quiz_type === 'chapter_end'
     );
-    
     if (!prevChapterEndQuiz) return false;
     return passedQuizzes.includes(prevChapterEndQuiz.id);
   };
 
-  // Check if a course is completed (all chapter_end quizzes passed)
   const isCourseCompleted = (courseId: string) => {
     const courseChapters = chapters.filter(ch => ch.course_id === courseId);
     const chapterEndQuizzes = quizzes.filter(q => 
@@ -231,11 +226,9 @@ const Courses = () => {
     return chapterEndQuizzes.every(q => passedQuizzes.includes(q.id));
   };
 
-  // Check if a course's prerequisites are met (any one prerequisite group fully completed)
   const isCourseUnlocked = (courseId: string) => {
     const coursePrereqs = prerequisites.filter(p => p.course_id === courseId);
-    if (coursePrereqs.length === 0) return true; // No prerequisites
-
+    if (coursePrereqs.length === 0) return true;
     const groups = [...new Set(coursePrereqs.map(p => p.prerequisite_group))];
     return groups.some(group => {
       const groupPrereqs = coursePrereqs.filter(p => p.prerequisite_group === group);
@@ -243,11 +236,9 @@ const Courses = () => {
     });
   };
 
-  // Get prerequisite course names for display
   const getPrerequisiteNames = (courseId: string) => {
     const coursePrereqs = prerequisites.filter(p => p.course_id === courseId);
     if (coursePrereqs.length === 0) return [];
-
     const groups = [...new Set(coursePrereqs.map(p => p.prerequisite_group))];
     return groups.map(group => {
       const groupPrereqs = coursePrereqs.filter(p => p.prerequisite_group === group);
@@ -278,6 +269,93 @@ const Courses = () => {
     );
   };
 
+  // Reusable course card renderer
+  const renderCourseCard = (course: Course, icon: 'book' | 'flask' = 'book') => {
+    const courseContent = getCourseContent(course);
+    const locked = !isCourseUnlocked(course.id);
+    const prereqGroups = getPrerequisiteNames(course.id);
+    const IconComponent = icon === 'flask' ? FlaskConical : BookOpen;
+
+    return (
+      <Card className={`mb-6 overflow-hidden ${locked ? 'opacity-70' : ''}`}>
+        <CardHeader className={`bg-gradient-to-r ${locked ? 'from-muted/50 to-muted/30' : icon === 'flask' ? 'from-accent/20 to-primary/10' : 'from-primary/10 to-secondary/10'}`}>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="text-2xl font-display flex items-center gap-2">
+                {locked && <Lock className="w-5 h-5 text-muted-foreground" />}
+                {courseContent.title}
+              </CardTitle>
+              <CardDescription className="mt-2">{courseContent.description}</CardDescription>
+              {locked && prereqGroups.length > 0 && (
+                <div className="mt-3 space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+                    <ShieldCheck className="w-4 h-4" />
+                    {t.prerequisitesRequired}:
+                  </p>
+                  {prereqGroups.map((group, i) => (
+                    <p key={i} className="text-xs text-muted-foreground pl-5">
+                      {i > 0 && <span className="font-semibold">OR </span>}
+                      {group.join(' + ')}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+            <IconComponent className={`w-8 h-8 ${locked ? 'text-muted-foreground' : 'text-primary'}`} />
+          </div>
+        </CardHeader>
+        {!locked && (
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              {(() => {
+                const courseChapters = chapters
+                  .filter(ch => ch.course_id === course.id)
+                  .sort((a, b) => a.order_index - b.order_index);
+                return courseChapters.map((chapter) => {
+                  const chapterProgress = getChapterProgress(chapter.id);
+                  const isLocked = !isChapterAccessible(chapter, courseChapters);
+                  const chapterContent = getChapterContent(chapter);
+                  return (
+                    <div
+                      key={chapter.id}
+                      className={`border rounded-lg p-4 transition-all ${
+                        isLocked 
+                          ? 'opacity-50 bg-muted/30' 
+                          : 'hover:border-primary/50 hover:shadow-md cursor-pointer'
+                      }`}
+                      onClick={() => !isLocked && navigate(`/course/${course.id}/chapter/${chapter.id}`)}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-3">
+                          {chapterProgress === 100 ? (
+                            <CheckCircle className="w-5 h-5 text-green-500" />
+                          ) : isLocked ? (
+                            <Lock className="w-5 h-5 text-muted-foreground" />
+                          ) : (
+                            <Play className="w-5 h-5 text-primary" />
+                          )}
+                          <div>
+                            <h3 className="font-semibold">{chapterContent.title}</h3>
+                            <p className="text-sm text-muted-foreground">{chapterContent.description}</p>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                      </div>
+                      <Progress value={chapterProgress} className="h-2" />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {chapterProgress}% {t.complete}
+                      </p>
+                    </div>
+                  );
+                });
+              })()}
+            </div>
+          </CardContent>
+        )}
+      </Card>
+    );
+  };
+
   if (loading || seeding) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -290,6 +368,13 @@ const Courses = () => {
       </div>
     );
   }
+
+  // Certification courses (not simulations, not Jira)
+  const certificationCourses = courses.filter(c => !SIMULATION_IDS.includes(c.id) && !BETWEEN_CERT_AND_SIM_IDS.includes(c.id));
+  // Jira and similar courses
+  const betweenCourses = courses.filter(c => BETWEEN_CERT_AND_SIM_IDS.includes(c.id));
+  // Simulations
+  const simulationCourses = courses.filter(c => SIMULATION_IDS.includes(c.id));
 
   return (
     <div className="min-h-screen bg-background">
@@ -327,221 +412,11 @@ const Courses = () => {
           </p>
         </motion.div>
 
-        {/* Courses before simulations (e.g. Jira) */}
-        {courses.filter(c => BEFORE_SIMULATIONS_IDS.includes(c.id)).map((course, courseIndex) => {
-          const courseContent = getCourseContent(course);
-          const locked = !isCourseUnlocked(course.id);
-          const prereqGroups = getPrerequisiteNames(course.id);
-          
-          return (
-            <motion.div
-              key={course.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: courseIndex * 0.1 }}
-            >
-              <Card className={`mb-6 overflow-hidden ${locked ? 'opacity-70' : ''}`}>
-                <CardHeader className={`bg-gradient-to-r ${locked ? 'from-muted/50 to-muted/30' : 'from-primary/10 to-secondary/10'}`}>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-2xl font-display flex items-center gap-2">
-                        {locked && <Lock className="w-5 h-5 text-muted-foreground" />}
-                        {courseContent.title}
-                      </CardTitle>
-                      <CardDescription className="mt-2">{courseContent.description}</CardDescription>
-                      {locked && prereqGroups.length > 0 && (
-                        <div className="mt-3 space-y-1">
-                          <p className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                            <ShieldCheck className="w-4 h-4" />
-                            {t.prerequisitesRequired}:
-                          </p>
-                          {prereqGroups.map((group, i) => (
-                            <p key={i} className="text-xs text-muted-foreground pl-5">
-                              {i > 0 && <span className="font-semibold">OR </span>}
-                              {group.join(' + ')}
-                            </p>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <BookOpen className={`w-8 h-8 ${locked ? 'text-muted-foreground' : 'text-primary'}`} />
-                  </div>
-                </CardHeader>
-                {!locked && (
-                  <CardContent className="p-6">
-                    <div className="space-y-4">
-                      {(() => {
-                        const courseChapters = chapters
-                          .filter(ch => ch.course_id === course.id)
-                          .sort((a, b) => a.order_index - b.order_index);
-                        
-                        return courseChapters.map((chapter) => {
-                          const chapterProgress = getChapterProgress(chapter.id);
-                          const isLocked = !isChapterAccessible(chapter, courseChapters);
-                          const chapterContent = getChapterContent(chapter);
-
-                          return (
-                            <div
-                              key={chapter.id}
-                              className={`border rounded-lg p-4 transition-all ${
-                                isLocked 
-                                  ? 'opacity-50 bg-muted/30' 
-                                  : 'hover:border-primary/50 hover:shadow-md cursor-pointer'
-                              }`}
-                              onClick={() => !isLocked && navigate(`/course/${course.id}/chapter/${chapter.id}`)}
-                            >
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-3">
-                                  {chapterProgress === 100 ? (
-                                    <CheckCircle className="w-5 h-5 text-green-500" />
-                                  ) : isLocked ? (
-                                    <Lock className="w-5 h-5 text-muted-foreground" />
-                                  ) : (
-                                    <Play className="w-5 h-5 text-primary" />
-                                  )}
-                                  <div>
-                                    <h3 className="font-semibold">{chapterContent.title}</h3>
-                                    <p className="text-sm text-muted-foreground">{chapterContent.description}</p>
-                                  </div>
-                                </div>
-                                <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                              </div>
-                              <Progress value={chapterProgress} className="h-2" />
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {chapterProgress}% {t.complete}
-                              </p>
-                            </div>
-                          );
-                        });
-                      })()}
-                    </div>
-                  </CardContent>
-                )}
-              </Card>
-            </motion.div>
-          );
-        })}
-
-        {/* Projects & Simulations Section */}
-        {courses.some(c => SIMULATION_IDS.includes(c.id)) && (
-          <>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-8 mt-12"
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <FlaskConical className="w-8 h-8 text-primary" />
-                <h2 className="text-3xl font-display font-bold text-foreground">
-                  {t.projectsAndSimulations}
-                </h2>
-              </div>
-              <p className="text-muted-foreground">
-                {t.projectsSubtitle}
-              </p>
-            </motion.div>
-
-            {courses.filter(c => SIMULATION_IDS.includes(c.id)).map((course, courseIndex) => {
-              const courseContent = getCourseContent(course);
-              const locked = !isCourseUnlocked(course.id);
-              const prereqGroups = getPrerequisiteNames(course.id);
-              
-              return (
-                <motion.div
-                  key={course.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: courseIndex * 0.1 }}
-                >
-                  <Card className={`mb-6 overflow-hidden ${locked ? 'opacity-70' : ''}`}>
-                    <CardHeader className={`bg-gradient-to-r ${locked ? 'from-muted/50 to-muted/30' : 'from-accent/20 to-primary/10'}`}>
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <CardTitle className="text-2xl font-display flex items-center gap-2">
-                            {locked && <Lock className="w-5 h-5 text-muted-foreground" />}
-                            {courseContent.title}
-                          </CardTitle>
-                          <CardDescription className="mt-2">{courseContent.description}</CardDescription>
-                          {locked && prereqGroups.length > 0 && (
-                            <div className="mt-3 space-y-1">
-                              <p className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                                <ShieldCheck className="w-4 h-4" />
-                                {t.prerequisitesRequired}:
-                              </p>
-                              {prereqGroups.map((group, i) => (
-                                <p key={i} className="text-xs text-muted-foreground pl-5">
-                                  {i > 0 && <span className="font-semibold">OR </span>}
-                                  {group.join(' + ')}
-                                </p>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        <FlaskConical className={`w-8 h-8 ${locked ? 'text-muted-foreground' : 'text-primary'}`} />
-                      </div>
-                    </CardHeader>
-                    {!locked && (
-                      <CardContent className="p-6">
-                        <div className="space-y-4">
-                          {(() => {
-                            const courseChapters = chapters
-                              .filter(ch => ch.course_id === course.id)
-                              .sort((a, b) => a.order_index - b.order_index);
-                            
-                            return courseChapters.map((chapter) => {
-                              const chapterProgress = getChapterProgress(chapter.id);
-                              const isLocked = !isChapterAccessible(chapter, courseChapters);
-                              const chapterContent = getChapterContent(chapter);
-
-                              return (
-                                <div
-                                  key={chapter.id}
-                                  className={`border rounded-lg p-4 transition-all ${
-                                    isLocked 
-                                      ? 'opacity-50 bg-muted/30' 
-                                      : 'hover:border-primary/50 hover:shadow-md cursor-pointer'
-                                  }`}
-                                  onClick={() => !isLocked && navigate(`/course/${course.id}/chapter/${chapter.id}`)}
-                                >
-                                  <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center gap-3">
-                                      {chapterProgress === 100 ? (
-                                        <CheckCircle className="w-5 h-5 text-green-500" />
-                                      ) : isLocked ? (
-                                        <Lock className="w-5 h-5 text-muted-foreground" />
-                                      ) : (
-                                        <Play className="w-5 h-5 text-primary" />
-                                      )}
-                                      <div>
-                                        <h3 className="font-semibold">{chapterContent.title}</h3>
-                                        <p className="text-sm text-muted-foreground">{chapterContent.description}</p>
-                                      </div>
-                                    </div>
-                                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                                  </div>
-                                  <Progress value={chapterProgress} className="h-2" />
-                                  <p className="text-xs text-muted-foreground mt-1">
-                                    {chapterProgress}% {t.complete}
-                                  </p>
-                                </div>
-                              );
-                            });
-                          })()}
-                        </div>
-                      </CardContent>
-                    )}
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </>
-        )}
-
-        {/* Remaining Regular Courses (after simulations) */}
+        {/* 1. Professional Certification Courses - FIRST */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8 mt-12"
+          className="mb-8"
         >
           <div className="flex items-center gap-3 mb-2">
             <GraduationCap className="w-8 h-8 text-primary" />
@@ -551,99 +426,37 @@ const Courses = () => {
           </div>
         </motion.div>
 
-        {courses.filter(c => !SIMULATION_IDS.includes(c.id) && !BEFORE_SIMULATIONS_IDS.includes(c.id)).map((course, courseIndex) => {
-          const courseContent = getCourseContent(course);
-          const locked = !isCourseUnlocked(course.id);
-          const prereqGroups = getPrerequisiteNames(course.id);
-          
-          return (
-            <motion.div
-              key={course.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: courseIndex * 0.1 }}
-            >
-              <Card className={`mb-6 overflow-hidden ${locked ? 'opacity-70' : ''}`}>
-                <CardHeader className={`bg-gradient-to-r ${locked ? 'from-muted/50 to-muted/30' : 'from-primary/10 to-secondary/10'}`}>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-2xl font-display flex items-center gap-2">
-                        {locked && <Lock className="w-5 h-5 text-muted-foreground" />}
-                        {courseContent.title}
-                      </CardTitle>
-                      <CardDescription className="mt-2">{courseContent.description}</CardDescription>
-                      {locked && prereqGroups.length > 0 && (
-                        <div className="mt-3 space-y-1">
-                          <p className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                            <ShieldCheck className="w-4 h-4" />
-                            {t.prerequisitesRequired}:
-                          </p>
-                          {prereqGroups.map((group, i) => (
-                            <p key={i} className="text-xs text-muted-foreground pl-5">
-                              {i > 0 && <span className="font-semibold">OR </span>}
-                              {group.join(' + ')}
-                            </p>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <BookOpen className={`w-8 h-8 ${locked ? 'text-muted-foreground' : 'text-primary'}`} />
-                  </div>
-                </CardHeader>
-                {!locked && (
-                  <CardContent className="p-6">
-                    <div className="space-y-4">
-                      {(() => {
-                        const courseChapters = chapters
-                          .filter(ch => ch.course_id === course.id)
-                          .sort((a, b) => a.order_index - b.order_index);
-                        
-                        return courseChapters.map((chapter) => {
-                          const chapterProgress = getChapterProgress(chapter.id);
-                          const isLocked = !isChapterAccessible(chapter, courseChapters);
-                          const chapterContent = getChapterContent(chapter);
+        {certificationCourses.map((course, i) => (
+          <motion.div key={course.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
+            {renderCourseCard(course, 'book')}
+          </motion.div>
+        ))}
 
-                          return (
-                            <div
-                              key={chapter.id}
-                              className={`border rounded-lg p-4 transition-all ${
-                                isLocked 
-                                  ? 'opacity-50 bg-muted/30' 
-                                  : 'hover:border-primary/50 hover:shadow-md cursor-pointer'
-                              }`}
-                              onClick={() => !isLocked && navigate(`/course/${course.id}/chapter/${chapter.id}`)}
-                            >
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-3">
-                                  {chapterProgress === 100 ? (
-                                    <CheckCircle className="w-5 h-5 text-green-500" />
-                                  ) : isLocked ? (
-                                    <Lock className="w-5 h-5 text-muted-foreground" />
-                                  ) : (
-                                    <Play className="w-5 h-5 text-primary" />
-                                  )}
-                                  <div>
-                                    <h3 className="font-semibold">{chapterContent.title}</h3>
-                                    <p className="text-sm text-muted-foreground">{chapterContent.description}</p>
-                                  </div>
-                                </div>
-                                <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                              </div>
-                              <Progress value={chapterProgress} className="h-2" />
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {chapterProgress}% {t.complete}
-                              </p>
-                            </div>
-                          );
-                        });
-                      })()}
-                    </div>
-                  </CardContent>
-                )}
-              </Card>
+        {/* 2. Jira and other in-between courses */}
+        {betweenCourses.map((course, i) => (
+          <motion.div key={course.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
+            {renderCourseCard(course, 'book')}
+          </motion.div>
+        ))}
+
+        {/* 3. Projects & Simulations - LAST */}
+        {simulationCourses.length > 0 && (
+          <>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 mt-12">
+              <div className="flex items-center gap-3 mb-2">
+                <FlaskConical className="w-8 h-8 text-primary" />
+                <h2 className="text-3xl font-display font-bold text-foreground">{t.projectsAndSimulations}</h2>
+              </div>
+              <p className="text-muted-foreground">{t.projectsSubtitle}</p>
             </motion.div>
-          );
-        })}
+
+            {simulationCourses.map((course, i) => (
+              <motion.div key={course.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
+                {renderCourseCard(course, 'flask')}
+              </motion.div>
+            ))}
+          </>
+        )}
       </main>
     </div>
   );
