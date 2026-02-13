@@ -40,7 +40,7 @@ const Header = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <img src={aladiahLogo} alt="Aladiah Academy" className="h-14 sm:h-16 w-auto object-contain" />
+            <img src={aladiahLogo} alt="Aladiah Academy" className="h-28 sm:h-32 w-auto object-contain" />
           </motion.a>
 
           {/* Desktop Navigation */}
