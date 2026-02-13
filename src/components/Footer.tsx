@@ -1,5 +1,6 @@
 import { Mail, MapPin, Phone, Linkedin, ArrowUpRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -21,14 +22,8 @@ const Footer = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
             {/* Brand */}
             <div className="lg:col-span-2">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-11 h-11 rounded-xl bg-gradient-ocean flex items-center justify-center">
-                  <span className="font-display font-bold text-lg text-white">A</span>
-                </div>
-                <div>
-                  <span className="font-display font-bold text-xl text-white tracking-tight">Aladiah</span>
-                  <span className="font-display font-medium text-xl text-secondary ml-1.5">Academy</span>
-                </div>
+              <div className="mb-6">
+                <img src={aladiahLogo} alt="Aladiah Academy" className="h-20 w-auto object-contain brightness-0 invert" />
               </div>
               <p className="text-white/60 max-w-md mb-6 leading-relaxed">
                 {t('footer.description')}
