@@ -136,6 +136,17 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.stats.adoption': 'Agile Adoption Rate',
     'blog.stats.scrum': 'Use Scrum Framework',
     'blog.stats.growth': 'Projected Job Growth',
+
+    // Career Pathway
+    'career.badge': 'Career Opportunity',
+    'career.title': 'Your Path to U.S. Career Opportunities',
+    'career.statement': 'Top-performing graduates may be considered for employment or contract opportunities in the United States through our sister company, Aladiah Management, at its sole discretion. Selection is based on academic performance, demonstrated skills, and current business needs.',
+    'career.highlight1': 'Aladiah Management, our sister company, actively hires top graduates for U.S.-based roles',
+    'career.highlight2': 'Opportunities based on performance, qualifications, and business needs',
+    'career.highlight3': 'Compliant, transparent process — no guarantees, only merit-based consideration',
+    'career.disclaimer': 'Disclaimer: Course completion does not constitute a guarantee, promise, or obligation of employment. Aladiah Management may, at its sole discretion, extend employment or contract opportunities to select graduates. This provision does not entitle any student to placement. All hiring decisions are subject to applicable laws, visa requirements, and business conditions.',
+    'career.cta': 'Start Your Journey',
+    'career.ctaSub': 'Excel in your studies and stand out for career opportunities',
   },
   es: {
     // Navigation
@@ -254,6 +265,17 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.stats.adoption': 'Tasa de Adopción Agile',
     'blog.stats.scrum': 'Usan Framework Scrum',
     'blog.stats.growth': 'Crecimiento Proyectado',
+
+    // Career Pathway
+    'career.badge': 'Oportunidad Profesional',
+    'career.title': 'Tu Camino a Oportunidades Profesionales en EE.UU.',
+    'career.statement': 'Los graduados con mejor desempeño pueden ser considerados para empleo u oportunidades de contrato en Estados Unidos a través de nuestra empresa hermana, Aladiah Management, a su exclusiva discreción. La selección se basa en rendimiento académico, habilidades demostradas y necesidades empresariales actuales.',
+    'career.highlight1': 'Aladiah Management, nuestra empresa hermana, contrata activamente a los mejores graduados para roles en EE.UU.',
+    'career.highlight2': 'Oportunidades basadas en rendimiento, cualificaciones y necesidades del negocio',
+    'career.highlight3': 'Proceso transparente y conforme — sin garantías, solo consideración basada en mérito',
+    'career.disclaimer': 'Aviso: La finalización del curso no constituye una garantía, promesa u obligación de empleo. Aladiah Management puede, a su exclusiva discreción, extender oportunidades de empleo o contrato a graduados selectos. Esta disposición no otorga a ningún estudiante derecho a colocación. Todas las decisiones de contratación están sujetas a leyes aplicables, requisitos de visa y condiciones comerciales.',
+    'career.cta': 'Comienza Tu Camino',
+    'career.ctaSub': 'Destaca en tus estudios y sobresale para oportunidades profesionales',
   },
   zh: {
     // Navigation
@@ -372,6 +394,17 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.stats.adoption': '敏捷采用率',
     'blog.stats.scrum': '使用Scrum框架',
     'blog.stats.growth': '预计增长',
+
+    // Career Pathway
+    'career.badge': '职业机会',
+    'career.title': '通往美国职业机会的道路',
+    'career.statement': '表现优异的毕业生可能会被我们的姐妹公司Aladiah Management自行决定考虑在美国的就业或合同机会。选拔基于学术表现、展示的技能和当前的业务需求。',
+    'career.highlight1': '我们的姐妹公司Aladiah Management积极聘用优秀毕业生从事美国职位',
+    'career.highlight2': '机会基于表现、资质和业务需求',
+    'career.highlight3': '透明合规的流程——无保证，仅基于绩效的考量',
+    'career.disclaimer': '免责声明：课程完成不构成就业的保证、承诺或义务。Aladiah Management可自行决定向选定的毕业生提供就业或合同机会。此条款不赋予任何学生安置权利。所有招聘决策受适用法律、签证要求和商业条件约束。',
+    'career.cta': '开始您的旅程',
+    'career.ctaSub': '在学业中脱颖而出，争取职业机会',
   },
   ar: {
     // Navigation
@@ -490,6 +523,17 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.stats.adoption': 'معدل اعتماد Agile',
     'blog.stats.scrum': 'يستخدمون إطار Scrum',
     'blog.stats.growth': 'النمو المتوقع',
+
+    // Career Pathway
+    'career.badge': 'فرصة مهنية',
+    'career.title': 'طريقك إلى فرص العمل في الولايات المتحدة',
+    'career.statement': 'قد يتم النظر في توظيف أو تقديم فرص تعاقد للخريجين المتميزين في الولايات المتحدة من خلال شركتنا الشقيقة، Aladiah Management، وفقًا لتقديرها الخاص. يعتمد الاختيار على الأداء الأكاديمي والمهارات المثبتة واحتياجات العمل الحالية.',
+    'career.highlight1': 'شركتنا الشقيقة Aladiah Management توظف بنشاط أفضل الخريجين لأدوار في الولايات المتحدة',
+    'career.highlight2': 'فرص مبنية على الأداء والمؤهلات واحتياجات العمل',
+    'career.highlight3': 'عملية شفافة ومتوافقة — بدون ضمانات، فقط تقييم قائم على الجدارة',
+    'career.disclaimer': 'إخلاء مسؤولية: لا يشكل إكمال الدورة ضمانًا أو وعدًا أو التزامًا بالتوظيف. قد تقوم Aladiah Management، وفقًا لتقديرها الخاص، بتمديد فرص التوظيف أو التعاقد لخريجين مختارين. لا يمنح هذا الحكم أي طالب حق التوظيف. تخضع جميع قرارات التوظيف للقوانين المعمول بها ومتطلبات التأشيرة والظروف التجارية.',
+    'career.cta': 'ابدأ رحلتك',
+    'career.ctaSub': 'تفوق في دراستك وتميز للحصول على فرص مهنية',
   },
   fr: {
     // Navigation
@@ -608,6 +652,17 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.stats.adoption': 'Taux d\'Adoption Agile',
     'blog.stats.scrum': 'Utilisent le Framework Scrum',
     'blog.stats.growth': 'Croissance Projetée',
+
+    // Career Pathway
+    'career.badge': 'Opportunité de Carrière',
+    'career.title': 'Votre Chemin vers des Opportunités aux États-Unis',
+    'career.statement': 'Les diplômés les plus performants peuvent être considérés pour un emploi ou des opportunités de contrat aux États-Unis via notre société sœur, Aladiah Management, à sa seule discrétion. La sélection est basée sur les performances académiques, les compétences démontrées et les besoins actuels de l\'entreprise.',
+    'career.highlight1': 'Aladiah Management, notre société sœur, recrute activement les meilleurs diplômés pour des postes aux États-Unis',
+    'career.highlight2': 'Opportunités basées sur la performance, les qualifications et les besoins de l\'entreprise',
+    'career.highlight3': 'Processus transparent et conforme — aucune garantie, uniquement une considération basée sur le mérite',
+    'career.disclaimer': 'Avertissement : L\'achèvement du cours ne constitue pas une garantie, une promesse ou une obligation d\'emploi. Aladiah Management peut, à sa seule discrétion, offrir des opportunités d\'emploi ou de contrat à des diplômés sélectionnés. Cette disposition ne donne droit à aucun étudiant à un placement. Toutes les décisions d\'embauche sont soumises aux lois applicables, aux exigences de visa et aux conditions commerciales.',
+    'career.cta': 'Commencez Votre Parcours',
+    'career.ctaSub': 'Excellez dans vos études et démarquez-vous pour des opportunités de carrière',
   },
   de: {
     // Navigation
@@ -726,6 +781,17 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.stats.adoption': 'Agile-Einführungsrate',
     'blog.stats.scrum': 'Nutzen Scrum Framework',
     'blog.stats.growth': 'Prognostiziertes Wachstum',
+
+    // Career Pathway
+    'career.badge': 'Karrierechance',
+    'career.title': 'Ihr Weg zu Karrieremöglichkeiten in den USA',
+    'career.statement': 'Leistungsstärkste Absolventen können für Beschäftigungs- oder Vertragsmöglichkeiten in den Vereinigten Staaten durch unser Schwesterunternehmen Aladiah Management nach eigenem Ermessen in Betracht gezogen werden. Die Auswahl basiert auf akademischer Leistung, nachgewiesenen Fähigkeiten und aktuellen Geschäftsanforderungen.',
+    'career.highlight1': 'Aladiah Management, unser Schwesterunternehmen, stellt aktiv Top-Absolventen für Positionen in den USA ein',
+    'career.highlight2': 'Möglichkeiten basierend auf Leistung, Qualifikationen und Geschäftsanforderungen',
+    'career.highlight3': 'Transparenter, konformer Prozess — keine Garantien, nur leistungsbasierte Berücksichtigung',
+    'career.disclaimer': 'Haftungsausschluss: Der Kursabschluss stellt keine Garantie, kein Versprechen oder keine Verpflichtung zur Beschäftigung dar. Aladiah Management kann nach eigenem Ermessen ausgewählten Absolventen Beschäftigungs- oder Vertragsmöglichkeiten anbieten. Diese Bestimmung berechtigt keinen Studenten zur Vermittlung. Alle Einstellungsentscheidungen unterliegen geltenden Gesetzen, Visaanforderungen und Geschäftsbedingungen.',
+    'career.cta': 'Starten Sie Ihre Reise',
+    'career.ctaSub': 'Glänzen Sie in Ihrem Studium und heben Sie sich für Karrierechancen ab',
   },
   ja: {
     // Navigation
@@ -844,6 +910,17 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.stats.adoption': 'アジャイル採用率',
     'blog.stats.scrum': 'スクラムフレームワーク使用',
     'blog.stats.growth': '予測成長',
+
+    // Career Pathway
+    'career.badge': 'キャリア機会',
+    'career.title': '米国でのキャリア機会への道',
+    'career.statement': '優秀な成績の卒業生は、姉妹会社であるAladiah Managementの独自の裁量により、米国での雇用または契約機会の対象となる場合があります。選考は学業成績、実証されたスキル、現在のビジネスニーズに基づいて行われます。',
+    'career.highlight1': '姉妹会社Aladiah Managementが米国のポジションに優秀な卒業生を積極的に採用',
+    'career.highlight2': 'パフォーマンス、資格、ビジネスニーズに基づく機会',
+    'career.highlight3': '透明でコンプライアンスに準拠したプロセス——保証なし、実力に基づく検討のみ',
+    'career.disclaimer': '免責事項：コースの修了は、雇用の保証、約束、または義務を構成するものではありません。Aladiah Managementは、独自の裁量により、選ばれた卒業生に雇用または契約の機会を提供する場合があります。この規定は、いかなる学生にも配置の権利を付与するものではありません。すべての採用決定は、適用される法律、ビザ要件、およびビジネス条件に従います。',
+    'career.cta': '旅を始めましょう',
+    'career.ctaSub': '学業で卓越し、キャリア機会のために際立ちましょう',
   },
 };
 
