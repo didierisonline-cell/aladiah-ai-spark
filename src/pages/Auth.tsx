@@ -24,13 +24,21 @@ const Auth = () => {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { error, data } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (error) throw error;
+        
+        // Check if user has completed intro
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('has_completed_intro')
+          .eq('user_id', data.user.id)
+          .single();
+        
         toast({ title: 'Welcome back!', description: 'Successfully logged in.' });
-        navigate('/courses');
+        navigate(profile?.has_completed_intro === false ? '/community' : '/courses');
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -41,8 +49,8 @@ const Auth = () => {
           },
         });
         if (error) throw error;
-        toast({ title: 'Account created!', description: 'You can now access the courses.' });
-        navigate('/courses');
+        toast({ title: 'Account created!', description: 'Please complete your community introduction.' });
+        navigate('/community');
       }
     } catch (error: any) {
       toast({
