@@ -57,9 +57,10 @@ const SIMULATION_IDS = [
   'b2c3d4e5-f6a7-8901-bcde-fa2345678901', // Rogers-Shaw IT Merger
 ];
 
-// Courses that should appear between certification and simulations
-const BETWEEN_CERT_AND_SIM_IDS = [
+// Courses that should appear after simulations
+const AFTER_SIMULATION_IDS = [
   'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', // Jira SCRUM Project
+  'dddddddd-eeee-ffff-1111-222222222222', // Managing AI Projects
 ];
 
 const Courses = () => {
@@ -369,9 +370,9 @@ const Courses = () => {
   }
 
   // Certification courses (not simulations, not Jira)
-  const certificationCourses = courses.filter(c => !SIMULATION_IDS.includes(c.id) && !BETWEEN_CERT_AND_SIM_IDS.includes(c.id));
-  // Jira and similar courses
-  const betweenCourses = courses.filter(c => BETWEEN_CERT_AND_SIM_IDS.includes(c.id));
+  const certificationCourses = courses.filter(c => !SIMULATION_IDS.includes(c.id) && !AFTER_SIMULATION_IDS.includes(c.id));
+  // Courses after simulations
+  const afterSimCourses = courses.filter(c => AFTER_SIMULATION_IDS.includes(c.id));
   // Simulations
   const simulationCourses = courses.filter(c => SIMULATION_IDS.includes(c.id));
 
@@ -451,7 +452,7 @@ const Courses = () => {
         )}
 
         {/* 3. Jira and other courses - LAST */}
-        {betweenCourses.map((course, i) => (
+        {afterSimCourses.map((course, i) => (
           <motion.div key={course.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
             {renderCourseCard(course, 'book')}
           </motion.div>
