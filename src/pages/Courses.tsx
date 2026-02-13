@@ -432,14 +432,7 @@ const Courses = () => {
           </motion.div>
         ))}
 
-        {/* 2. Jira and other in-between courses */}
-        {betweenCourses.map((course, i) => (
-          <motion.div key={course.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-            {renderCourseCard(course, 'book')}
-          </motion.div>
-        ))}
-
-        {/* 3. Projects & Simulations - LAST */}
+        {/* 2. Projects & Simulations */}
         {simulationCourses.length > 0 && (
           <>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 mt-12">
@@ -457,6 +450,13 @@ const Courses = () => {
             ))}
           </>
         )}
+
+        {/* 3. Jira and other courses - LAST */}
+        {betweenCourses.map((course, i) => (
+          <motion.div key={course.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
+            {renderCourseCard(course, 'book')}
+          </motion.div>
+        ))}
       </main>
     </div>
   );
