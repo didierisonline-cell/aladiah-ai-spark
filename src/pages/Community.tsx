@@ -11,7 +11,7 @@ import ProgressBar from '@/components/ProgressBar';
 import IntroForm from '@/components/community/IntroForm';
 import PostCard from '@/components/community/PostCard';
 import { GraduationCap, LogOut, Send, MessageCircle, Sparkles } from 'lucide-react';
-import aladiahLogo from '@/assets/aladiah-header-logo.png';
+import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
 import { communityTranslations, type SupportedLanguage } from '@/utils/communityTranslations';
 
 interface PostData {
