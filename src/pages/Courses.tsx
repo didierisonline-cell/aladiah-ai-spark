@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import ProgressBar from '@/components/ProgressBar';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -293,7 +294,9 @@ const Courses = () => {
             <GraduationCap className="w-8 h-8 text-primary" />
             <span className="font-display font-bold text-xl">Aladiah Academy</span>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <Link to="/community"><Button variant="ghost" size="sm">Community</Button></Link>
+            <Link to="/feedback"><Button variant="ghost" size="sm">Feedback</Button></Link>
             <span className="text-sm text-muted-foreground">{user?.email}</span>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="w-4 h-4 mr-2" />
@@ -302,6 +305,8 @@ const Courses = () => {
           </div>
         </div>
       </header>
+
+      <ProgressBar />
 
       <main className="container mx-auto px-4 py-8">
         <motion.div
