@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import aladiahLogo from '@/assets/aladiah-logo.png';
+import aladiahLogo from '@/assets/aladiah-header-logo.png';
 
 type Language = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja';
 
@@ -40,7 +40,7 @@ const Header = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <img src={aladiahLogo} alt="Aladiah Academy" className="h-12 sm:h-14 w-auto object-contain" />
+            <img src={aladiahLogo} alt="Aladiah Academy" className="h-10 sm:h-11 w-auto object-contain" />
           </motion.a>
 
           {/* Desktop Navigation */}
