@@ -54,13 +54,23 @@ interface Prerequisite {
 
 const SIMULATION_IDS = [
   'a1b2c3d4-e5f6-7890-abcd-ef1234567890', // Live Scrum Project
+];
+
+// Courses that should appear after simulations (in this order)
+const AFTER_SIMULATION_IDS = [
+  'cccccccc-dddd-eeee-ffff-111111111111', // Agile, Scrum & SAFe 6.0 Mastery
+  'dddddddd-eeee-ffff-1111-222222222222', // Managing AI Projects
+];
+
+// Courses to hide entirely
+const HIDDEN_IDS = [
   'b2c3d4e5-f6a7-8901-bcde-fa2345678901', // Rogers-Shaw IT Merger
 ];
 
-// Courses that should appear after simulations
-const AFTER_SIMULATION_IDS = [
+// Explicit ordering for certification courses
+const CERTIFICATION_ORDER = [
+  'bbbbbbbb-cccc-dddd-eeee-ffffffffffff', // Agile Development and Scrum
   'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', // Jira SCRUM Project
-  'dddddddd-eeee-ffff-1111-222222222222', // Managing AI Projects
 ];
 
 const Courses = () => {
@@ -369,12 +379,20 @@ const Courses = () => {
     );
   }
 
-  // Certification courses (not simulations, not Jira)
-  const certificationCourses = courses.filter(c => !SIMULATION_IDS.includes(c.id) && !AFTER_SIMULATION_IDS.includes(c.id));
-  // Courses after simulations
-  const afterSimCourses = courses.filter(c => AFTER_SIMULATION_IDS.includes(c.id));
-  // Simulations
-  const simulationCourses = courses.filter(c => SIMULATION_IDS.includes(c.id));
+  // Certification courses (not simulations, not after-sim, not hidden)
+  const certificationCourses = courses
+    .filter(c => !SIMULATION_IDS.includes(c.id) && !AFTER_SIMULATION_IDS.includes(c.id) && !HIDDEN_IDS.includes(c.id))
+    .sort((a, b) => {
+      const aIdx = CERTIFICATION_ORDER.indexOf(a.id);
+      const bIdx = CERTIFICATION_ORDER.indexOf(b.id);
+      return (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
+    });
+  // Courses after simulations (in defined order)
+  const afterSimCourses = courses
+    .filter(c => AFTER_SIMULATION_IDS.includes(c.id))
+    .sort((a, b) => AFTER_SIMULATION_IDS.indexOf(a.id) - AFTER_SIMULATION_IDS.indexOf(b.id));
+  // Simulations (excluding hidden)
+  const simulationCourses = courses.filter(c => SIMULATION_IDS.includes(c.id) && !HIDDEN_IDS.includes(c.id));
 
   return (
     <div className="min-h-screen bg-background">
