@@ -84,9 +84,9 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'Visionary Leader in Agile & AI Education',
-    'founder.bio.p1': 'Didier is a seasoned IT executive and Agile transformation leader with years of experience driving large-scale technology initiatives across the cruise, hospitality, and enterprise sectors. Currently a Senior Project Manager at Royal Caribbean International, he orchestrates multi-million-dollar digital transformation programs spanning global operations.',
+    'founder.bio.p1': 'Didier is a seasoned IT executive and Agile transformation leader with years of experience driving large-scale technology initiatives across the cruise, hospitality, and enterprise sectors. Currently an IT Agile Technical Project Manager at Royal Caribbean International, he orchestrates multi-million-dollar digital transformation programs spanning global operations.',
     'founder.bio.p2': 'Passionate about democratizing professional education, Didier founded Aladiah Academy to bring world-class Scrum Master and Project Management training to emerging markets — powered by cutting-edge AI tools that personalize the learning journey for every student.',
-    'founder.credential1': 'Senior PM at Royal Caribbean International — leading cross-functional teams across 5 countries',
+    'founder.credential1': 'IT Agile Technical PM at Royal Caribbean International — leading cross-functional teams across 5 countries',
     'founder.credential2': 'Certified Scrum Master (CSM), PMP, and SAFe Agilist with years of experience in enterprise IT',
     'founder.credential3': 'AI & Education innovator — pioneering AI-powered curriculum design for professional training',
     'founder.credential4': 'Multilingual leader fluent in 4 languages, building a global academy across 7 languages',
@@ -202,9 +202,9 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'Líder Visionario en Educación Agile e IA',
-    'founder.bio.p1': 'Didier es un ejecutivo de TI experimentado y líder en transformación Agile con años de experiencia impulsando iniciativas tecnológicas a gran escala en los sectores de cruceros, hospitalidad y empresarial. Actualmente Gerente Senior de Proyectos en Royal Caribbean International, orquesta programas de transformación digital multimillonarios a nivel global.',
+    'founder.bio.p1': 'Didier es un ejecutivo de TI experimentado y líder en transformación Agile con años de experiencia impulsando iniciativas tecnológicas a gran escala en los sectores de cruceros, hospitalidad y empresarial. Actualmente IT Agile Technical Project Manager en Royal Caribbean International, orquesta programas de transformación digital multimillonarios a nivel global.',
     'founder.bio.p2': 'Apasionado por democratizar la educación profesional, Didier fundó Aladiah Academy para llevar formación de clase mundial en Scrum Master y Gestión de Proyectos a mercados emergentes — impulsada por herramientas de IA de vanguardia que personalizan el viaje de aprendizaje de cada estudiante.',
-    'founder.credential1': 'PM Senior en Royal Caribbean International — lidera equipos multifuncionales en 5 países',
+    'founder.credential1': 'IT Agile Technical PM en Royal Caribbean International — lidera equipos multifuncionales en 5 países',
     'founder.credential2': 'Scrum Master Certificado (CSM), PMP y SAFe Agilist con años de experiencia en TI empresarial',
     'founder.credential3': 'Innovador en IA y Educación — pionero en diseño curricular con IA para formación profesional',
     'founder.credential4': 'Líder multilingüe fluido en 4 idiomas, construyendo una academia global en 7 idiomas',
@@ -320,9 +320,9 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': '敏捷与AI教育的远见领导者',
-    'founder.bio.p1': 'Didier是一位经验丰富的IT高管和敏捷转型领导者，拥有多年推动邮轮、酒店和企业领域大规模技术计划的经验。目前担任皇家加勒比国际公司高级项目经理，他策划跨全球运营的数百万美元数字化转型项目。',
+    'founder.bio.p1': 'Didier是一位经验丰富的IT高管和敏捷转型领导者，拥有多年推动邮轮、酒店和企业领域大规模技术计划的经验。目前担任皇家加勒比国际公司IT敏捷技术项目经理，他策划跨全球运营的数百万美元数字化转型项目。',
     'founder.bio.p2': 'Didier热衷于教育民主化，创立了Aladiah Academy，旨在将世界一流的Scrum Master和项目管理培训带到新兴市场——借助前沿AI工具为每位学员个性化学习旅程。',
-    'founder.credential1': '皇家加勒比国际高级项目经理——在5个国家领导跨职能团队',
+    'founder.credential1': '皇家加勒比国际IT敏捷技术项目经理——在5个国家领导跨职能团队',
     'founder.credential2': '认证Scrum Master (CSM)、PMP和SAFe敏捷师，多年企业IT经验',
     'founder.credential3': 'AI与教育创新者——开创AI驱动的专业培训课程设计',
     'founder.credential4': '精通4种语言的多语言领导者，正在构建一所覆盖7种语言的全球学院',
@@ -438,9 +438,9 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'قائد صاحب رؤية في تعليم Agile والذكاء الاصطناعي',
-    'founder.bio.p1': 'ديدييه هو مدير تنفيذي متمرس في تقنية المعلومات وقائد في التحول الرشيق مع سنوات من الخبرة في قيادة مبادرات التكنولوجيا واسعة النطاق في قطاعات الرحلات البحرية والضيافة والمؤسسات. يعمل حاليًا كمدير مشاريع أول في Royal Caribbean International، وينظم برامج تحول رقمي بملايين الدولارات عبر العمليات العالمية.',
+    'founder.bio.p1': 'ديدييه هو مدير تنفيذي متمرس في تقنية المعلومات وقائد في التحول الرشيق مع سنوات من الخبرة في قيادة مبادرات التكنولوجيا واسعة النطاق في قطاعات الرحلات البحرية والضيافة والمؤسسات. يعمل حاليًا كمدير مشاريع تقني IT Agile في Royal Caribbean International، وينظم برامج تحول رقمي بملايين الدولارات عبر العمليات العالمية.',
     'founder.bio.p2': 'شغوف بديمقراطية التعليم المهني، أسس ديدييه أكاديمية علاديا لتقديم تدريب عالمي المستوى في Scrum Master وإدارة المشاريع للأسواق الناشئة — مدعومة بأدوات ذكاء اصطناعي متطورة تخصص رحلة التعلم لكل طالب.',
-    'founder.credential1': 'مدير مشاريع أول في Royal Caribbean International — يقود فرقًا متعددة الوظائف في 5 دول',
+    'founder.credential1': 'IT Agile Technical PM في Royal Caribbean International — يقود فرقًا متعددة الوظائف في 5 دول',
     'founder.credential2': 'Scrum Master معتمد (CSM)، PMP وSAFe Agilist مع سنوات من الخبرة في تقنية المعلومات المؤسسية',
     'founder.credential3': 'مبتكر في الذكاء الاصطناعي والتعليم — رائد في تصميم المناهج المدعومة بالذكاء الاصطناعي للتدريب المهني',
     'founder.credential4': 'قائد متعدد اللغات يتحدث 4 لغات بطلاقة، يبني أكاديمية عالمية بـ 7 لغات',
@@ -556,9 +556,9 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'Leader Visionnaire en Éducation Agile et IA',
-    'founder.bio.p1': 'Didier est un cadre IT chevronné et leader de la transformation Agile avec des années d\'expérience dans la conduite d\'initiatives technologiques à grande échelle dans les secteurs des croisières, de l\'hôtellerie et de l\'entreprise. Actuellement Chef de Projet Senior chez Royal Caribbean International, il orchestre des programmes de transformation numérique de plusieurs millions de dollars à travers les opérations mondiales.',
+    'founder.bio.p1': 'Didier est un cadre IT chevronné et leader de la transformation Agile avec des années d\'expérience dans la conduite d\'initiatives technologiques à grande échelle dans les secteurs des croisières, de l\'hôtellerie et de l\'entreprise. Actuellement IT Agile Technical Project Manager chez Royal Caribbean International, il orchestre des programmes de transformation numérique de plusieurs millions de dollars à travers les opérations mondiales.',
     'founder.bio.p2': 'Passionné par la démocratisation de l\'éducation professionnelle, Didier a fondé Aladiah Academy pour apporter une formation de classe mondiale en Scrum Master et Gestion de Projet aux marchés émergents — propulsée par des outils IA de pointe qui personnalisent le parcours d\'apprentissage de chaque étudiant.',
-    'founder.credential1': 'PM Senior chez Royal Caribbean International — dirige des équipes pluridisciplinaires dans 5 pays',
+    'founder.credential1': 'IT Agile Technical PM chez Royal Caribbean International — dirige des équipes pluridisciplinaires dans 5 pays',
     'founder.credential2': 'Scrum Master Certifié (CSM), PMP et SAFe Agilist avec des années d\'expérience en IT d\'entreprise',
     'founder.credential3': 'Innovateur en IA et Éducation — pionnier de la conception curriculaire par IA pour la formation professionnelle',
     'founder.credential4': 'Leader multilingue parlant couramment 4 langues, construisant une académie mondiale en 7 langues',
@@ -674,9 +674,9 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'Visionärer Führer in Agile & KI-Bildung',
-    'founder.bio.p1': 'Didier ist ein erfahrener IT-Führungskraft und Agile-Transformationsleiter mit jahrelanger Erfahrung in der Leitung großer Technologieinitiativen in der Kreuzfahrt-, Gastgewerbe- und Unternehmensbranche. Derzeit Senior-Projektmanager bei Royal Caribbean International, orchestriert er millionenschwere digitale Transformationsprogramme über globale Operationen hinweg.',
+    'founder.bio.p1': 'Didier ist ein erfahrener IT-Führungskraft und Agile-Transformationsleiter mit jahrelanger Erfahrung in der Leitung großer Technologieinitiativen in der Kreuzfahrt-, Gastgewerbe- und Unternehmensbranche. Derzeit IT Agile Technical Project Manager bei Royal Caribbean International, orchestriert er millionenschwere digitale Transformationsprogramme über globale Operationen hinweg.',
     'founder.bio.p2': 'Leidenschaftlich für die Demokratisierung der Berufsausbildung gründete Didier die Aladiah Academy, um erstklassige Scrum Master und Projektmanagement-Ausbildung in aufstrebende Märkte zu bringen — angetrieben von modernsten KI-Tools, die den Lernweg jedes Studenten personalisieren.',
-    'founder.credential1': 'Senior PM bei Royal Caribbean International — leitet funktionsübergreifende Teams in 5 Ländern',
+    'founder.credential1': 'IT Agile Technical PM bei Royal Caribbean International — leitet funktionsübergreifende Teams in 5 Ländern',
     'founder.credential2': 'Zertifizierter Scrum Master (CSM), PMP und SAFe Agilist mit jahrelanger Erfahrung in Unternehmens-IT',
     'founder.credential3': 'KI & Bildungsinnovator — Pionier im KI-gestützten Curriculumdesign für Berufsausbildung',
     'founder.credential4': 'Mehrsprachiger Leader fließend in 4 Sprachen, baut eine globale Akademie in 7 Sprachen auf',
@@ -792,9 +792,9 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'アジャイル＆AI教育の先見的リーダー',
-    'founder.bio.p1': 'Didierは、クルーズ、ホスピタリティ、エンタープライズセクターにおいて大規模なテクノロジーイニシアチブを推進してきた豊富な経験を持つ熟練したITエグゼクティブ兼アジャイル変革リーダーです。現在Royal Caribbean Internationalのシニアプロジェクトマネージャーとして、グローバルオペレーション全体で数百万ドル規模のデジタルトランスフォーメーションプログラムを統括しています。',
+    'founder.bio.p1': 'Didierは、クルーズ、ホスピタリティ、エンタープライズセクターにおいて大規模なテクノロジーイニシアチブを推進してきた豊富な経験を持つ熟練したITエグゼクティブ兼アジャイル変革リーダーです。現在Royal Caribbean InternationalのIT Agile Technical Project Managerとして、グローバルオペレーション全体で数百万ドル規模のデジタルトランスフォーメーションプログラムを統括しています。',
     'founder.bio.p2': 'プロフェッショナル教育の民主化に情熱を持ち、DidierはAladiah Academyを設立し、世界クラスのスクラムマスターおよびプロジェクトマネジメント研修を新興市場に届けています——最先端のAIツールが各学生の学習旅路をパーソナライズします。',
-    'founder.credential1': 'Royal Caribbean Internationalシニアプロジェクトマネージャー——5カ国でクロスファンクショナルチームをリード',
+    'founder.credential1': 'Royal Caribbean International IT Agile Technical PM——5カ国でクロスファンクショナルチームをリード',
     'founder.credential2': '認定スクラムマスター（CSM）、PMP、SAFe Agilist、エンタープライズITの豊富な経験',
     'founder.credential3': 'AI＆教育イノベーター——専門研修のためのAI駆動カリキュラムデザインのパイオニア',
     'founder.credential4': '4言語に堪能な多言語リーダー、7言語でグローバルアカデミーを構築中',
