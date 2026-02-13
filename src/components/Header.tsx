@@ -23,6 +23,8 @@ const Header = () => {
     { key: 'nav.programs', href: '#programs' },
     { key: 'nav.about', href: '#about' },
     { key: 'nav.contact', href: '#contact' },
+    { key: 'nav.community', href: '/community', isRoute: true },
+    { key: 'nav.feedback', href: '/feedback', isRoute: true },
   ];
 
   return (
@@ -52,6 +54,12 @@ const Header = () => {
               <motion.a
                 key={item.key}
                 href={item.href}
+                onClick={(e) => {
+                  if ((item as any).isRoute) {
+                    e.preventDefault();
+                    navigate(item.href);
+                  }
+                }}
                 className="px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 font-medium text-sm"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -130,7 +138,13 @@ const Header = () => {
                   key={item.key}
                   href={item.href}
                   className="py-3 px-4 text-foreground hover:bg-muted/50 rounded-xl transition-colors font-medium"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={(e) => {
+                    setIsMenuOpen(false);
+                    if ((item as any).isRoute) {
+                      e.preventDefault();
+                      navigate(item.href);
+                    }
+                  }}
                 >
                   {t(item.key)}
                 </a>
