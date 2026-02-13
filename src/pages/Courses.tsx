@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GraduationCap, BookOpen, ChevronRight, LogOut, Play, CheckCircle, Lock, ShieldCheck, FlaskConical } from 'lucide-react';
-import aladiahLogo from '@/assets/aladiah-header-logo-transparent.png';
+import aladiahLogo from '@/assets/aladiah-header-logo.png';
 import { 
   courseUITranslations, 
   getTranslatedContent,
@@ -401,7 +401,7 @@ const Courses = () => {
       <header className="border-b bg-white sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <img src={aladiahLogo} alt="Aladiah Academy" className="h-14 w-auto" />
+            <img src={aladiahLogo} alt="Aladiah Academy" className="h-20 w-auto object-contain" />
           </Link>
           <div className="flex items-center gap-3">
             <Link to="/community"><Button variant="ghost" size="sm">Community</Button></Link>
