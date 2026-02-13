@@ -23,7 +23,7 @@ const Footer = () => {
             {/* Brand */}
             <div className="lg:col-span-2">
               <div className="mb-6">
-                <img src={aladiahLogo} alt="Aladiah Academy" className="h-40 w-auto object-contain mix-blend-screen" />
+                <img src={aladiahLogo} alt="Aladiah Academy" className="h-[12.5rem] w-auto object-contain mix-blend-screen" />
               </div>
               <p className="text-white/60 max-w-md mb-6 leading-relaxed">
                 {t('footer.description')}
