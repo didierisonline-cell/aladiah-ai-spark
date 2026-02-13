@@ -83,16 +83,12 @@ const Enroll = () => {
 
     setLoading(true);
     try {
-      // TODO: Wire Stripe checkout here
-      // This will call an edge function that:
-      // 1. Creates a Stripe checkout session for $1,999
-      // 2. On success webhook: creates user account with temp password
-      // 3. Sends payment confirmation email
-      // 4. Sends login credentials email
+      // Temporarily bypass payment and redirect to courses
       toast({
-        title: 'Payment integration coming soon',
-        description: 'Stripe checkout will be connected shortly. Your enrollment details have been captured.',
+        title: 'Welcome!',
+        description: 'Payment will be enabled soon. Redirecting to your course...',
       });
+      setTimeout(() => navigate('/courses'), 1500);
     } catch (err: any) {
       toast({ title: err.message || 'Something went wrong', variant: 'destructive' });
     } finally {
