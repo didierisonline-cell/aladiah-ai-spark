@@ -3,7 +3,7 @@ import { ArrowRight, Sparkles, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
-import aladiahSeal from '@/assets/aladiah-seal-transparent.png';
+import aladiahSeal from '@/assets/aladiah-full-seal.png';
 
 const CTA = () => {
   const { t } = useLanguage();
@@ -80,7 +80,7 @@ const CTA = () => {
             <img
               src={aladiahSeal}
               alt="Aladiah Academy Seal"
-              className="w-48 h-auto lg:w-64 mx-auto drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+              className="w-48 h-auto lg:w-64 mx-auto brightness-[2] contrast-[1.2] mix-blend-screen opacity-70 drop-shadow-[0_0_30px_rgba(255,255,255,0.15)]"
             />
           </motion.div>
         </div>
