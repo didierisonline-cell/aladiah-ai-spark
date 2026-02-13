@@ -6,11 +6,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import ProgressBar from '@/components/ProgressBar';
 import IntroForm from '@/components/community/IntroForm';
 import PostCard from '@/components/community/PostCard';
 import { GraduationCap, LogOut, Send, MessageCircle, Sparkles } from 'lucide-react';
 import aladiahLogo from '@/assets/aladiah-header-logo.png';
+import { communityTranslations, type SupportedLanguage } from '@/utils/communityTranslations';
 
 interface PostData {
   id: string;
@@ -25,6 +27,11 @@ interface PostData {
 
 const Community = () => {
   const { user, loading: authLoading } = useAuth();
+  const { language } = useLanguage();
+  const supportedLangs: SupportedLanguage[] = ['en', 'es', 'zh', 'ar', 'fr', 'de', 'ja'];
+  const currentLang = supportedLangs.includes(language as SupportedLanguage) ? (language as SupportedLanguage) : 'en';
+  const ct = communityTranslations[currentLang];
+
   const [hasCompletedIntro, setHasCompletedIntro] = useState<boolean | null>(null);
   const [posts, setPosts] = useState<PostData[]>([]);
   const [newPost, setNewPost] = useState('');
@@ -197,14 +204,14 @@ const Community = () => {
           </Link>
           <div className="flex items-center gap-3">
             <Link to="/courses">
-              <Button variant="ghost" size="sm">My Courses</Button>
+              <Button variant="ghost" size="sm">{ct.myCourses}</Button>
             </Link>
             <Link to="/feedback">
-              <Button variant="ghost" size="sm">Feedback</Button>
+              <Button variant="ghost" size="sm">{ct.feedback}</Button>
             </Link>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="w-4 h-4 mr-2" />
-              Logout
+              {ct.logout}
             </Button>
           </div>
         </div>
@@ -231,10 +238,10 @@ const Community = () => {
             >
               <h1 className="text-3xl font-display font-bold text-foreground mb-2 flex items-center gap-3">
                 <MessageCircle className="w-8 h-8 text-primary" />
-                Community
+                {ct.communityTitle}
               </h1>
               <p className="text-muted-foreground">
-                Connect with fellow students, share findings, and welcome new members.
+                {ct.communitySubtitle}
               </p>
             </motion.div>
 
@@ -244,7 +251,7 @@ const Community = () => {
                 <Textarea
                   value={newPost}
                   onChange={(e) => setNewPost(e.target.value)}
-                  placeholder="Share something with the community..."
+                  placeholder={ct.sharePlaceholder}
                   className="min-h-[80px]"
                 />
                 <Button
@@ -254,7 +261,7 @@ const Community = () => {
                   className="self-end"
                 >
                   <Send className="w-4 h-4 mr-2" />
-                  Post
+                  {ct.post}
                 </Button>
               </div>
             </div>
@@ -263,12 +270,12 @@ const Community = () => {
             {loadingPosts ? (
               <div className="text-center py-12">
                 <Sparkles className="w-8 h-8 text-primary animate-pulse mx-auto mb-2" />
-                <p className="text-muted-foreground">Loading posts...</p>
+                <p className="text-muted-foreground">{ct.loadingPosts}</p>
               </div>
             ) : posts.length === 0 ? (
               <div className="text-center py-12">
                 <MessageCircle className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-muted-foreground">No posts yet. Be the first to share!</p>
+                <p className="text-muted-foreground">{ct.noPosts} {ct.beFirst}</p>
               </div>
             ) : (
               <div className="space-y-4">

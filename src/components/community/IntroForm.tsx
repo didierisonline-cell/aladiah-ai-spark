@@ -6,7 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Sparkles } from 'lucide-react';
+import { communityTranslations, type SupportedLanguage } from '@/utils/communityTranslations';
 
 interface IntroFormProps {
   userId: string;
@@ -15,6 +17,11 @@ interface IntroFormProps {
 }
 
 const IntroForm = ({ userId, fullName, onComplete }: IntroFormProps) => {
+  const { language } = useLanguage();
+  const supportedLangs: SupportedLanguage[] = ['en', 'es', 'zh', 'ar', 'fr', 'de', 'ja'];
+  const currentLang = supportedLangs.includes(language as SupportedLanguage) ? (language as SupportedLanguage) : 'en';
+  const ct = communityTranslations[currentLang];
+
   const [whoAmI, setWhoAmI] = useState('');
   const [whereFrom, setWhereFrom] = useState('');
   const [howLearned, setHowLearned] = useState('');
@@ -27,7 +34,7 @@ const IntroForm = ({ userId, fullName, onComplete }: IntroFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!whoAmI || !whereFrom || !howLearned || !goals || !sixMonthGoals || !pledge) {
-      toast({ title: 'All fields are required', variant: 'destructive' });
+      toast({ title: ct.allFieldsRequired, variant: 'destructive' });
       return;
     }
 
@@ -35,13 +42,12 @@ const IntroForm = ({ userId, fullName, onComplete }: IntroFormProps) => {
     try {
       const introData = { whoAmI, whereFrom, howLearned, goals, sixMonthGoals, pledge };
 
-      // Build formatted post content
-      const content = `👋 Hey everyone! I'm **${fullName}**!\n\n` +
-        `📍 **Where I'm from:** ${whereFrom}\n\n` +
-        `🔍 **How I found Aladiah Academy:** ${howLearned}\n\n` +
-        `🎯 **What I want to achieve:** ${goals}\n\n` +
-        `📅 **My 6-month goals:** ${sixMonthGoals}\n\n` +
-        `🤝 **My pledge & commitment:** ${pledge}`;
+      const content = `${ct.introHey} **${fullName}**!\n\n` +
+        `${ct.introFrom} ${whereFrom}\n\n` +
+        `${ct.introHow} ${howLearned}\n\n` +
+        `${ct.introGoals} ${goals}\n\n` +
+        `${ct.introSixMonth} ${sixMonthGoals}\n\n` +
+        `${ct.introPledge} ${pledge}`;
 
       const { error } = await supabase.from('community_posts').insert({
         user_id: userId,
@@ -52,13 +58,12 @@ const IntroForm = ({ userId, fullName, onComplete }: IntroFormProps) => {
 
       if (error) throw error;
 
-      // Mark intro as completed
       await supabase
         .from('profiles')
         .update({ has_completed_intro: true })
         .eq('user_id', userId);
 
-      toast({ title: 'Welcome to the community! 🎉' });
+      toast({ title: ct.welcomeToast });
       onComplete();
     } catch (error: any) {
       toast({ title: 'Error', description: error.message, variant: 'destructive' });
@@ -68,12 +73,12 @@ const IntroForm = ({ userId, fullName, onComplete }: IntroFormProps) => {
   };
 
   const fields = [
-    { label: 'Who are you? Tell us about yourself', value: whoAmI, setter: setWhoAmI, placeholder: 'Share a bit about your background, career, and passions...' },
-    { label: 'Where are you from?', value: whereFrom, setter: setWhereFrom, placeholder: 'Your city, country...' },
-    { label: 'How did you learn about Aladiah Academy?', value: howLearned, setter: setHowLearned, placeholder: 'Social media, a friend, Google search...' },
-    { label: 'What do you want to achieve?', value: goals, setter: setGoals, placeholder: 'Your career aspirations and learning goals...' },
-    { label: 'What are your 6-month goals from now?', value: sixMonthGoals, setter: setSixMonthGoals, placeholder: 'Where do you see yourself in 6 months...' },
-    { label: 'What do you pledge and commit to do?', value: pledge, setter: setPledge, placeholder: 'Your commitment to this learning journey...' },
+    { label: ct.whoAreYou, value: whoAmI, setter: setWhoAmI, placeholder: ct.whoPlaceholder },
+    { label: ct.whereFrom, value: whereFrom, setter: setWhereFrom, placeholder: ct.wherePlaceholder },
+    { label: ct.howLearned, value: howLearned, setter: setHowLearned, placeholder: ct.howPlaceholder },
+    { label: ct.whatAchieve, value: goals, setter: setGoals, placeholder: ct.whatPlaceholder },
+    { label: ct.sixMonthGoals, value: sixMonthGoals, setter: setSixMonthGoals, placeholder: ct.sixMonthPlaceholder },
+    { label: ct.pledgeLabel, value: pledge, setter: setPledge, placeholder: ct.pledgePlaceholder },
   ];
 
   return (
@@ -87,10 +92,8 @@ const IntroForm = ({ userId, fullName, onComplete }: IntroFormProps) => {
           <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
             <Sparkles className="w-8 h-8 text-primary" />
           </div>
-          <CardTitle className="text-2xl font-display">Welcome to the Community!</CardTitle>
-          <CardDescription>
-            Introduce yourself to your fellow students. This will be posted as your introduction in the community.
-          </CardDescription>
+          <CardTitle className="text-2xl font-display">{ct.welcomeCommunity}</CardTitle>
+          <CardDescription>{ct.introSubtitle}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -107,7 +110,7 @@ const IntroForm = ({ userId, fullName, onComplete }: IntroFormProps) => {
               </div>
             ))}
             <Button type="submit" variant="coral" className="w-full" disabled={submitting}>
-              {submitting ? 'Submitting...' : 'Post My Introduction'}
+              {submitting ? ct.submitting : ct.postIntro}
             </Button>
           </form>
         </CardContent>
