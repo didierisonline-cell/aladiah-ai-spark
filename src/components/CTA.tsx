@@ -3,7 +3,7 @@ import { ArrowRight, Sparkles, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
-import aladiahSeal from '@/assets/aladiah-full-seal.png';
+import aladiahSeal from '@/assets/aladiah-seal-only.png';
 
 const CTA = () => {
   const { t } = useLanguage();
