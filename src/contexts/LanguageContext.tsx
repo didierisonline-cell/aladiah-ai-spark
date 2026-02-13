@@ -26,6 +26,8 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.about': 'About',
     'nav.contact': 'Contact',
     'nav.enroll': 'Enroll Now',
+    'nav.community': 'Community',
+    'nav.feedback': 'Feedback',
     
     // Hero
     'hero.badge': 'AI-Powered Professional Training',
@@ -142,6 +144,8 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.about': 'Nosotros',
     'nav.contact': 'Contacto',
     'nav.enroll': 'Inscríbete',
+    'nav.community': 'Comunidad',
+    'nav.feedback': 'Comentarios',
     
     // Hero
     'hero.badge': 'Formación Profesional con IA',
@@ -258,6 +262,8 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.about': '关于我们',
     'nav.contact': '联系我们',
     'nav.enroll': '立即报名',
+    'nav.community': '社区',
+    'nav.feedback': '反馈',
     
     // Hero
     'hero.badge': 'AI驱动的专业培训',
@@ -374,6 +380,8 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.about': 'من نحن',
     'nav.contact': 'اتصل بنا',
     'nav.enroll': 'سجل الآن',
+    'nav.community': 'المجتمع',
+    'nav.feedback': 'ملاحظات',
     
     // Hero
     'hero.badge': 'تدريب مهني مدعوم بالذكاء الاصطناعي',
@@ -490,6 +498,8 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.about': 'À propos',
     'nav.contact': 'Contact',
     'nav.enroll': 'S\'inscrire',
+    'nav.community': 'Communauté',
+    'nav.feedback': 'Avis',
     
     // Hero
     'hero.badge': 'Formation Professionnelle Alimentée par l\'IA',
@@ -606,6 +616,8 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.about': 'Über uns',
     'nav.contact': 'Kontakt',
     'nav.enroll': 'Jetzt anmelden',
+    'nav.community': 'Gemeinschaft',
+    'nav.feedback': 'Feedback',
     
     // Hero
     'hero.badge': 'KI-gestützte Berufsausbildung',
@@ -722,6 +734,8 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.about': '私たちについて',
     'nav.contact': 'お問い合わせ',
     'nav.enroll': '今すぐ登録',
+    'nav.community': 'コミュニティ',
+    'nav.feedback': 'フィードバック',
     
     // Hero
     'hero.badge': 'AI駆動のプロフェッショナルトレーニング',
