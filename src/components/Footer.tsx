@@ -1,15 +1,18 @@
 import { Mail, MapPin, Phone, Linkedin, ArrowUpRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNavigate } from 'react-router-dom';
 import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
 
 const Footer = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   const links = [
     { key: 'nav.home', href: '#home' },
     { key: 'nav.programs', href: '#programs' },
     { key: 'nav.about', href: '#about' },
     { key: 'nav.contact', href: '#contact' },
+    { key: 'nav.store', href: '/store', isRoute: true },
   ];
 
   return (
@@ -52,6 +55,12 @@ const Footer = () => {
                   <li key={link.key}>
                     <a
                       href={link.href}
+                      onClick={(e) => {
+                        if ((link as any).isRoute) {
+                          e.preventDefault();
+                          navigate(link.href);
+                        }
+                      }}
                       className="text-white/60 hover:text-white transition-colors flex items-center gap-1 group"
                     >
                       {t(link.key)}
