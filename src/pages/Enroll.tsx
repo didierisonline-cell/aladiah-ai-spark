@@ -10,6 +10,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import WaitlistModal from '@/components/WaitlistModal';
+import { enrollTranslations, type SupportedLanguage } from '@/utils/enrollTranslations';
 
 const enrollmentSchema = z.object({
   fullName: z.string().trim().min(1, 'Full name is required').max(100),
@@ -44,11 +45,15 @@ const countries = [
 ];
 
 const Enroll = () => {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const courseParam = searchParams.get('course') || 'scrum';
+
+  const supportedLangs: SupportedLanguage[] = ['en', 'es', 'zh', 'ar', 'fr', 'de', 'ja'];
+  const currentLang = supportedLangs.includes(language as SupportedLanguage) ? (language as SupportedLanguage) : 'en';
+  const et = enrollTranslations[currentLang];
 
   const [waitlistOpen, setWaitlistOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -83,10 +88,9 @@ const Enroll = () => {
 
     setLoading(true);
     try {
-      // Temporarily bypass payment and redirect to courses
       toast({
-        title: 'Welcome!',
-        description: 'Payment will be enabled soon. Redirecting to your course...',
+        title: et.welcome,
+        description: et.paymentSoon,
       });
       setTimeout(() => navigate('/courses'), 1500);
     } catch (err: any) {
@@ -106,12 +110,12 @@ const Enroll = () => {
             className="flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground transition-colors mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm font-medium">Back to Home</span>
+            <span className="text-sm font-medium">{et.backToHome}</span>
           </button>
           <h1 className="text-2xl sm:text-3xl font-display font-bold">
-            {isScrum ? 'Scrum Master Certification Course' : 'Project Management Professional'}
+            {isScrum ? et.scrumTitle : et.pmpTitle}
           </h1>
-          <p className="text-primary-foreground/80 mt-1">Enrollment Application</p>
+          <p className="text-primary-foreground/80 mt-1">{et.enrollmentApplication}</p>
         </div>
       </div>
 
@@ -126,30 +130,30 @@ const Enroll = () => {
           >
             <div className="bg-card rounded-2xl p-8 shadow-soft border border-border/50">
               <h2 className="text-xl font-display font-bold text-foreground mb-6">
-                Your Information
+                {et.yourInfo}
               </h2>
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <Label htmlFor="fullName">Full Name *</Label>
+                    <Label htmlFor="fullName">{et.fullName} *</Label>
                     <Input
                       id="fullName"
                       value={form.fullName}
                       onChange={e => updateField('fullName', e.target.value)}
-                      placeholder="John Doe"
+                      placeholder={et.fullNamePlaceholder}
                       required
                       maxLength={100}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email Address *</Label>
+                    <Label htmlFor="email">{et.emailAddress} *</Label>
                     <Input
                       id="email"
                       type="email"
                       value={form.email}
                       onChange={e => updateField('email', e.target.value)}
-                      placeholder="john@company.com"
+                      placeholder={et.emailPlaceholder}
                       required
                       maxLength={255}
                     />
@@ -158,22 +162,22 @@ const Enroll = () => {
 
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number *</Label>
+                    <Label htmlFor="phone">{et.phoneNumber} *</Label>
                     <Input
                       id="phone"
                       type="tel"
                       value={form.phone}
                       onChange={e => updateField('phone', e.target.value)}
-                      placeholder="+1 (555) 123-4567"
+                      placeholder={et.phonePlaceholder}
                       required
                       maxLength={20}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="country">Country *</Label>
+                    <Label htmlFor="country">{et.country} *</Label>
                     <Select value={form.country} onValueChange={v => updateField('country', v)}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your country" />
+                        <SelectValue placeholder={et.selectCountry} />
                       </SelectTrigger>
                       <SelectContent>
                         {countries.map(c => (
@@ -186,22 +190,22 @@ const Enroll = () => {
 
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <Label htmlFor="company">Company <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                    <Label htmlFor="company">{et.company} <span className="text-muted-foreground text-xs">({et.optional})</span></Label>
                     <Input
                       id="company"
                       value={form.company}
                       onChange={e => updateField('company', e.target.value)}
-                      placeholder="Acme Corp"
+                      placeholder={et.companyPlaceholder}
                       maxLength={100}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="jobTitle">Job Title <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                    <Label htmlFor="jobTitle">{et.jobTitle} <span className="text-muted-foreground text-xs">({et.optional})</span></Label>
                     <Input
                       id="jobTitle"
                       value={form.jobTitle}
                       onChange={e => updateField('jobTitle', e.target.value)}
-                      placeholder="Software Engineer"
+                      placeholder={et.jobTitlePlaceholder}
                       maxLength={100}
                     />
                   </div>
@@ -210,12 +214,12 @@ const Enroll = () => {
                 <div className="pt-4">
                   {isScrum ? (
                     <Button type="submit" variant="coral" size="lg" className="w-full" disabled={loading}>
-                      {loading ? 'Processing...' : 'Proceed to Payment — $1,999'}
+                      {loading ? et.processing : et.proceedToPayment}
                       <ArrowRight className="w-4 h-4" />
                     </Button>
                   ) : (
                     <Button type="submit" variant="default" size="lg" className="w-full" disabled={loading}>
-                      {loading ? 'Processing...' : 'Join Waitlist'}
+                      {loading ? et.processing : et.joinWaitlist}
                       <ArrowRight className="w-4 h-4" />
                     </Button>
                   )}
@@ -234,24 +238,24 @@ const Enroll = () => {
             {/* Course Summary */}
             <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
               <h3 className="font-display font-bold text-foreground mb-4">
-                {isScrum ? 'Scrum Master Certification Course' : 'Project Management Professional'}
+                {isScrum ? et.scrumTitle : et.pmpTitle}
               </h3>
 
               <div className="space-y-3 text-sm">
                 <div className="flex items-center gap-3 text-muted-foreground">
                   <Clock className="w-4 h-4 flex-shrink-0" />
-                  <span>{isScrum ? '8 weeks' : '12 weeks'}</span>
+                  <span>{isScrum ? et.weeks8 : et.weeks12}</span>
                 </div>
                 <div className="flex items-center gap-3 text-muted-foreground">
                   <Users className="w-4 h-4 flex-shrink-0" />
-                  <span>100% online learning</span>
+                  <span>{et.onlineLearning}</span>
                 </div>
               </div>
 
               {isScrum && (
                 <div className="mt-6 pt-4 border-t border-border">
                   <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground text-sm">Total</span>
+                    <span className="text-muted-foreground text-sm">{et.total}</span>
                     <span className="text-2xl font-display font-bold text-foreground">$1,999</span>
                   </div>
                 </div>
@@ -260,13 +264,8 @@ const Enroll = () => {
 
             {/* Trust signals */}
             <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50 space-y-4">
-              <h4 className="font-display font-semibold text-foreground text-sm">What's Included</h4>
-              {[
-                'Full course access & materials',
-                'Live project simulations',
-                'AI-powered learning tools',
-                'Lifetime community access',
-              ].map((item, i) => (
+              <h4 className="font-display font-semibold text-foreground text-sm">{et.whatsIncluded}</h4>
+              {[et.fullAccess, et.liveProjects, et.aiTools, et.communityAccess].map((item, i) => (
                 <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                   <CheckCircle className="w-4 h-4 text-secondary flex-shrink-0 mt-0.5" />
                   <span>{item}</span>
@@ -277,7 +276,7 @@ const Enroll = () => {
             {/* Security */}
             <div className="flex items-center gap-3 text-xs text-muted-foreground px-2">
               <Shield className="w-4 h-4 flex-shrink-0" />
-              <span>Secure payment processing. Your data is encrypted and protected.</span>
+              <span>{et.securePayment}</span>
             </div>
           </motion.div>
         </div>
