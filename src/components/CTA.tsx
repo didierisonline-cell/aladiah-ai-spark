@@ -77,11 +77,13 @@ const CTA = () => {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="mt-14"
           >
-            <img
-              src={aladiahSeal}
-              alt="Aladiah Academy Seal"
-              className="w-48 h-auto lg:w-64 mx-auto mix-blend-multiply opacity-60 drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]"
-            />
+            <div className="w-56 h-56 lg:w-72 lg:h-72 mx-auto rounded-full overflow-hidden drop-shadow-[0_0_30px_rgba(255,255,255,0.15)]">
+              <img
+                src={aladiahSeal}
+                alt="Aladiah Academy Seal"
+                className="w-full h-full object-cover scale-[1.35]"
+              />
+            </div>
           </motion.div>
         </div>
       </div>
