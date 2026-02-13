@@ -76,11 +76,11 @@ const About = () => {
               <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary-foreground/5 rounded-full translate-y-1/2 -translate-x-1/2" />
               
               <div className="relative mb-8">
-                <div className="w-40 h-40 lg:w-48 lg:h-48 rounded-full overflow-hidden border-4 border-primary-foreground/20 shadow-2xl ring-4 ring-primary-foreground/10 ring-offset-4 ring-offset-transparent">
+                <div className="w-52 h-64 lg:w-60 lg:h-72 rounded-2xl overflow-hidden border-4 border-primary-foreground/20 shadow-2xl ring-4 ring-primary-foreground/10 ring-offset-4 ring-offset-transparent">
                   <img 
                     src={founderPhoto} 
                     alt="Didier - Founder & CEO" 
-                    className="w-full h-full object-cover object-top scale-110"
+                    className="w-full h-full object-cover object-top"
                   />
                 </div>
                 <div className="absolute -bottom-2 -right-2 w-14 h-14 rounded-full bg-secondary flex items-center justify-center shadow-lg border-4 border-card">
