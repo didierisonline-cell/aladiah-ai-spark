@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GraduationCap, BookOpen, ChevronRight, LogOut, Play, CheckCircle, Lock, ShieldCheck, FlaskConical } from 'lucide-react';
-import aladiahLogo from '@/assets/aladiah-header-logo.png';
+import aladiahLogo from '@/assets/aladiah-header-logo-transparent.png';
 import { 
   courseUITranslations, 
   getTranslatedContent,
