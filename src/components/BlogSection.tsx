@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
+import LatamInsights from '@/components/LatamInsights';
 
 type BlogLanguage = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja';
 
@@ -439,6 +440,9 @@ const BlogSection = () => {
                   ))}
                 </div>
               </div>
+
+              {/* LATAM Salaries & DR Growth Charts */}
+              <LatamInsights />
 
               {/* Industries */}
               <div>
