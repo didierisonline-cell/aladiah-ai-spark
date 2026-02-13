@@ -253,6 +253,8 @@ export const courseUITranslations: Record<SupportedLanguage, {
   loading: string;
   settingUp: string;
   myCourses: string;
+  community: string;
+  feedback: string;
   subtitle: string;
   logout: string;
   complete: string;
@@ -278,6 +280,8 @@ export const courseUITranslations: Record<SupportedLanguage, {
     loading: 'Loading courses...',
     settingUp: 'Setting up your course...',
     myCourses: 'My Courses',
+    community: 'Community',
+    feedback: 'Feedback',
     subtitle: 'Continue your learning journey and earn your certification',
     logout: 'Logout',
     complete: 'complete',
@@ -303,6 +307,8 @@ export const courseUITranslations: Record<SupportedLanguage, {
     loading: 'Cargando cursos...',
     settingUp: 'Configurando tu curso...',
     myCourses: 'Mis Cursos',
+    community: 'Comunidad',
+    feedback: 'Comentarios',
     subtitle: 'Continúa tu viaje de aprendizaje y obtén tu certificación',
     logout: 'Cerrar Sesión',
     complete: 'completado',
@@ -328,6 +334,8 @@ export const courseUITranslations: Record<SupportedLanguage, {
     loading: '加载课程中...',
     settingUp: '正在设置您的课程...',
     myCourses: '我的课程',
+    community: '社区',
+    feedback: '反馈',
     subtitle: '继续您的学习之旅并获得认证',
     logout: '退出登录',
     complete: '已完成',
@@ -353,6 +361,8 @@ export const courseUITranslations: Record<SupportedLanguage, {
     loading: 'جاري تحميل الدورات...',
     settingUp: 'جاري إعداد دورتك...',
     myCourses: 'دوراتي',
+    community: 'المجتمع',
+    feedback: 'الملاحظات',
     subtitle: 'استمر في رحلة التعلم واحصل على شهادتك',
     logout: 'تسجيل الخروج',
     complete: 'مكتمل',
@@ -378,6 +388,8 @@ export const courseUITranslations: Record<SupportedLanguage, {
     loading: 'Chargement des cours...',
     settingUp: 'Configuration de votre cours...',
     myCourses: 'Mes Cours',
+    community: 'Communauté',
+    feedback: 'Avis',
     subtitle: 'Continuez votre parcours d\'apprentissage et obtenez votre certification',
     logout: 'Déconnexion',
     complete: 'terminé',
@@ -403,6 +415,8 @@ export const courseUITranslations: Record<SupportedLanguage, {
     loading: 'Kurse werden geladen...',
     settingUp: 'Ihr Kurs wird eingerichtet...',
     myCourses: 'Meine Kurse',
+    community: 'Gemeinschaft',
+    feedback: 'Rückmeldung',
     subtitle: 'Setzen Sie Ihre Lernreise fort und erhalten Sie Ihre Zertifizierung',
     logout: 'Abmelden',
     complete: 'abgeschlossen',
@@ -428,6 +442,8 @@ export const courseUITranslations: Record<SupportedLanguage, {
     loading: 'コースを読み込み中...',
     settingUp: 'コースを設定中...',
     myCourses: 'マイコース',
+    community: 'コミュニティ',
+    feedback: 'フィードバック',
     subtitle: '学習の旅を続けて認定資格を取得しましょう',
     logout: 'ログアウト',
     complete: '完了',
