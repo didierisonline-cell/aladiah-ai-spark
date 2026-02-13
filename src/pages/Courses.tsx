@@ -404,8 +404,8 @@ const Courses = () => {
             <img src={aladiahLogo} alt="Aladiah Academy" className="h-28 w-auto object-contain mix-blend-multiply" />
           </Link>
           <div className="flex items-center gap-3">
-            <Link to="/community"><Button variant="ghost" size="sm">Community</Button></Link>
-            <Link to="/feedback"><Button variant="ghost" size="sm">Feedback</Button></Link>
+            <Link to="/community"><Button variant="ghost" size="sm">{t.community}</Button></Link>
+            <Link to="/feedback"><Button variant="ghost" size="sm">{t.feedback}</Button></Link>
             <span className="text-sm text-muted-foreground">{user?.email}</span>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="w-4 h-4 mr-2" />
