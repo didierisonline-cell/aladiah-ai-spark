@@ -2,8 +2,6 @@ import { motion } from 'framer-motion';
 import { DollarSign, TrendingUp, Brain } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -16,28 +14,44 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 type LangKey = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja';
 
+// Sources: Digital.ai 17th State of Agile Report (2023), CertiProf Agile Adoption Report 2025
+// Global: 71% Agile adoption, 66% Scrum. DR lags global ~15-20pp but accelerating via nearshoring.
 const scrumGrowthDR = [
-  { year: '2018', adoption: 8 },
-  { year: '2019', adoption: 12 },
-  { year: '2020', adoption: 19 },
-  { year: '2021', adoption: 28 },
-  { year: '2022', adoption: 38 },
-  { year: '2023', adoption: 47 },
-  { year: '2024', adoption: 55 },
-  { year: '2025', adoption: 63 },
-  { year: '2026', adoption: 71 },
+  { year: '2018', adoption: 5 },
+  { year: '2019', adoption: 9 },
+  { year: '2020', adoption: 15 },
+  { year: '2021', adoption: 22 },
+  { year: '2022', adoption: 31 },
+  { year: '2023', adoption: 40 },
+  { year: '2024', adoption: 48 },
+  { year: '2025', adoption: 55 },
 ];
 
+// Sources: UNDP 2025 Global Survey on AI & Human Development, ILIA 2024 Latin American AI Index
+// UNDP: 85% of DR respondents have used AI tools — highest among surveyed developing economies
 const aiAdoptionDR = [
-  { year: '2019', adoption: 3 },
-  { year: '2020', adoption: 7 },
-  { year: '2021', adoption: 14 },
-  { year: '2022', adoption: 22 },
-  { year: '2023', adoption: 35 },
-  { year: '2024', adoption: 48 },
-  { year: '2025', adoption: 59 },
-  { year: '2026', adoption: 68 },
+  { year: '2019', adoption: 2 },
+  { year: '2020', adoption: 5 },
+  { year: '2021', adoption: 10 },
+  { year: '2022', adoption: 18 },
+  { year: '2023', adoption: 32 },
+  { year: '2024', adoption: 45 },
+  { year: '2025', adoption: 58 },
 ];
+
+// Salary sources shared across languages (no translation needed)
+const SCRUM_SOURCE = 'Sources: Digital.ai 17th State of Agile Report (2023), CertiProf Agile Adoption Report 2025';
+const AI_SOURCE = 'Sources: UNDP 2025 Global Survey on AI & Human Development, ILIA 2024 Latin American AI Index';
+const SALARY_SOURCE = 'Sources: TalentUp (2025), Glassdoor, HireWithNear Salary Guide 2026';
+
+// Real salary data: TalentUp Colombia median $15,400; Argentina median $17,000; 
+// HireWithNear Mexico $25K-$40K; DR estimated from regional benchmarks
+const salaryData = {
+  dr: 'USD 18,000 - USD 30,000',
+  co: 'USD 12,000 - USD 20,000',
+  mx: 'USD 25,000 - USD 40,000',
+  ar: 'USD 14,000 - USD 22,000',
+};
 
 const translations: Record<LangKey, {
   latamTitle: string;
@@ -46,112 +60,104 @@ const translations: Record<LangKey, {
   scrumChartSubtitle: string;
   aiChartTitle: string;
   aiChartSubtitle: string;
-  yAxisLabel: string;
   countries: { name: string; salary: string; flag: string; trend: string }[];
 }> = {
   en: {
     latamTitle: 'Trending Scrum Salaries in Latin America',
     latamSubtitle: 'Annual Scrum Master salaries across key LATAM markets',
     scrumChartTitle: 'Scrum Adoption Growth in Dominican Republic',
-    scrumChartSubtitle: '% of tech organizations using Scrum framework',
+    scrumChartSubtitle: '% of tech organizations using Scrum framework (estimated)',
     aiChartTitle: 'AI Adoption Growth in Dominican Republic',
-    aiChartSubtitle: '% of businesses integrating AI solutions',
-    yAxisLabel: 'Adoption %',
+    aiChartSubtitle: '% of businesses integrating AI solutions (estimated)',
     countries: [
-      { name: 'Dominican Republic', salary: 'USD 28,000 - USD 45,000', flag: '🇩🇴', trend: '↑ 24% YoY' },
-      { name: 'Colombia', salary: 'USD 22,000 - USD 38,000', flag: '🇨🇴', trend: '↑ 18% YoY' },
-      { name: 'Mexico', salary: 'USD 30,000 - USD 52,000', flag: '🇲🇽', trend: '↑ 21% YoY' },
-      { name: 'Argentina', salary: 'USD 18,000 - USD 35,000', flag: '🇦🇷', trend: '↑ 15% YoY' },
+      { name: 'Dominican Republic', salary: salaryData.dr, flag: '🇩🇴', trend: '↑ Fastest growing' },
+      { name: 'Colombia', salary: salaryData.co, flag: '🇨🇴', trend: '↑ High demand' },
+      { name: 'Mexico', salary: salaryData.mx, flag: '🇲🇽', trend: '↑ Largest market' },
+      { name: 'Argentina', salary: salaryData.ar, flag: '🇦🇷', trend: '↑ Cost advantage' },
     ],
   },
   es: {
     latamTitle: 'Salarios Tendencia de Scrum en América Latina',
     latamSubtitle: 'Salarios anuales de Scrum Master en mercados clave de LATAM',
     scrumChartTitle: 'Crecimiento de Adopción de Scrum en República Dominicana',
-    scrumChartSubtitle: '% de organizaciones tecnológicas usando el framework Scrum',
+    scrumChartSubtitle: '% de organizaciones tecnológicas usando Scrum (estimado)',
     aiChartTitle: 'Crecimiento de Adopción de IA en República Dominicana',
-    aiChartSubtitle: '% de empresas integrando soluciones de IA',
-    yAxisLabel: 'Adopción %',
+    aiChartSubtitle: '% de empresas integrando soluciones de IA (estimado)',
     countries: [
-      { name: 'República Dominicana', salary: 'USD 28,000 - USD 45,000', flag: '🇩🇴', trend: '↑ 24% interanual' },
-      { name: 'Colombia', salary: 'USD 22,000 - USD 38,000', flag: '🇨🇴', trend: '↑ 18% interanual' },
-      { name: 'México', salary: 'USD 30,000 - USD 52,000', flag: '🇲🇽', trend: '↑ 21% interanual' },
-      { name: 'Argentina', salary: 'USD 18,000 - USD 35,000', flag: '🇦🇷', trend: '↑ 15% interanual' },
+      { name: 'República Dominicana', salary: salaryData.dr, flag: '🇩🇴', trend: '↑ Más rápido crecimiento' },
+      { name: 'Colombia', salary: salaryData.co, flag: '🇨🇴', trend: '↑ Alta demanda' },
+      { name: 'México', salary: salaryData.mx, flag: '🇲🇽', trend: '↑ Mayor mercado' },
+      { name: 'Argentina', salary: salaryData.ar, flag: '🇦🇷', trend: '↑ Ventaja de costos' },
     ],
   },
   zh: {
     latamTitle: '拉丁美洲Scrum薪资趋势',
     latamSubtitle: '关键拉美市场的Scrum Master年薪',
     scrumChartTitle: '多米尼加共和国Scrum采用增长',
-    scrumChartSubtitle: '使用Scrum框架的科技组织百分比',
+    scrumChartSubtitle: '使用Scrum框架的科技组织百分比（估计）',
     aiChartTitle: '多米尼加共和国AI采用增长',
-    aiChartSubtitle: '整合AI解决方案的企业百分比',
-    yAxisLabel: '采用率 %',
+    aiChartSubtitle: '整合AI解决方案的企业百分比（估计）',
     countries: [
-      { name: '多米尼加共和国', salary: 'USD 28,000 - USD 45,000', flag: '🇩🇴', trend: '↑ 24% 同比' },
-      { name: '哥伦比亚', salary: 'USD 22,000 - USD 38,000', flag: '🇨🇴', trend: '↑ 18% 同比' },
-      { name: '墨西哥', salary: 'USD 30,000 - USD 52,000', flag: '🇲🇽', trend: '↑ 21% 同比' },
-      { name: '阿根廷', salary: 'USD 18,000 - USD 35,000', flag: '🇦🇷', trend: '↑ 15% 同比' },
+      { name: '多米尼加共和国', salary: salaryData.dr, flag: '🇩🇴', trend: '↑ 增长最快' },
+      { name: '哥伦比亚', salary: salaryData.co, flag: '🇨🇴', trend: '↑ 高需求' },
+      { name: '墨西哥', salary: salaryData.mx, flag: '🇲🇽', trend: '↑ 最大市场' },
+      { name: '阿根廷', salary: salaryData.ar, flag: '🇦🇷', trend: '↑ 成本优势' },
     ],
   },
   ar: {
     latamTitle: 'رواتب Scrum الرائجة في أمريكا اللاتينية',
     latamSubtitle: 'رواتب Scrum Master السنوية في أسواق LATAM الرئيسية',
     scrumChartTitle: 'نمو اعتماد Scrum في جمهورية الدومينيكان',
-    scrumChartSubtitle: '% من منظمات التكنولوجيا التي تستخدم إطار Scrum',
+    scrumChartSubtitle: '% من منظمات التكنولوجيا التي تستخدم Scrum (تقدير)',
     aiChartTitle: 'نمو اعتماد الذكاء الاصطناعي في جمهورية الدومينيكان',
-    aiChartSubtitle: '% من الشركات التي تدمج حلول الذكاء الاصطناعي',
-    yAxisLabel: '% الاعتماد',
+    aiChartSubtitle: '% من الشركات التي تدمج حلول الذكاء الاصطناعي (تقدير)',
     countries: [
-      { name: 'جمهورية الدومينيكان', salary: 'USD 28,000 - USD 45,000', flag: '🇩🇴', trend: '↑ 24% سنوياً' },
-      { name: 'كولومبيا', salary: 'USD 22,000 - USD 38,000', flag: '🇨🇴', trend: '↑ 18% سنوياً' },
-      { name: 'المكسيك', salary: 'USD 30,000 - USD 52,000', flag: '🇲🇽', trend: '↑ 21% سنوياً' },
-      { name: 'الأرجنتين', salary: 'USD 18,000 - USD 35,000', flag: '🇦🇷', trend: '↑ 15% سنوياً' },
+      { name: 'جمهورية الدومينيكان', salary: salaryData.dr, flag: '🇩🇴', trend: '↑ الأسرع نمواً' },
+      { name: 'كولومبيا', salary: salaryData.co, flag: '🇨🇴', trend: '↑ طلب مرتفع' },
+      { name: 'المكسيك', salary: salaryData.mx, flag: '🇲🇽', trend: '↑ أكبر سوق' },
+      { name: 'الأرجنتين', salary: salaryData.ar, flag: '🇦🇷', trend: '↑ ميزة التكلفة' },
     ],
   },
   fr: {
     latamTitle: 'Salaires Scrum en Tendance en Amérique Latine',
     latamSubtitle: 'Salaires annuels des Scrum Masters sur les marchés clés de LATAM',
     scrumChartTitle: 'Croissance de l\'Adoption de Scrum en République Dominicaine',
-    scrumChartSubtitle: '% d\'organisations tech utilisant le framework Scrum',
+    scrumChartSubtitle: '% d\'organisations tech utilisant Scrum (estimé)',
     aiChartTitle: 'Croissance de l\'Adoption de l\'IA en République Dominicaine',
-    aiChartSubtitle: '% d\'entreprises intégrant des solutions IA',
-    yAxisLabel: 'Adoption %',
+    aiChartSubtitle: '% d\'entreprises intégrant des solutions IA (estimé)',
     countries: [
-      { name: 'République Dominicaine', salary: 'USD 28,000 - USD 45,000', flag: '🇩🇴', trend: '↑ 24% par an' },
-      { name: 'Colombie', salary: 'USD 22,000 - USD 38,000', flag: '🇨🇴', trend: '↑ 18% par an' },
-      { name: 'Mexique', salary: 'USD 30,000 - USD 52,000', flag: '🇲🇽', trend: '↑ 21% par an' },
-      { name: 'Argentine', salary: 'USD 18,000 - USD 35,000', flag: '🇦🇷', trend: '↑ 15% par an' },
+      { name: 'République Dominicaine', salary: salaryData.dr, flag: '🇩🇴', trend: '↑ Croissance la plus rapide' },
+      { name: 'Colombie', salary: salaryData.co, flag: '🇨🇴', trend: '↑ Forte demande' },
+      { name: 'Mexique', salary: salaryData.mx, flag: '🇲🇽', trend: '↑ Plus grand marché' },
+      { name: 'Argentine', salary: salaryData.ar, flag: '🇦🇷', trend: '↑ Avantage coût' },
     ],
   },
   de: {
     latamTitle: 'Trendgehälter für Scrum in Lateinamerika',
     latamSubtitle: 'Jährliche Scrum Master Gehälter in wichtigen LATAM-Märkten',
     scrumChartTitle: 'Scrum-Adoptionswachstum in der Dominikanischen Republik',
-    scrumChartSubtitle: '% der Tech-Organisationen mit Scrum-Framework',
+    scrumChartSubtitle: '% der Tech-Organisationen mit Scrum (geschätzt)',
     aiChartTitle: 'KI-Adoptionswachstum in der Dominikanischen Republik',
-    aiChartSubtitle: '% der Unternehmen mit KI-Integration',
-    yAxisLabel: 'Adoption %',
+    aiChartSubtitle: '% der Unternehmen mit KI-Integration (geschätzt)',
     countries: [
-      { name: 'Dominikanische Republik', salary: 'USD 28,000 - USD 45,000', flag: '🇩🇴', trend: '↑ 24% p.a.' },
-      { name: 'Kolumbien', salary: 'USD 22,000 - USD 38,000', flag: '🇨🇴', trend: '↑ 18% p.a.' },
-      { name: 'Mexiko', salary: 'USD 30,000 - USD 52,000', flag: '🇲🇽', trend: '↑ 21% p.a.' },
-      { name: 'Argentinien', salary: 'USD 18,000 - USD 35,000', flag: '🇦🇷', trend: '↑ 15% p.a.' },
+      { name: 'Dominikanische Republik', salary: salaryData.dr, flag: '🇩🇴', trend: '↑ Schnellstes Wachstum' },
+      { name: 'Kolumbien', salary: salaryData.co, flag: '🇨🇴', trend: '↑ Hohe Nachfrage' },
+      { name: 'Mexiko', salary: salaryData.mx, flag: '🇲🇽', trend: '↑ Größter Markt' },
+      { name: 'Argentinien', salary: salaryData.ar, flag: '🇦🇷', trend: '↑ Kostenvorteil' },
     ],
   },
   ja: {
     latamTitle: 'ラテンアメリカのScrum給与トレンド',
     latamSubtitle: '主要LATAMマーケットのスクラムマスター年収',
     scrumChartTitle: 'ドミニカ共和国のScrum採用成長',
-    scrumChartSubtitle: 'Scrumフレームワークを使用するテック組織の割合',
+    scrumChartSubtitle: 'Scrumフレームワークを使用するテック組織の割合（推定）',
     aiChartTitle: 'ドミニカ共和国のAI採用成長',
-    aiChartSubtitle: 'AIソリューションを統合する企業の割合',
-    yAxisLabel: '採用率 %',
+    aiChartSubtitle: 'AIソリューションを統合する企業の割合（推定）',
     countries: [
-      { name: 'ドミニカ共和国', salary: 'USD 28,000 - USD 45,000', flag: '🇩🇴', trend: '↑ 24% 年間' },
-      { name: 'コロンビア', salary: 'USD 22,000 - USD 38,000', flag: '🇨🇴', trend: '↑ 18% 年間' },
-      { name: 'メキシコ', salary: 'USD 30,000 - USD 52,000', flag: '🇲🇽', trend: '↑ 21% 年間' },
-      { name: 'アルゼンチン', salary: 'USD 18,000 - USD 35,000', flag: '🇦🇷', trend: '↑ 15% 年間' },
+      { name: 'ドミニカ共和国', salary: salaryData.dr, flag: '🇩🇴', trend: '↑ 最速成長' },
+      { name: 'コロンビア', salary: salaryData.co, flag: '🇨🇴', trend: '↑ 高需要' },
+      { name: 'メキシコ', salary: salaryData.mx, flag: '🇲🇽', trend: '↑ 最大市場' },
+      { name: 'アルゼンチン', salary: salaryData.ar, flag: '🇦🇷', trend: '↑ コスト優位性' },
     ],
   },
 };
@@ -199,6 +205,7 @@ const LatamInsights = () => {
             </motion.div>
           ))}
         </div>
+        <p className="text-[10px] text-muted-foreground mt-3 italic">{SALARY_SOURCE}</p>
       </motion.div>
 
       {/* Charts Grid */}
@@ -228,7 +235,7 @@ const LatamInsights = () => {
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(215, 20%, 88%)" />
                     <XAxis dataKey="year" tick={{ fontSize: 12, fill: 'hsl(215, 20%, 45%)' }} />
-                    <YAxis tick={{ fontSize: 12, fill: 'hsl(215, 20%, 45%)' }} domain={[0, 80]} unit="%" />
+                    <YAxis tick={{ fontSize: 12, fill: 'hsl(215, 20%, 45%)' }} domain={[0, 60]} unit="%" />
                     <Tooltip
                       contentStyle={{
                         backgroundColor: 'hsl(0, 0%, 100%)',
@@ -250,6 +257,7 @@ const LatamInsights = () => {
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
+              <p className="text-[10px] text-muted-foreground mt-3 italic">{SCRUM_SOURCE}</p>
             </CardContent>
           </Card>
         </motion.div>
@@ -279,7 +287,7 @@ const LatamInsights = () => {
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(215, 20%, 88%)" />
                     <XAxis dataKey="year" tick={{ fontSize: 12, fill: 'hsl(215, 20%, 45%)' }} />
-                    <YAxis tick={{ fontSize: 12, fill: 'hsl(215, 20%, 45%)' }} domain={[0, 80]} unit="%" />
+                    <YAxis tick={{ fontSize: 12, fill: 'hsl(215, 20%, 45%)' }} domain={[0, 65]} unit="%" />
                     <Tooltip
                       contentStyle={{
                         backgroundColor: 'hsl(0, 0%, 100%)',
@@ -301,6 +309,7 @@ const LatamInsights = () => {
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
+              <p className="text-[10px] text-muted-foreground mt-3 italic">{AI_SOURCE}</p>
             </CardContent>
           </Card>
         </motion.div>
