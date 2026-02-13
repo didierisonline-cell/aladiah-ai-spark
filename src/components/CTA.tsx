@@ -68,6 +68,21 @@ const CTA = () => {
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </motion.div>
+
+          {/* Academy Seal */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="mt-14"
+          >
+            <img
+              src={aladiahSeal}
+              alt="Aladiah Academy Seal"
+              className="w-32 h-32 lg:w-40 lg:h-40 mx-auto opacity-80 drop-shadow-[0_0_20px_rgba(255,255,255,0.15)]"
+            />
+          </motion.div>
         </div>
       </div>
     </section>
