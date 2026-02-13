@@ -6,10 +6,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import ProgressBar from '@/components/ProgressBar';
 import PostCard from '@/components/community/PostCard';
 import { GraduationCap, LogOut, Send, MessageSquareText } from 'lucide-react';
 import aladiahLogo from '@/assets/aladiah-header-logo.png';
+import { communityTranslations, type SupportedLanguage } from '@/utils/communityTranslations';
 
 interface PostData {
   id: string;
@@ -24,6 +26,11 @@ interface PostData {
 
 const Feedback = () => {
   const { user, loading: authLoading } = useAuth();
+  const { language } = useLanguage();
+  const supportedLangs: SupportedLanguage[] = ['en', 'es', 'zh', 'ar', 'fr', 'de', 'ja'];
+  const currentLang = supportedLangs.includes(language as SupportedLanguage) ? (language as SupportedLanguage) : 'en';
+  const ct = communityTranslations[currentLang];
+
   const [posts, setPosts] = useState<PostData[]>([]);
   const [newPost, setNewPost] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -155,10 +162,10 @@ const Feedback = () => {
             <img src={aladiahLogo} alt="Aladiah Academy" className="h-14 w-auto object-contain mix-blend-multiply" />
           </Link>
           <div className="flex items-center gap-3">
-            <Link to="/courses"><Button variant="ghost" size="sm">My Courses</Button></Link>
-            <Link to="/community"><Button variant="ghost" size="sm">Community</Button></Link>
+            <Link to="/courses"><Button variant="ghost" size="sm">{ct.myCourses}</Button></Link>
+            <Link to="/community"><Button variant="ghost" size="sm">{ct.community}</Button></Link>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" /> Logout
+              <LogOut className="w-4 h-4 mr-2" /> {ct.logout}
             </Button>
           </div>
         </div>
@@ -170,10 +177,10 @@ const Feedback = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="text-3xl font-display font-bold text-foreground mb-2 flex items-center gap-3">
             <MessageSquareText className="w-8 h-8 text-secondary" />
-            Feedback
+            {ct.feedbackTitle}
           </h1>
           <p className="text-muted-foreground">
-            Share your thoughts, suggestions, and feedback about the courses and platform.
+            {ct.feedbackSubtitle}
           </p>
         </motion.div>
 
@@ -182,23 +189,23 @@ const Feedback = () => {
             <Textarea
               value={newPost}
               onChange={(e) => setNewPost(e.target.value)}
-              placeholder="Share your feedback..."
+              placeholder={ct.feedbackPlaceholder}
               className="min-h-[80px]"
             />
             <Button onClick={handleNewPost} disabled={submitting || !newPost.trim()} variant="coral" className="self-end">
-              <Send className="w-4 h-4 mr-2" /> Post
+              <Send className="w-4 h-4 mr-2" /> {ct.post}
             </Button>
           </div>
         </div>
 
         {loadingPosts ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">Loading feedback...</p>
+            <p className="text-muted-foreground">{ct.loadingFeedback}</p>
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-12">
             <MessageSquareText className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
-            <p className="text-muted-foreground">No feedback yet. Be the first to share!</p>
+            <p className="text-muted-foreground">{ct.noFeedback}</p>
           </div>
         ) : (
           <div className="space-y-4">
