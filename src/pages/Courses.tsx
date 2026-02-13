@@ -69,6 +69,7 @@ const HIDDEN_IDS = [
 
 // Explicit ordering for certification courses
 const CERTIFICATION_ORDER = [
+  '00f26156-db7e-446e-b6b5-28e9e1150309', // Professional Scrum Master Certification
   'bbbbbbbb-cccc-dddd-eeee-ffffffffffff', // Agile Development and Scrum
   'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', // Jira SCRUM Project
 ];
