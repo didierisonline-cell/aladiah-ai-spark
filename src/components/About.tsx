@@ -79,7 +79,7 @@ const About = () => {
                 <div className="w-40 h-40 lg:w-48 lg:h-48 rounded-full overflow-hidden border-4 border-primary-foreground/20 shadow-2xl ring-4 ring-primary-foreground/10 ring-offset-4 ring-offset-transparent">
                   <img 
                     src={founderPhoto} 
-                    alt="Didier Boumtje - Founder & CEO" 
+                    alt="Didier - Founder & CEO" 
                     className="w-full h-full object-cover object-top scale-110"
                   />
                 </div>
@@ -89,7 +89,7 @@ const About = () => {
               </div>
 
               <h3 className="text-2xl lg:text-3xl font-display font-bold text-primary-foreground mb-2">
-                Didier Boumtje
+                Didier
               </h3>
               <p className="text-primary-foreground/80 font-medium mb-1">{t('about.founder')}</p>
               <p className="text-primary-foreground/50 text-sm mb-6">Aladiah Management</p>

@@ -84,14 +84,14 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'Visionary Leader in Agile & AI Education',
-    'founder.bio.p1': 'Didier Boumtje is a seasoned IT executive and Agile transformation leader with over 10 years of experience driving large-scale technology initiatives across the cruise, hospitality, and enterprise sectors. Currently a Senior Project Manager at Royal Caribbean International, he orchestrates multi-million-dollar digital transformation programs spanning global operations.',
+    'founder.bio.p1': 'Didier is a seasoned IT executive and Agile transformation leader with over 10 years of experience driving large-scale technology initiatives across the cruise, hospitality, and enterprise sectors. Currently a Senior Project Manager at Royal Caribbean International, he orchestrates multi-million-dollar digital transformation programs spanning global operations.',
     'founder.bio.p2': 'Passionate about democratizing professional education, Didier founded Aladiah Academy to bring world-class Scrum Master and Project Management training to emerging markets — powered by cutting-edge AI tools that personalize the learning journey for every student.',
     'founder.credential1': 'Senior PM at Royal Caribbean International — leading cross-functional teams across 5 countries',
     'founder.credential2': 'Certified Scrum Master (CSM), PMP, and SAFe Agilist with 10+ years in enterprise IT',
     'founder.credential3': 'AI & Education innovator — pioneering AI-powered curriculum design for professional training',
     'founder.credential4': 'Multilingual leader fluent in 4 languages, building a global academy across 7 languages',
     'founder.quote': 'I believe in the power of "automate the automation" in a sophisticated way.',
-    'founder.teaching.caption': 'Didier Boumtje delivering hands-on Scrum training to the next generation of Agile leaders',
+    'founder.teaching.caption': 'Didier delivering hands-on Scrum training to the next generation of Agile leaders',
 
     // Features
     'features.ai.title': 'AI-Enhanced Learning',
@@ -202,14 +202,14 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'Líder Visionario en Educación Agile e IA',
-    'founder.bio.p1': 'Didier Boumtje es un ejecutivo de TI experimentado y líder en transformación Agile con más de 10 años de experiencia impulsando iniciativas tecnológicas a gran escala en los sectores de cruceros, hospitalidad y empresarial. Actualmente Gerente Senior de Proyectos en Royal Caribbean International, orquesta programas de transformación digital multimillonarios a nivel global.',
+    'founder.bio.p1': 'Didier es un ejecutivo de TI experimentado y líder en transformación Agile con más de 10 años de experiencia impulsando iniciativas tecnológicas a gran escala en los sectores de cruceros, hospitalidad y empresarial. Actualmente Gerente Senior de Proyectos en Royal Caribbean International, orquesta programas de transformación digital multimillonarios a nivel global.',
     'founder.bio.p2': 'Apasionado por democratizar la educación profesional, Didier fundó Aladiah Academy para llevar formación de clase mundial en Scrum Master y Gestión de Proyectos a mercados emergentes — impulsada por herramientas de IA de vanguardia que personalizan el viaje de aprendizaje de cada estudiante.',
     'founder.credential1': 'PM Senior en Royal Caribbean International — lidera equipos multifuncionales en 5 países',
     'founder.credential2': 'Scrum Master Certificado (CSM), PMP y SAFe Agilist con 10+ años en TI empresarial',
     'founder.credential3': 'Innovador en IA y Educación — pionero en diseño curricular con IA para formación profesional',
     'founder.credential4': 'Líder multilingüe fluido en 4 idiomas, construyendo una academia global en 7 idiomas',
     'founder.quote': 'Creo en el poder de "automatizar la automatización" de manera sofisticada.',
-    'founder.teaching.caption': 'Didier Boumtje impartiendo formación práctica en Scrum a la próxima generación de líderes Agile',
+    'founder.teaching.caption': 'Didier impartiendo formación práctica en Scrum a la próxima generación de líderes Agile',
 
     // Features
     'features.ai.title': 'Aprendizaje con IA',
@@ -320,14 +320,14 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': '敏捷与AI教育的远见领导者',
-    'founder.bio.p1': 'Didier Boumtje是一位经验丰富的IT高管和敏捷转型领导者，拥有超过10年推动邮轮、酒店和企业领域大规模技术计划的经验。目前担任皇家加勒比国际公司高级项目经理，他策划跨全球运营的数百万美元数字化转型项目。',
+    'founder.bio.p1': 'Didier是一位经验丰富的IT高管和敏捷转型领导者，拥有超过10年推动邮轮、酒店和企业领域大规模技术计划的经验。目前担任皇家加勒比国际公司高级项目经理，他策划跨全球运营的数百万美元数字化转型项目。',
     'founder.bio.p2': 'Didier热衷于教育民主化，创立了Aladiah Academy，旨在将世界一流的Scrum Master和项目管理培训带到新兴市场——借助前沿AI工具为每位学员个性化学习旅程。',
     'founder.credential1': '皇家加勒比国际高级项目经理——在5个国家领导跨职能团队',
     'founder.credential2': '认证Scrum Master (CSM)、PMP和SAFe敏捷师，10年以上企业IT经验',
     'founder.credential3': 'AI与教育创新者——开创AI驱动的专业培训课程设计',
     'founder.credential4': '精通4种语言的多语言领导者，正在构建一所覆盖7种语言的全球学院',
     'founder.quote': '我相信以精密方式"自动化自动化"的力量。',
-    'founder.teaching.caption': 'Didier Boumtje为下一代敏捷领导者提供实战Scrum培训',
+    'founder.teaching.caption': 'Didier为下一代敏捷领导者提供实战Scrum培训',
 
     // Features
     'features.ai.title': 'AI增强学习',
@@ -438,14 +438,14 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'قائد صاحب رؤية في تعليم Agile والذكاء الاصطناعي',
-    'founder.bio.p1': 'ديدييه بومتجي هو مدير تنفيذي متمرس في تقنية المعلومات وقائد في التحول الرشيق مع أكثر من 10 سنوات من الخبرة في قيادة مبادرات التكنولوجيا واسعة النطاق في قطاعات الرحلات البحرية والضيافة والمؤسسات. يعمل حاليًا كمدير مشاريع أول في Royal Caribbean International، وينظم برامج تحول رقمي بملايين الدولارات عبر العمليات العالمية.',
+    'founder.bio.p1': 'ديدييه هو مدير تنفيذي متمرس في تقنية المعلومات وقائد في التحول الرشيق مع أكثر من 10 سنوات من الخبرة في قيادة مبادرات التكنولوجيا واسعة النطاق في قطاعات الرحلات البحرية والضيافة والمؤسسات. يعمل حاليًا كمدير مشاريع أول في Royal Caribbean International، وينظم برامج تحول رقمي بملايين الدولارات عبر العمليات العالمية.',
     'founder.bio.p2': 'شغوف بديمقراطية التعليم المهني، أسس ديدييه أكاديمية علاديا لتقديم تدريب عالمي المستوى في Scrum Master وإدارة المشاريع للأسواق الناشئة — مدعومة بأدوات ذكاء اصطناعي متطورة تخصص رحلة التعلم لكل طالب.',
     'founder.credential1': 'مدير مشاريع أول في Royal Caribbean International — يقود فرقًا متعددة الوظائف في 5 دول',
     'founder.credential2': 'Scrum Master معتمد (CSM)، PMP وSAFe Agilist مع أكثر من 10 سنوات في تقنية المعلومات المؤسسية',
     'founder.credential3': 'مبتكر في الذكاء الاصطناعي والتعليم — رائد في تصميم المناهج المدعومة بالذكاء الاصطناعي للتدريب المهني',
     'founder.credential4': 'قائد متعدد اللغات يتحدث 4 لغات بطلاقة، يبني أكاديمية عالمية بـ 7 لغات',
     'founder.quote': 'أؤمن بقوة "أتمتة الأتمتة" بطريقة متطورة.',
-    'founder.teaching.caption': 'ديدييه بومتجي يقدم تدريب Scrum عملي للجيل القادم من قادة Agile',
+    'founder.teaching.caption': 'ديدييه يقدم تدريب Scrum عملي للجيل القادم من قادة Agile',
 
     // Features
     'features.ai.title': 'تعلم معزز بالذكاء الاصطناعي',
@@ -556,14 +556,14 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'Leader Visionnaire en Éducation Agile et IA',
-    'founder.bio.p1': 'Didier Boumtje est un cadre IT chevronné et leader de la transformation Agile avec plus de 10 ans d\'expérience dans la conduite d\'initiatives technologiques à grande échelle dans les secteurs des croisières, de l\'hôtellerie et de l\'entreprise. Actuellement Chef de Projet Senior chez Royal Caribbean International, il orchestre des programmes de transformation numérique de plusieurs millions de dollars à travers les opérations mondiales.',
+    'founder.bio.p1': 'Didier est un cadre IT chevronné et leader de la transformation Agile avec plus de 10 ans d\'expérience dans la conduite d\'initiatives technologiques à grande échelle dans les secteurs des croisières, de l\'hôtellerie et de l\'entreprise. Actuellement Chef de Projet Senior chez Royal Caribbean International, il orchestre des programmes de transformation numérique de plusieurs millions de dollars à travers les opérations mondiales.',
     'founder.bio.p2': 'Passionné par la démocratisation de l\'éducation professionnelle, Didier a fondé Aladiah Academy pour apporter une formation de classe mondiale en Scrum Master et Gestion de Projet aux marchés émergents — propulsée par des outils IA de pointe qui personnalisent le parcours d\'apprentissage de chaque étudiant.',
     'founder.credential1': 'PM Senior chez Royal Caribbean International — dirige des équipes pluridisciplinaires dans 5 pays',
     'founder.credential2': 'Scrum Master Certifié (CSM), PMP et SAFe Agilist avec 10+ ans en IT d\'entreprise',
     'founder.credential3': 'Innovateur en IA et Éducation — pionnier de la conception curriculaire par IA pour la formation professionnelle',
     'founder.credential4': 'Leader multilingue parlant couramment 4 langues, construisant une académie mondiale en 7 langues',
     'founder.quote': 'Je crois au pouvoir d\'«automatiser l\'automatisation» de manière sophistiquée.',
-    'founder.teaching.caption': 'Didier Boumtje dispensant une formation Scrum pratique à la prochaine génération de leaders Agile',
+    'founder.teaching.caption': 'Didier dispensant une formation Scrum pratique à la prochaine génération de leaders Agile',
 
     // Features
     'features.ai.title': 'Apprentissage Amélioré par l\'IA',
@@ -674,14 +674,14 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'Visionärer Führer in Agile & KI-Bildung',
-    'founder.bio.p1': 'Didier Boumtje ist ein erfahrener IT-Führungskraft und Agile-Transformationsleiter mit über 10 Jahren Erfahrung in der Leitung großer Technologieinitiativen in der Kreuzfahrt-, Gastgewerbe- und Unternehmensbranche. Derzeit Senior-Projektmanager bei Royal Caribbean International, orchestriert er millionenschwere digitale Transformationsprogramme über globale Operationen hinweg.',
+    'founder.bio.p1': 'Didier ist ein erfahrener IT-Führungskraft und Agile-Transformationsleiter mit über 10 Jahren Erfahrung in der Leitung großer Technologieinitiativen in der Kreuzfahrt-, Gastgewerbe- und Unternehmensbranche. Derzeit Senior-Projektmanager bei Royal Caribbean International, orchestriert er millionenschwere digitale Transformationsprogramme über globale Operationen hinweg.',
     'founder.bio.p2': 'Leidenschaftlich für die Demokratisierung der Berufsausbildung gründete Didier die Aladiah Academy, um erstklassige Scrum Master und Projektmanagement-Ausbildung in aufstrebende Märkte zu bringen — angetrieben von modernsten KI-Tools, die den Lernweg jedes Studenten personalisieren.',
     'founder.credential1': 'Senior PM bei Royal Caribbean International — leitet funktionsübergreifende Teams in 5 Ländern',
     'founder.credential2': 'Zertifizierter Scrum Master (CSM), PMP und SAFe Agilist mit 10+ Jahren in Unternehmens-IT',
     'founder.credential3': 'KI & Bildungsinnovator — Pionier im KI-gestützten Curriculumdesign für Berufsausbildung',
     'founder.credential4': 'Mehrsprachiger Leader fließend in 4 Sprachen, baut eine globale Akademie in 7 Sprachen auf',
     'founder.quote': 'Ich glaube an die Kraft, „die Automatisierung zu automatisieren" auf eine raffinierte Weise.',
-    'founder.teaching.caption': 'Didier Boumtje bei der praxisnahen Scrum-Schulung der nächsten Generation agiler Führungskräfte',
+    'founder.teaching.caption': 'Didier bei der praxisnahen Scrum-Schulung der nächsten Generation agiler Führungskräfte',
 
     // Features
     'features.ai.title': 'KI-erweitertes Lernen',
@@ -792,14 +792,14 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Founder
     'founder.bio.title': 'アジャイル＆AI教育の先見的リーダー',
-    'founder.bio.p1': 'Didier Boumtjeは、クルーズ、ホスピタリティ、エンタープライズセクターにおいて大規模なテクノロジーイニシアチブを推進してきた10年以上の経験を持つ熟練したITエグゼクティブ兼アジャイル変革リーダーです。現在Royal Caribbean Internationalのシニアプロジェクトマネージャーとして、グローバルオペレーション全体で数百万ドル規模のデジタルトランスフォーメーションプログラムを統括しています。',
+    'founder.bio.p1': 'Didierは、クルーズ、ホスピタリティ、エンタープライズセクターにおいて大規模なテクノロジーイニシアチブを推進してきた10年以上の経験を持つ熟練したITエグゼクティブ兼アジャイル変革リーダーです。現在Royal Caribbean Internationalのシニアプロジェクトマネージャーとして、グローバルオペレーション全体で数百万ドル規模のデジタルトランスフォーメーションプログラムを統括しています。',
     'founder.bio.p2': 'プロフェッショナル教育の民主化に情熱を持ち、DidierはAladiah Academyを設立し、世界クラスのスクラムマスターおよびプロジェクトマネジメント研修を新興市場に届けています——最先端のAIツールが各学生の学習旅路をパーソナライズします。',
     'founder.credential1': 'Royal Caribbean Internationalシニアプロジェクトマネージャー——5カ国でクロスファンクショナルチームをリード',
     'founder.credential2': '認定スクラムマスター（CSM）、PMP、SAFe Agilist、エンタープライズIT10年以上の経験',
     'founder.credential3': 'AI＆教育イノベーター——専門研修のためのAI駆動カリキュラムデザインのパイオニア',
     'founder.credential4': '4言語に堪能な多言語リーダー、7言語でグローバルアカデミーを構築中',
     'founder.quote': '「自動化を自動化する」力を、洗練された方法で信じています。',
-    'founder.teaching.caption': 'Didier Boumtjeが次世代のアジャイルリーダーに実践的なスクラム研修を提供',
+    'founder.teaching.caption': 'Didierが次世代のアジャイルリーダーに実践的なスクラム研修を提供',
 
     // Features
     'features.ai.title': 'AI強化学習',

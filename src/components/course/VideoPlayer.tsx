@@ -13,7 +13,7 @@ import {
 const professors = [
   {
     id: "professor_didier",
-    name: "Professor Didier Boumtje",
+    name: "Professor Didier",
     avatar: "👨‍🏫",
     color: "from-blue-500 to-cyan-500",
     specialty: "Scrum Fundamentals",
