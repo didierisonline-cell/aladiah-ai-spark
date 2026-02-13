@@ -31,7 +31,7 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card backdrop-blur-xl border-b border-border/30">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-24 lg:h-28">
+        <div className="flex items-center justify-between h-36 lg:h-44">
           {/* Logo */}
           <motion.a
             href="#home"
@@ -40,7 +40,7 @@ const Header = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <img src={aladiahLogo} alt="Aladiah Academy" className="h-20 sm:h-24 w-auto object-contain" />
+            <img src={aladiahLogo} alt="Aladiah Academy" className="h-32 sm:h-40 w-auto object-contain" />
           </motion.a>
 
           {/* Desktop Navigation */}
