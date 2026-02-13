@@ -84,6 +84,137 @@ const Programs = () => {
         </div>
 
         {/* Programs Grid */}
+        {/* Live Scrum Project */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="mb-8"
+        >
+          <div className="relative bg-card rounded-2xl p-8 lg:p-10 shadow-soft hover:shadow-large transition-all duration-500 ring-1 ring-primary/15 overflow-hidden">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-full pointer-events-none" />
+            
+            <div className="relative flex flex-col lg:flex-row lg:items-center gap-8">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-primary/10 text-primary">
+                    <Rocket className="w-7 h-7" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Lock className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-xs font-medium text-muted-foreground bg-muted px-3 py-1 rounded-full">
+                      {t('programs.liveProject.prereq')}
+                    </span>
+                  </div>
+                </div>
+
+                <h3 className="text-2xl font-display font-bold text-foreground mb-3">
+                  {t('programs.liveProject.title')}
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-4 max-w-2xl">
+                  {t('programs.liveProject.desc')}
+                </p>
+
+                <div className="flex items-center gap-6 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <CalendarDays className="w-4 h-4" />
+                    <span>{t('programs.liveProject.duration')}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Monitor className="w-4 h-4" />
+                    <span>{t('programs.online')}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:flex-shrink-0">
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  className="w-full lg:w-auto group/btn"
+                  onClick={() => navigate('/auth')}
+                >
+                  {t('programs.learnMore')}
+                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Rogers IT Merger Project - Coming Soon */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mb-12"
+        >
+          <div className="relative bg-card rounded-2xl p-8 lg:p-10 shadow-soft ring-1 ring-border/30 overflow-hidden select-none">
+            <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] z-20 flex items-center justify-center">
+              <div className="text-center">
+                <span className="inline-block px-8 py-3 rounded-full bg-muted border-2 border-border text-lg sm:text-2xl font-display font-bold text-muted-foreground tracking-widest uppercase shadow-soft">
+                  Coming Soon
+                </span>
+              </div>
+            </div>
+
+            <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-secondary/5 to-transparent rounded-bl-full pointer-events-none" />
+            
+            <div className="relative flex flex-col lg:flex-row lg:items-center gap-8 opacity-40">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-secondary/10 text-secondary">
+                    <Network className="w-7 h-7" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Lock className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-xs font-medium text-muted-foreground bg-muted px-3 py-1 rounded-full">
+                      {t('programs.rogersProject.prereq')}
+                    </span>
+                  </div>
+                </div>
+
+                <h3 className="text-2xl font-display font-bold text-foreground mb-3">
+                  {t('programs.rogersProject.title')}
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-4 max-w-2xl">
+                  {t('programs.rogersProject.desc')}
+                </p>
+
+                <div className="flex flex-wrap items-center gap-4 text-sm mb-4">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <CalendarDays className="w-4 h-4" />
+                    <span>{t('programs.rogersProject.duration')}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Monitor className="w-4 h-4" />
+                    <span>{t('programs.online')}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Users className="w-4 h-4" />
+                    <span>{t('programs.rogersProject.teams')}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:flex-shrink-0">
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  className="w-full lg:w-auto"
+                  disabled
+                >
+                  {t('programs.learnMore')}
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Programs Grid (Certification Courses) */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {programs.map((program, index) => (
             <motion.div
@@ -157,136 +288,6 @@ const Programs = () => {
           ))}
         </div>
 
-        {/* Live Scrum Project */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-12"
-        >
-          <div className="relative bg-card rounded-2xl p-8 lg:p-10 shadow-soft hover:shadow-large transition-all duration-500 ring-1 ring-primary/15 overflow-hidden">
-            <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-full pointer-events-none" />
-            
-            <div className="relative flex flex-col lg:flex-row lg:items-center gap-8">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-primary/10 text-primary">
-                    <Rocket className="w-7 h-7" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Lock className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-xs font-medium text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                      {t('programs.liveProject.prereq')}
-                    </span>
-                  </div>
-                </div>
-
-                <h3 className="text-2xl font-display font-bold text-foreground mb-3">
-                  {t('programs.liveProject.title')}
-                </h3>
-                <p className="text-muted-foreground leading-relaxed mb-4 max-w-2xl">
-                  {t('programs.liveProject.desc')}
-                </p>
-
-                <div className="flex items-center gap-6 text-sm">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <CalendarDays className="w-4 h-4" />
-                    <span>{t('programs.liveProject.duration')}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Monitor className="w-4 h-4" />
-                    <span>{t('programs.online')}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="lg:flex-shrink-0">
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  className="w-full lg:w-auto group/btn"
-                  onClick={() => navigate('/auth')}
-                >
-                  {t('programs.learnMore')}
-                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Rogers IT Merger Project - Coming Soon */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-8"
-        >
-          <div className="relative bg-card rounded-2xl p-8 lg:p-10 shadow-soft ring-1 ring-border/30 overflow-hidden select-none">
-            {/* Greyed-out overlay */}
-            <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] z-20 flex items-center justify-center">
-              <div className="text-center">
-                <span className="inline-block px-8 py-3 rounded-full bg-muted border-2 border-border text-lg sm:text-2xl font-display font-bold text-muted-foreground tracking-widest uppercase shadow-soft">
-                  Coming Soon
-                </span>
-              </div>
-            </div>
-
-            <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-secondary/5 to-transparent rounded-bl-full pointer-events-none" />
-            
-            <div className="relative flex flex-col lg:flex-row lg:items-center gap-8 opacity-40">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-secondary/10 text-secondary">
-                    <Network className="w-7 h-7" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Lock className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-xs font-medium text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                      {t('programs.rogersProject.prereq')}
-                    </span>
-                  </div>
-                </div>
-
-                <h3 className="text-2xl font-display font-bold text-foreground mb-3">
-                  {t('programs.rogersProject.title')}
-                </h3>
-                <p className="text-muted-foreground leading-relaxed mb-4 max-w-2xl">
-                  {t('programs.rogersProject.desc')}
-                </p>
-
-                <div className="flex flex-wrap items-center gap-4 text-sm mb-4">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <CalendarDays className="w-4 h-4" />
-                    <span>{t('programs.rogersProject.duration')}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Monitor className="w-4 h-4" />
-                    <span>{t('programs.online')}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Users className="w-4 h-4" />
-                    <span>{t('programs.rogersProject.teams')}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="lg:flex-shrink-0">
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  className="w-full lg:w-auto"
-                  disabled
-                >
-                  {t('programs.learnMore')}
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </motion.div>
       </div>
       <WaitlistModal open={waitlistOpen} onOpenChange={setWaitlistOpen} />
     </section>
