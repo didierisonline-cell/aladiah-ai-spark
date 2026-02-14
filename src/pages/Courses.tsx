@@ -57,6 +57,10 @@ const SIMULATION_IDS = [
   'a1b2c3d4-e5f6-7890-abcd-ef1234567890', // Live Scrum Project
 ];
 
+const INTERACTIVE_SIMULATION_IDS = [
+  'a1b2c3d4-e5f6-7890-abcd-ef1234567890', // Live Scrum Project → /simulation
+];
+
 // Courses that should appear after simulations (in this order)
 const AFTER_SIMULATION_IDS = [
   'cccccccc-dddd-eeee-ffff-111111111111', // Agile, Scrum & SAFe 6.0 Mastery
@@ -316,7 +320,15 @@ const Courses = () => {
             <IconComponent className={`w-8 h-8 ${locked ? 'text-muted-foreground' : 'text-primary'}`} />
           </div>
         </CardHeader>
-        {!locked && (
+        {!locked && INTERACTIVE_SIMULATION_IDS.includes(course.id) && (
+          <CardContent className="p-6">
+            <Button variant="coral" className="w-full" onClick={() => navigate('/simulation')}>
+              🏃‍♂️ Enter Live Sprint Simulation
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </Button>
+          </CardContent>
+        )}
+        {!locked && !INTERACTIVE_SIMULATION_IDS.includes(course.id) && (
           <CardContent className="p-6">
             <div className="space-y-4">
               {(() => {

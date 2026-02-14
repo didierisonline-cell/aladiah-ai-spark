@@ -13,6 +13,7 @@ import Enroll from "./pages/Enroll";
 import Community from "./pages/Community";
 import Feedback from "./pages/Feedback";
 import Store from "./pages/Store";
+import ScrumSimulation from "./pages/ScrumSimulation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const AppContent = () => {
         <Route path="/community" element={<Community />} />
         <Route path="/feedback" element={<Feedback />} />
         <Route path="/store" element={<Store />} />
+        <Route path="/simulation" element={<ScrumSimulation />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
