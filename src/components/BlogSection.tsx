@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import LatamInsights from '@/components/LatamInsights';
+import PMLatamInsights from '@/components/PMLatamInsights';
 
 type BlogLanguage = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja';
 
@@ -23,6 +24,8 @@ interface ContentData {
   section3Content: string;
   section4Title: string;
   salaryData: { country: string; salary: string; flag: string }[];
+  pmSection4Title: string;
+  pmSalaryData: { country: string; salary: string; flag: string }[];
   section5Title: string;
   industries: string[];
   section6Title: string;
@@ -58,6 +61,14 @@ const BlogSection = () => {
         { country: 'United States', salary: 'USD 115,000 - USD 145,000', flag: '🇺🇸' },
         { country: 'Germany', salary: 'EUR 70,000 - EUR 85,000', flag: '🇩🇪' },
         { country: 'India', salary: 'INR 14 LPA', flag: '🇮🇳' },
+      ],
+      pmSection4Title: 'Project Manager Salaries: A Global Perspective',
+      pmSalaryData: [
+        { country: 'Australia', salary: 'A$120,000 - A$145,000', flag: '🇦🇺' },
+        { country: 'United Kingdom', salary: 'GBP 55,000 - GBP 75,000', flag: '🇬🇧' },
+        { country: 'United States', salary: 'USD 95,000 - USD 130,000', flag: '🇺🇸' },
+        { country: 'Germany', salary: 'EUR 60,000 - EUR 80,000', flag: '🇩🇪' },
+        { country: 'India', salary: 'INR 12 LPA', flag: '🇮🇳' },
       ],
       section5Title: 'Top Industries for Scrum Masters',
       industries: ['Energy', 'Healthcare & Life Sciences', 'Automotive', 'Financial Services', 'Consulting', 'Insurance', 'IT & Technology'],
@@ -96,6 +107,14 @@ const BlogSection = () => {
         { country: 'Alemania', salary: 'EUR 70,000 - EUR 85,000', flag: '🇩🇪' },
         { country: 'India', salary: 'INR 14 LPA', flag: '🇮🇳' },
       ],
+      pmSection4Title: 'Salarios de Project Manager: Una Perspectiva Global',
+      pmSalaryData: [
+        { country: 'Australia', salary: 'A$120,000 - A$145,000', flag: '🇦🇺' },
+        { country: 'Reino Unido', salary: 'GBP 55,000 - GBP 75,000', flag: '🇬🇧' },
+        { country: 'Estados Unidos', salary: 'USD 95,000 - USD 130,000', flag: '🇺🇸' },
+        { country: 'Alemania', salary: 'EUR 60,000 - EUR 80,000', flag: '🇩🇪' },
+        { country: 'India', salary: 'INR 12 LPA', flag: '🇮🇳' },
+      ],
       section5Title: 'Principales Industrias para Scrum Masters',
       industries: ['Energía', 'Salud y Ciencias de la Vida', 'Automotriz', 'Servicios Financieros', 'Consultoría', 'Seguros', 'TI y Tecnología'],
       section6Title: 'Trayectorias Profesionales en Scrum',
@@ -132,6 +151,14 @@ const BlogSection = () => {
         { country: '美国', salary: 'USD 115,000 - USD 145,000', flag: '🇺🇸' },
         { country: '德国', salary: 'EUR 70,000 - EUR 85,000', flag: '🇩🇪' },
         { country: '印度', salary: 'INR 14 LPA', flag: '🇮🇳' },
+      ],
+      pmSection4Title: '项目经理薪资：全球视角',
+      pmSalaryData: [
+        { country: '澳大利亚', salary: 'A$120,000 - A$145,000', flag: '🇦🇺' },
+        { country: '英国', salary: 'GBP 55,000 - GBP 75,000', flag: '🇬🇧' },
+        { country: '美国', salary: 'USD 95,000 - USD 130,000', flag: '🇺🇸' },
+        { country: '德国', salary: 'EUR 60,000 - EUR 80,000', flag: '🇩🇪' },
+        { country: '印度', salary: 'INR 12 LPA', flag: '🇮🇳' },
       ],
       section5Title: 'Scrum Master的顶级行业',
       industries: ['能源', '医疗保健与生命科学', '汽车', '金融服务', '咨询', '保险', 'IT与技术'],
@@ -170,6 +197,14 @@ const BlogSection = () => {
         { country: 'ألمانيا', salary: 'EUR 70,000 - EUR 85,000', flag: '🇩🇪' },
         { country: 'الهند', salary: 'INR 14 LPA', flag: '🇮🇳' },
       ],
+      pmSection4Title: 'رواتب مدير المشاريع: منظور عالمي',
+      pmSalaryData: [
+        { country: 'أستراليا', salary: 'A$120,000 - A$145,000', flag: '🇦🇺' },
+        { country: 'المملكة المتحدة', salary: 'GBP 55,000 - GBP 75,000', flag: '🇬🇧' },
+        { country: 'الولايات المتحدة', salary: 'USD 95,000 - USD 130,000', flag: '🇺🇸' },
+        { country: 'ألمانيا', salary: 'EUR 60,000 - EUR 80,000', flag: '🇩🇪' },
+        { country: 'الهند', salary: 'INR 12 LPA', flag: '🇮🇳' },
+      ],
       section5Title: 'أفضل الصناعات لـ Scrum Masters',
       industries: ['الطاقة', 'الرعاية الصحية وعلوم الحياة', 'السيارات', 'الخدمات المالية', 'الاستشارات', 'التأمين', 'تكنولوجيا المعلومات'],
       section6Title: 'مسارات مهنية في Scrum',
@@ -206,6 +241,14 @@ const BlogSection = () => {
         { country: 'États-Unis', salary: 'USD 115,000 - USD 145,000', flag: '🇺🇸' },
         { country: 'Allemagne', salary: 'EUR 70,000 - EUR 85,000', flag: '🇩🇪' },
         { country: 'Inde', salary: 'INR 14 LPA', flag: '🇮🇳' },
+      ],
+      pmSection4Title: 'Salaires Chef de Projet : Une Perspective Mondiale',
+      pmSalaryData: [
+        { country: 'Australie', salary: 'A$120,000 - A$145,000', flag: '🇦🇺' },
+        { country: 'Royaume-Uni', salary: 'GBP 55,000 - GBP 75,000', flag: '🇬🇧' },
+        { country: 'États-Unis', salary: 'USD 95,000 - USD 130,000', flag: '🇺🇸' },
+        { country: 'Allemagne', salary: 'EUR 60,000 - EUR 80,000', flag: '🇩🇪' },
+        { country: 'Inde', salary: 'INR 12 LPA', flag: '🇮🇳' },
       ],
       section5Title: 'Meilleures Industries pour les Scrum Masters',
       industries: ['Énergie', 'Santé et Sciences de la Vie', 'Automobile', 'Services Financiers', 'Conseil', 'Assurance', 'IT et Technologie'],
@@ -244,6 +287,14 @@ const BlogSection = () => {
         { country: 'Deutschland', salary: 'EUR 70,000 - EUR 85,000', flag: '🇩🇪' },
         { country: 'Indien', salary: 'INR 14 LPA', flag: '🇮🇳' },
       ],
+      pmSection4Title: 'Projektmanager Gehälter: Eine Globale Perspektive',
+      pmSalaryData: [
+        { country: 'Australien', salary: 'A$120,000 - A$145,000', flag: '🇦🇺' },
+        { country: 'Vereinigtes Königreich', salary: 'GBP 55,000 - GBP 75,000', flag: '🇬🇧' },
+        { country: 'Vereinigte Staaten', salary: 'USD 95,000 - USD 130,000', flag: '🇺🇸' },
+        { country: 'Deutschland', salary: 'EUR 60,000 - EUR 80,000', flag: '🇩🇪' },
+        { country: 'Indien', salary: 'INR 12 LPA', flag: '🇮🇳' },
+      ],
       section5Title: 'Top-Branchen für Scrum Masters',
       industries: ['Energie', 'Gesundheitswesen & Life Sciences', 'Automobil', 'Finanzdienstleistungen', 'Beratung', 'Versicherung', 'IT & Technologie'],
       section6Title: 'Karrierewege in Scrum',
@@ -280,6 +331,14 @@ const BlogSection = () => {
         { country: 'アメリカ', salary: 'USD 115,000 - USD 145,000', flag: '🇺🇸' },
         { country: 'ドイツ', salary: 'EUR 70,000 - EUR 85,000', flag: '🇩🇪' },
         { country: 'インド', salary: 'INR 14 LPA', flag: '🇮🇳' },
+      ],
+      pmSection4Title: 'プロジェクトマネージャーの給与：グローバルな視点',
+      pmSalaryData: [
+        { country: 'オーストラリア', salary: 'A$120,000 - A$145,000', flag: '🇦🇺' },
+        { country: 'イギリス', salary: 'GBP 55,000 - GBP 75,000', flag: '🇬🇧' },
+        { country: 'アメリカ', salary: 'USD 95,000 - USD 130,000', flag: '🇺🇸' },
+        { country: 'ドイツ', salary: 'EUR 60,000 - EUR 80,000', flag: '🇩🇪' },
+        { country: 'インド', salary: 'INR 12 LPA', flag: '🇮🇳' },
       ],
       section5Title: 'スクラムマスターのトップ業界',
       industries: ['エネルギー', 'ヘルスケア＆ライフサイエンス', '自動車', '金融サービス', 'コンサルティング', '保険', 'IT＆テクノロジー'],
@@ -457,6 +516,31 @@ const BlogSection = () => {
 
               {/* LATAM Salaries & DR Growth Charts */}
               <LatamInsights />
+
+              {/* PM Global Salary Section */}
+              <div>
+                <h3 className="text-2xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
+                  <DollarSign className="w-6 h-6 text-secondary" />
+                  {t.pmSection4Title}
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {t.pmSalaryData.map((item, index) => (
+                    <div
+                      key={index}
+                      className="p-4 rounded-xl bg-muted/50 border border-border hover:border-primary/30 transition-colors"
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-2xl">{item.flag}</span>
+                        <span className="font-semibold text-foreground">{item.country}</span>
+                      </div>
+                      <p className="text-primary font-bold">{item.salary}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* PM LATAM Salaries & DR Growth Charts */}
+              <PMLatamInsights />
 
               {/* Industries */}
               <div>
