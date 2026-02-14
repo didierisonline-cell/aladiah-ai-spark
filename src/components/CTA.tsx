@@ -81,7 +81,7 @@ const CTA = () => {
               <img
                 src={aladiahSeal}
                 alt="Aladiah Academy Seal"
-                className="w-[125%] h-[125%] max-w-none object-contain"
+                className="w-full h-full object-contain p-2"
               />
             </div>
           </motion.div>
