@@ -168,7 +168,6 @@ const Hero = () => {
                 autoPlay
                 muted={isMuted}
                 playsInline
-                loop
                 onEnded={handleVideoEnd}
                 className="w-full aspect-video object-cover"
               />
