@@ -361,6 +361,124 @@ export type Database = {
           },
         ]
       }
+      scrum_simulations: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          current_day: number
+          id: string
+          started_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          current_day?: number
+          id?: string
+          started_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          current_day?: number
+          id?: string
+          started_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      simulation_messages: {
+        Row: {
+          ceremony: string | null
+          content: string
+          created_at: string
+          day: number
+          id: string
+          role: string
+          simulation_id: string
+          speaker: string | null
+        }
+        Insert: {
+          ceremony?: string | null
+          content: string
+          created_at?: string
+          day: number
+          id?: string
+          role: string
+          simulation_id: string
+          speaker?: string | null
+        }
+        Update: {
+          ceremony?: string | null
+          content?: string
+          created_at?: string
+          day?: number
+          id?: string
+          role?: string
+          simulation_id?: string
+          speaker?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "simulation_messages_simulation_id_fkey"
+            columns: ["simulation_id"]
+            isOneToOne: false
+            referencedRelation: "scrum_simulations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      simulation_scores: {
+        Row: {
+          artifact_score: number
+          communication_score: number
+          created_at: string
+          day: number
+          decision_score: number
+          facilitation_score: number
+          feedback: string | null
+          id: string
+          simulation_id: string
+          total_score: number
+        }
+        Insert: {
+          artifact_score?: number
+          communication_score?: number
+          created_at?: string
+          day: number
+          decision_score?: number
+          facilitation_score?: number
+          feedback?: string | null
+          id?: string
+          simulation_id: string
+          total_score?: number
+        }
+        Update: {
+          artifact_score?: number
+          communication_score?: number
+          created_at?: string
+          day?: number
+          decision_score?: number
+          facilitation_score?: number
+          feedback?: string | null
+          id?: string
+          simulation_id?: string
+          total_score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "simulation_scores_simulation_id_fkey"
+            columns: ["simulation_id"]
+            isOneToOne: false
+            referencedRelation: "scrum_simulations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_progress: {
         Row: {
           chapter_id: string | null
