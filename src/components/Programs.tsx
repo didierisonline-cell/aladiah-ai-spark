@@ -180,7 +180,7 @@ const Programs = () => {
                 </div>
               </div>
               <div className="lg:flex-shrink-0">
-                <Button variant="outline" size="lg" className="w-full lg:w-auto group/btn" onClick={() => navigate('/auth')}>
+                <Button variant="outline" size="lg" className="w-full lg:w-auto group/btn" onClick={() => navigate('/simulation')}>
                   {t('programs.learnMore')}
                   <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                 </Button>
