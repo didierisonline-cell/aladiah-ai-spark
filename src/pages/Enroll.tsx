@@ -92,8 +92,7 @@ const Enroll = () => {
         title: et.welcome,
         description: et.paymentSoon,
       });
-      // Auto-redirect to the personalized student portal
-      setTimeout(() => navigate('/portal'), 1500);
+      setTimeout(() => navigate('/dashboard'), 1500);
     } catch (err: any) {
       toast({ title: err.message || 'Something went wrong', variant: 'destructive' });
     } finally {
