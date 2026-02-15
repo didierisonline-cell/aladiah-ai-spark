@@ -180,6 +180,11 @@ const translations: Record<Language, Record<string, string>> = {
     'referral.terms.t3': 'Affiliate rewards are paid once all 5 referred individuals have completed full registration and payment.',
     'referral.terms.t4': 'Rewards are paid via bank transfer or digital payment within 30 business days of qualification.',
     'referral.terms.t5': 'Aladiah Academy reserves the right to modify or discontinue this program at any time. Fraudulent referrals will result in disqualification.',
+    'referral.link.title': 'Your Unique Referral Link',
+    'referral.link.referrals': 'referrals',
+    'referral.link.share': 'Share this link with friends. When they register using your link, it counts toward your reward.',
+    'referral.link.loginRequired': 'Log in to get your unique referral link',
+    'referral.link.login': 'Log In',
   },
   es: {
     // Navigation
@@ -342,6 +347,11 @@ const translations: Record<Language, Record<string, string>> = {
     'referral.terms.t3': 'Las recompensas de afiliados se pagan una vez que los 5 referidos completen registro y pago.',
     'referral.terms.t4': 'Las recompensas se pagan por transferencia bancaria o pago digital dentro de 30 días hábiles.',
     'referral.terms.t5': 'Aladiah Academy se reserva el derecho de modificar o descontinuar este programa. Los referidos fraudulentos resultarán en descalificación.',
+    'referral.link.title': 'Tu Enlace Único de Referido',
+    'referral.link.referrals': 'referidos',
+    'referral.link.share': 'Comparte este enlace con amigos. Cuando se registren usando tu enlace, contará para tu recompensa.',
+    'referral.link.loginRequired': 'Inicia sesión para obtener tu enlace de referido',
+    'referral.link.login': 'Iniciar Sesión',
   },
   zh: {
     // Navigation
@@ -504,6 +514,11 @@ const translations: Record<Language, Record<string, string>> = {
     'referral.terms.t3': '联盟奖励在5位推荐人完成注册和付款后支付。',
     'referral.terms.t4': '奖励在符合条件后30个工作日内通过银行转账或数字支付方式支付。',
     'referral.terms.t5': 'Aladiah Academy保留随时修改或终止此计划的权利。欺诈性推荐将导致取消资格。',
+    'referral.link.title': '您的专属推荐链接',
+    'referral.link.referrals': '推荐',
+    'referral.link.share': '与朋友分享此链接。当他们使用您的链接注册时，将计入您的奖励。',
+    'referral.link.loginRequired': '登录以获取您的专属推荐链接',
+    'referral.link.login': '登录',
   },
   ar: {
     // Navigation
@@ -666,6 +681,11 @@ const translations: Record<Language, Record<string, string>> = {
     'referral.terms.t3': 'تُدفع مكافآت الشراكة بعد إكمال المُحالين الخمسة التسجيل والدفع.',
     'referral.terms.t4': 'تُدفع المكافآت عبر تحويل بنكي أو دفع رقمي خلال 30 يوم عمل.',
     'referral.terms.t5': 'تحتفظ أكاديمية علاديا بالحق في تعديل أو إيقاف هذا البرنامج. الإحالات الاحتيالية ستؤدي إلى الاستبعاد.',
+    'referral.link.title': 'رابط الإحالة الخاص بك',
+    'referral.link.referrals': 'إحالات',
+    'referral.link.share': 'شارك هذا الرابط مع أصدقائك. عندما يسجلون باستخدام رابطك، سيُحتسب ذلك لمكافأتك.',
+    'referral.link.loginRequired': 'سجّل الدخول للحصول على رابط الإحالة الخاص بك',
+    'referral.link.login': 'تسجيل الدخول',
   },
   fr: {
     // Navigation
@@ -828,6 +848,11 @@ const translations: Record<Language, Record<string, string>> = {
     'referral.terms.t3': 'Les récompenses d\'affiliation sont versées après inscription et paiement complets des 5 filleuls.',
     'referral.terms.t4': 'Les récompenses sont versées par virement bancaire ou paiement numérique sous 30 jours ouvrables.',
     'referral.terms.t5': 'Aladiah Academy se réserve le droit de modifier ou d\'interrompre ce programme. Les parrainages frauduleux entraîneront une disqualification.',
+    'referral.link.title': 'Votre Lien de Parrainage Unique',
+    'referral.link.referrals': 'parrainages',
+    'referral.link.share': 'Partagez ce lien avec vos amis. Lorsqu\'ils s\'inscrivent via votre lien, cela compte pour votre récompense.',
+    'referral.link.loginRequired': 'Connectez-vous pour obtenir votre lien de parrainage',
+    'referral.link.login': 'Se Connecter',
   },
   de: {
     // Navigation
@@ -990,6 +1015,11 @@ const translations: Record<Language, Record<string, string>> = {
     'referral.terms.t3': 'Partnerprämien werden nach vollständiger Registrierung und Zahlung aller 5 Empfehlungen ausgezahlt.',
     'referral.terms.t4': 'Prämien werden per Banküberweisung oder digitaler Zahlung innerhalb von 30 Werktagen ausgezahlt.',
     'referral.terms.t5': 'Aladiah Academy behält sich das Recht vor, dieses Programm jederzeit zu ändern oder einzustellen. Betrügerische Empfehlungen führen zur Disqualifikation.',
+    'referral.link.title': 'Ihr Einzigartiger Empfehlungslink',
+    'referral.link.referrals': 'Empfehlungen',
+    'referral.link.share': 'Teilen Sie diesen Link mit Freunden. Wenn sie sich über Ihren Link registrieren, zählt es zu Ihrer Belohnung.',
+    'referral.link.loginRequired': 'Melden Sie sich an, um Ihren Empfehlungslink zu erhalten',
+    'referral.link.login': 'Anmelden',
   },
   ja: {
     // Navigation
@@ -1152,6 +1182,11 @@ const translations: Record<Language, Record<string, string>> = {
     'referral.terms.t3': 'アフィリエイト報酬は5人全員が登録と支払いを完了後に支払われます。',
     'referral.terms.t4': '報酬は資格取得後30営業日以内に銀行振込またはデジタル決済で支払われます。',
     'referral.terms.t5': 'Aladiah Academyはこのプログラムをいつでも変更または中止する権利を留保します。不正な紹介は失格となります。',
+    'referral.link.title': 'あなたの紹介リンク',
+    'referral.link.referrals': '紹介',
+    'referral.link.share': '友人とこのリンクを共有してください。あなたのリンクから登録すると、報酬にカウントされます。',
+    'referral.link.loginRequired': '紹介リンクを取得するにはログインしてください',
+    'referral.link.login': 'ログイン',
   },
 };
 
