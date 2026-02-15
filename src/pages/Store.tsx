@@ -9,7 +9,7 @@ import { useCartStore, ShopifyProduct } from '@/stores/cartStore';
 import { CartDrawer } from '@/components/CartDrawer';
 import { storefrontApiRequest, PRODUCTS_QUERY } from '@/lib/shopify';
 import { toast } from 'sonner';
-import aladiahSeal from '@/assets/aladiah-academy-seal.svg';
+import aladiahSeal from '@/assets/aladiah-store-seal.png';
 
 const Store = () => {
   const { t } = useLanguage();
