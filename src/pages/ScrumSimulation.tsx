@@ -274,6 +274,18 @@ const ScrumSimulation = () => {
   // Completed state
   if (simStatus === 'completed') {
     const avgScore = allScores.length > 0 ? Math.round(allScores.reduce((s, sc) => s + sc.total_score, 0) / allScores.length) : 0;
+    const avgFacilitation = allScores.length > 0 ? Math.round(allScores.reduce((s, sc) => s + sc.facilitation_score, 0) / allScores.length) : 0;
+    const avgCommunication = allScores.length > 0 ? Math.round(allScores.reduce((s, sc) => s + sc.communication_score, 0) / allScores.length) : 0;
+    const avgArtifact = allScores.length > 0 ? Math.round(allScores.reduce((s, sc) => s + sc.artifact_score, 0) / allScores.length) : 0;
+    const avgDecision = allScores.length > 0 ? Math.round(allScores.reduce((s, sc) => s + sc.decision_score, 0) / allScores.length) : 0;
+    const grade = avgScore >= 90 ? 'A' : avgScore >= 80 ? 'B' : avgScore >= 70 ? 'C' : avgScore >= 60 ? 'D' : 'F';
+    const strengths = [
+      { label: 'Facilitation', score: avgFacilitation },
+      { label: 'Communication', score: avgCommunication },
+      { label: 'Artifacts', score: avgArtifact },
+      { label: 'Decision Making', score: avgDecision },
+    ].sort((a, b) => b.score - a.score);
+
     return (
       <div className="min-h-screen bg-background">
         <header className="border-b bg-white sticky top-0 z-50">
@@ -285,10 +297,56 @@ const ScrumSimulation = () => {
           </div>
         </header>
         <main className="container mx-auto px-4 py-12 max-w-3xl">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
             <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-            <h1 className="text-4xl font-display font-bold mb-4">Sprint Complete! 🎉</h1>
-            <p className="text-lg text-muted-foreground mb-6">Average Score: {avgScore}/100</p>
+            <h1 className="text-4xl font-display font-bold mb-2">Sprint Complete! 🎉</h1>
+            <p className="text-lg text-muted-foreground">You've completed a full 2-week sprint simulation</p>
+          </motion.div>
+
+          {/* Certificate Card */}
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}>
+            <Card className="mb-8 border-2 border-accent/30 bg-gradient-to-br from-accent/5 to-primary/5 overflow-hidden">
+              <CardContent className="p-8 text-center">
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-accent/20 flex items-center justify-center">
+                  <span className="text-3xl font-display font-bold text-accent">{grade}</span>
+                </div>
+                <h2 className="text-2xl font-display font-bold mb-1">Scrum Master Simulation</h2>
+                <p className="text-sm text-muted-foreground mb-4">Certificate of Completion</p>
+                <div className="text-4xl font-display font-bold text-primary mb-1">{avgScore}/100</div>
+                <p className="text-sm text-muted-foreground">Overall Score</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Skills Breakdown */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Star className="w-5 h-5 text-accent" /> Skills Report
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {strengths.map((skill, i) => (
+                  <div key={skill.label}>
+                    <div className="flex items-center justify-between text-sm mb-1">
+                      <span className="font-medium">{i === 0 ? '💪 ' : ''}{skill.label}</span>
+                      <span className="font-bold">{skill.score}/100</span>
+                    </div>
+                    <Progress value={skill.score} className="h-2" />
+                    {i === 0 && <p className="text-xs text-muted-foreground mt-1">Your strongest area</p>}
+                    {i === strengths.length - 1 && skill.score < 70 && (
+                      <p className="text-xs text-secondary mt-1">Focus area for improvement</p>
+                    )}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Daily Scores */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+            <h3 className="font-display font-bold text-lg mb-3">Daily Performance</h3>
             <div className="space-y-3 mb-8">
               {allScores.map((score, i) => (
                 <Card key={i} className="p-4">
@@ -302,8 +360,14 @@ const ScrumSimulation = () => {
                 </Card>
               ))}
             </div>
-            <Button onClick={() => navigate('/courses')}>Back to Courses</Button>
           </motion.div>
+
+          <div className="flex gap-3 justify-center">
+            <Button variant="outline" onClick={() => { setSimStatus('idle'); setSimulationId(null); setAllScores([]); setMessages([]); }}>
+              Start New Simulation
+            </Button>
+            <Button onClick={() => navigate('/courses')}>Back to Courses</Button>
+          </div>
         </main>
       </div>
     );

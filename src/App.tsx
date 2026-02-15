@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { useCartSync } from "@/hooks/useCartSync";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
 import Courses from "./pages/Courses";
 import ChapterView from "./pages/ChapterView";
 import Enroll from "./pages/Enroll";
@@ -25,6 +26,7 @@ const AppContent = () => {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/course/:courseId/chapter/:chapterId" element={<ChapterView />} />
         <Route path="/enroll" element={<Enroll />} />
