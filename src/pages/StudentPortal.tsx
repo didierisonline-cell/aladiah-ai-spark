@@ -99,7 +99,7 @@ const StudentPortal = () => {
   };
 
   const sendChat = useCallback(async () => {
-    if (!chatInput.trim() || isStreaming || !user) return;
+    if (!chatInput.trim() || isStreaming) return;
     const userMsg: Msg = { role: 'user', content: chatInput };
     setChatMessages(prev => [...prev, userMsg]);
     setChatInput('');
