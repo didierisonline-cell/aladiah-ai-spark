@@ -238,7 +238,7 @@ const StudentPortal = () => {
                   <div
                     key={cp.courseId}
                     className="space-y-2 p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
-                    onClick={() => navigate(cp.nextChapterId ? `/course/${cp.courseId}/chapter/${cp.nextChapterId}` : `/courses`)}
+                    onClick={() => navigate(`/courses`)}
                   >
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">{cp.title}</span>
