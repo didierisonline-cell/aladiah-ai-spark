@@ -30,15 +30,26 @@ const Auth = () => {
         });
         if (error) throw error;
         
-        // Check if user has completed intro
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('has_completed_intro')
+        // Check if user is admin
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
           .eq('user_id', data.user.id)
-          .single();
+          .eq('role', 'admin')
+          .maybeSingle();
         
-        toast({ title: 'Welcome back!', description: 'Successfully logged in.' });
-        navigate(profile?.has_completed_intro === false ? '/community' : '/courses');
+        if (roleData) {
+          toast({ title: 'Welcome back, Admin!', description: 'Redirecting to your dashboard.' });
+          navigate('/admin');
+        } else {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('has_completed_intro')
+            .eq('user_id', data.user.id)
+            .single();
+          toast({ title: 'Welcome back!', description: 'Successfully logged in.' });
+          navigate(profile?.has_completed_intro === false ? '/community' : '/courses');
+        }
       } else {
         const { error } = await supabase.auth.signUp({
           email,
