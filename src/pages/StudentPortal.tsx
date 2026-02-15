@@ -235,17 +235,19 @@ const StudentPortal = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 {courseProgresses.map(cp => (
-                  <div key={cp.courseId} className="space-y-2">
+                  <div
+                    key={cp.courseId}
+                    className="space-y-2 p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                    onClick={() => navigate(cp.nextChapterId ? `/course/${cp.courseId}/chapter/${cp.nextChapterId}` : `/courses`)}
+                  >
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">{cp.title}</span>
-                      <span className="text-sm text-muted-foreground">{cp.pct}%</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">{cp.pct}%</span>
+                        <ArrowRight className="w-3.5 h-3.5 text-muted-foreground" />
+                      </div>
                     </div>
                     <Progress value={cp.pct} className="h-2" />
-                    {cp.nextChapterId && cp.pct < 100 && (
-                      <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => navigate(`/course/${cp.courseId}/chapter/${cp.nextChapterId}`)}>
-                        Continue <ArrowRight className="w-3 h-3 ml-1" />
-                      </Button>
-                    )}
                   </div>
                 ))}
               </CardContent>
