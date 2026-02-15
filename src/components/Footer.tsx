@@ -24,7 +24,7 @@ const Footer = () => {
     { key: 'nav.about', href: '#about' },
     { key: 'nav.contact', href: '#contact' },
     { key: 'nav.store', href: '/store', isRoute: true },
-    ...(isAdmin ? [{ key: 'Admin', href: '/admin', isRoute: true, raw: true }] : []),
+    { key: 'Admin', href: '/admin', isRoute: true, raw: true },
   ];
 
   return (
