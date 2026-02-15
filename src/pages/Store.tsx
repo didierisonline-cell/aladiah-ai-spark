@@ -9,7 +9,10 @@ import { useCartStore, ShopifyProduct } from '@/stores/cartStore';
 import { CartDrawer } from '@/components/CartDrawer';
 import { storefrontApiRequest, PRODUCTS_QUERY } from '@/lib/shopify';
 import { toast } from 'sonner';
-import aladiahSeal from '@/assets/aladiah-store-seal.png';
+import storeSealBlue from '@/assets/store-seal-blue.png';
+import storeMerch1 from '@/assets/store-merch-1.png';
+import storeMerch2 from '@/assets/store-merch-2.jpeg';
+import storeMerch3 from '@/assets/store-merch-3.png';
 
 const Store = () => {
   const { t } = useLanguage();
@@ -80,17 +83,47 @@ const Store = () => {
               <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
             </div>
           ) : products.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8 }}
-                className="w-[90vw] max-w-[900px] mb-10"
-              >
-                <img src={aladiahSeal} alt="Aladiah Academy Seal" className="w-full h-full object-contain drop-shadow-[0_0_40px_rgba(30,58,138,0.15)]" />
-              </motion.div>
-              <h2 className="text-3xl font-display font-bold text-foreground mb-3">Merchandise Coming Soon</h2>
-              <p className="text-muted-foreground text-lg max-w-md text-center">Official Aladiah Academy merchandise is on its way. Stay tuned!</p>
+            <div className="relative rounded-3xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #5b9bb5 0%, #3a7d99 30%, #2a6a85 60%, #1d5570 100%)' }}>
+              {/* Background merch images */}
+              <div className="absolute inset-0 grid grid-cols-3 gap-2 opacity-[0.12]">
+                <div className="overflow-hidden">
+                  <img src={storeMerch1} alt="" className="w-full h-full object-cover" />
+                </div>
+                <div className="overflow-hidden">
+                  <img src={storeMerch2} alt="" className="w-full h-full object-cover" />
+                </div>
+                <div className="overflow-hidden">
+                  <img src={storeMerch3} alt="" className="w-full h-full object-cover" />
+                </div>
+              </div>
+              
+              {/* Content */}
+              <div className="relative z-10 flex flex-col items-center justify-center py-16 lg:py-24 px-6">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8 }}
+                  className="w-[75vw] max-w-[550px] mb-10"
+                >
+                  <img src={storeSealBlue} alt="Aladiah Academy Seal" className="w-full h-full object-contain drop-shadow-[0_0_60px_rgba(255,255,255,0.2)]" />
+                </motion.div>
+                <motion.h2
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-3xl lg:text-4xl font-display font-bold text-white mb-3 text-center"
+                >
+                  Merchandise Coming Soon
+                </motion.h2>
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="text-white/70 text-lg max-w-md text-center"
+                >
+                  Official Aladiah Academy merchandise is on its way. Stay tuned!
+                </motion.p>
+              </div>
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
