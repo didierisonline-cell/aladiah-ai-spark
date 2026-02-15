@@ -12,7 +12,7 @@ const professors = [
   {
     id: "professor_didier",
     name: "Professor Didier",
-    voiceId: "JBFqnCBsd6RMkjVDRZzb", // George - warm, authoritative male voice
+    voiceId: "iP95p4xoKVk53GoZ742B", // Chris - Black American male voice, warm and confident
     personality: "Warm and encouraging, uses Dominican expressions, often says '¡Mira!' and 'Tú sabes'",
     style: "Speaks with passion about Scrum, loves sports analogies especially baseball"
   },
