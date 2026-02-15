@@ -251,8 +251,9 @@ const Dashboard = () => {
 
         {/* Quick Actions */}
         <h2 className="text-xl font-display font-bold mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {[
+            { label: 'AI Portal', path: '/portal', icon: Target },
             { label: 'All Courses', path: '/courses', icon: BookOpen },
             { label: 'Community', path: '/community', icon: Target },
             { label: 'Sprint Simulation', path: '/simulation', icon: Flame },
