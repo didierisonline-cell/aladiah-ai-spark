@@ -55,7 +55,7 @@ export const useReferralCode = (programType: 'student' | 'affiliate') => {
   }, [user, programType]);
 
   const referralLink = code
-    ? `${window.location.origin}/enroll?ref=${code}`
+    ? `${window.location.origin}/refer/${code}`
     : null;
 
   return { code, referralLink, loading, referralCount, user };

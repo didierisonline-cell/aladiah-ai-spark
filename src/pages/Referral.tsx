@@ -112,6 +112,11 @@ const Referral = () => {
                       {t('referral.student.cta')}
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
+
+                    <Button variant="ghost" size="sm" className="w-full text-primary" onClick={() => navigate('/referral/kit')}>
+                      📦 {t('referral.kit.link')}
+                      <ArrowRight className="w-3 h-3 ml-1" />
+                    </Button>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -162,6 +167,11 @@ const Referral = () => {
                     <Button variant="coral" size="lg" className="w-full">
                       {t('referral.affiliate.cta')}
                       <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+
+                    <Button variant="ghost" size="sm" className="w-full text-secondary" onClick={() => navigate('/referral/kit')}>
+                      📦 {t('referral.kit.link')}
+                      <ArrowRight className="w-3 h-3 ml-1" />
                     </Button>
                   </CardContent>
                 </Card>
