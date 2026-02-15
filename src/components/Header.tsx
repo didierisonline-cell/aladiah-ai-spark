@@ -20,10 +20,10 @@ const Header = () => {
   const navigate = useNavigate();
 
   const navItems = [
-    { key: 'nav.home', href: '#home' },
-    { key: 'nav.programs', href: '#programs' },
-    { key: 'nav.about', href: '#about' },
-    { key: 'nav.contact', href: '#contact' },
+    { key: 'nav.home', href: '/#home' },
+    { key: 'nav.programs', href: '/#programs' },
+    { key: 'nav.about', href: '/#about' },
+    { key: 'nav.contact', href: '/#contact' },
     { key: 'nav.community', href: '/community', isRoute: true },
     { key: 'nav.feedback', href: '/feedback', isRoute: true },
     { key: 'nav.store', href: '/store', isRoute: true },
@@ -36,16 +36,14 @@ const Header = () => {
         <div className="flex items-center justify-between h-20 lg:h-24">
           {/* Logo */}
           <motion.a
-            href="#home"
+            href="/#home"
             className="flex items-center gap-2.5"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             onClick={(e) => {
-              e.preventDefault();
-              if (window.location.pathname !== '/') {
-                navigate('/#home');
-              } else {
+              if (window.location.pathname === '/') {
+                e.preventDefault();
                 const el = document.querySelector('#home');
                 el?.scrollIntoView({ behavior: 'smooth' });
               }
@@ -64,15 +62,13 @@ const Header = () => {
                   if ((item as any).isRoute) {
                     e.preventDefault();
                     navigate(item.href);
-                  } else if (item.href.startsWith('#')) {
+                  } else if (item.href.includes('#') && window.location.pathname === '/') {
                     e.preventDefault();
-                    if (window.location.pathname !== '/') {
-                      navigate('/' + item.href);
-                    } else {
-                      const el = document.querySelector(item.href);
-                      el?.scrollIntoView({ behavior: 'smooth' });
-                    }
+                    const hash = item.href.split('#')[1];
+                    const el = document.querySelector('#' + hash);
+                    el?.scrollIntoView({ behavior: 'smooth' });
                   }
+                  // For cross-page hash links, let the native <a> handle it
                 }}
                 className="px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 font-medium text-sm"
                 initial={{ opacity: 0, y: -10 }}
@@ -157,14 +153,11 @@ const Header = () => {
                     if ((item as any).isRoute) {
                       e.preventDefault();
                       navigate(item.href);
-                    } else if (item.href.startsWith('#')) {
+                    } else if (item.href.includes('#') && window.location.pathname === '/') {
                       e.preventDefault();
-                      if (window.location.pathname !== '/') {
-                        navigate('/' + item.href);
-                      } else {
-                        const el = document.querySelector(item.href);
-                        el?.scrollIntoView({ behavior: 'smooth' });
-                      }
+                      const hash = item.href.split('#')[1];
+                      const el = document.querySelector('#' + hash);
+                      el?.scrollIntoView({ behavior: 'smooth' });
                     }
                   }}
                 >
