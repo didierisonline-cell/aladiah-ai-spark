@@ -10,9 +10,9 @@ const corsHeaders = {
 // 4 Dominican professors with distinct personalities
 const professors = [
   {
-    id: "professor_miguel",
-    name: "Professor Miguel Santos",
-    voiceId: "JBFqnCBsd6RMkjVDRZzb", // George - warm, authoritative
+    id: "professor_didier",
+    name: "Professor Didier",
+    voiceId: "JBFqnCBsd6RMkjVDRZzb", // George - warm, authoritative male voice
     personality: "Warm and encouraging, uses Dominican expressions, often says '¡Mira!' and 'Tú sabes'",
     style: "Speaks with passion about Scrum, loves sports analogies especially baseball"
   },
