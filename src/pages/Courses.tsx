@@ -105,11 +105,8 @@ const Courses = () => {
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate('/auth');
-      return;
-    }
-    setUser(session.user);
+    // DEV MODE: bypass auth, allow anonymous access
+    setUser(session?.user ?? { email: 'dev@preview.local' });
     loadData();
   };
 
@@ -222,15 +219,8 @@ const Courses = () => {
       : 0;
   };
 
-  const isChapterAccessible = (chapter: Chapter, courseChapters: Chapter[]) => {
-    if (chapter.order_index === 0) return true;
-    const prevChapter = courseChapters.find(c => c.order_index === chapter.order_index - 1);
-    if (!prevChapter) return false;
-    const prevChapterEndQuiz = quizzes.find(
-      q => q.chapter_id === prevChapter.id && q.quiz_type === 'chapter_end'
-    );
-    if (!prevChapterEndQuiz) return false;
-    return passedQuizzes.includes(prevChapterEndQuiz.id);
+  const isChapterAccessible = (_chapter: Chapter, _courseChapters: Chapter[]) => {
+    return true; // DEV MODE: all chapters unlocked
   };
 
   const isCourseCompleted = (courseId: string) => {
@@ -242,14 +232,8 @@ const Courses = () => {
     return chapterEndQuizzes.every(q => passedQuizzes.includes(q.id));
   };
 
-  const isCourseUnlocked = (courseId: string) => {
-    const coursePrereqs = prerequisites.filter(p => p.course_id === courseId);
-    if (coursePrereqs.length === 0) return true;
-    const groups = [...new Set(coursePrereqs.map(p => p.prerequisite_group))];
-    return groups.some(group => {
-      const groupPrereqs = coursePrereqs.filter(p => p.prerequisite_group === group);
-      return groupPrereqs.every(p => isCourseCompleted(p.prerequisite_course_id));
-    });
+  const isCourseUnlocked = (_courseId: string) => {
+    return true; // DEV MODE: all courses unlocked
   };
 
   const getPrerequisiteNames = (courseId: string) => {
