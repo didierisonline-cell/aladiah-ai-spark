@@ -17,3 +17,18 @@ verify_jwt = false
 
 [functions.handle-payment-webhook]
 verify_jwt = false
+
+[functions.lesson-qa]
+verify_jwt = false
+
+[functions.seed-ai-pm-course]
+verify_jwt = false
+
+[functions.seed-all-quizzes]
+verify_jwt = false
+
+[functions.seed-scrum-course]
+verify_jwt = false
+
+[functions.scrum-simulation]
+verify_jwt = false
