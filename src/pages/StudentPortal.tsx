@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -325,7 +326,13 @@ const StudentPortal = () => {
                           ? 'bg-primary text-primary-foreground rounded-br-md'
                           : 'bg-muted rounded-bl-md'
                       }`}>
-                        <p className="whitespace-pre-wrap">{m.content}</p>
+                        {m.role === 'assistant' ? (
+                          <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:mb-2 [&>ul]:mb-2 [&>ol]:mb-2 [&>h1]:text-base [&>h2]:text-sm [&>h3]:text-sm [&>h1]:font-bold [&>h2]:font-semibold [&>h3]:font-medium">
+                            <ReactMarkdown>{m.content}</ReactMarkdown>
+                          </div>
+                        ) : (
+                          <p className="whitespace-pre-wrap">{m.content}</p>
+                        )}
                       </div>
                     </div>
                   ))}
