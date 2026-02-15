@@ -16,6 +16,8 @@ import Feedback from "./pages/Feedback";
 import Store from "./pages/Store";
 import ScrumSimulation from "./pages/ScrumSimulation";
 import Referral from "./pages/Referral";
+import MarketingKit from "./pages/MarketingKit";
+import ReferralProfile from "./pages/ReferralProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +38,8 @@ const AppContent = () => {
         <Route path="/store" element={<Store />} />
         <Route path="/simulation" element={<ScrumSimulation />} />
         <Route path="/referral" element={<Referral />} />
+        <Route path="/referral/kit" element={<MarketingKit />} />
+        <Route path="/refer/:code" element={<ReferralProfile />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
