@@ -32,3 +32,9 @@ verify_jwt = false
 
 [functions.scrum-simulation]
 verify_jwt = false
+
+[functions.student-assistant]
+verify_jwt = false
+
+[functions.admin-analytics]
+verify_jwt = false

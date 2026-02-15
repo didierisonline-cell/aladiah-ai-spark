@@ -14,6 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_conversations: {
+        Row: {
+          context: Json | null
+          created_at: string
+          id: string
+          messages: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          context?: Json | null
+          created_at?: string
+          id?: string
+          messages?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          context?: Json | null
+          created_at?: string
+          id?: string
+          messages?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_suggestions: {
+        Row: {
+          acted_on: boolean
+          content: Json
+          created_at: string
+          dismissed: boolean
+          id: string
+          suggestion_type: string
+          user_id: string
+        }
+        Insert: {
+          acted_on?: boolean
+          content?: Json
+          created_at?: string
+          dismissed?: boolean
+          id?: string
+          suggestion_type: string
+          user_id: string
+        }
+        Update: {
+          acted_on?: boolean
+          content?: Json
+          created_at?: string
+          dismissed?: boolean
+          id?: string
+          suggestion_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      blog_engagement: {
+        Row: {
+          blog_id: string
+          comment_text: string | null
+          created_at: string
+          engagement_type: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          blog_id: string
+          comment_text?: string | null
+          created_at?: string
+          engagement_type: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          blog_id?: string
+          comment_text?: string | null
+          created_at?: string
+          engagement_type?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_engagement_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_blogs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chapters: {
         Row: {
           course_id: string
@@ -206,6 +298,41 @@ export type Database = {
           translations?: Json | null
         }
         Relationships: []
+      }
+      points_redemptions: {
+        Row: {
+          created_at: string
+          id: string
+          points_spent: number
+          reward_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          points_spent: number
+          reward_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          points_spent?: number
+          reward_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "points_redemptions_reward_id_fkey"
+            columns: ["reward_id"]
+            isOneToOne: false
+            referencedRelation: "rewards_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -423,6 +550,36 @@ export type Database = {
           },
         ]
       }
+      rewards_catalog: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          points_cost: number
+          reward_type: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          points_cost: number
+          reward_type: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          points_cost?: number
+          reward_type?: string
+          title?: string
+        }
+        Relationships: []
+      }
       scrum_simulations: {
         Row: {
           completed_at: string | null
@@ -541,6 +698,128 @@ export type Database = {
           },
         ]
       }
+      student_analytics: {
+        Row: {
+          course_id: string | null
+          created_at: string
+          duration_seconds: number | null
+          event_data: Json | null
+          event_type: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          course_id?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          course_id?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_analytics_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_labs: {
+        Row: {
+          ai_assessment: Json | null
+          chapter_id: string
+          completed: boolean
+          course_id: string
+          created_at: string
+          difficulty_level: string
+          id: string
+          lab_content: Json
+          score: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_assessment?: Json | null
+          chapter_id: string
+          completed?: boolean
+          course_id: string
+          created_at?: string
+          difficulty_level?: string
+          id?: string
+          lab_content?: Json
+          score?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_assessment?: Json | null
+          chapter_id?: string
+          completed?: boolean
+          course_id?: string
+          created_at?: string
+          difficulty_level?: string
+          id?: string
+          lab_content?: Json
+          score?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_labs_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_labs_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_points: {
+        Row: {
+          created_at: string
+          id: string
+          points: number
+          reason: string
+          reference_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          points?: number
+          reason: string
+          reference_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          points?: number
+          reason?: string
+          reference_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_progress: {
         Row: {
           chapter_id: string | null
@@ -600,6 +879,24 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       videos: {
         Row: {
           chapter_id: string
@@ -643,6 +940,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      weekly_blogs: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          published: boolean
+          summary: string | null
+          tags: string[] | null
+          title: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          published?: boolean
+          summary?: string | null
+          tags?: string[] | null
+          title: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          published?: boolean
+          summary?: string | null
+          tags?: string[] | null
+          title?: string
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -694,6 +1021,7 @@ export type Database = {
         Returns: boolean
       }
       generate_referral_code: { Args: never; Returns: string }
+      is_admin: { Args: { check_user_id: string }; Returns: boolean }
       is_owner_profile: { Args: { profile_user_id: string }; Returns: boolean }
       user_passed_quiz: {
         Args: { p_quiz_id: string; p_user_id: string }
@@ -701,6 +1029,7 @@ export type Database = {
       }
     }
     Enums: {
+      app_role: "admin" | "moderator" | "user"
       quiz_type: "mini_video" | "chapter_end"
     }
     CompositeTypes: {
@@ -829,6 +1158,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "moderator", "user"],
       quiz_type: ["mini_video", "chapter_end"],
     },
   },
