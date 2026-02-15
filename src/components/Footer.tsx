@@ -24,6 +24,7 @@ const Footer = () => {
     { key: 'nav.about', href: '#about' },
     { key: 'nav.contact', href: '#contact' },
     { key: 'nav.store', href: '/store', isRoute: true },
+    ...(isAdmin ? [{ key: 'Admin', href: '/admin', isRoute: true, raw: true }] : []),
   ];
 
   return (
@@ -74,7 +75,7 @@ const Footer = () => {
                       }}
                       className="text-white/60 hover:text-white transition-colors flex items-center gap-1 group"
                     >
-                      {t(link.key)}
+                      {(link as any).raw ? link.key : t(link.key)}
                       <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </a>
                   </li>
