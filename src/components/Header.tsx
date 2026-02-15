@@ -41,6 +41,15 @@ const Header = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
+            onClick={(e) => {
+              e.preventDefault();
+              if (window.location.pathname !== '/') {
+                navigate('/#home');
+              } else {
+                const el = document.querySelector('#home');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
           >
             <img src={aladiahLogo} alt="Aladiah Academy" className="h-[7.9rem] lg:h-[9.2rem] w-auto object-contain py-1 mix-blend-multiply" />
           </motion.a>
@@ -55,6 +64,14 @@ const Header = () => {
                   if ((item as any).isRoute) {
                     e.preventDefault();
                     navigate(item.href);
+                  } else if (item.href.startsWith('#')) {
+                    e.preventDefault();
+                    if (window.location.pathname !== '/') {
+                      navigate('/' + item.href);
+                    } else {
+                      const el = document.querySelector(item.href);
+                      el?.scrollIntoView({ behavior: 'smooth' });
+                    }
                   }
                 }}
                 className="px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 font-medium text-sm"
@@ -140,6 +157,14 @@ const Header = () => {
                     if ((item as any).isRoute) {
                       e.preventDefault();
                       navigate(item.href);
+                    } else if (item.href.startsWith('#')) {
+                      e.preventDefault();
+                      if (window.location.pathname !== '/') {
+                        navigate('/' + item.href);
+                      } else {
+                        const el = document.querySelector(item.href);
+                        el?.scrollIntoView({ behavior: 'smooth' });
+                      }
                     }
                   }}
                 >
