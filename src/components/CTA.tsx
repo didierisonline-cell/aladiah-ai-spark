@@ -77,11 +77,11 @@ const CTA = () => {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="mt-14"
           >
-            <div className="w-72 h-72 lg:w-96 lg:h-96 mx-auto rounded-full overflow-hidden drop-shadow-[0_0_30px_rgba(255,255,255,0.15)] flex items-center justify-center">
+            <div className="w-64 h-64 lg:w-80 lg:h-80 mx-auto drop-shadow-[0_0_30px_rgba(255,255,255,0.15)] flex items-center justify-center">
               <img
                 src={aladiahSeal}
                 alt="Aladiah Academy Seal"
-                className="w-[125%] h-[125%] max-w-none object-cover"
+                className="w-full h-full object-contain"
               />
             </div>
           </motion.div>
