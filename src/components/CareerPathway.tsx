@@ -89,7 +89,7 @@ const CareerPathway = () => {
 
               {/* CTA */}
               <div className="flex flex-col sm:flex-row items-center gap-4">
-                <Button variant="coral" size="lg" className="group/btn" onClick={() => navigate('/enroll')}>
+                <Button variant="coral" size="lg" className="group/btn" onClick={() => navigate('/courses')}>
                   {t('career.cta')}
                   <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                 </Button>
