@@ -12,6 +12,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useProgress } from '@/hooks/useProgress';
 import Header from '@/components/Header';
+import YouTubeRecommendations from '@/components/portal/YouTubeRecommendations';
+import CareerTools from '@/components/portal/CareerTools';
 import {
   Bot, Send, BookOpen, Trophy, Flame, Target, GraduationCap,
   FlaskConical, Star, Gift, Youtube, Briefcase, Users, MessageCircle,
@@ -392,82 +394,17 @@ const StudentPortal = () => {
 
           {/* Career Tab */}
           <TabsContent value="career" className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <Card className="p-6 space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Briefcase className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">Career Roadmap</h3>
-                    <p className="text-xs text-muted-foreground">AI-powered career growth plan</p>
-                  </div>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2 p-2 rounded bg-muted/50">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span>Scrum Fundamentals</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-2 rounded bg-muted/50">
-                    {overallProgress >= 50 ? <CheckCircle className="w-4 h-4 text-green-500" /> : <Clock className="w-4 h-4 text-muted-foreground" />}
-                    <span>Complete 50% of coursework</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-2 rounded bg-muted/50">
-                    <Clock className="w-4 h-4 text-muted-foreground" />
-                    <span>Sprint Simulation</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-2 rounded bg-muted/50">
-                    <Clock className="w-4 h-4 text-muted-foreground" />
-                    <span>Resume & LinkedIn Optimization</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-2 rounded bg-muted/50">
-                    <Clock className="w-4 h-4 text-muted-foreground" />
-                    <span>Job Placement</span>
-                  </div>
-                </div>
-              </Card>
+            <CareerTools
+              overallProgress={overallProgress}
+              onSwitchToAssistant={(prompt) => { setActiveTab('assistant'); setChatInput(prompt); }}
+            />
 
-              <Card className="p-6 space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-                    <Youtube className="w-5 h-5 text-secondary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">Recommended Videos</h3>
-                    <p className="text-xs text-muted-foreground">AI-curated daily learning</p>
-                  </div>
-                </div>
-                <div className="space-y-2 text-sm">
-                  {['Scrum in 10 Minutes', 'Sprint Planning Best Practices', 'Daily Standup Anti-Patterns', 'Product Backlog Refinement Tips', 'Agile Retrospective Techniques'].map((v, i) => (
-                    <a key={i} href={`https://www.youtube.com/results?search_query=${encodeURIComponent(v)}`} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-2 p-2 rounded bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
-                      <Youtube className="w-4 h-4 text-red-500 shrink-0" />
-                      <span>{v}</span>
-                      <ArrowRight className="w-3 h-3 ml-auto text-muted-foreground" />
-                    </a>
-                  ))}
-                </div>
-                <Button variant="outline" size="sm" className="w-full" onClick={() => { setActiveTab('assistant'); setChatInput('Suggest 5 YouTube videos to help me understand Scrum better'); }}>
-                  <Sparkles className="w-3 h-3 mr-1" /> Get Personalized Suggestions
-                </Button>
-              </Card>
-            </div>
-
-            <Card className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-accent" />
-                </div>
-                <div>
-                  <h3 className="font-semibold">Connect with Students</h3>
-                  <p className="text-xs text-muted-foreground">Find study partners worldwide</p>
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground mb-3">Join the community to collaborate with fellow students globally.</p>
-              <Button onClick={() => navigate('/community')}>
-                <MessageCircle className="w-4 h-4 mr-1" /> Join Community
-              </Button>
-            </Card>
+            <YouTubeRecommendations
+              weakAreas={[]}
+              recentQuestions={chatMessages.filter(m => m.role === 'user').map(m => m.content).slice(-5)}
+              currentTopic="Scrum Master"
+              onSwitchToAssistant={(prompt) => { setActiveTab('assistant'); setChatInput(prompt); }}
+            />
           </TabsContent>
 
           {/* Rewards Tab */}

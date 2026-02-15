@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import TranscriptPanel from './TranscriptPanel';
 import LessonNotes from './LessonNotes';
+import SmartSidebar from './SmartSidebar';
 
 import professorDidierImg from '@/assets/professor-didier.png';
 import professorCarmenImg from '@/assets/professor-carmen.png';
@@ -104,6 +105,11 @@ const VideoPlayer = ({
   const [showNotes, setShowNotes] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
 
+  // Smart sidebar tracking
+  const [questionsAsked, setQuestionsAsked] = useState(0);
+  const [lessonStartTime] = useState(Date.now());
+  const [timeOnLesson, setTimeOnLesson] = useState(0);
+
   const { toast } = useToast();
   const professor = professors[orderIndex % professors.length];
 
@@ -113,6 +119,14 @@ const VideoPlayer = ({
       qaScrollRef.current.scrollTop = qaScrollRef.current.scrollHeight;
     }
   }, [qaMessages]);
+
+  // Track time on lesson
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeOnLesson(Math.round((Date.now() - lessonStartTime) / 1000));
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [lessonStartTime]);
 
   // Cleanup audio on unmount
   useEffect(() => {
@@ -329,6 +343,7 @@ const VideoPlayer = ({
     setQaInput('');
     setQaMessages(prev => [...prev, { role: 'student', content: question }]);
     setQaLoading(true);
+    setQuestionsAsked(prev => prev + 1);
 
     try {
       const response = await fetch(
@@ -693,6 +708,20 @@ const VideoPlayer = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Smart AI Sidebar */}
+      {hasStarted && (
+        <SmartSidebar
+          isPlaying={isPlaying}
+          progress={progress}
+          questionsAsked={questionsAsked}
+          timeOnLesson={timeOnLesson}
+          lessonTitle={title}
+          chapterTitle={chapterTitle}
+          onPauseForLab={pauseAndAsk}
+          onNavigateToLab={() => window.open('/portal?tab=labs', '_blank')}
+        />
+      )}
     </div>
   );
 };
