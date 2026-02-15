@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { encode as base64Encode } from "https://deno.land/std@0.168.0/encoding/base64.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
@@ -426,13 +427,8 @@ serve(async (req) => {
         if (response.ok) {
           const audioBuffer = await response.arrayBuffer();
           
-          // Encode to base64 for response using Deno's standard library approach
           const uint8Array = new Uint8Array(audioBuffer);
-          let binary = '';
-          for (let i = 0; i < uint8Array.length; i++) {
-            binary += String.fromCharCode(uint8Array[i]);
-          }
-          const base64Audio = btoa(binary);
+          const base64Audio = base64Encode(uint8Array);
 
           return new Response(
             JSON.stringify({

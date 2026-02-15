@@ -84,12 +84,10 @@ const VideoPlayer = ({
   const [script, setScript] = useState<string>('');
   const [isPaused, setIsPaused] = useState(false);
   
-  // TTS state
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  // Audio element ref for ElevenLabs playback
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [isMuted, setIsMuted] = useState(false);
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-  const scriptSentencesRef = useRef<string[]>([]);
-  const currentSentenceRef = useRef(0);
   
   // Q&A state
   const [showQA, setShowQA] = useState(false);
@@ -108,54 +106,36 @@ const VideoPlayer = ({
     }
   }, [qaMessages]);
 
-  // Cleanup speech on unmount
+  // Cleanup audio on unmount
   useEffect(() => {
     return () => {
-      window.speechSynthesis.cancel();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
     };
   }, []);
 
-  const splitIntoSentences = (text: string): string[] => {
-    return text
-      .replace(/\n+/g, '. ')
-      .split(/(?<=[.!?])\s+/)
-      .filter(s => s.trim().length > 0);
-  };
+  const startProgressTracking = useCallback(() => {
+    if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+    progressIntervalRef.current = setInterval(() => {
+      const audio = audioRef.current;
+      if (audio && audio.duration > 0) {
+        const pct = Math.round((audio.currentTime / audio.duration) * 100);
+        setProgress(pct);
+      }
+    }, 500);
+  }, []);
 
-  const speakSentence = useCallback((index: number) => {
-    const sentences = scriptSentencesRef.current;
-    if (index >= sentences.length) {
-      setIsSpeaking(false);
-      setIsPlaying(false);
-      setProgress(100);
-      return;
+  const stopProgressTracking = () => {
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
     }
-
-    currentSentenceRef.current = index;
-    const pct = Math.round((index / sentences.length) * 100);
-    setProgress(pct);
-
-    const utterance = new SpeechSynthesisUtterance(sentences[index]);
-    utterance.rate = 0.95;
-    utterance.pitch = 1.0;
-    utterance.volume = isMuted ? 0 : 1;
-    
-    // Try to pick a good voice
-    const voices = window.speechSynthesis.getVoices();
-    const preferred = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) 
-      || voices.find(v => v.lang.startsWith('en'));
-    if (preferred) utterance.voice = preferred;
-
-    utterance.onend = () => {
-      speakSentence(index + 1);
-    };
-    utterance.onerror = () => {
-      speakSentence(index + 1);
-    };
-
-    utteranceRef.current = utterance;
-    window.speechSynthesis.speak(utterance);
-  }, [isMuted]);
+  };
 
   const generateAndSpeak = async () => {
     setIsLoading(true);
@@ -186,22 +166,36 @@ const VideoPlayer = ({
       setScript(lessonScript);
       setHasStarted(true);
 
-      // Start browser TTS
-      const sentences = splitIntoSentences(lessonScript);
-      scriptSentencesRef.current = sentences;
-      currentSentenceRef.current = 0;
-      setIsSpeaking(true);
-      setIsPlaying(true);
+      if (data.mode === 'audio' && data.audioBase64) {
+        // Play real ElevenLabs audio
+        const audioUrl = `data:audio/mpeg;base64,${data.audioBase64}`;
+        const audio = new Audio(audioUrl);
+        audio.volume = isMuted ? 0 : 1;
+        audioRef.current = audio;
 
-      // Load voices first (some browsers need this)
-      if (window.speechSynthesis.getVoices().length === 0) {
-        await new Promise<void>(resolve => {
-          window.speechSynthesis.onvoiceschanged = () => resolve();
-          setTimeout(resolve, 500);
-        });
+        audio.onended = () => {
+          setIsPlaying(false);
+          setProgress(100);
+          stopProgressTracking();
+        };
+
+        audio.onerror = () => {
+          toast({
+            title: 'Audio Playback Error',
+            description: 'Could not play audio. Showing transcript instead.',
+            variant: 'destructive',
+          });
+          setIsPlaying(false);
+          stopProgressTracking();
+        };
+
+        await audio.play();
+        setIsPlaying(true);
+        startProgressTracking();
+      } else {
+        // Text-only fallback — use browser TTS
+        fallbackToTTS(lessonScript);
       }
-
-      speakSentence(0);
     } catch (error: any) {
       console.error('Error generating lesson:', error);
       toast({
@@ -214,39 +208,91 @@ const VideoPlayer = ({
     }
   };
 
-  const togglePlayPause = () => {
-    if (isPlaying) {
-      window.speechSynthesis.pause();
+  // Browser TTS fallback for when ElevenLabs is unavailable
+  const fallbackToTTS = (text: string) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.95;
+    utterance.pitch = 1.0;
+    utterance.volume = isMuted ? 0 : 1;
+
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google'))
+      || voices.find(v => v.lang.startsWith('en'));
+    if (preferred) utterance.voice = preferred;
+
+    utterance.onend = () => {
       setIsPlaying(false);
-      setIsPaused(true);
-    } else if (isPaused) {
-      window.speechSynthesis.resume();
-      setIsPlaying(true);
-      setIsPaused(false);
+      setProgress(100);
+    };
+
+    window.speechSynthesis.speak(utterance);
+    setIsPlaying(true);
+  };
+
+  const togglePlayPause = () => {
+    const audio = audioRef.current;
+    if (audio && audio.src) {
+      // ElevenLabs audio mode
+      if (isPlaying) {
+        audio.pause();
+        setIsPlaying(false);
+        setIsPaused(true);
+        stopProgressTracking();
+      } else {
+        audio.play();
+        setIsPlaying(true);
+        setIsPaused(false);
+        startProgressTracking();
+      }
     } else {
-      // Restart from current position
-      speakSentence(currentSentenceRef.current);
-      setIsPlaying(true);
+      // Browser TTS fallback
+      if (isPlaying) {
+        window.speechSynthesis.pause();
+        setIsPlaying(false);
+        setIsPaused(true);
+      } else if (isPaused) {
+        window.speechSynthesis.resume();
+        setIsPlaying(true);
+        setIsPaused(false);
+      }
     }
   };
 
   const toggleMute = () => {
-    setIsMuted(prev => !prev);
-    // Can't change volume mid-utterance easily, will apply on next sentence
+    setIsMuted(prev => {
+      const next = !prev;
+      if (audioRef.current) {
+        audioRef.current.volume = next ? 0 : 1;
+      }
+      return next;
+    });
   };
 
   const restart = () => {
-    window.speechSynthesis.cancel();
-    currentSentenceRef.current = 0;
-    setProgress(0);
-    speakSentence(0);
-    setIsPlaying(true);
-    setIsPaused(false);
+    const audio = audioRef.current;
+    if (audio && audio.src) {
+      audio.currentTime = 0;
+      audio.play();
+      setIsPlaying(true);
+      setIsPaused(false);
+      setProgress(0);
+      startProgressTracking();
+    } else {
+      window.speechSynthesis.cancel();
+      if (script) fallbackToTTS(script);
+      setProgress(0);
+    }
   };
 
   const pauseAndAsk = () => {
     if (isPlaying) {
-      window.speechSynthesis.pause();
+      const audio = audioRef.current;
+      if (audio && audio.src) {
+        audio.pause();
+        stopProgressTracking();
+      } else {
+        window.speechSynthesis.pause();
+      }
       setIsPlaying(false);
       setIsPaused(true);
     }
@@ -256,7 +302,13 @@ const VideoPlayer = ({
   const closeQA = () => {
     setShowQA(false);
     if (isPaused) {
-      window.speechSynthesis.resume();
+      const audio = audioRef.current;
+      if (audio && audio.src) {
+        audio.play();
+        startProgressTracking();
+      } else {
+        window.speechSynthesis.resume();
+      }
       setIsPlaying(true);
       setIsPaused(false);
     }
@@ -310,7 +362,6 @@ const VideoPlayer = ({
     <Card className="overflow-hidden">
       {/* Classroom Scene with Background */}
       <div className="aspect-video relative flex items-end justify-center overflow-hidden">
-        {/* Classroom Background Image */}
         <img 
           src={classroomBg} 
           alt="Classroom" 
@@ -353,7 +404,6 @@ const VideoPlayer = ({
             alt={professor.name}
             className="w-full h-full object-contain drop-shadow-2xl"
           />
-          {/* Speech indicator */}
           <AnimatePresence>
             {isPlaying && (
               <motion.div
@@ -535,7 +585,7 @@ const VideoPlayer = ({
             </div>
 
             {/* Mark Complete for text fallback */}
-            {!isSpeaking && progress < 95 && (
+            {!isPlaying && progress < 95 && (
               <div className="flex justify-center mb-3">
                 <Button variant="outline" size="sm" onClick={markComplete} className="gap-2 text-xs">
                   <BookOpen className="w-4 h-4" />
