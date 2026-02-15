@@ -71,7 +71,7 @@ const Store = () => {
                 transition={{ delay: 0.1 }}
                 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-foreground"
               >
-                Aladiah Store
+                Aladiah Academy Store
               </motion.h1>
             </div>
             <CartDrawer />
