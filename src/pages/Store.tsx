@@ -85,7 +85,7 @@ const Store = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8 }}
-                className="w-[60vw] max-w-[500px] mb-10"
+                className="w-[90vw] max-w-[900px] mb-10"
               >
                 <img src={aladiahSeal} alt="Aladiah Academy Seal" className="w-full h-full object-contain drop-shadow-[0_0_40px_rgba(30,58,138,0.15)]" />
               </motion.div>
