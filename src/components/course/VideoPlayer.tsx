@@ -1,20 +1,21 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Play, Pause, Volume2, VolumeX, RotateCcw, 
-  Loader2, BookOpen, CheckCircle
+  Loader2, BookOpen, CheckCircle, MessageCircleQuestion, Send, X
 } from 'lucide-react';
 
 import professorDidierImg from '@/assets/professor-didier.png';
 import professorCarmenImg from '@/assets/professor-carmen.png';
 import professorRafaelImg from '@/assets/professor-rafael.png';
 import professorLuciaImg from '@/assets/professor-lucia.png';
+import classroomBg from '@/assets/classroom-bg.jpg';
 
-// 4 Dominican professors with distinct personalities
 const professors = [
   {
     id: "professor_didier",
@@ -61,6 +62,11 @@ interface VideoPlayerProps {
   chapterTitle?: string;
 }
 
+interface QAMessage {
+  role: 'student' | 'professor';
+  content: string;
+}
+
 const VideoPlayer = ({ 
   videoId, 
   title, 
@@ -73,29 +79,85 @@ const VideoPlayer = ({
 }: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [isMuted, setIsMuted] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const [script, setScript] = useState<string>('');
-  const [isTextOnlyMode, setIsTextOnlyMode] = useState(false);
-  const [readingProgress, setReadingProgress] = useState(0);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const { toast } = useToast();
+  const [isPaused, setIsPaused] = useState(false);
+  
+  // TTS state
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const scriptSentencesRef = useRef<string[]>([]);
+  const currentSentenceRef = useRef(0);
+  
+  // Q&A state
+  const [showQA, setShowQA] = useState(false);
+  const [qaMessages, setQaMessages] = useState<QAMessage[]>([]);
+  const [qaInput, setQaInput] = useState('');
+  const [qaLoading, setQaLoading] = useState(false);
+  const qaScrollRef = useRef<HTMLDivElement>(null);
 
+  const { toast } = useToast();
   const professor = professors[orderIndex % professors.length];
 
+  // Scroll Q&A to bottom
+  useEffect(() => {
+    if (qaScrollRef.current) {
+      qaScrollRef.current.scrollTop = qaScrollRef.current.scrollHeight;
+    }
+  }, [qaMessages]);
+
+  // Cleanup speech on unmount
   useEffect(() => {
     return () => {
-      if (audioUrl) {
-        URL.revokeObjectURL(audioUrl);
-      }
+      window.speechSynthesis.cancel();
     };
-  }, [audioUrl]);
+  }, []);
 
-  const generateAudio = async () => {
+  const splitIntoSentences = (text: string): string[] => {
+    return text
+      .replace(/\n+/g, '. ')
+      .split(/(?<=[.!?])\s+/)
+      .filter(s => s.trim().length > 0);
+  };
+
+  const speakSentence = useCallback((index: number) => {
+    const sentences = scriptSentencesRef.current;
+    if (index >= sentences.length) {
+      setIsSpeaking(false);
+      setIsPlaying(false);
+      setProgress(100);
+      return;
+    }
+
+    currentSentenceRef.current = index;
+    const pct = Math.round((index / sentences.length) * 100);
+    setProgress(pct);
+
+    const utterance = new SpeechSynthesisUtterance(sentences[index]);
+    utterance.rate = 0.95;
+    utterance.pitch = 1.0;
+    utterance.volume = isMuted ? 0 : 1;
+    
+    // Try to pick a good voice
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) 
+      || voices.find(v => v.lang.startsWith('en'));
+    if (preferred) utterance.voice = preferred;
+
+    utterance.onend = () => {
+      speakSentence(index + 1);
+    };
+    utterance.onerror = () => {
+      speakSentence(index + 1);
+    };
+
+    utteranceRef.current = utterance;
+    window.speechSynthesis.speak(utterance);
+  }, [isMuted]);
+
+  const generateAndSpeak = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -109,9 +171,7 @@ const VideoPlayer = ({
           body: JSON.stringify({
             videoId,
             lessonTitle: title,
-            lessonContent: {
-              mainPoints: [description, `This lesson covers ${title} in detail.`]
-            },
+            lessonContent: { mainPoints: [description, `This lesson covers ${title} in detail.`] },
             professorIndex: orderIndex,
             courseTitle: courseTitle || 'Aladiah Academy Course',
             chapterTitle: chapterTitle || 'Module'
@@ -122,44 +182,31 @@ const VideoPlayer = ({
       const data = await response.json();
       if (data.error) throw new Error(data.error);
 
-      setScript(data.script);
+      const lessonScript = data.script || '';
+      setScript(lessonScript);
       setHasStarted(true);
 
-      if (data.mode === 'text' || !data.audioBase64) {
-        setIsTextOnlyMode(true);
-        setReadingProgress(0);
-        toast({
-          title: 'Text Lesson Mode',
-          description: 'Audio is temporarily unavailable. Please read the lesson below.',
+      // Start browser TTS
+      const sentences = splitIntoSentences(lessonScript);
+      scriptSentencesRef.current = sentences;
+      currentSentenceRef.current = 0;
+      setIsSpeaking(true);
+      setIsPlaying(true);
+
+      // Load voices first (some browsers need this)
+      if (window.speechSynthesis.getVoices().length === 0) {
+        await new Promise<void>(resolve => {
+          window.speechSynthesis.onvoiceschanged = () => resolve();
+          setTimeout(resolve, 500);
         });
-        return;
       }
 
-      // Audio mode
-      const audioDataUrl = `data:audio/mpeg;base64,${data.audioBase64}`;
-      setAudioUrl(audioDataUrl);
-      setIsTextOnlyMode(false);
-
-      const audio = new Audio(audioDataUrl);
-      audioRef.current = audio;
-      
-      audio.addEventListener('loadedmetadata', () => setDuration(audio.duration));
-      audio.addEventListener('timeupdate', () => {
-        setCurrentTime(audio.currentTime);
-        setProgress((audio.currentTime / audio.duration) * 100);
-      });
-      audio.addEventListener('ended', () => {
-        setIsPlaying(false);
-        setProgress(100);
-      });
-
-      await audio.play();
-      setIsPlaying(true);
+      speakSentence(0);
     } catch (error: any) {
       console.error('Error generating lesson:', error);
       toast({
         title: 'Lesson Generation Error',
-        description: error.message || 'Failed to generate lesson. Please try again.',
+        description: error.message || 'Failed to generate lesson.',
         variant: 'destructive',
       });
     } finally {
@@ -167,60 +214,137 @@ const VideoPlayer = ({
     }
   };
 
-  const markTextLessonComplete = () => {
-    setReadingProgress(100);
-    setProgress(100);
-  };
-
   const togglePlayPause = () => {
-    if (!audioRef.current) return;
-    if (isPlaying) audioRef.current.pause();
-    else audioRef.current.play();
-    setIsPlaying(!isPlaying);
+    if (isPlaying) {
+      window.speechSynthesis.pause();
+      setIsPlaying(false);
+      setIsPaused(true);
+    } else if (isPaused) {
+      window.speechSynthesis.resume();
+      setIsPlaying(true);
+      setIsPaused(false);
+    } else {
+      // Restart from current position
+      speakSentence(currentSentenceRef.current);
+      setIsPlaying(true);
+    }
   };
 
   const toggleMute = () => {
-    if (!audioRef.current) return;
-    audioRef.current.muted = !isMuted;
-    setIsMuted(!isMuted);
+    setIsMuted(prev => !prev);
+    // Can't change volume mid-utterance easily, will apply on next sentence
   };
 
   const restart = () => {
-    if (!audioRef.current) return;
-    audioRef.current.currentTime = 0;
+    window.speechSynthesis.cancel();
+    currentSentenceRef.current = 0;
     setProgress(0);
-    setCurrentTime(0);
-    audioRef.current.play();
+    speakSentence(0);
     setIsPlaying(true);
+    setIsPaused(false);
   };
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  const pauseAndAsk = () => {
+    if (isPlaying) {
+      window.speechSynthesis.pause();
+      setIsPlaying(false);
+      setIsPaused(true);
+    }
+    setShowQA(true);
+  };
+
+  const closeQA = () => {
+    setShowQA(false);
+    if (isPaused) {
+      window.speechSynthesis.resume();
+      setIsPlaying(true);
+      setIsPaused(false);
+    }
+  };
+
+  const askQuestion = async () => {
+    if (!qaInput.trim() || qaLoading) return;
+    
+    const question = qaInput.trim();
+    setQaInput('');
+    setQaMessages(prev => [...prev, { role: 'student', content: question }]);
+    setQaLoading(true);
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lesson-qa`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            question,
+            lessonTitle: title,
+            lessonScript: script,
+            professorName: professor.name,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+
+      setQaMessages(prev => [...prev, { role: 'professor', content: data.answer }]);
+    } catch (error: any) {
+      setQaMessages(prev => [...prev, { 
+        role: 'professor', 
+        content: "Sorry, I couldn't process your question right now. Try again in a moment!" 
+      }]);
+    } finally {
+      setQaLoading(false);
+    }
+  };
+
+  const markComplete = () => {
+    setProgress(100);
   };
 
   return (
     <Card className="overflow-hidden">
-      {/* Classroom Scene */}
-      <div className={`aspect-video bg-gradient-to-br ${professor.color} relative flex items-end justify-center overflow-hidden`}>
-        {/* Classroom Background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-black/30" />
-        <div className="absolute top-4 left-6 right-6 h-16 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20 flex items-center px-4">
-          <div className="flex gap-2">
+      {/* Classroom Scene with Background */}
+      <div className="aspect-video relative flex items-end justify-center overflow-hidden">
+        {/* Classroom Background Image */}
+        <img 
+          src={classroomBg} 
+          alt="Classroom" 
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/10" />
+
+        {/* Lesson title bar */}
+        <div className="absolute top-4 left-6 right-6 h-12 bg-black/40 backdrop-blur-md rounded-lg border border-white/10 flex items-center px-4 z-10">
+          <div className="flex gap-1.5">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="w-2 h-2 rounded-full bg-white/40" />
+              <div key={i} className="w-2 h-2 rounded-full bg-white/30" />
             ))}
           </div>
-          <p className="ml-4 text-white/70 text-xs font-mono truncate">{title}</p>
+          <p className="ml-4 text-white/80 text-xs font-mono truncate flex-1">{title}</p>
+          {hasStarted && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={pauseAndAsk}
+              className="text-white/80 hover:text-white hover:bg-white/20 gap-1 text-xs h-8"
+            >
+              <MessageCircleQuestion className="w-4 h-4" />
+              Ask Question
+            </Button>
+          )}
         </div>
 
         {/* Professor Character */}
         <motion.div
-          className="relative z-10 w-40 h-40 sm:w-52 sm:h-52 mb-0"
+          className="relative z-10 w-44 h-44 sm:w-56 sm:h-56 mb-0"
           animate={isPlaying ? {
-            y: [0, -6, 0],
-            rotate: [0, -1, 1, 0],
+            y: [0, -8, 0],
+            rotate: [0, -1.5, 1.5, 0],
           } : {}}
           transition={{ duration: 2, repeat: isPlaying ? Infinity : 0, ease: "easeInOut" }}
         >
@@ -229,7 +353,7 @@ const VideoPlayer = ({
             alt={professor.name}
             className="w-full h-full object-contain drop-shadow-2xl"
           />
-          {/* Speech bubble when playing */}
+          {/* Speech indicator */}
           <AnimatePresence>
             {isPlaying && (
               <motion.div
@@ -254,15 +378,15 @@ const VideoPlayer = ({
           </AnimatePresence>
         </motion.div>
 
-        {/* Audio Visualization Bar */}
+        {/* Audio Visualizer */}
         {isPlaying && (
           <div className="absolute bottom-0 left-0 right-0 h-8 flex items-end justify-center gap-[2px] px-4 pb-1">
-            {[...Array(24)].map((_, i) => (
+            {[...Array(32)].map((_, i) => (
               <motion.div
                 key={i}
-                className="w-1 bg-white/50 rounded-full"
-                animate={{ height: [4, Math.random() * 20 + 4, 4] }}
-                transition={{ duration: 0.4 + Math.random() * 0.3, repeat: Infinity, delay: i * 0.03 }}
+                className="w-1 bg-white/40 rounded-full"
+                animate={{ height: [4, Math.random() * 24 + 4, 4] }}
+                transition={{ duration: 0.3 + Math.random() * 0.3, repeat: Infinity, delay: i * 0.02 }}
               />
             ))}
           </div>
@@ -270,12 +394,12 @@ const VideoPlayer = ({
 
         {/* Pre-start Overlay */}
         {!hasStarted && !isLoading && (
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex flex-col items-center justify-center z-20">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-20">
             <img src={professor.image} alt={professor.name} className="w-28 h-28 object-contain mb-4 drop-shadow-xl" />
             <h2 className="text-xl sm:text-2xl font-display font-bold text-white mb-1 text-center px-4">{title}</h2>
             <p className="text-white/70 text-sm text-center max-w-md mb-2 px-4">{description}</p>
             <p className="text-white/50 text-xs italic mb-5">"{professor.catchphrase}"</p>
-            <Button onClick={generateAudio} variant="coral" size="lg" className="gap-2">
+            <Button onClick={generateAndSpeak} variant="coral" size="lg" className="gap-2">
               <Play className="w-5 h-5" />
               Start Lesson with {professor.name.split(' ').pop()}
             </Button>
@@ -307,64 +431,92 @@ const VideoPlayer = ({
             </div>
           </div>
         )}
+
+        {/* Q&A Panel Overlay */}
+        <AnimatePresence>
+          {showQA && (
+            <motion.div
+              initial={{ opacity: 0, x: '100%' }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="absolute inset-y-0 right-0 w-full sm:w-80 bg-background/95 backdrop-blur-md z-30 flex flex-col border-l"
+            >
+              <div className="flex items-center justify-between p-3 border-b bg-primary/5">
+                <div className="flex items-center gap-2">
+                  <MessageCircleQuestion className="w-5 h-5 text-primary" />
+                  <span className="font-semibold text-sm">Ask {professor.name.split(' ').pop()}</span>
+                </div>
+                <Button variant="ghost" size="icon" onClick={closeQA} className="h-8 w-8">
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              
+              <div ref={qaScrollRef} className="flex-1 overflow-y-auto p-3 space-y-3">
+                {qaMessages.length === 0 && (
+                  <div className="text-center text-muted-foreground text-xs py-8">
+                    <MessageCircleQuestion className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                    <p>Lesson paused. Ask anything about this topic!</p>
+                  </div>
+                )}
+                {qaMessages.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.role === 'student' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
+                      msg.role === 'student' 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-muted'
+                    }`}>
+                      {msg.role === 'professor' && (
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <img src={professor.image} alt="" className="w-4 h-4 rounded-full" />
+                          <span className="text-xs font-medium text-primary">{professor.name.split(' ').pop()}</span>
+                        </div>
+                      )}
+                      <p className="whitespace-pre-wrap">{msg.content}</p>
+                    </div>
+                  </div>
+                ))}
+                {qaLoading && (
+                  <div className="flex justify-start">
+                    <div className="bg-muted rounded-lg px-3 py-2 text-sm flex items-center gap-2">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      <span className="text-muted-foreground text-xs">Thinking...</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-3 border-t flex gap-2">
+                <Input
+                  value={qaInput}
+                  onChange={(e) => setQaInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && askQuestion()}
+                  placeholder="Type your question..."
+                  className="text-sm h-9"
+                  disabled={qaLoading}
+                />
+                <Button onClick={askQuestion} size="icon" disabled={qaLoading || !qaInput.trim()} className="h-9 w-9 shrink-0">
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Controls */}
       <CardContent className="p-4">
-        {hasStarted && isTextOnlyMode && (
-          <>
-            <div className="mb-4 p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
-              <div className="flex items-center gap-2 mb-2">
-                <BookOpen className="w-5 h-5 text-primary" />
-                <span className="font-medium text-sm">Text Lesson Mode</span>
-              </div>
-              <p className="text-xs text-muted-foreground mb-3">
-                Audio is temporarily unavailable. Please read the lesson below and mark it as complete when finished.
-              </p>
-            </div>
-            
-            <div className="mb-4 p-4 bg-background rounded-lg border max-h-64 overflow-y-auto">
-              <div className="prose prose-sm dark:prose-invert max-w-none">
-                {script.split('\n\n').map((paragraph, idx) => (
-                  <p key={idx} className="mb-3 text-sm leading-relaxed">{paragraph}</p>
-                ))}
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <Progress value={readingProgress} className="h-2" />
-              <p className="text-xs text-muted-foreground mt-1 text-center">
-                {readingProgress >= 100 ? 'Reading Complete!' : 'Read the lesson above and mark as complete'}
-              </p>
-            </div>
-
-            <div className="flex justify-center mb-4">
-              <Button
-                variant="coral"
-                size="lg"
-                onClick={markTextLessonComplete}
-                disabled={readingProgress >= 100}
-                className="gap-2"
-              >
-                <CheckCircle className="w-5 h-5" />
-                {readingProgress >= 100 ? 'Lesson Read' : 'Mark Lesson as Read'}
-              </Button>
-            </div>
-          </>
-        )}
-
-        {hasStarted && !isTextOnlyMode && (
+        {hasStarted && (
           <>
             <div className="mb-4">
               <Progress value={progress} className="h-2" />
-              <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                <span>{formatTime(currentTime)}</span>
-                <span>{formatTime(duration)}</span>
-              </div>
+              <p className="text-xs text-muted-foreground mt-1 text-center">
+                {progress >= 100 ? 'Lesson Complete!' : `${progress}% complete`}
+              </p>
             </div>
 
             <div className="flex items-center justify-center gap-4 mb-4">
-              <Button variant="ghost" size="icon" onClick={restart} disabled={isLoading}>
+              <Button variant="ghost" size="icon" onClick={restart}>
                 <RotateCcw className="w-5 h-5" />
               </Button>
               
@@ -372,16 +524,25 @@ const VideoPlayer = ({
                 variant="coral"
                 size="lg"
                 onClick={togglePlayPause}
-                disabled={isLoading}
                 className="w-16 h-16 rounded-full"
               >
                 {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-1" />}
               </Button>
 
-              <Button variant="ghost" size="icon" onClick={toggleMute} disabled={isLoading}>
+              <Button variant="ghost" size="icon" onClick={toggleMute}>
                 {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
               </Button>
             </div>
+
+            {/* Mark Complete for text fallback */}
+            {!isSpeaking && progress < 95 && (
+              <div className="flex justify-center mb-3">
+                <Button variant="outline" size="sm" onClick={markComplete} className="gap-2 text-xs">
+                  <BookOpen className="w-4 h-4" />
+                  Mark Lesson as Read
+                </Button>
+              </div>
+            )}
           </>
         )}
 
@@ -404,12 +565,12 @@ const VideoPlayer = ({
         </div>
 
         {/* Transcript */}
-        {script && !isTextOnlyMode && (
+        {script && (
           <details className="mt-4">
             <summary className="text-sm text-muted-foreground cursor-pointer hover:text-foreground">
               View Transcript
             </summary>
-            <div className="mt-2 p-4 bg-muted/50 rounded-lg text-sm whitespace-pre-wrap">{script}</div>
+            <div className="mt-2 p-4 bg-muted/50 rounded-lg text-sm whitespace-pre-wrap max-h-64 overflow-y-auto">{script}</div>
           </details>
         )}
       </CardContent>
