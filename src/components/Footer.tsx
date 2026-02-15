@@ -1,11 +1,22 @@
-import { Mail, MapPin, Phone, Linkedin, ArrowUpRight } from 'lucide-react';
+import { Mail, MapPin, Phone, Linkedin, ArrowUpRight, Shield } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
 
 const Footer = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    supabase.from('user_roles').select('role').eq('user_id', user.id).eq('role', 'admin').maybeSingle()
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [user]);
 
   const links = [
     { key: 'nav.home', href: '#home' },
@@ -103,9 +114,28 @@ const Footer = () => {
           <p className="text-white/40 text-sm">
             © {new Date().getFullYear()} Aladiah Academy. {t('footer.rights')}
           </p>
-          <p className="text-white/30 text-xs">
-            Powered by AI Innovation
-          </p>
+          <div className="flex items-center gap-4">
+            {user && (
+              <button
+                onClick={() => navigate('/portal')}
+                className="text-white/40 hover:text-white text-xs transition-colors"
+              >
+                My Portal
+              </button>
+            )}
+            {isAdmin && (
+              <button
+                onClick={() => navigate('/admin')}
+                className="flex items-center gap-1 text-white/40 hover:text-secondary text-xs transition-colors"
+              >
+                <Shield className="w-3 h-3" />
+                Admin
+              </button>
+            )}
+            <p className="text-white/30 text-xs">
+              Powered by AI Innovation
+            </p>
+          </div>
         </div>
       </div>
     </footer>
