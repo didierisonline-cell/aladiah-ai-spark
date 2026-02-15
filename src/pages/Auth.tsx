@@ -42,13 +42,8 @@ const Auth = () => {
           toast({ title: 'Welcome back, Admin!', description: 'Redirecting to your dashboard.' });
           navigate('/admin');
         } else {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('has_completed_intro')
-            .eq('user_id', data.user.id)
-            .single();
           toast({ title: 'Welcome back!', description: 'Successfully logged in.' });
-          navigate(profile?.has_completed_intro === false ? '/community' : '/courses');
+          navigate('/dashboard');
         }
       } else {
         const { error } = await supabase.auth.signUp({
