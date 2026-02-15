@@ -361,6 +361,68 @@ export type Database = {
           },
         ]
       }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          program_type: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          program_type: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          program_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referral_tracking: {
+        Row: {
+          created_at: string
+          id: string
+          referral_code_id: string
+          referred_email: string | null
+          referred_user_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referral_code_id: string
+          referred_email?: string | null
+          referred_user_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referral_code_id?: string
+          referred_email?: string | null
+          referred_user_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_tracking_referral_code_id_fkey"
+            columns: ["referral_code_id"]
+            isOneToOne: false
+            referencedRelation: "referral_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scrum_simulations: {
         Row: {
           completed_at: string | null
@@ -631,6 +693,7 @@ export type Database = {
         Args: { p_user_id: string; p_video_id: string }
         Returns: boolean
       }
+      generate_referral_code: { Args: never; Returns: string }
       is_owner_profile: { Args: { profile_user_id: string }; Returns: boolean }
       user_passed_quiz: {
         Args: { p_quiz_id: string; p_user_id: string }

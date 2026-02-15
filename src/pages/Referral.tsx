@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import ReferralLinkCard from '@/components/ReferralLinkCard';
 
 const Referral = () => {
   const { t } = useLanguage();
@@ -105,6 +106,8 @@ const Referral = () => {
                       </p>
                     </div>
 
+                    <ReferralLinkCard programType="student" variant="primary" />
+
                     <Button variant="hero" size="lg" className="w-full" onClick={() => navigate('/enroll')}>
                       {t('referral.student.cta')}
                       <ArrowRight className="w-4 h-4 ml-2" />
@@ -153,6 +156,8 @@ const Referral = () => {
                         {t('referral.affiliate.reward')}
                       </p>
                     </div>
+
+                    <ReferralLinkCard programType="affiliate" variant="secondary" />
 
                     <Button variant="coral" size="lg" className="w-full">
                       {t('referral.affiliate.cta')}
