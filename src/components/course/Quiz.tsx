@@ -223,6 +223,8 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
   if (showingResults && submitted && !passed) {
     const currentResult = results[currentIndex];
     const currentQuestion = questions[currentIndex];
+    const incorrectResults = results.filter(r => !r.isCorrect);
+    const correctCount = results.filter(r => r.isCorrect).length;
 
     return (
       <div className="min-h-screen bg-background">
@@ -231,7 +233,7 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-destructive">
                 <XCircle className="w-5 h-5" />
-                <span className="font-semibold">Score: {score}% - Need 100% to pass</span>
+                <span className="font-semibold">Score: {score}% — Need 100% to pass</span>
               </div>
               <Button onClick={handleRetry} variant="coral">
                 <RefreshCw className="w-4 h-4 mr-2" />
@@ -242,6 +244,40 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
         </header>
 
         <main className="container mx-auto px-4 py-8 max-w-3xl">
+          {/* Remediation Summary */}
+          <Card className="mb-6 border-secondary/30 bg-secondary/5">
+            <CardContent className="p-5">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="font-display font-bold text-lg mb-1">Remediation Focus</h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    You got {correctCount}/{questions.length} correct. Review the {incorrectResults.length} question{incorrectResults.length !== 1 ? 's' : ''} you missed below, then retry.
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {results.map((r, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCurrentIndex(idx)}
+                        className={`w-7 h-7 rounded-full text-xs font-medium transition-colors ${
+                          idx === currentIndex
+                            ? 'ring-2 ring-primary ring-offset-2'
+                            : ''
+                        } ${
+                          r.isCorrect
+                            ? 'bg-green-500/20 text-green-600'
+                            : 'bg-destructive/20 text-destructive'
+                        }`}
+                      >
+                        {idx + 1}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <div className="mb-6">
             <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
               <span>Reviewing answers</span>
@@ -266,7 +302,7 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
                       <XCircle className="w-5 h-5 text-destructive" />
                     )}
                     <span className={`text-sm font-medium ${currentResult?.isCorrect ? 'text-green-500' : 'text-destructive'}`}>
-                      {currentResult?.isCorrect ? 'Correct' : 'Incorrect'}
+                      {currentResult?.isCorrect ? 'Correct' : 'Incorrect — Review this!'}
                     </span>
                   </div>
                   {currentQuestion?.scenario_context && (
@@ -331,7 +367,7 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
                     ) : (
                       <Button onClick={handleRetry} variant="coral">
                         <RefreshCw className="w-4 h-4 mr-2" />
-                        Try Again
+                        Retry Quiz
                       </Button>
                     )}
                   </div>
