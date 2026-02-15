@@ -85,12 +85,7 @@ const ChapterView = () => {
 
   const loadChapterData = async () => {
     try {
-      // Check auth
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/auth');
-        return;
-      }
+      // DEV MODE: skip auth check
 
       // Load course with translations
       const { data: courseData } = await supabase
@@ -181,23 +176,8 @@ const ChapterView = () => {
     );
   };
 
-  const isVideoAccessible = (video: Video) => {
-    // First video of the chapter is always accessible
-    if (video.order_index === 0) return true;
-    
-    // Find the previous video
-    const prevVideo = videos.find(v => v.order_index === video.order_index - 1);
-    if (!prevVideo) return false; // No previous video found, lock it
-    
-    // Check if previous video has a quiz that was passed
-    const prevQuiz = quizzes.find(q => q.video_id === prevVideo.id);
-    
-    // STRICT MASTERY: If previous video has no quiz, video is LOCKED
-    // This enforces that quizzes must exist for progression
-    if (!prevQuiz) return false;
-    
-    // Check if the previous video's quiz was passed
-    return passedQuizzes.includes(prevQuiz.id);
+  const isVideoAccessible = (_video: Video) => {
+    return true; // DEV MODE: all videos unlocked
   };
 
   const isVideoPassed = (video: Video) => {
