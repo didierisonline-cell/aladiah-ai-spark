@@ -92,7 +92,7 @@ const Enroll = () => {
         title: et.welcome,
         description: et.paymentSoon,
       });
-      setTimeout(() => navigate('/dashboard'), 1500);
+      setTimeout(() => navigate('/portal'), 1500);
     } catch (err: any) {
       toast({ title: err.message || 'Something went wrong', variant: 'destructive' });
     } finally {

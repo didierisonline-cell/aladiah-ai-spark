@@ -39,7 +39,6 @@ const StudentPortal = () => {
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!authLoading && !user) navigate('/auth');
     if (user) loadPortalData();
   }, [user, authLoading]);
 
