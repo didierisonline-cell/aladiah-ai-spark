@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
+import aladiahLogo from '@/assets/aladiah-header-logo-v2.png';
 
 type Language = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja';
 
