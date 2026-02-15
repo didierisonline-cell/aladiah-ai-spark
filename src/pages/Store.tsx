@@ -9,6 +9,7 @@ import { useCartStore, ShopifyProduct } from '@/stores/cartStore';
 import { CartDrawer } from '@/components/CartDrawer';
 import { storefrontApiRequest, PRODUCTS_QUERY } from '@/lib/shopify';
 import { toast } from 'sonner';
+import aladiahSeal from '@/assets/aladiah-academy-seal.svg';
 
 const Store = () => {
   const { t } = useLanguage();
@@ -79,10 +80,17 @@ const Store = () => {
               <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
             </div>
           ) : products.length === 0 ? (
-            <div className="text-center py-24">
-              <ShoppingBag className="w-16 h-16 text-muted-foreground mx-auto mb-6" />
-              <h2 className="text-2xl font-display font-bold text-foreground mb-2">No products yet</h2>
-              <p className="text-muted-foreground">Products will appear here once added to the store.</p>
+            <div className="flex flex-col items-center justify-center py-12">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8 }}
+                className="w-[60vw] max-w-[500px] mb-10"
+              >
+                <img src={aladiahSeal} alt="Aladiah Academy Seal" className="w-full h-full object-contain drop-shadow-[0_0_40px_rgba(30,58,138,0.15)]" />
+              </motion.div>
+              <h2 className="text-3xl font-display font-bold text-foreground mb-3">Merchandise Coming Soon</h2>
+              <p className="text-muted-foreground text-lg max-w-md text-center">Official Aladiah Academy merchandise is on its way. Stay tuned!</p>
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
