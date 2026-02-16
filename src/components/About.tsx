@@ -80,7 +80,7 @@ const About = () => {
                   <img 
                     src={founderPhoto} 
                     alt="Didier - Founder & CEO" 
-                    className="w-full h-full object-cover object-top"
+                    className="w-full h-full object-cover object-center scale-105"
                   />
                 </div>
                 <div className="absolute -bottom-2 -right-2 w-14 h-14 rounded-full bg-secondary flex items-center justify-center shadow-lg border-4 border-card">
