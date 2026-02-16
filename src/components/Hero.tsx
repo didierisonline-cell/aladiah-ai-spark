@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Sparkles, Users, TrendingUp, Building2, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { ArrowRight, Sparkles, Users, TrendingUp, Building2, Play, Pause, Volume2, VolumeX, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import scene1 from '@/assets/story-scene1.mp4';
@@ -88,15 +88,31 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Content */}
           <div className="space-y-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-secondary/10 border border-secondary/20 backdrop-blur-sm"
-            >
-              <Sparkles className="w-4 h-4 text-secondary" />
-              <span className="text-sm font-semibold text-secondary tracking-wide">{t('hero.badge')}</span>
-            </motion.div>
+            <div className="flex flex-wrap items-center gap-3">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-secondary/10 border border-secondary/20 backdrop-blur-sm"
+              >
+                <Sparkles className="w-4 h-4 text-secondary" />
+                <span className="text-sm font-semibold text-secondary tracking-wide">{t('hero.badge')}</span>
+              </motion.div>
+
+              <motion.a
+                href="https://aladiahmanagement.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.05 }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-primary/30 bg-primary/5 backdrop-blur-sm hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 group"
+              >
+                <Building2 className="w-4 h-4 text-primary" />
+                <span className="text-sm font-semibold text-primary tracking-wide uppercase">Boutique IT Staffing & Consulting</span>
+                <ArrowRight className="w-3.5 h-3.5 text-primary opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+              </motion.a>
+            </div>
 
             <motion.h1
               initial={{ opacity: 0, y: 30 }}

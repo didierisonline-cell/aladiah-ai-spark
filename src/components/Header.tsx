@@ -28,7 +28,6 @@ const Header = () => {
     { key: 'nav.feedback', href: '/feedback', isRoute: true },
     { key: 'nav.store', href: '/store', isRoute: true },
     { key: 'nav.referral', href: '/referral', isRoute: true },
-    { key: 'nav.talent', href: 'https://aladiahmanagement.com', isExternal: true },
   ];
 
   return (
@@ -60,10 +59,6 @@ const Header = () => {
                 key={item.key}
                 href={item.href}
                 onClick={(e) => {
-                  if ((item as any).isExternal) {
-                    // Let native <a> handle external links
-                    return;
-                  }
                   if ((item as any).isRoute) {
                     e.preventDefault();
                     navigate(item.href);
@@ -74,8 +69,6 @@ const Header = () => {
                     el?.scrollIntoView({ behavior: 'smooth' });
                   }
                 }}
-                target={(item as any).isExternal ? '_blank' : undefined}
-                rel={(item as any).isExternal ? 'noopener noreferrer' : undefined}
                 className="px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 font-medium text-sm"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -156,7 +149,6 @@ const Header = () => {
                   className="py-3 px-4 text-foreground hover:bg-muted/50 rounded-xl transition-colors font-medium"
                   onClick={(e) => {
                     setIsMenuOpen(false);
-                    if ((item as any).isExternal) return;
                     if ((item as any).isRoute) {
                       e.preventDefault();
                       navigate(item.href);
@@ -167,8 +159,6 @@ const Header = () => {
                       el?.scrollIntoView({ behavior: 'smooth' });
                     }
                   }}
-                  target={(item as any).isExternal ? '_blank' : undefined}
-                  rel={(item as any).isExternal ? 'noopener noreferrer' : undefined}
                 >
                   {t(item.key)}
                 </a>
