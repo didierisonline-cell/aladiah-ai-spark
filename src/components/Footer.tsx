@@ -25,6 +25,7 @@ const Footer = () => {
     { key: 'nav.contact', href: '#contact' },
     { key: 'nav.store', href: '/store', isRoute: true },
     { key: 'nav.feedback', href: '/feedback', isRoute: true },
+    { key: 'nav.referral', href: '/referral', isRoute: true },
     { key: 'Admin', href: '/admin', isRoute: true, raw: true },
   ];
 
