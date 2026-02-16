@@ -409,7 +409,7 @@ const StudentPortal = () => {
                         placeholder="e.g. Sprint Planning, Product Backlog, Daily Scrum..."
                         className="flex-1"
                       />
-                      <Button type="submit" disabled={!labSearch.trim()} className="gap-2">
+                      <Button type="submit" className="gap-2">
                         <FlaskConical className="w-4 h-4" />
                         Lab
                       </Button>
