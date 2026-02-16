@@ -16,13 +16,22 @@ const suggestedQuestions = [
   "I'm new to Scrum — is this for me?",
 ];
 
+const SHOW_DELAY_MS = 2 * 60 * 1000; // 2 minutes
+
 export default function EnrollmentChatbot() {
+  const [visible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [hasGreeted, setHasGreeted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Show chatbot after 2 minutes on site
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(true), SHOW_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -120,6 +129,8 @@ export default function EnrollmentChatbot() {
     if (!input.trim() || isLoading) return;
     sendMessage(input.trim());
   };
+
+  if (!visible) return null;
 
   return (
     <>
