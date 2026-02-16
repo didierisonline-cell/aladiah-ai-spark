@@ -29,6 +29,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.community': 'Community',
     'nav.feedback': 'Feedback',
     'nav.store': 'Store',
+    'nav.talent': 'Aladiah Management',
     
     // Hero
     'hero.badge': 'AI-Powered Professional Training',
@@ -212,6 +213,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.community': 'Comunidad',
     'nav.feedback': 'Comentarios',
     'nav.store': 'Tienda',
+    'nav.talent': 'Aladiah Management',
     
     // Hero
     'hero.badge': 'Formación Profesional con IA',
@@ -395,6 +397,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.community': '社区',
     'nav.feedback': '反馈',
     'nav.store': '商店',
+    'nav.talent': 'Aladiah Management',
     
     // Hero
     'hero.badge': 'AI驱动的专业培训',
@@ -578,6 +581,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.community': 'المجتمع',
     'nav.feedback': 'ملاحظات',
     'nav.store': 'المتجر',
+    'nav.talent': 'Aladiah Management',
     
     // Hero
     'hero.badge': 'تدريب مهني مدعوم بالذكاء الاصطناعي',
@@ -761,6 +765,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.community': 'Communauté',
     'nav.feedback': 'Avis',
     'nav.store': 'Boutique',
+    'nav.talent': 'Aladiah Management',
     
     // Hero
     'hero.badge': 'Formation Professionnelle Alimentée par l\'IA',
@@ -944,6 +949,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.community': 'Gemeinschaft',
     'nav.feedback': 'Feedback',
     'nav.store': 'Shop',
+    'nav.talent': 'Aladiah Management',
     
     // Hero
     'hero.badge': 'KI-gestützte Berufsausbildung',
@@ -1127,6 +1133,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.community': 'コミュニティ',
     'nav.feedback': 'フィードバック',
     'nav.store': 'ストア',
+    'nav.talent': 'Aladiah Management',
     
     // Hero
     'hero.badge': 'AI駆動のプロフェッショナルトレーニング',
