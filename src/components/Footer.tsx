@@ -24,6 +24,7 @@ const Footer = () => {
     { key: 'nav.about', href: '#about' },
     { key: 'nav.contact', href: '#contact' },
     { key: 'nav.store', href: '/store', isRoute: true },
+    { key: 'nav.talent', href: 'https://aladiahmanagement.com', isExternal: true },
     { key: 'Admin', href: '/admin', isRoute: true, raw: true },
   ];
 
@@ -68,11 +69,14 @@ const Footer = () => {
                     <a
                       href={link.href}
                       onClick={(e) => {
+                        if ((link as any).isExternal) return;
                         if ((link as any).isRoute) {
                           e.preventDefault();
                           navigate(link.href);
                         }
                       }}
+                      target={(link as any).isExternal ? '_blank' : undefined}
+                      rel={(link as any).isExternal ? 'noopener noreferrer' : undefined}
                       className="text-white/60 hover:text-white transition-colors flex items-center gap-1 group"
                     >
                       {(link as any).raw ? link.key : t(link.key)}
