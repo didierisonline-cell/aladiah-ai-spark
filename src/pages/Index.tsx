@@ -8,6 +8,7 @@ import About from '@/components/About';
 import CareerPathway from '@/components/CareerPathway';
 import CTA from '@/components/CTA';
 import Footer from '@/components/Footer';
+import EnrollmentChatbot from '@/components/EnrollmentChatbot';
 
 const Index = () => {
   const location = useLocation();
@@ -36,6 +37,7 @@ const Index = () => {
         <CTA />
       </main>
       <Footer />
+      <EnrollmentChatbot />
     </div>
   );
 };
