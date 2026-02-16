@@ -26,7 +26,6 @@ const Header = () => {
     { key: 'nav.contact', href: '/#contact' },
     { key: 'nav.community', href: '/community', isRoute: true },
     { key: 'nav.store', href: '/store', isRoute: true },
-    { key: 'nav.referral', href: '/referral', isRoute: true },
   ];
 
   return (
