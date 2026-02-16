@@ -15,6 +15,7 @@ import { useProgress } from '@/hooks/useProgress';
 import Header from '@/components/Header';
 import YouTubeRecommendations from '@/components/portal/YouTubeRecommendations';
 import CareerTools from '@/components/portal/CareerTools';
+import LabMode from '@/components/portal/LabMode';
 import {
   Bot, Send, BookOpen, Trophy, Flame, Target, GraduationCap,
   FlaskConical, Star, Gift, Youtube, Briefcase, Users, MessageCircle,
@@ -37,6 +38,9 @@ const StudentPortal = () => {
   const [labs, setLabs] = useState<any[]>([]);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [courseProgresses, setCourseProgresses] = useState<any[]>([]);
+  const [labSearch, setLabSearch] = useState('');
+  const [labModeActive, setLabModeActive] = useState(false);
+  const [labTopic, setLabTopic] = useState('');
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -365,39 +369,102 @@ const StudentPortal = () => {
 
           {/* Labs Tab */}
           <TabsContent value="labs" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2"><FlaskConical className="w-5 h-5 text-primary" /> Your Labs</CardTitle>
-                <p className="text-sm text-muted-foreground">Interactive labs tailored to your understanding level. Terms, definitions, illustrations, and exercises.</p>
-              </CardHeader>
-              <CardContent>
-                {labs.length === 0 ? (
-                  <div className="text-center py-12 space-y-3">
-                    <FlaskConical className="w-12 h-12 mx-auto text-muted-foreground/30" />
-                    <p className="text-muted-foreground">No labs yet! Start watching lessons and your AI will generate personalized labs.</p>
-                    <Button onClick={() => navigate('/courses')}>Go to Courses</Button>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {labs.map(lab => (
-                      <div key={lab.id} className="p-4 rounded-lg border hover:shadow-sm transition-shadow">
-                        <div className="flex items-center justify-between mb-2">
-                          <Badge variant={lab.completed ? 'default' : 'outline'}>
-                            {lab.completed ? <><CheckCircle className="w-3 h-3 mr-1" /> Complete</> : lab.difficulty_level}
-                          </Badge>
-                          {lab.score > 0 && <span className="text-sm font-medium">{lab.score}%</span>}
+            <AnimatePresence mode="wait">
+              {labModeActive ? (
+                <LabMode
+                  key="lab-mode"
+                  topic={labTopic}
+                  studentContext={{
+                    courseProgress: overallProgress,
+                    points: totalPoints,
+                    streak,
+                    weakAreas: [],
+                  }}
+                  onExit={() => { setLabModeActive(false); setLabTopic(''); setLabSearch(''); }}
+                />
+              ) : (
+                <motion.div key="lab-list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+                  {/* Search + Lab Button */}
+                  <Card className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <FlaskConical className="w-5 h-5 text-primary" />
+                      <h3 className="font-bold text-lg">Enter Lab Mode</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Type any topic you want to master — AI will break it down, quiz you, and suggest improvements.
+                    </p>
+                    <form
+                      onSubmit={e => {
+                        e.preventDefault();
+                        if (labSearch.trim()) {
+                          setLabTopic(labSearch.trim());
+                          setLabModeActive(true);
+                        }
+                      }}
+                      className="flex gap-2"
+                    >
+                      <Input
+                        value={labSearch}
+                        onChange={e => setLabSearch(e.target.value)}
+                        placeholder="e.g. Sprint Planning, Product Backlog, Daily Scrum..."
+                        className="flex-1"
+                      />
+                      <Button type="submit" disabled={!labSearch.trim()} className="gap-2">
+                        <FlaskConical className="w-4 h-4" />
+                        Lab
+                      </Button>
+                    </form>
+                    {/* Quick topic pills */}
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {['Scrum Events', 'Product Owner Role', 'Sprint Retrospective', 'Agile vs Waterfall', 'User Stories'].map(t => (
+                        <Button
+                          key={t}
+                          variant="outline"
+                          size="sm"
+                          className="text-xs h-auto py-1.5"
+                          onClick={() => { setLabTopic(t); setLabModeActive(true); }}
+                        >
+                          {t}
+                        </Button>
+                      ))}
+                    </div>
+                  </Card>
+
+                  {/* Previous Labs */}
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg flex items-center gap-2"><BookOpen className="w-5 h-5 text-primary" /> Previous Labs</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {labs.length === 0 ? (
+                        <div className="text-center py-8 space-y-3">
+                          <FlaskConical className="w-12 h-12 mx-auto text-muted-foreground/30" />
+                          <p className="text-sm text-muted-foreground">No labs yet! Enter a topic above to start your first lab.</p>
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                          {typeof lab.lab_content === 'object' && lab.lab_content.terms
-                            ? `${lab.lab_content.terms.length} terms • ${lab.lab_content.exercises?.length || 0} exercises`
-                            : 'Lab content available'}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                      ) : (
+                        <div className="space-y-3">
+                          {labs.map(lab => (
+                            <div key={lab.id} className="p-4 rounded-lg border hover:shadow-sm transition-shadow">
+                              <div className="flex items-center justify-between mb-2">
+                                <Badge variant={lab.completed ? 'default' : 'outline'}>
+                                  {lab.completed ? <><CheckCircle className="w-3 h-3 mr-1" /> Complete</> : lab.difficulty_level}
+                                </Badge>
+                                {lab.score > 0 && <span className="text-sm font-medium">{lab.score}%</span>}
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                {typeof lab.lab_content === 'object' && lab.lab_content.terms
+                                  ? `${lab.lab_content.terms.length} terms • ${lab.lab_content.exercises?.length || 0} exercises`
+                                  : 'Lab content available'}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </TabsContent>
 
           {/* Career Tab */}
