@@ -7,35 +7,35 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// 4 Dominican professors with distinct personalities
+// 4 professors with distinct personalities
 const professors = [
   {
     id: "professor_didier",
     name: "Professor Didier",
     voiceId: "iP95p4xoKVk53GoZ742B", // Chris - Black American male voice, warm and confident
-    personality: "Warm and encouraging, uses Dominican expressions, often says '¡Mira!' and 'Tú sabes'",
-    style: "Speaks with passion about Scrum, loves sports analogies especially baseball"
+    personality: "Warm and encouraging, speaks with confidence and passion",
+    style: "Speaks with passion about Scrum, loves sports analogies especially baseball and basketball"
   },
   {
     id: "professor_carmen",
-    name: "Profesora Carmen Valdez",
+    name: "Professor Carmen Valdez",
     voiceId: "EXAVITQu4vr4xnSDxMaL", // Sarah - clear, professional
     personality: "Sharp wit, practical examples, occasionally teases students kindly",
-    style: "Uses real-world Dominican business examples, loves merengue metaphors for teamwork"
+    style: "Uses real-world business examples, loves teamwork metaphors"
   },
   {
     id: "professor_rafael",
     name: "Professor Rafael Jiménez",
     voiceId: "onwK4e9ZLuTAKqWW03F9", // Daniel - energetic
-    personality: "Energetic and humorous, tells jokes, uses 'manito' and '¡Dimelo!' frequently",
-    style: "High energy, uses funny stories to explain concepts, references Dominican culture"
+    personality: "Energetic and humorous, tells jokes, keeps it engaging",
+    style: "High energy, uses funny stories to explain concepts"
   },
   {
     id: "professor_lucia",
-    name: "Profesora Lucía Fernández",
+    name: "Professor Lucia Fernández",
     voiceId: "pFZP5JQG7iQjIQuC4Bku", // Lily - warm, friendly
-    personality: "Motherly wisdom, patient explanations, uses 'mi amor' and 'mijo/mija'",
-    style: "Storytelling approach, connects Scrum to family and community values"
+    personality: "Wise and patient explanations, nurturing tone",
+    style: "Storytelling approach, connects Scrum to everyday life and community values"
   }
 ];
 
@@ -44,43 +44,43 @@ const courseContentTemplates: Record<string, Record<string, string[]>> = {
   // Scrum Master Course
   "scrum_master": {
     "role": [
-      "The Scrum Master is like the coach of a baseball team - you're not playing the game yourself, but without you, the team falls apart!",
-      "In my years working with Dominican companies, I've seen how a good Scrum Master can transform a team from chaos to champions.",
-      "Think of the Scrum Master as the facilitator who removes obstacles - like clearing the dance floor so everyone can move to the merengue!"
+      "The Scrum Master is like the coach of a basketball team - you're not playing the game yourself, but without you, the team falls apart!",
+      "In my years working with companies, I've seen how a good Scrum Master can transform a team from chaos to champions.",
+      "Think of the Scrum Master as the facilitator who removes obstacles - like clearing the path so everyone can move forward!"
     ],
     "opportunities": [
-      "The demand for Scrum Masters is growing fast! Companies from Santo Domingo to New York are looking for talented practitioners.",
+      "The demand for Scrum Masters is growing fast! Companies everywhere are looking for talented practitioners.",
       "As a Scrum Master, you can work in tech, finance, healthcare - any industry that wants to deliver value faster.",
-      "The certification opens doors to salaries ranging from entry-level to senior positions - the sky is the limit, manito!"
+      "The certification opens doors to salaries ranging from entry-level to senior positions - the sky is the limit!"
     ]
   },
   // Jira Course
   "jira_project": {
     "setup": [
-      "Setting up Jira is like organizing your kitchen before cooking a big sancocho - everything needs its place!",
+      "Setting up Jira is like organizing your workspace before starting a big project - everything needs its place!",
       "First, we create the project. Think of it as your digital workspace where all the magic happens.",
       "The board is where you'll see your team's work flowing like a river - from To Do, to In Progress, to Done!"
     ],
     "sprints": [
-      "Sprints in Jira are your two-week dance - you plan, you execute, you review, you improve!",
-      "The burndown chart tells you if you're on track - it's like checking the recipe while cooking to make sure everything is coming together.",
-      "Managing epics is like managing a big family reunion - you need to see both the big picture and the details!"
+      "Sprints in Jira are your two-week rhythm - you plan, you execute, you review, you improve!",
+      "The burndown chart tells you if you're on track - it's like checking your GPS to make sure you're heading the right way.",
+      "Managing epics is like managing a big event - you need to see both the big picture and the details!"
     ]
   },
   // Agile Development Course
   "agile_development": {
     "principles": [
-      "Agile is not just a methodology - it's a mindset! Like how we Dominicans adapt to any situation with a smile.",
-      "The Agile Manifesto values individuals and interactions over processes - because at the end of the day, it's about people, mi gente!",
+      "Agile is not just a methodology - it's a mindset! It's about adapting to any situation with confidence.",
+      "The Agile Manifesto values individuals and interactions over processes - because at the end of the day, it's about people!",
       "Iterative development means you deliver small pieces frequently - like serving appetizers before the main course!"
     ],
     "planning": [
       "User stories are the heart of Agile planning - they tell us what the customer really needs, not what we think they need.",
-      "Story points help us estimate effort - it's not about hours, it's about complexity. Like comparing cooking rice to making mofongo!",
-      "Backlog refinement is our weekly grooming session - keeping everything organized and ready for the next sprint."
+      "Story points help us estimate effort - it's not about hours, it's about complexity. Like comparing simple tasks to complex ones!",
+      "Backlog refinement is our regular grooming session - keeping everything organized and ready for the next sprint."
     ],
     "execution": [
-      "The daily standup is sacred - 15 minutes, standing up, focused on what matters. No dominoes talk until after!",
+      "The daily standup is sacred - 15 minutes, standing up, focused on what matters.",
       "Burndown charts show our progress - when the line goes down smoothly, we're in the zone. When it flatlines, we need to investigate!",
       "The sprint retrospective is where we get better - we celebrate wins and fix problems. No blame, only improvement!"
     ]
@@ -119,8 +119,7 @@ const lessonContentByTopic: Record<string, string> = {
     The job market for Scrum Masters is thriving! Companies across all industries recognize the value of Agile practices.
     Entry-level Scrum Masters can expect competitive salaries, with senior positions commanding even higher compensation.
     Beyond traditional tech companies, you'll find opportunities in finance, healthcare, government, and startups.
-    The certification opens doors globally - remote work options mean you can work for companies anywhere in the world
-    while enjoying your café con leche on a Dominican beach!
+    The certification opens doors globally - remote work options mean you can work for companies anywhere in the world!
   `,
   "job overview": `
     A typical day as a Scrum Master includes facilitating the daily standup, meeting with stakeholders, 
@@ -489,34 +488,34 @@ serve(async (req) => {
 
 function generateLessonScript(title: string, content: any, professor: any, courseTitle?: string, chapterTitle?: string): string {
   const greetings = [
-    `¡Hola, qué lo que! Welcome back to Aladiah Academy. I'm ${professor.name}, and today we're diving into something really exciting.`,
-    `¡Dimelo! What's up everyone? ${professor.name} here, ready to drop some knowledge on you today.`,
-    `¡Mira! Welcome, welcome! It's ${professor.name}, and I'm so happy to see you all here again.`,
-    `¡Wepa! How are we doing today? ${professor.name} at your service, ready to make you an Agile expert!`,
+    `Hey, what's going on! Welcome back to Aladiah Academy. I'm ${professor.name}, and today we're diving into something really exciting.`,
+    `What's up everyone? ${professor.name} here, ready to drop some knowledge on you today.`,
+    `Welcome, welcome! It's ${professor.name}, and I'm so happy to see you all here again.`,
+    `How are we doing today? ${professor.name} at your service, ready to make you an Agile expert!`,
   ];
 
   const transitions = [
-    "Now, this is where it gets really interesting, tú sabes...",
-    "Pay attention to this part, porque this is going to be on the exam, manito!",
-    "Let me tell you something, mi gente...",
-    "Here's where the magic happens, ¡de verdad!",
+    "Now, this is where it gets really interesting...",
+    "Pay attention to this part, because this is going to be on the exam!",
+    "Let me tell you something important here...",
+    "Here's where the magic happens, for real!",
     "Now listen closely, because this is crucial for your certification...",
   ];
 
   const jokes = [
-    "You know, my abuela used to say, 'Mijo, if you can organize a family sancocho for 30 people, you can be a Scrum Master!' And you know what? She wasn't wrong!",
-    "This is like dominoes, my friend. You need strategy, you need teamwork, and you definitely need to know when to pass!",
-    "In the DR, we say 'el que mucho abarca, poco aprieta' - and that's basically the Sprint Backlog in a nutshell!",
-    "My cousin thought Scrum was a new bachata dance move. ¡Imagínate! But honestly, coordinating a Sprint is like leading a dance - everyone needs to know the steps!",
-    "Back in my village, we'd say 'poco a poco se va lejos' - little by little you go far. That's iterative development, Dominican style!",
+    "You know, my grandmother used to say, 'If you can organize a family gathering for 30 people, you can be a Scrum Master!' And you know what? She wasn't wrong!",
+    "This is like chess, my friend. You need strategy, you need teamwork, and you definitely need to know when to make your move!",
+    "They say 'don't bite off more than you can chew' - and that's basically the Sprint Backlog in a nutshell!",
+    "My cousin thought Scrum was some kind of workout routine. Can you imagine? But honestly, coordinating a Sprint is like leading a dance - everyone needs to know the steps!",
+    "There's a saying: 'little by little you go far.' That's iterative development right there!",
   ];
 
   const closings = [
-    "And that's the lesson for today, mi gente! Remember, practice makes perfect. ¡Nos vemos pronto!",
-    "That's a wrap, manito! Now go out there and be the Agile practitioner your team deserves. ¡Pa'lante siempre!",
-    "Alright, that's all for now. Keep studying, keep practicing, and remember - you got this! ¡Bendiciones!",
-    "We made it through another lesson! Give yourself a pat on the back. ¡Hasta la próxima!",
-    "Now go practice what you learned, and remember - in Agile, we learn by doing! ¡Éxito!",
+    "And that's the lesson for today! Remember, practice makes perfect. See you next time!",
+    "That's a wrap! Now go out there and be the Agile practitioner your team deserves. Keep pushing forward!",
+    "Alright, that's all for now. Keep studying, keep practicing, and remember - you got this!",
+    "We made it through another lesson! Give yourself a pat on the back. Until next time!",
+    "Now go practice what you learned, and remember - in Agile, we learn by doing. Let's go!",
   ];
 
   const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
