@@ -115,7 +115,7 @@ const Header = () => {
               className="hidden sm:block"
             >
               <Button variant="hero" size="sm" onClick={() => navigate('/portal')}>
-                {t('nav.enroll')}
+                Get Busy
               </Button>
             </motion.div>
 
@@ -162,7 +162,7 @@ const Header = () => {
                 </a>
               ))}
               <Button variant="hero" size="lg" className="mt-4" onClick={() => { setIsMenuOpen(false); navigate('/portal'); }}>
-                {t('nav.enroll')}
+                Get Busy
               </Button>
             </nav>
           </motion.div>
