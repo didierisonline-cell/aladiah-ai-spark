@@ -66,10 +66,14 @@ const YouTubeRecommendations = ({
         }
       }
 
-      const jsonMatch = full.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const result = JSON.parse(jsonMatch[0]);
-        setSuggestions(result.suggestions || []);
+      try {
+        const jsonMatch = full.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const result = JSON.parse(jsonMatch[0]);
+          setSuggestions(result.suggestions || []);
+        }
+      } catch (parseErr) {
+        console.warn('Could not parse YouTube suggestions response:', parseErr);
       }
     } catch (e) {
       console.error('YouTube suggestions error:', e);

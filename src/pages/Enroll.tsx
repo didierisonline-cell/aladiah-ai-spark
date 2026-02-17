@@ -88,11 +88,23 @@ const Enroll = () => {
 
     setLoading(true);
     try {
-      toast({
-        title: et.welcome,
-        description: et.paymentSoon,
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ ...result.data, course: courseParam }),
       });
-      setTimeout(() => navigate('/portal'), 1500);
+      const data = await resp.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        toast({
+          title: et.welcome,
+          description: 'Payment integration is being configured. Please check back soon!',
+        });
+      }
     } catch (err: any) {
       toast({ title: err.message || 'Something went wrong', variant: 'destructive' });
     } finally {

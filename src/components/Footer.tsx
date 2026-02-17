@@ -1,12 +1,12 @@
+import { forwardRef, useEffect, useState } from 'react';
 import { Mail, MapPin, Phone, Linkedin, ArrowUpRight, Shield } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
 
-const Footer = () => {
+const Footer = forwardRef<HTMLElement>((_, ref) => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -29,8 +29,21 @@ const Footer = () => {
     { key: 'Admin', href: '/admin', isRoute: true, raw: true },
   ];
 
+  const location = useLocation();
+
+  const handleHashLink = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const hash = href.replace('#', '');
+    if (location.pathname !== '/') {
+      navigate('/', { state: { scrollTo: hash } });
+    } else {
+      const el = document.querySelector('#' + hash);
+      el?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <footer className="bg-foreground text-background relative overflow-hidden">
+    <footer ref={ref} className="bg-foreground text-background relative overflow-hidden">
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20 pointer-events-none" />
       
@@ -73,6 +86,8 @@ const Footer = () => {
                         if ((link as any).isRoute) {
                           e.preventDefault();
                           navigate(link.href);
+                        } else if (link.href.startsWith('#')) {
+                          handleHashLink(e, link.href);
                         }
                       }}
                       className="text-white/60 hover:text-white transition-colors flex items-center gap-1 group"
@@ -143,6 +158,8 @@ const Footer = () => {
       </div>
     </footer>
   );
-};
+});
+
+Footer.displayName = 'Footer';
 
 export default Footer;

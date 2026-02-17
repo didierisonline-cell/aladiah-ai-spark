@@ -14,16 +14,24 @@ const Index = () => {
   const location = useLocation();
 
   useEffect(() => {
+    // Handle hash from URL
     if (location.hash) {
-      // Small delay to ensure DOM is ready
       setTimeout(() => {
         const el = document.querySelector(location.hash);
-        if (el) {
-          el.scrollIntoView({ behavior: 'instant' });
-        }
+        if (el) el.scrollIntoView({ behavior: 'instant' });
       }, 50);
     }
-  }, [location.hash]);
+    // Handle scrollTo from navigation state (footer links from other pages)
+    const state = location.state as { scrollTo?: string } | null;
+    if (state?.scrollTo) {
+      setTimeout(() => {
+        const el = document.querySelector('#' + state.scrollTo);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+      // Clear the state to prevent re-scrolling
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.hash, location.state]);
 
   return (
     <div className="min-h-screen bg-background">
