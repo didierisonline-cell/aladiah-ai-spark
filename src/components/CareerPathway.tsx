@@ -1,12 +1,29 @@
 import { motion } from 'framer-motion';
-import { Briefcase, ArrowRight, ShieldCheck, Building2 } from 'lucide-react';
+import { Briefcase, ArrowRight, ShieldCheck, Building2, CheckCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const CareerPathway = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const { data: isEnrolled } = useQuery({
+    queryKey: ['enrollment-status', user?.id],
+    queryFn: async () => {
+      if (!user) return false;
+      const { count } = await supabase
+        .from('user_progress')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+      return (count ?? 0) > 0;
+    },
+    enabled: !!user,
+  });
 
   const highlights = [
     { icon: Building2, textKey: 'career.highlight1' },
@@ -89,11 +106,28 @@ const CareerPathway = () => {
 
               {/* CTA */}
               <div className="flex flex-col sm:flex-row items-center gap-4">
-                <Button variant="coral" size="lg" className="group/btn" onClick={() => navigate('/courses')}>
-                  {t('career.cta')}
-                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                <Button
+                  variant={isEnrolled ? "secondary" : "coral"}
+                  size="lg"
+                  className={`group/btn ${isEnrolled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  onClick={() => !isEnrolled && navigate('/enroll')}
+                  disabled={!!isEnrolled}
+                >
+                  {isEnrolled ? (
+                    <>
+                      <CheckCircle className="w-4 h-4" />
+                      {t('career.enrolled') || 'Already Enrolled'}
+                    </>
+                  ) : (
+                    <>
+                      {t('career.cta')}
+                      <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                    </>
+                  )}
                 </Button>
-                <span className="text-sm text-muted-foreground">{t('career.ctaSub')}</span>
+                <span className="text-sm text-muted-foreground">
+                  {isEnrolled ? (t('career.enrolledSub') || 'You have full access') : t('career.ctaSub')}
+                </span>
               </div>
             </div>
           </motion.div>
