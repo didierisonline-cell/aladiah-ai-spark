@@ -12,6 +12,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useProgress } from '@/hooks/useProgress';
+import { useLearningProfile } from '@/hooks/useLearningProfile';
 import Header from '@/components/Header';
 import YouTubeRecommendations from '@/components/portal/YouTubeRecommendations';
 import CareerTools from '@/components/portal/CareerTools';
@@ -28,6 +29,7 @@ const StudentPortal = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { progress: overallProgress } = useProgress(user?.id);
+  const { profile: learningProfile, recordQuestion, getDueReviews } = useLearningProfile(user?.id);
 
   const [activeTab, setActiveTab] = useState('overview');
   const [chatMessages, setChatMessages] = useState<Msg[]>([]);
@@ -108,6 +110,7 @@ const StudentPortal = () => {
     setChatMessages(prev => [...prev, userMsg]);
     setChatInput('');
     setIsStreaming(true);
+    recordQuestion();
 
     let assistantSoFar = '';
     const allMessages = [...chatMessages, userMsg];
@@ -125,7 +128,17 @@ const StudentPortal = () => {
             courseProgress: overallProgress,
             points: totalPoints,
             streak,
-            weakAreas: [],
+            weakAreas: learningProfile?.weakAreas || [],
+            strongAreas: learningProfile?.strongAreas || [],
+            learningStyle: learningProfile?.learningStyle || 'balanced',
+            preferredDifficulty: learningProfile?.preferredDifficulty || 'beginner',
+            engagementScore: learningProfile?.engagementScore || 50,
+            consecutiveFailures: learningProfile?.consecutiveFailures || 0,
+            dueReviews: getDueReviews(),
+            quizAccuracyTrend: learningProfile?.quizAccuracyTrend?.slice(-5) || [],
+            videoRewatchCount: learningProfile?.videoRewatchCount || 0,
+            labCompletionRate: learningProfile?.labCompletionRate || 0,
+            totalQuestionsAsked: learningProfile?.totalQuestionsAsked || 0,
           },
           mode: 'chat',
         }),
@@ -172,7 +185,7 @@ const StudentPortal = () => {
     } finally {
       setIsStreaming(false);
     }
-  }, [chatInput, isStreaming, chatMessages, user, overallProgress, totalPoints, streak]);
+  }, [chatInput, isStreaming, chatMessages, user, overallProgress, totalPoints, streak, learningProfile, getDueReviews, recordQuestion]);
 
   if (authLoading) {
     return <div className="min-h-screen bg-background flex items-center justify-center"><GraduationCap className="w-12 h-12 text-primary animate-pulse" /></div>;

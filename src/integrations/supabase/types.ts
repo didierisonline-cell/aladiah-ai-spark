@@ -793,6 +793,86 @@ export type Database = {
           },
         ]
       }
+      student_learning_profiles: {
+        Row: {
+          avg_time_per_lesson: number
+          consecutive_failures: number
+          course_id: string | null
+          created_at: string
+          engagement_score: number
+          id: string
+          lab_completion_rate: number
+          last_review_at: string | null
+          last_struggle_topic: string | null
+          learning_style: string
+          needs_intervention: boolean
+          preferred_difficulty: string
+          quiz_accuracy_trend: Json
+          review_queue: Json
+          strong_areas: Json
+          struggle_events: Json
+          total_questions_asked: number
+          updated_at: string
+          user_id: string
+          video_rewatch_count: number
+          weak_areas: Json
+        }
+        Insert: {
+          avg_time_per_lesson?: number
+          consecutive_failures?: number
+          course_id?: string | null
+          created_at?: string
+          engagement_score?: number
+          id?: string
+          lab_completion_rate?: number
+          last_review_at?: string | null
+          last_struggle_topic?: string | null
+          learning_style?: string
+          needs_intervention?: boolean
+          preferred_difficulty?: string
+          quiz_accuracy_trend?: Json
+          review_queue?: Json
+          strong_areas?: Json
+          struggle_events?: Json
+          total_questions_asked?: number
+          updated_at?: string
+          user_id: string
+          video_rewatch_count?: number
+          weak_areas?: Json
+        }
+        Update: {
+          avg_time_per_lesson?: number
+          consecutive_failures?: number
+          course_id?: string | null
+          created_at?: string
+          engagement_score?: number
+          id?: string
+          lab_completion_rate?: number
+          last_review_at?: string | null
+          last_struggle_topic?: string | null
+          learning_style?: string
+          needs_intervention?: boolean
+          preferred_difficulty?: string
+          quiz_accuracy_trend?: Json
+          review_queue?: Json
+          strong_areas?: Json
+          struggle_events?: Json
+          total_questions_asked?: number
+          updated_at?: string
+          user_id?: string
+          video_rewatch_count?: number
+          weak_areas?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_learning_profiles_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       student_points: {
         Row: {
           created_at: string

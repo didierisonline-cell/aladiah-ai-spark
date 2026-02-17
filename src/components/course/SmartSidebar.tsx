@@ -11,9 +11,19 @@ interface SmartSidebarProps {
   isPlaying: boolean;
   progress: number;
   questionsAsked: number;
-  timeOnLesson: number; // seconds
+  timeOnLesson: number;
   lessonTitle: string;
   chapterTitle?: string;
+  learningProfile?: {
+    weakAreas: { topic: string; score: number }[];
+    strongAreas: { topic: string; score: number }[];
+    engagementScore: number;
+    consecutiveFailures: number;
+    videoRewatchCount: number;
+    learningStyle: string;
+    preferredDifficulty: string;
+    dueReviews: { topic: string; nextReviewAt: string }[];
+  };
   onPauseForLab?: () => void;
   onNavigateToLab?: () => void;
   onDismiss?: () => void;
@@ -33,6 +43,7 @@ const SmartSidebar = ({
   timeOnLesson,
   lessonTitle,
   chapterTitle,
+  learningProfile,
   onPauseForLab,
   onNavigateToLab,
   onDismiss,
@@ -59,7 +70,15 @@ const SmartSidebar = ({
             timeOnLesson: Math.round(timeOnLesson / 60),
             completionRate: progress,
             currentTopic: chapterTitle || lessonTitle,
-            recentScores: [],
+            recentScores: learningProfile?.weakAreas?.map(w => w.score) || [],
+            weakAreas: learningProfile?.weakAreas || [],
+            strongAreas: learningProfile?.strongAreas || [],
+            consecutiveFailures: learningProfile?.consecutiveFailures || 0,
+            engagementScore: learningProfile?.engagementScore || 50,
+            videoRewatchCount: learningProfile?.videoRewatchCount || 0,
+            learningStyle: learningProfile?.learningStyle || 'balanced',
+            preferredDifficulty: learningProfile?.preferredDifficulty || 'beginner',
+            dueReviews: learningProfile?.dueReviews || [],
           },
           mode: 'lesson_monitor',
         }),
@@ -102,7 +121,7 @@ const SmartSidebar = ({
     } catch (e) {
       console.error('Smart sidebar check error:', e);
     }
-  }, [dismissed, isPlaying, lessonTitle, chapterTitle, questionsAsked, timeOnLesson, progress]);
+  }, [dismissed, isPlaying, lessonTitle, chapterTitle, questionsAsked, timeOnLesson, progress, learningProfile]);
 
   // Check at 25%, 50%, 75% progress milestones
   useEffect(() => {
