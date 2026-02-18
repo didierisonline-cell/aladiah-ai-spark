@@ -21,9 +21,16 @@ const ASSIGNEE_OPTIONS = Object.entries(TEAM_MEMBERS)
   .map(([name, info]) => ({ name, ...info }));
 
 const TicketDetailModal = ({ story, onClose, onSave }: TicketDetailModalProps) => {
-  const [ticket, setTicket] = useState<StoryTicketData>(story.ticketData || {
+  const rawTicket = story.ticketData || {
     fixVersion: 'v2.1.0', platform: 'AWS', team: 'Nebula Core', sprint: 'Sprint 21',
     dueDate: '', tags: [], comments: [], notes: '', acceptanceCriteria: [], figmaUrl: '',
+  };
+  const [ticket, setTicket] = useState<StoryTicketData>({
+    ...rawTicket,
+    acceptanceCriteria: rawTicket.acceptanceCriteria ?? [],
+    figmaUrl: rawTicket.figmaUrl ?? '',
+    tags: rawTicket.tags ?? [],
+    comments: rawTicket.comments ?? [],
   });
   const [userStory, setUserStory] = useState<UserStory>(story.userStory || {
     asA: '', iWantTo: '', soThatICan: '',
