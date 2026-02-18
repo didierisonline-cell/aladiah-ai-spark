@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -6,20 +6,58 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
   Briefcase, FileText, Linkedin, Sparkles, Loader2,
-  CheckCircle, Clock, Users, MessageCircle, ArrowRight
+  CheckCircle, Clock, Users, MessageCircle, ArrowRight, History
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface CareerToolsProps {
   overallProgress: number;
   onSwitchToAssistant: (prompt: string) => void;
 }
 
+interface SavedResume {
+  id: string;
+  fullName: string;
+  updatedAt: string;
+}
+
 const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [linkedinInput, setLinkedinInput] = useState('');
   const [linkedinResult, setLinkedinResult] = useState('');
   const [loadingLinkedin, setLoadingLinkedin] = useState(false);
+  const [savedResumes, setSavedResumes] = useState<SavedResume[]>([]);
+
+  // Load saved resumes from ai_conversations
+  useEffect(() => {
+    if (!user) return;
+    const loadSavedResumes = async () => {
+      const { data } = await supabase
+        .from('ai_conversations')
+        .select('id, context, updated_at')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false })
+        .limit(3);
+
+      if (data) {
+        const resumes: SavedResume[] = data
+          .filter((d: any) => {
+            const ctx = d.context as any;
+            return ctx?.resumeData;
+          })
+          .map((d: any) => ({
+            id: d.id,
+            fullName: (d.context as any)?.resumeData?.fullName || 'Untitled Resume',
+            updatedAt: d.updated_at,
+          }));
+        setSavedResumes(resumes);
+      }
+    };
+    loadSavedResumes();
+  }, [user]);
 
   // Career roadmap milestones with dynamic progress
   const roadmapSteps = [
@@ -154,6 +192,39 @@ const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps)
             Open Resume Builder Studio
             <ArrowRight className="w-4 h-4" />
           </Button>
+
+          {/* Saved Resumes Badges */}
+          {savedResumes.length > 0 && (
+            <div className="space-y-2 pt-2 border-t border-border/50">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <History className="w-3 h-3" />
+                <span>Recent Resumes</span>
+              </div>
+              <div className="space-y-1.5">
+                {savedResumes.map((r, i) => (
+                  <button
+                    key={r.id}
+                    onClick={() => navigate('/resume-studio')}
+                    className="w-full flex items-center gap-2 p-2 rounded-lg bg-muted/50 hover:bg-muted transition-colors text-left group"
+                  >
+                    <FileText className="w-4 h-4 text-primary shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <span className="text-sm font-medium block truncate">
+                        {r.fullName || 'Untitled Resume'}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {new Date(r.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
+                    </div>
+                    {i === 0 && (
+                      <Badge variant="secondary" className="text-[10px] shrink-0">Latest</Badge>
+                    )}
+                    <ArrowRight className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </Card>
       </div>
 
