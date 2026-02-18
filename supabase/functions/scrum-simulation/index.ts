@@ -84,7 +84,7 @@ SCORING CRITERIA (evaluate the Scrum Master on):
 When asked to score a day, return JSON: { "score": { "facilitation": N, "communication": N, "artifact": N, "decision": N, "total": N, "feedback": "..." }, "messages": [...], "executive_report": { "health": "green|yellow|red", "summary": "...", "risks": "...", "next_focus": "..." } }`;
 
 function getEventForDay() {
-  return `Day 4: James is out sick. Day 5: Sean (PO) wants to add urgent scope mid-sprint — a new compliance requirement from legal. Day 7: Sebastian finds a critical security vulnerability in the authentication module. Day 3: Network peering approval is delayed by infra team.`;
+  return `Day 2: CTO sends urgent email about IAM policy gaps from security audit. Maya hits AWS service quota limit blocking VPC work. Day 3: CI/CD pipeline failures blocking deployments. AWS support reports VPC peering route propagation delay. Day 4: James is out sick — auth migration at risk. Program Manager moves VP demo to Day 6. QA test environment is unstable. Day 5: Sean (PO) wants to add urgent PKCE compliance requirement mid-sprint — scope creep. Priya finds 3 critical security vulnerabilities. Day 6: Mid-sprint VP demo — team must present progress. AWS architect provides architecture review feedback. Day 7: Sebastian finds critical session hijacking vulnerability in auth module. Deployment rollback drill reveals DNS propagation issues. Day 8: Sprint Review and Retrospective — final presentations and team reflection.`;
 }
 
 serve(async (req) => {
