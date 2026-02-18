@@ -47,7 +47,7 @@ const Header = () => {
               }
             }}
           >
-            <img src={aladiahLogo} alt="Aladiah Academy" className="h-[7.9rem] lg:h-[9.2rem] w-auto object-contain py-1 mix-blend-multiply" />
+            <img src={aladiahLogo} alt="Aladiah Academy" className="h-[7.9rem] lg:h-[9.2rem] w-auto object-contain py-1 mix-blend-multiply" style={{ imageRendering: 'auto', WebkitFontSmoothing: 'antialiased', filter: 'contrast(1.05) saturate(1.1)' }} />
           </motion.a>
 
           {/* Desktop Navigation */}
