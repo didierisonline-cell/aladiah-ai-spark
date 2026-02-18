@@ -19,6 +19,8 @@ import JiraBoard from '@/components/simulation/JiraBoard';
 import EmailInbox from '@/components/simulation/EmailInbox';
 import RiskBoard from '@/components/simulation/RiskBoard';
 import ReportsDashboard from '@/components/simulation/ReportsDashboard';
+import SimulationGlossary from '@/components/simulation/SimulationGlossary';
+import { DAILY_RISK_EMAILS } from '@/components/simulation/DailyEmails';
 import { Progress } from '@/components/ui/progress';
 
 type SimTab = 'meeting' | 'jira' | 'email' | 'risks' | 'reports';
@@ -167,6 +169,12 @@ const ScrumSimulation = () => {
       }
       if (result.actions_available) setActions(result.actions_available);
       processAIResult(result);
+      // Inject pre-written Day 1 risk emails
+      const dayEmails = DAILY_RISK_EMAILS[1] || [];
+      setEmails(prev => [
+        ...dayEmails.map((e, i) => ({ ...e, id: `preset-1-${i}`, read: false, timestamp: '9:00 AM' })),
+        ...prev,
+      ]);
     } catch (e: any) {
       toast({ title: 'Error', description: e.message, variant: 'destructive' });
     } finally {
@@ -226,6 +234,15 @@ const ScrumSimulation = () => {
     setActions([]);
     setLoading(true);
 
+    // Inject pre-written risk emails for the new day
+    const dayEmails = DAILY_RISK_EMAILS[nextDay] || [];
+    if (dayEmails.length > 0) {
+      setEmails(prev => [
+        ...dayEmails.map((e, i) => ({ ...e, id: `preset-${nextDay}-${i}`, read: false, timestamp: '8:30 AM' })),
+        ...prev,
+      ]);
+    }
+
     try {
       const result = await callSimulation('start_day', { day: nextDay, simulation_id: simulationId });
       if (result.messages) {
@@ -242,6 +259,11 @@ const ScrumSimulation = () => {
 
   const markEmailRead = (id: string) => {
     setEmails(prev => prev.map(e => e.id === id ? { ...e, read: true } : e));
+  };
+
+  const handleReplyEmail = (emailId: string, reply: string) => {
+    // Send the reply as a message in the simulation context
+    sendMessage(`[Email Reply] RE: ${emails.find(e => e.id === emailId)?.subject || 'email'} — ${reply}`);
   };
 
   const unreadEmails = emails.filter(e => !e.read).length;
@@ -455,7 +477,7 @@ const ScrumSimulation = () => {
           <JiraBoard stories={stories} currentDay={currentDay} onStoriesChange={setStories} />
         )}
         {activeTab === 'email' && (
-          <EmailInbox emails={emails} onMarkRead={markEmailRead} />
+          <EmailInbox emails={emails} onMarkRead={markEmailRead} onReplyEmail={handleReplyEmail} />
         )}
         {activeTab === 'risks' && (
           <RiskBoard risks={risks} currentDay={currentDay} />
@@ -470,6 +492,8 @@ const ScrumSimulation = () => {
           />
         )}
       </div>
+      {/* Floating Glossary */}
+      <SimulationGlossary currentDay={currentDay} simulationId={simulationId} />
     </div>
   );
 };
