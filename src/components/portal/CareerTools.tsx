@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Progress } from '@/components/ui/progress';
 import {
-  Briefcase, FileText, Linkedin, Sparkles, Send, Loader2,
+  Briefcase, FileText, Linkedin, Sparkles, Loader2,
   CheckCircle, Clock, Users, MessageCircle, ArrowRight
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -17,26 +17,26 @@ interface CareerToolsProps {
 
 const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps) => {
   const navigate = useNavigate();
-  const [resumeInput, setResumeInput] = useState('');
   const [linkedinInput, setLinkedinInput] = useState('');
-  const [resumeResult, setResumeResult] = useState('');
   const [linkedinResult, setLinkedinResult] = useState('');
-  const [loadingResume, setLoadingResume] = useState(false);
   const [loadingLinkedin, setLoadingLinkedin] = useState(false);
 
-  const generateContent = async (type: 'resume' | 'linkedin') => {
-    const input = type === 'resume' ? resumeInput : linkedinInput;
-    const setLoading = type === 'resume' ? setLoadingResume : setLoadingLinkedin;
-    const setResult = type === 'resume' ? setResumeResult : setLinkedinResult;
+  // Career roadmap milestones with dynamic progress
+  const roadmapSteps = [
+    { label: 'Scrum Fundamentals', threshold: 20, pct: Math.min(100, (overallProgress / 20) * 100) },
+    { label: 'Complete Coursework', threshold: 100, pct: Math.min(100, overallProgress) },
+    { label: 'Sprint Simulation', threshold: 0, pct: 0 }, // would need sim data
+    { label: 'Resume & LinkedIn Optimization', threshold: 0, pct: 0 },
+    { label: 'Job Placement Readiness', threshold: 0, pct: 0 },
+  ];
 
-    if (!input.trim()) return;
-    setLoading(true);
-    setResult('');
+  const generateLinkedin = async () => {
+    if (!linkedinInput.trim()) return;
+    setLoadingLinkedin(true);
+    setLinkedinResult('');
 
     try {
-      const prompt = type === 'resume'
-        ? `Help me create a top-notch Scrum Master resume. Here's my background: ${input}. Create a professional resume highlighting Scrum Master and Agile expertise. Include strong action verbs, quantifiable achievements, and relevant certifications.`
-        : `Help me optimize my LinkedIn profile for a Scrum Master/PM role. Here's my current situation: ${input}. Provide an optimized headline, summary, skills section, and tips for visibility.`;
+      const prompt = `Help me optimize my LinkedIn profile for a Scrum Master/PM role. Here's my current situation: ${linkedinInput}. Provide an optimized headline, summary, skills section, and tips for visibility.`;
 
       const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/student-assistant`, {
         method: 'POST',
@@ -73,23 +73,23 @@ const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps)
             const content = parsed.choices?.[0]?.delta?.content;
             if (content) {
               full += content;
-              setResult(full);
+              setLinkedinResult(full);
             }
           } catch {}
         }
       }
     } catch (e) {
       console.error('Career tool error:', e);
-      setResult('Something went wrong. Please try again.');
+      setLinkedinResult('Something went wrong. Please try again.');
     } finally {
-      setLoading(false);
+      setLoadingLinkedin(false);
     }
   };
 
   return (
     <div className="space-y-4">
       <div className="grid md:grid-cols-2 gap-4">
-        {/* Career Roadmap */}
+        {/* Career Roadmap with progress bars */}
         <Card className="p-6 space-y-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -97,26 +97,45 @@ const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps)
             </div>
             <div>
               <h3 className="font-semibold">Career Roadmap</h3>
-              <p className="text-xs text-muted-foreground">AI-powered career growth plan</p>
+              <p className="text-xs text-muted-foreground">Track your path to career readiness</p>
             </div>
           </div>
-          <div className="space-y-2 text-sm">
-            {[
-              { label: 'Scrum Fundamentals', done: overallProgress >= 20 },
-              { label: 'Complete 50% of coursework', done: overallProgress >= 50 },
-              { label: 'Sprint Simulation', done: false },
-              { label: 'Resume & LinkedIn Optimization', done: false },
-              { label: 'Job Placement Readiness', done: false },
-            ].map((step, i) => (
-              <div key={i} className="flex items-center gap-2 p-2 rounded bg-muted/50">
-                {step.done ? <CheckCircle className="w-4 h-4 text-green-500" /> : <Clock className="w-4 h-4 text-muted-foreground" />}
-                <span className={step.done ? 'line-through text-muted-foreground' : ''}>{step.label}</span>
-              </div>
-            ))}
+          <div className="space-y-3">
+            {roadmapSteps.map((step, i) => {
+              const isComplete = step.pct >= 100;
+              return (
+                <div key={i} className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {isComplete ? (
+                        <CheckCircle className="w-4 h-4 text-primary" />
+                      ) : (
+                        <Clock className="w-4 h-4 text-muted-foreground" />
+                      )}
+                      <span className={`text-sm ${isComplete ? 'font-medium' : 'text-muted-foreground'}`}>
+                        {step.label}
+                      </span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">{Math.round(step.pct)}%</span>
+                  </div>
+                  <div className="relative h-6 rounded-md overflow-hidden bg-muted/50 border">
+                    <div
+                      className="absolute inset-y-0 left-0 bg-primary/80 rounded-md transition-all duration-500"
+                      style={{ width: `${step.pct}%` }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-[10px] font-medium mix-blend-difference text-white">
+                        {step.label}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </Card>
 
-        {/* Resume Builder */}
+        {/* Resume Builder - Links to Studio */}
         <Card className="p-6 space-y-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
@@ -124,24 +143,17 @@ const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps)
             </div>
             <div>
               <h3 className="font-semibold">AI Resume Builder</h3>
-              <p className="text-xs text-muted-foreground">Create a top-notch Scrum Master resume</p>
+              <p className="text-xs text-muted-foreground">Build a professional Scrum Master resume</p>
             </div>
           </div>
-          <Textarea
-            value={resumeInput}
-            onChange={e => setResumeInput(e.target.value)}
-            placeholder="Describe your experience, skills, and career goals..."
-            className="text-sm min-h-[80px]"
-          />
-          <Button onClick={() => generateContent('resume')} disabled={loadingResume || !resumeInput.trim()} className="w-full gap-1">
-            {loadingResume ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-            Generate Resume
+          <p className="text-sm text-muted-foreground">
+            Enter our full Resume Builder Studio with AI-powered suggestions, templates, and auto-save. Build, edit, and download your resume anytime.
+          </p>
+          <Button onClick={() => navigate('/resume-studio')} className="w-full gap-2">
+            <FileText className="w-4 h-4" />
+            Open Resume Builder Studio
+            <ArrowRight className="w-4 h-4" />
           </Button>
-          {resumeResult && (
-            <ScrollArea className="h-48 rounded border p-3">
-              <pre className="text-xs whitespace-pre-wrap font-sans">{resumeResult}</pre>
-            </ScrollArea>
-          )}
         </Card>
       </div>
 
@@ -149,8 +161,8 @@ const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps)
         {/* LinkedIn Optimizer */}
         <Card className="p-6 space-y-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-              <Linkedin className="w-5 h-5 text-blue-500" />
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Linkedin className="w-5 h-5 text-primary" />
             </div>
             <div>
               <h3 className="font-semibold">LinkedIn Optimizer</h3>
@@ -163,14 +175,14 @@ const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps)
             placeholder="Paste your current LinkedIn summary or describe your target role..."
             className="text-sm min-h-[80px]"
           />
-          <Button onClick={() => generateContent('linkedin')} disabled={loadingLinkedin || !linkedinInput.trim()} className="w-full gap-1">
+          <Button onClick={generateLinkedin} disabled={loadingLinkedin || !linkedinInput.trim()} className="w-full gap-1">
             {loadingLinkedin ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
             Optimize LinkedIn
           </Button>
           {linkedinResult && (
-            <ScrollArea className="h-48 rounded border p-3">
+            <div className="h-48 rounded border p-3 overflow-auto">
               <pre className="text-xs whitespace-pre-wrap font-sans">{linkedinResult}</pre>
-            </ScrollArea>
+            </div>
           )}
         </Card>
 

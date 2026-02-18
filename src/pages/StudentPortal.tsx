@@ -18,12 +18,31 @@ import YouTubeRecommendations from '@/components/portal/YouTubeRecommendations';
 import CareerTools from '@/components/portal/CareerTools';
 import LabMode from '@/components/portal/LabMode';
 import {
+  ProgressDetailModal, StreakDetailModal, PointsDetailModal, LabsDetailModal
+} from '@/components/portal/StatDetailModals';
+import {
   Bot, Send, BookOpen, Trophy, Flame, Target, GraduationCap,
   FlaskConical, Star, Gift, Youtube, Briefcase, Users, MessageCircle,
-  TrendingUp, Award, Lightbulb, Sparkles, Clock, ArrowRight, CheckCircle
+  TrendingUp, Award, Lightbulb, Sparkles, Clock, ArrowRight, CheckCircle,
+  FileText, ExternalLink
 } from 'lucide-react';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
+
+// Course display order for the Scrum course
+const COURSE_ORDER = [
+  'Professional Scrum Master Certification',
+  'Agile Development and Scrum',
+  'Jira Scrum Project: Hands-on Training',
+  'Jira SCRUM Project: Hands-On Training',
+  'Projects & Simulations',
+  'Agile, Scrum & SAFe 6.0 Mastery',
+  'Agile, Scrum & Safe 6.0 Mastery',
+  'Managing AI Projects',
+  'Managing Ai Projects',
+];
+
+const EXCLUDED_COURSES = ['Rogers-Shaw', 'IT Merger', 'Network Integration'];
 
 const StudentPortal = () => {
   const { user, loading: authLoading } = useAuth();
@@ -44,6 +63,14 @@ const StudentPortal = () => {
   const [labModeActive, setLabModeActive] = useState(false);
   const [labTopic, setLabTopic] = useState('');
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Stat detail modals
+  const [progressModalOpen, setProgressModalOpen] = useState(false);
+  const [streakModalOpen, setStreakModalOpen] = useState(false);
+  const [pointsModalOpen, setPointsModalOpen] = useState(false);
+  const [labsModalOpen, setLabsModalOpen] = useState(false);
+
+  const firstName = user?.user_metadata?.full_name?.split(' ')[0] || 'Student';
 
   useEffect(() => {
     if (user) loadPortalData();
@@ -85,9 +112,13 @@ const StudentPortal = () => {
     }
     setStreak(s);
 
-    // Course progress
+    // Course progress - filter out excluded courses, sort by order
     const passedQuizIds = (progressRes.data || []).map(p => p.quiz_id as string);
-    const progresses = (coursesRes.data || []).map(course => {
+    const filteredCourses = (coursesRes.data || []).filter(course =>
+      !EXCLUDED_COURSES.some(ex => course.title.includes(ex))
+    );
+
+    const progresses = filteredCourses.map(course => {
       const courseChapters = (chaptersRes.data || []).filter(ch => ch.course_id === course.id);
       const courseVideos = (videosRes.data || []).filter(v => courseChapters.some(ch => ch.id === v.chapter_id));
       const miniQuizzes = (quizzesRes.data || []).filter(q => courseVideos.some(v => v.id === q.video_id) && q.quiz_type === 'mini_video');
@@ -98,9 +129,22 @@ const StudentPortal = () => {
         total: courseVideos.length,
         completed,
         pct: courseVideos.length > 0 ? Math.round((completed / courseVideos.length) * 100) : 0,
-        nextChapterId: courseChapters[0]?.id,
+        nextChapterId: courseChapters.find(ch => {
+          const chVids = courseVideos.filter(v => v.chapter_id === ch.id);
+          const chQuizzes = miniQuizzes.filter(q => chVids.some(v => v.id === q.video_id));
+          return !chQuizzes.every(q => passedQuizIds.includes(q.id));
+        })?.id || courseChapters[0]?.id,
+        chapters: courseChapters,
       };
     });
+
+    // Sort by defined order
+    progresses.sort((a, b) => {
+      const aIdx = COURSE_ORDER.findIndex(name => a.title.toLowerCase().includes(name.toLowerCase()));
+      const bIdx = COURSE_ORDER.findIndex(name => b.title.toLowerCase().includes(name.toLowerCase()));
+      return (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
+    });
+
     setCourseProgresses(progresses);
   };
 
@@ -192,10 +236,10 @@ const StudentPortal = () => {
   }
 
   const stats = [
-    { icon: TrendingUp, label: 'Progress', value: `${overallProgress}%`, color: 'text-primary' },
-    { icon: Flame, label: 'Streak', value: `${streak} days`, color: 'text-secondary' },
-    { icon: Star, label: 'Points', value: totalPoints.toLocaleString(), color: 'text-accent' },
-    { icon: FlaskConical, label: 'Labs Done', value: labs.filter(l => l.completed).length.toString(), color: 'text-primary' },
+    { icon: TrendingUp, label: 'Progress', value: `${overallProgress}%`, color: 'text-primary', onClick: () => setProgressModalOpen(true) },
+    { icon: Flame, label: 'Streak', value: `${streak} days`, color: 'text-secondary', onClick: () => setStreakModalOpen(true) },
+    { icon: Star, label: 'Points', value: totalPoints.toLocaleString(), color: 'text-accent', onClick: () => setPointsModalOpen(true) },
+    { icon: FlaskConical, label: 'Labs Done', value: labs.filter(l => l.completed).length.toString(), color: 'text-primary', onClick: () => setLabsModalOpen(true) },
   ];
 
   return (
@@ -203,25 +247,42 @@ const StudentPortal = () => {
       <Header />
       <main className="container mx-auto px-4 py-8 pt-24">
         {/* Hero Welcome */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-primary" />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-2xl md:text-3xl font-display font-bold">
+                  {firstName}'s AI Learning Portal
+                </h1>
+                <p className="text-muted-foreground text-sm">Powered by your personal AI assistant</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-display font-bold">
-                Your AI Learning Portal
-              </h1>
-              <p className="text-muted-foreground text-sm">Powered by your personal AI assistant</p>
-            </div>
+            {/* Scrum Guide Button */}
+            <a
+              href="https://scrumguides.org/docs/scrumguide/v2020/2020-Scrum-Guide-US.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant="outline" className="gap-2">
+                <FileText className="w-4 h-4" />
+                <span className="hidden sm:inline">Scrum Guide</span>
+                <ExternalLink className="w-3 h-3" />
+              </Button>
+            </a>
           </div>
         </motion.div>
 
-        {/* Stats */}
+        {/* Clickable Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {stats.map((s, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-              <Card className="p-3">
+              <Card
+                className="p-3 cursor-pointer hover:shadow-md hover:border-primary/30 transition-all"
+                onClick={s.onClick}
+              >
                 <div className="flex items-center gap-2">
                   <s.icon className={`w-5 h-5 ${s.color}`} />
                   <div>
@@ -246,23 +307,33 @@ const StudentPortal = () => {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-4">
-            {/* Course Progress */}
+            {/* Course Progress - sorted and clickable */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2"><GraduationCap className="w-5 h-5 text-primary" /> Course Progress</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {courseProgresses.map(cp => (
+                {courseProgresses.map((cp, idx) => (
                   <div
                     key={cp.courseId}
                     className="space-y-2 p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
-                    onClick={() => navigate(`/courses`)}
+                    onClick={() => cp.nextChapterId
+                      ? navigate(`/course/${cp.courseId}/chapter/${cp.nextChapterId}`)
+                      : navigate('/courses')
+                    }
                   >
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">{cp.title}</span>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-[10px] shrink-0">{idx + 1}</Badge>
+                        <span className="text-sm font-medium">{cp.title}</span>
+                      </div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-muted-foreground">{cp.pct}%</span>
-                        <ArrowRight className="w-3.5 h-3.5 text-muted-foreground" />
+                        {cp.pct === 100 ? (
+                          <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                        ) : (
+                          <ArrowRight className="w-3.5 h-3.5 text-muted-foreground" />
+                        )}
                       </div>
                     </div>
                     <Progress value={cp.pct} className="h-2" />
@@ -443,7 +514,7 @@ const StudentPortal = () => {
                     </div>
                   </Card>
 
-                  {/* Previous Labs */}
+                  {/* Previous Labs - clickable to re-enter */}
                   <Card>
                     <CardHeader className="pb-3">
                       <CardTitle className="text-lg flex items-center gap-2"><BookOpen className="w-5 h-5 text-primary" /> Previous Labs</CardTitle>
@@ -456,21 +527,32 @@ const StudentPortal = () => {
                         </div>
                       ) : (
                         <div className="space-y-3">
-                          {labs.map(lab => (
-                            <div key={lab.id} className="p-4 rounded-lg border hover:shadow-sm transition-shadow">
-                              <div className="flex items-center justify-between mb-2">
-                                <Badge variant={lab.completed ? 'default' : 'outline'}>
-                                  {lab.completed ? <><CheckCircle className="w-3 h-3 mr-1" /> Complete</> : lab.difficulty_level}
-                                </Badge>
-                                {lab.score > 0 && <span className="text-sm font-medium">{lab.score}%</span>}
+                          {labs.map(lab => {
+                            const topic = typeof lab.lab_content === 'object' && lab.lab_content.topic
+                              ? lab.lab_content.topic
+                              : 'Lab Session';
+                            return (
+                              <div
+                                key={lab.id}
+                                className="p-4 rounded-lg border hover:shadow-sm hover:bg-muted/50 cursor-pointer transition-all"
+                                onClick={() => {
+                                  setLabTopic(topic);
+                                  setLabModeActive(true);
+                                }}
+                              >
+                                <div className="flex items-center justify-between mb-2">
+                                  <Badge variant={lab.completed ? 'default' : 'outline'}>
+                                    {lab.completed ? <><CheckCircle className="w-3 h-3 mr-1" /> Complete</> : lab.difficulty_level}
+                                  </Badge>
+                                  {lab.score > 0 && <span className="text-sm font-medium">{lab.score}%</span>}
+                                </div>
+                                <p className="text-sm font-medium">{topic}</p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {new Date(lab.created_at).toLocaleDateString()} • Click to re-enter
+                                </p>
                               </div>
-                              <p className="text-sm text-muted-foreground">
-                                {typeof lab.lab_content === 'object' && lab.lab_content.terms
-                                  ? `${lab.lab_content.terms.length} terms • ${lab.lab_content.exercises?.length || 0} exercises`
-                                  : 'Lab content available'}
-                              </p>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       )}
                     </CardContent>
@@ -488,14 +570,14 @@ const StudentPortal = () => {
             />
 
             <YouTubeRecommendations
-              weakAreas={[]}
+              weakAreas={(learningProfile?.weakAreas || []).map((w: any) => typeof w === 'string' ? w : w.topic || String(w))}
               recentQuestions={chatMessages.filter(m => m.role === 'user').map(m => m.content).slice(-5)}
               currentTopic="Scrum Master"
               onSwitchToAssistant={(prompt) => { setActiveTab('assistant'); setChatInput(prompt); }}
             />
           </TabsContent>
 
-          {/* Rewards Tab */}
+          {/* Rewards Tab - Updated points */}
           <TabsContent value="rewards" className="space-y-4">
             <Card className="p-6">
               <div className="flex items-center justify-between mb-6">
@@ -503,7 +585,7 @@ const StudentPortal = () => {
                   <h3 className="text-xl font-bold flex items-center gap-2"><Star className="w-5 h-5 text-accent" /> Your Points</h3>
                   <p className="text-sm text-muted-foreground">Earn points by engaging with the platform</p>
                 </div>
-                <div className="text-right">
+                <div className="text-right cursor-pointer" onClick={() => setPointsModalOpen(true)}>
                   <p className="text-3xl font-display font-bold text-accent">{totalPoints}</p>
                   <p className="text-xs text-muted-foreground">Total Points</p>
                 </div>
@@ -511,14 +593,14 @@ const StudentPortal = () => {
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
                 {[
-                  { action: 'Comment on Blog', points: '+10', icon: MessageCircle },
-                  { action: 'Complete a Lab', points: '+50', icon: FlaskConical },
-                  { action: 'Pass a Quiz', points: '+25', icon: Trophy },
-                  { action: 'Daily Login', points: '+5', icon: Flame },
+                  { action: 'Comment on Blog', points: '+5', icon: MessageCircle },
+                  { action: 'Complete a Lab', points: '+5', icon: FlaskConical },
+                  { action: 'Pass a Quiz', points: '+5', icon: Trophy },
+                  { action: 'Daily Login', points: '+1', icon: Flame },
                   { action: 'Refer a Student', points: '+200', icon: Users },
-                  { action: 'Read Weekly Blog', points: '+15', icon: BookOpen },
+                  { action: 'Collaborate with Students', points: '+2', icon: Award },
                 ].map((item, i) => (
-                  <div key={i} className="p-3 rounded-lg border text-center">
+                  <div key={i} className="p-3 rounded-lg border text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => setPointsModalOpen(true)}>
                     <item.icon className="w-5 h-5 mx-auto mb-1 text-primary" />
                     <p className="text-xs font-medium">{item.action}</p>
                     <p className="text-sm font-bold text-accent">{item.points}</p>
@@ -549,6 +631,41 @@ const StudentPortal = () => {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Stat Detail Modals */}
+      {user && (
+        <>
+          <ProgressDetailModal
+            open={progressModalOpen}
+            onOpenChange={setProgressModalOpen}
+            userId={user.id}
+            courseProgresses={courseProgresses}
+            overallProgress={overallProgress}
+          />
+          <StreakDetailModal
+            open={streakModalOpen}
+            onOpenChange={setStreakModalOpen}
+            userId={user.id}
+            streak={streak}
+          />
+          <PointsDetailModal
+            open={pointsModalOpen}
+            onOpenChange={setPointsModalOpen}
+            userId={user.id}
+            totalPoints={totalPoints}
+          />
+          <LabsDetailModal
+            open={labsModalOpen}
+            onOpenChange={setLabsModalOpen}
+            labs={labs}
+            onReenterLab={(topic) => {
+              setLabTopic(topic);
+              setLabModeActive(true);
+              setActiveTab('labs');
+            }}
+          />
+        </>
+      )}
     </div>
   );
 };
