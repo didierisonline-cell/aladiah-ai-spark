@@ -193,6 +193,7 @@ const VideoPlayer = ({
         const audioUrl = `data:audio/mpeg;base64,${data.audioBase64}`;
         const audio = new Audio(audioUrl);
         audio.volume = isMuted ? 0 : 1;
+        audio.preload = 'auto';
         audioRef.current = audio;
 
         audio.onended = () => {
@@ -202,29 +203,29 @@ const VideoPlayer = ({
         };
 
         audio.onerror = () => {
-          toast({
-            title: 'Audio Playback Error',
-            description: 'Could not play audio. Showing transcript instead.',
-            variant: 'destructive',
-          });
-          setIsPlaying(false);
-          stopProgressTracking();
+          console.warn('Audio playback error, falling back to TTS');
+          fallbackToTTS(lessonScript);
         };
 
-        await audio.play();
-        setIsPlaying(true);
-        startProgressTracking();
+        try {
+          await audio.play();
+          setIsPlaying(true);
+          startProgressTracking();
+        } catch (playError) {
+          console.warn('Autoplay blocked, falling back to TTS:', playError);
+          fallbackToTTS(lessonScript);
+        }
       } else {
         // Text-only fallback — use browser TTS
         fallbackToTTS(lessonScript);
       }
     } catch (error: any) {
       console.error('Error generating lesson:', error);
-      toast({
-        title: 'Lesson Generation Error',
-        description: error.message || 'Failed to generate lesson.',
-        variant: 'destructive',
-      });
+      // Even on error, start the lesson with a default script so user isn't stuck
+      const fallbackScript = `Welcome to this lesson on "${title}". ${description}. Let's explore this topic together. This lesson covers the key concepts you need to understand. Practice these concepts and you'll master them in no time!`;
+      setScript(fallbackScript);
+      setHasStarted(true);
+      fallbackToTTS(fallbackScript);
     } finally {
       setIsLoading(false);
     }
@@ -232,23 +233,57 @@ const VideoPlayer = ({
 
   // Browser TTS fallback for when ElevenLabs is unavailable
   const fallbackToTTS = (text: string) => {
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+    
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.95;
     utterance.pitch = 1.0;
     utterance.volume = isMuted ? 0 : 1;
 
-    const voices = window.speechSynthesis.getVoices();
-    const preferred = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google'))
-      || voices.find(v => v.lang.startsWith('en'));
-    if (preferred) utterance.voice = preferred;
+    // Try to set voice - voices may load asynchronously
+    const setVoice = () => {
+      const voices = window.speechSynthesis.getVoices();
+      const preferred = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google'))
+        || voices.find(v => v.lang.startsWith('en'));
+      if (preferred) utterance.voice = preferred;
+    };
+    
+    setVoice();
+
+    // Simulate progress for TTS (estimate ~150 words per minute)
+    const wordCount = text.split(/\s+/).length;
+    const estimatedDurationMs = (wordCount / 150) * 60 * 1000;
+    const startTime = Date.now();
+    
+    if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+    progressIntervalRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(Math.round((elapsed / estimatedDurationMs) * 100), 99);
+      setProgress(pct);
+    }, 500);
 
     utterance.onend = () => {
       setIsPlaying(false);
       setProgress(100);
+      stopProgressTracking();
     };
 
-    window.speechSynthesis.speak(utterance);
-    setIsPlaying(true);
+    utterance.onerror = (e) => {
+      console.warn('TTS error:', e);
+      // Still mark as started so user can see transcript
+      setIsPlaying(false);
+      stopProgressTracking();
+    };
+
+    try {
+      window.speechSynthesis.speak(utterance);
+      setIsPlaying(true);
+    } catch (e) {
+      console.warn('TTS speak failed:', e);
+      // Lesson is still started, transcript is visible
+      setIsPlaying(false);
+    }
   };
 
   const togglePlayPause = () => {
