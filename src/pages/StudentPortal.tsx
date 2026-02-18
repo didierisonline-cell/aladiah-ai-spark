@@ -327,9 +327,9 @@ const StudentPortal = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 {courseProgresses.map((cp, idx) => (
-                  <div
+                  <button
                     key={cp.courseId}
-                    className="space-y-2 p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                    className="w-full text-left space-y-2 p-3 rounded-lg border border-transparent hover:border-primary/30 hover:bg-muted/50 cursor-pointer transition-all group"
                     onClick={() => cp.nextChapterId
                       ? navigate(`/course/${cp.courseId}/chapter/${cp.nextChapterId}`)
                       : navigate('/courses')
@@ -338,19 +338,22 @@ const StudentPortal = () => {
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
                         <Badge variant="outline" className="text-[10px] shrink-0">{idx + 1}</Badge>
-                        <span className="text-sm font-medium">{cp.title}</span>
+                        <span className="text-sm font-medium group-hover:text-primary transition-colors">{cp.title}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">{cp.pct}%</span>
+                        <span className="text-xs text-muted-foreground">
+                          {cp.pct === 100 ? 'Completed' : cp.pct > 0 ? 'Continue' : 'Start'}
+                        </span>
                         {cp.pct === 100 ? (
-                          <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                          <CheckCircle className="w-4 h-4 text-green-500" />
                         ) : (
-                          <ArrowRight className="w-3.5 h-3.5 text-muted-foreground" />
+                          <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                         )}
                       </div>
                     </div>
                     <Progress value={cp.pct} className="h-2" />
-                  </div>
+                    <p className="text-[10px] text-muted-foreground">{cp.pct}% complete · {cp.completed}/{cp.total} lessons</p>
+                  </button>
                 ))}
               </CardContent>
             </Card>
