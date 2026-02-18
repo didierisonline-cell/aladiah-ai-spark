@@ -20,6 +20,7 @@ import MarketingKit from "./pages/MarketingKit";
 import ReferralProfile from "./pages/ReferralProfile";
 import StudentPortal from "./pages/StudentPortal";
 import AdminDashboard from "./pages/AdminDashboard";
+import ResumeStudio from "./pages/ResumeStudio";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const AppContent = () => {
         <Route path="/referral/kit" element={<MarketingKit />} />
         <Route path="/refer/:code" element={<ReferralProfile />} />
         <Route path="/portal" element={<StudentPortal />} />
+        <Route path="/resume-studio" element={<ResumeStudio />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

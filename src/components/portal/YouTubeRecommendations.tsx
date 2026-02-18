@@ -143,7 +143,7 @@ const YouTubeRecommendations = ({
         )}
       </div>
 
-      <Button variant="outline" size="sm" className="w-full" onClick={() => onSwitchToAssistant('Suggest 5 YouTube videos personalized to my weak areas in Scrum')}>
+      <Button variant="outline" size="sm" className="w-full" onClick={fetchSuggestions} disabled={loading}>
         <Sparkles className="w-3 h-3 mr-1" /> Get More Personalized Suggestions
       </Button>
     </Card>
