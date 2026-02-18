@@ -452,7 +452,7 @@ const ScrumSimulation = () => {
           />
         )}
         {activeTab === 'jira' && (
-          <JiraBoard stories={stories} currentDay={currentDay} />
+          <JiraBoard stories={stories} currentDay={currentDay} onStoriesChange={setStories} />
         )}
         {activeTab === 'email' && (
           <EmailInbox emails={emails} onMarkRead={markEmailRead} />
