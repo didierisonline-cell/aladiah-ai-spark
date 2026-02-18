@@ -652,39 +652,35 @@ const StudentPortal = () => {
       </main>
 
       {/* Stat Detail Modals */}
-      {user && (
-        <>
-          <ProgressDetailModal
-            open={progressModalOpen}
-            onOpenChange={setProgressModalOpen}
-            userId={user.id}
-            courseProgresses={courseProgresses}
-            overallProgress={overallProgress}
-          />
-          <StreakDetailModal
-            open={streakModalOpen}
-            onOpenChange={setStreakModalOpen}
-            userId={user.id}
-            streak={streak}
-          />
-          <PointsDetailModal
-            open={pointsModalOpen}
-            onOpenChange={setPointsModalOpen}
-            userId={user.id}
-            totalPoints={totalPoints}
-          />
-          <LabsDetailModal
-            open={labsModalOpen}
-            onOpenChange={setLabsModalOpen}
-            labs={labs}
-            onReenterLab={(topic) => {
-              setLabTopic(topic);
-              setLabModeActive(true);
-              setActiveTab('labs');
-            }}
-          />
-        </>
-      )}
+      <ProgressDetailModal
+        open={progressModalOpen}
+        onOpenChange={setProgressModalOpen}
+        userId={user?.id || ''}
+        courseProgresses={courseProgresses}
+        overallProgress={overallProgress}
+      />
+      <StreakDetailModal
+        open={streakModalOpen}
+        onOpenChange={setStreakModalOpen}
+        userId={user?.id || ''}
+        streak={streak}
+      />
+      <PointsDetailModal
+        open={pointsModalOpen}
+        onOpenChange={setPointsModalOpen}
+        userId={user?.id || ''}
+        totalPoints={totalPoints}
+      />
+      <LabsDetailModal
+        open={labsModalOpen}
+        onOpenChange={setLabsModalOpen}
+        labs={labs}
+        onReenterLab={(topic) => {
+          setLabTopic(topic);
+          setLabModeActive(true);
+          setActiveTab('labs');
+        }}
+      />
     </div>
   );
 };
