@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { X, Save, MessageSquare, Tag, Calendar, Users, Layers, GitBranch, Clock, Plus, FileText, Link2, CheckCircle2, Trash2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Save, MessageSquare, Tag, Calendar, Users, Layers, GitBranch, Clock, Plus, FileText, Link2, CheckCircle2, Trash2, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BoardStory, StoryTicketData, StoryComment, UserStory, TEAM_MEMBERS, PRIORITY_COLORS, EPIC_COLORS, BOARD_COLUMNS } from './SimulationTypes';
+import ArchitectureDiagramViewer, { getDiagramForStory } from './ArchitectureDiagramViewer';
 
 interface TicketDetailModalProps {
   story: BoardStory;
@@ -39,6 +40,7 @@ const TicketDetailModal = ({ story, onClose, onSave }: TicketDetailModalProps) =
   const [newComment, setNewComment] = useState('');
   const [newTag, setNewTag] = useState('');
   const [newAC, setNewAC] = useState('');
+  const [showDiagram, setShowDiagram] = useState(false);
   const [status, setStatus] = useState(story.status);
 
   const addComment = () => {
@@ -215,14 +217,25 @@ const TicketDetailModal = ({ story, onClose, onSave }: TicketDetailModalProps) =
                   </div>
                   <div>
                     <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
-                      <Link2 className="w-3 h-3" /> Figma / Design Link
+                      <Image className="w-3 h-3" /> Architecture Diagram
                     </label>
-                    <Input
-                      value={ticket.figmaUrl}
-                      onChange={e => setTicket(prev => ({ ...prev, figmaUrl: e.target.value }))}
-                      placeholder="https://figma.com/file/..."
-                      className="h-8 text-xs"
-                    />
+                    {getDiagramForStory(story.id) ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8 text-xs w-full justify-start"
+                        onClick={() => setShowDiagram(true)}
+                      >
+                        <Image className="w-3 h-3 mr-1" /> View Infrastructure Diagram
+                      </Button>
+                    ) : (
+                      <Input
+                        value={ticket.figmaUrl}
+                        onChange={e => setTicket(prev => ({ ...prev, figmaUrl: e.target.value }))}
+                        placeholder="https://figma.com/file/..."
+                        className="h-8 text-xs"
+                      />
+                    )}
                   </div>
                 </div>
 
@@ -384,7 +397,21 @@ const TicketDetailModal = ({ story, onClose, onSave }: TicketDetailModalProps) =
               <p className="text-xs font-medium">{ticket.sprint}</p>
             </div>
 
-            {ticket.figmaUrl && (
+            {getDiagramForStory(story.id) && (
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
+                  <Image className="w-3 h-3" /> Design File
+                </label>
+                <button
+                  onClick={() => setShowDiagram(true)}
+                  className="text-xs text-primary hover:underline flex items-center gap-1"
+                >
+                  <Image className="w-3 h-3" />
+                  {getDiagramForStory(story.id)?.title}
+                </button>
+              </div>
+            )}
+            {ticket.figmaUrl && !getDiagramForStory(story.id) && (
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
                   <Link2 className="w-3 h-3" /> Design Attachment
@@ -416,6 +443,17 @@ const TicketDetailModal = ({ story, onClose, onSave }: TicketDetailModalProps) =
           </Button>
         </div>
       </motion.div>
+
+      {/* Architecture Diagram Viewer */}
+      <AnimatePresence>
+        {showDiagram && (
+          <ArchitectureDiagramViewer
+            storyId={story.id}
+            storyTitle={story.title}
+            onClose={() => setShowDiagram(false)}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
