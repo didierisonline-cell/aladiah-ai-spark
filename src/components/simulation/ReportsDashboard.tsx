@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { BoardStory, DayScore, ExecutiveReport, RiskItem, SPRINT_SCHEDULE } from './SimulationTypes';
 import PowerMetrics from './PowerMetrics';
+import ReportGenerator from './ReportGenerator';
 
 interface ReportsDashboardProps {
   stories: BoardStory[];
@@ -198,6 +199,15 @@ const ReportsDashboard = ({ stories, scores, executiveReports, risks, currentDay
 
         {/* Power Dashboard — Elite Agile Metrics */}
         <PowerMetrics stories={stories} scores={scores} currentDay={currentDay} />
+
+        {/* Report Generator */}
+        <ReportGenerator
+          stories={stories}
+          scores={scores}
+          executiveReports={executiveReports}
+          risks={risks}
+          currentDay={currentDay}
+        />
       </div>
     </div>
   );
