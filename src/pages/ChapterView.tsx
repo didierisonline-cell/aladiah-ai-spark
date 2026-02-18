@@ -55,11 +55,20 @@ interface PassedQuiz {
   quiz_id: string;
 }
 
+const SIMULATION_COURSE_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+
 const ChapterView = () => {
   const { courseId, chapterId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { language } = useLanguage();
+
+  // Redirect simulation course chapters to the interactive simulation page
+  useEffect(() => {
+    if (courseId === SIMULATION_COURSE_ID) {
+      navigate('/simulation', { replace: true });
+    }
+  }, [courseId, navigate]);
   
   const [course, setCourse] = useState<Course | null>(null);
   const [chapter, setChapter] = useState<Chapter | null>(null);
