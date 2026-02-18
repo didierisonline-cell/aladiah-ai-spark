@@ -322,8 +322,11 @@ const StudentPortal = () => {
           <TabsContent value="overview" className="space-y-4">
             {/* Course Progress - sorted and clickable */}
             <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2"><GraduationCap className="w-5 h-5 text-primary" /> Course Progress</CardTitle>
+              <CardHeader className="pb-3 cursor-pointer group" onClick={() => navigate('/courses')}>
+                <CardTitle className="text-lg flex items-center gap-2 group-hover:text-primary transition-colors">
+                  <GraduationCap className="w-5 h-5 text-primary" /> Course Progress
+                  <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors ml-auto" />
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {courseProgresses.map((cp, idx) => (
