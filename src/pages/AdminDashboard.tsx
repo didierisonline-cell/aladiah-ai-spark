@@ -1,19 +1,37 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import Header from '@/components/Header';
 import {
   BarChart3, Users, DollarSign, TrendingUp, Activity, Clock,
   Bot, BookOpen, FlaskConical, Award, Target, Flame, ArrowUpRight,
-  GraduationCap, Briefcase, Globe, Calendar
+  GraduationCap, Briefcase, Globe, Calendar, Search, ChevronRight,
+  Star, CheckCircle, X
 } from 'lucide-react';
+
+interface StudentStat {
+  userId: string;
+  fullName: string;
+  registeredAt: string;
+  overallProgress: number;
+  streak: number;
+  points: number;
+  labsCompleted: number;
+  totalLabs: number;
+  avgQuizScore: number;
+  quizAttempts: number;
+  courseProgress: { courseId: string; title: string; total: number; completed: number; pct: number }[];
+}
 
 interface AdminData {
   overview: {
@@ -29,6 +47,7 @@ interface AdminData {
     completedLabs: number;
     totalReferrals: number;
   };
+  students: StudentStat[];
   financials: {
     pricePerStudent: number;
     milestones: { students: number; revenue: number; label: string }[];
@@ -52,6 +71,8 @@ const AdminDashboard = () => {
   const [data, setData] = useState<AdminData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [studentSearch, setStudentSearch] = useState('');
+  const [selectedStudent, setSelectedStudent] = useState<StudentStat | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) navigate('/auth');
@@ -124,8 +145,9 @@ const AdminDashboard = () => {
         </motion.div>
 
         <Tabs defaultValue="analytics" className="space-y-4">
-          <TabsList className="grid grid-cols-3 w-full max-w-md">
+          <TabsList className="grid grid-cols-4 w-full max-w-lg">
             <TabsTrigger value="analytics"><Activity className="w-3 h-3 mr-1" />Analytics</TabsTrigger>
+            <TabsTrigger value="students"><Users className="w-3 h-3 mr-1" />Students</TabsTrigger>
             <TabsTrigger value="financials"><DollarSign className="w-3 h-3 mr-1" />Financials</TabsTrigger>
             <TabsTrigger value="gantt"><Calendar className="w-3 h-3 mr-1" />Gantt</TabsTrigger>
           </TabsList>
@@ -176,7 +198,142 @@ const AdminDashboard = () => {
             </div>
           </TabsContent>
 
-          {/* Financials Tab */}
+          {/* Students Tab */}
+          <TabsContent value="students" className="space-y-4">
+            <Card className="p-4">
+              <div className="flex items-center gap-3 mb-4">
+                <Users className="w-5 h-5 text-primary" />
+                <h3 className="text-lg font-bold">All Students ({data.students?.length || 0})</h3>
+              </div>
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search by name..."
+                  value={studentSearch}
+                  onChange={e => setStudentSearch(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+              <ScrollArea className="max-h-[60vh]">
+                <div className="space-y-2">
+                  {(data.students || [])
+                    .filter(s => s.fullName.toLowerCase().includes(studentSearch.toLowerCase()))
+                    .map(student => (
+                      <button
+                        key={student.userId}
+                        className="w-full text-left flex items-center gap-3 p-3 rounded-lg border hover:border-primary/30 hover:bg-muted/50 transition-all group"
+                        onClick={() => setSelectedStudent(student)}
+                      >
+                        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                          <span className="text-sm font-bold text-primary">
+                            {student.fullName.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">{student.fullName}</p>
+                          <p className="text-[10px] text-muted-foreground">
+                            Joined {new Date(student.registeredAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <div className="text-right">
+                            <p className="text-sm font-bold">{student.overallProgress}%</p>
+                            <p className="text-[10px] text-muted-foreground">Progress</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-bold">{student.streak}</p>
+                            <p className="text-[10px] text-muted-foreground">Streak</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-bold">{student.points}</p>
+                            <p className="text-[10px] text-muted-foreground">Pts</p>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                        </div>
+                      </button>
+                    ))}
+                  {(data.students || []).filter(s => s.fullName.toLowerCase().includes(studentSearch.toLowerCase())).length === 0 && (
+                    <p className="text-center text-sm text-muted-foreground py-8">No students found</p>
+                  )}
+                </div>
+              </ScrollArea>
+            </Card>
+
+            {/* Student Detail Modal */}
+            <Dialog open={!!selectedStudent} onOpenChange={open => !open && setSelectedStudent(null)}>
+              <DialogContent className="max-w-lg max-h-[85vh]">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Users className="w-5 h-5 text-primary" />
+                    {selectedStudent?.fullName}
+                  </DialogTitle>
+                </DialogHeader>
+                {selectedStudent && (
+                  <ScrollArea className="max-h-[65vh] pr-2">
+                    <div className="space-y-4">
+                      {/* Key Stats Grid */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="text-center p-3 rounded-lg bg-muted/50">
+                          <TrendingUp className="w-4 h-4 mx-auto mb-1 text-primary" />
+                          <p className="text-2xl font-bold text-primary">{selectedStudent.overallProgress}%</p>
+                          <p className="text-[10px] text-muted-foreground">Overall Progress</p>
+                        </div>
+                        <div className="text-center p-3 rounded-lg bg-muted/50">
+                          <Flame className="w-4 h-4 mx-auto mb-1 text-secondary" />
+                          <p className="text-2xl font-bold">{selectedStudent.streak}</p>
+                          <p className="text-[10px] text-muted-foreground">Day Streak</p>
+                        </div>
+                        <div className="text-center p-3 rounded-lg bg-muted/50">
+                          <Star className="w-4 h-4 mx-auto mb-1 text-accent" />
+                          <p className="text-2xl font-bold">{selectedStudent.points}</p>
+                          <p className="text-[10px] text-muted-foreground">Points</p>
+                        </div>
+                        <div className="text-center p-3 rounded-lg bg-muted/50">
+                          <FlaskConical className="w-4 h-4 mx-auto mb-1 text-primary" />
+                          <p className="text-2xl font-bold">{selectedStudent.labsCompleted}/{selectedStudent.totalLabs}</p>
+                          <p className="text-[10px] text-muted-foreground">Labs Done</p>
+                        </div>
+                      </div>
+
+                      {/* Quiz Stats */}
+                      <div className="p-3 rounded-lg border">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-sm font-medium">Quiz Performance</span>
+                          <Badge variant="outline">{selectedStudent.quizAttempts} attempts</Badge>
+                        </div>
+                        <Progress value={selectedStudent.avgQuizScore} className="h-2 mb-1" />
+                        <p className="text-xs text-muted-foreground">Avg Score: {selectedStudent.avgQuizScore}%</p>
+                      </div>
+
+                      {/* Registration Info */}
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Calendar className="w-4 h-4" />
+                        <span>Registered: {new Date(selectedStudent.registeredAt).toLocaleDateString()}</span>
+                      </div>
+
+                      {/* Per-Course Progress */}
+                      <h4 className="font-semibold text-sm">Course Progress</h4>
+                      {selectedStudent.courseProgress.map(cp => (
+                        <div key={cp.courseId} className="space-y-1.5 p-3 rounded-lg border">
+                          <div className="flex justify-between text-sm">
+                            <span className="font-medium truncate max-w-[250px]">{cp.title}</span>
+                            <div className="flex items-center gap-1">
+                              <span className="text-muted-foreground">{cp.pct}%</span>
+                              {cp.pct === 100 && <CheckCircle className="w-3.5 h-3.5 text-green-500" />}
+                            </div>
+                          </div>
+                          <Progress value={cp.pct} className="h-2" />
+                          <p className="text-xs text-muted-foreground">{cp.completed}/{cp.total} lessons</p>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                )}
+              </DialogContent>
+            </Dialog>
+          </TabsContent>
+
+
           <TabsContent value="financials" className="space-y-4">
             {/* Revenue Goal */}
             <Card className="p-6">
