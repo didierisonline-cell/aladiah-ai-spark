@@ -260,18 +260,31 @@ const StudentPortal = () => {
                 <p className="text-muted-foreground text-sm">Powered by your personal AI assistant</p>
               </div>
             </div>
-            {/* Scrum Guide Button */}
-            <a
-              href="https://scrumguides.org/docs/scrumguide/v2020/2020-Scrum-Guide-US.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button variant="outline" className="gap-2">
-                <FileText className="w-4 h-4" />
-                <span className="hidden sm:inline">Scrum Guide</span>
-                <ExternalLink className="w-3 h-3" />
-              </Button>
-            </a>
+            {/* Guide Buttons */}
+            <div className="flex gap-2">
+              <a
+                href="https://scrumguides.org/docs/scrumguide/v2020/2020-Scrum-Guide-US.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline" className="gap-2">
+                  <FileText className="w-4 h-4" />
+                  <span className="hidden sm:inline">Scrum Guide</span>
+                  <ExternalLink className="w-3 h-3" />
+                </Button>
+              </a>
+              <a
+                href="https://davidfrico.com/safe-6.0-intro.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline" className="gap-2">
+                  <FileText className="w-4 h-4" />
+                  <span className="hidden sm:inline">SAFe 6.0</span>
+                  <ExternalLink className="w-3 h-3" />
+                </Button>
+              </a>
+            </div>
           </div>
         </motion.div>
 
