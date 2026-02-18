@@ -47,6 +47,12 @@ serve(async (req) => {
       { data: pointsData },
       { data: blogData },
       { count: totalReferrals },
+      { data: profilesData },
+      { data: allProgress },
+      { data: coursesData },
+      { data: chaptersData },
+      { data: videosData },
+      { data: quizzesData },
     ] = await Promise.all([
       adminClient.from("profiles").select("*", { count: "exact", head: true }),
       adminClient.from("student_analytics").select("*").order("created_at", { ascending: false }).limit(1000),
@@ -55,6 +61,12 @@ serve(async (req) => {
       adminClient.from("student_points").select("*"),
       adminClient.from("blog_engagement").select("*"),
       adminClient.from("referral_tracking").select("*", { count: "exact", head: true }),
+      adminClient.from("profiles").select("user_id, full_name, created_at"),
+      adminClient.from("user_progress").select("user_id, quiz_id, completed_at").not("quiz_id", "is", null),
+      adminClient.from("courses").select("id, title").eq("is_published", true),
+      adminClient.from("chapters").select("id, course_id"),
+      adminClient.from("videos").select("id, chapter_id"),
+      adminClient.from("quizzes").select("id, video_id, chapter_id, quiz_type"),
     ]);
 
     // Calculate metrics
@@ -71,6 +83,84 @@ serve(async (req) => {
     const totalPoints = (pointsData || []).reduce((sum, p) => sum + p.points, 0);
     const completedLabs = (labsData || []).filter(l => l.completed).length;
 
+    // ---- Per-student roster ----
+    const students = (profilesData || []).map(profile => {
+      const userId = profile.user_id;
+
+      // Points
+      const userPoints = (pointsData || [])
+        .filter(p => p.user_id === userId)
+        .reduce((sum, p) => sum + p.points, 0);
+
+      // Labs
+      const userLabs = (labsData || []).filter(l => l.user_id === userId);
+      const userLabsCompleted = userLabs.filter(l => l.completed).length;
+
+      // Quiz attempts
+      const userQuizAttempts = (quizAttempts || []).filter(q => q.user_id === userId);
+      const userAvgScore = userQuizAttempts.length > 0
+        ? Math.round(userQuizAttempts.reduce((s, q) => s + q.score, 0) / userQuizAttempts.length)
+        : 0;
+
+      // Progress (passed quizzes)
+      const userPassedQuizIds = (allProgress || [])
+        .filter(p => p.user_id === userId)
+        .map(p => p.quiz_id);
+
+      // Overall progress: count mini_video quizzes passed / total mini_video quizzes
+      const allMiniQuizzes = (quizzesData || []).filter(q => q.quiz_type === "mini_video");
+      const passedMini = allMiniQuizzes.filter(q => userPassedQuizIds.includes(q.id)).length;
+      const overallPct = allMiniQuizzes.length > 0
+        ? Math.round((passedMini / allMiniQuizzes.length) * 100)
+        : 0;
+
+      // Streak
+      const userDates = (allProgress || [])
+        .filter(p => p.user_id === userId)
+        .map(p => new Date(p.completed_at).toDateString())
+        .filter((v, i, a) => a.indexOf(v) === i)
+        .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+      let streak = 0;
+      const today = new Date();
+      for (let i = 0; i < userDates.length; i++) {
+        const expected = new Date(today);
+        expected.setDate(expected.getDate() - i);
+        if (userDates[i] === expected.toDateString()) streak++;
+        else break;
+      }
+
+      // Per-course progress
+      const courseProgress = (coursesData || []).map(course => {
+        const cChapters = (chaptersData || []).filter(ch => ch.course_id === course.id);
+        const cVideos = (videosData || []).filter(v => cChapters.some(ch => ch.id === v.chapter_id));
+        const cMiniQuizzes = (quizzesData || []).filter(q =>
+          cVideos.some(v => v.id === q.video_id) && q.quiz_type === "mini_video"
+        );
+        const passed = cMiniQuizzes.filter(q => userPassedQuizIds.includes(q.id)).length;
+        return {
+          courseId: course.id,
+          title: course.title,
+          total: cVideos.length,
+          completed: passed,
+          pct: cVideos.length > 0 ? Math.round((passed / cVideos.length) * 100) : 0,
+        };
+      });
+
+      return {
+        userId,
+        fullName: profile.full_name || "Unknown",
+        registeredAt: profile.created_at,
+        overallProgress: overallPct,
+        streak,
+        points: userPoints,
+        labsCompleted: userLabsCompleted,
+        totalLabs: userLabs.length,
+        avgQuizScore: userAvgScore,
+        quizAttempts: userQuizAttempts.length,
+        courseProgress,
+      };
+    });
+
     const result = {
       overview: {
         totalStudents: totalStudents || 0,
@@ -85,6 +175,7 @@ serve(async (req) => {
         completedLabs,
         totalReferrals: totalReferrals || 0,
       },
+      students,
       // Financial projections
       financials: {
         pricePerStudent: 1999,
