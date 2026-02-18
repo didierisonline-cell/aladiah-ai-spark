@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, Save, MessageSquare, Tag, Calendar, Users, Layers, GitBranch, Clock, Plus } from 'lucide-react';
+import { X, Save, MessageSquare, Tag, Calendar, Users, Layers, GitBranch, Clock, Plus, FileText, Link2, CheckCircle2, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BoardStory, StoryTicketData, StoryComment, TEAM_MEMBERS, PRIORITY_COLORS, EPIC_COLORS, BOARD_COLUMNS } from './SimulationTypes';
+import { BoardStory, StoryTicketData, StoryComment, UserStory, TEAM_MEMBERS, PRIORITY_COLORS, EPIC_COLORS, BOARD_COLUMNS } from './SimulationTypes';
 
 interface TicketDetailModalProps {
   story: BoardStory;
@@ -16,13 +16,22 @@ interface TicketDetailModalProps {
 
 const TAG_OPTIONS = ['backend', 'frontend', 'infra', 'security', 'blocker', 'tech-debt', 'spike', 'automation'];
 
+const ASSIGNEE_OPTIONS = Object.entries(TEAM_MEMBERS)
+  .filter(([name]) => name !== 'Narrator' && name !== 'Scrum Master (You)')
+  .map(([name, info]) => ({ name, ...info }));
+
 const TicketDetailModal = ({ story, onClose, onSave }: TicketDetailModalProps) => {
   const [ticket, setTicket] = useState<StoryTicketData>(story.ticketData || {
     fixVersion: 'v2.1.0', platform: 'AWS', team: 'Nebula Core', sprint: 'Sprint 21',
-    dueDate: '', tags: [], comments: [], notes: '',
+    dueDate: '', tags: [], comments: [], notes: '', acceptanceCriteria: [], figmaUrl: '',
   });
+  const [userStory, setUserStory] = useState<UserStory>(story.userStory || {
+    asA: '', iWantTo: '', soThatICan: '',
+  });
+  const [assignee, setAssignee] = useState(story.assignee);
   const [newComment, setNewComment] = useState('');
   const [newTag, setNewTag] = useState('');
+  const [newAC, setNewAC] = useState('');
   const [status, setStatus] = useState(story.status);
 
   const addComment = () => {
@@ -50,12 +59,22 @@ const TicketDetailModal = ({ story, onClose, onSave }: TicketDetailModalProps) =
     setNewTag('');
   };
 
+  const addAC = () => {
+    if (!newAC.trim()) return;
+    setTicket(prev => ({ ...prev, acceptanceCriteria: [...prev.acceptanceCriteria, newAC.trim()] }));
+    setNewAC('');
+  };
+
+  const removeAC = (index: number) => {
+    setTicket(prev => ({ ...prev, acceptanceCriteria: prev.acceptanceCriteria.filter((_, i) => i !== index) }));
+  };
+
   const handleSave = () => {
-    onSave({ ...story, status, ticketData: ticket });
+    onSave({ ...story, status, assignee, userStory, ticketData: ticket });
     onClose();
   };
 
-  const member = TEAM_MEMBERS[story.assignee];
+  const member = TEAM_MEMBERS[assignee];
 
   return (
     <motion.div
@@ -69,7 +88,7 @@ const TicketDetailModal = ({ story, onClose, onSave }: TicketDetailModalProps) =
         initial={{ y: 30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 30, opacity: 0 }}
-        className="bg-card border rounded-xl shadow-2xl w-full max-w-3xl"
+        className="bg-card border rounded-xl shadow-2xl w-full max-w-4xl"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -83,15 +102,56 @@ const TicketDetailModal = ({ story, onClose, onSave }: TicketDetailModalProps) =
               <span className={`text-[10px] px-1.5 py-0.5 rounded ${EPIC_COLORS[story.epic] || 'bg-muted'}`}>
                 {story.epic}
               </span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-bold">
+                {story.points} pts
+              </span>
             </div>
             <h2 className="text-lg font-display font-bold leading-tight">{story.title}</h2>
-            {story.description && (
-              <p className="text-sm text-muted-foreground mt-1">{story.description}</p>
-            )}
           </div>
           <button onClick={onClose} className="p-1 rounded-md hover:bg-muted transition-colors">
             <X className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* User Story Banner */}
+        <div className="px-5 py-3 bg-primary/5 border-b">
+          <p className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
+            <FileText className="w-3 h-3" /> User Story
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+            <div>
+              <label className="text-[10px] text-muted-foreground uppercase tracking-wider">As a</label>
+              <Input
+                value={userStory.asA}
+                onChange={e => setUserStory(prev => ({ ...prev, asA: e.target.value }))}
+                placeholder="role..."
+                className="h-7 text-xs mt-0.5"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] text-muted-foreground uppercase tracking-wider">I want to</label>
+              <Input
+                value={userStory.iWantTo}
+                onChange={e => setUserStory(prev => ({ ...prev, iWantTo: e.target.value }))}
+                placeholder="action..."
+                className="h-7 text-xs mt-0.5"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] text-muted-foreground uppercase tracking-wider">So that I can</label>
+              <Input
+                value={userStory.soThatICan}
+                onChange={e => setUserStory(prev => ({ ...prev, soThatICan: e.target.value }))}
+                placeholder="benefit..."
+                className="h-7 text-xs mt-0.5"
+              />
+            </div>
+          </div>
+          {userStory.asA && userStory.iWantTo && userStory.soThatICan && (
+            <p className="text-xs italic text-muted-foreground mt-2 bg-background/50 rounded px-2 py-1">
+              "As a <span className="font-semibold text-foreground">{userStory.asA}</span>, I want to <span className="font-semibold text-foreground">{userStory.iWantTo}</span>, so that I can <span className="font-semibold text-foreground">{userStory.soThatICan}</span>."
+            </p>
+          )}
         </div>
 
         {/* Content */}
@@ -101,6 +161,12 @@ const TicketDetailModal = ({ story, onClose, onSave }: TicketDetailModalProps) =
             <Tabs defaultValue="details" className="w-full">
               <TabsList className="w-full justify-start rounded-none border-b bg-transparent px-5 pt-2">
                 <TabsTrigger value="details" className="text-xs">Details</TabsTrigger>
+                <TabsTrigger value="acceptance" className="text-xs flex items-center gap-1">
+                  Acceptance Criteria
+                  {ticket.acceptanceCriteria.length > 0 && (
+                    <span className="text-[9px] bg-green-500/10 text-green-600 px-1.5 rounded-full">{ticket.acceptanceCriteria.length}</span>
+                  )}
+                </TabsTrigger>
                 <TabsTrigger value="notes" className="text-xs">Notes</TabsTrigger>
                 <TabsTrigger value="comments" className="text-xs flex items-center gap-1">
                   Comments
@@ -111,55 +177,45 @@ const TicketDetailModal = ({ story, onClose, onSave }: TicketDetailModalProps) =
               </TabsList>
 
               <TabsContent value="details" className="p-5 space-y-4">
+                {story.description && (
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Description</label>
+                    <p className="text-sm bg-muted/30 rounded-lg p-3">{story.description}</p>
+                  </div>
+                )}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-medium text-muted-foreground mb-1 block">Fix Version</label>
-                    <Input
-                      value={ticket.fixVersion}
-                      onChange={e => setTicket(prev => ({ ...prev, fixVersion: e.target.value }))}
-                      className="h-8 text-xs"
-                    />
+                    <Input value={ticket.fixVersion} onChange={e => setTicket(prev => ({ ...prev, fixVersion: e.target.value }))} className="h-8 text-xs" />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-muted-foreground mb-1 block">Platform</label>
-                    <Input
-                      value={ticket.platform}
-                      onChange={e => setTicket(prev => ({ ...prev, platform: e.target.value }))}
-                      className="h-8 text-xs"
-                    />
+                    <Input value={ticket.platform} onChange={e => setTicket(prev => ({ ...prev, platform: e.target.value }))} className="h-8 text-xs" />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-muted-foreground mb-1 block">Team</label>
-                    <Input
-                      value={ticket.team}
-                      onChange={e => setTicket(prev => ({ ...prev, team: e.target.value }))}
-                      className="h-8 text-xs"
-                    />
+                    <Input value={ticket.team} onChange={e => setTicket(prev => ({ ...prev, team: e.target.value }))} className="h-8 text-xs" />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-muted-foreground mb-1 block">Sprint</label>
-                    <Input
-                      value={ticket.sprint}
-                      onChange={e => setTicket(prev => ({ ...prev, sprint: e.target.value }))}
-                      className="h-8 text-xs"
-                    />
+                    <Input value={ticket.sprint} onChange={e => setTicket(prev => ({ ...prev, sprint: e.target.value }))} className="h-8 text-xs" />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
                       <Calendar className="w-3 h-3" /> Due Date
                     </label>
-                    <Input
-                      type="date"
-                      value={ticket.dueDate}
-                      onChange={e => setTicket(prev => ({ ...prev, dueDate: e.target.value }))}
-                      className="h-8 text-xs"
-                    />
+                    <Input type="date" value={ticket.dueDate} onChange={e => setTicket(prev => ({ ...prev, dueDate: e.target.value }))} className="h-8 text-xs" />
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Story Points</label>
-                    <div className="h-8 flex items-center">
-                      <span className="text-sm font-bold text-primary">{story.points} pts</span>
-                    </div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
+                      <Link2 className="w-3 h-3" /> Figma / Design Link
+                    </label>
+                    <Input
+                      value={ticket.figmaUrl}
+                      onChange={e => setTicket(prev => ({ ...prev, figmaUrl: e.target.value }))}
+                      placeholder="https://figma.com/file/..."
+                      className="h-8 text-xs"
+                    />
                   </div>
                 </div>
 
@@ -184,17 +240,43 @@ const TicketDetailModal = ({ story, onClose, onSave }: TicketDetailModalProps) =
                     ))}
                   </div>
                   <div className="flex gap-2">
-                    <Input
-                      placeholder="Custom tag..."
-                      value={newTag}
-                      onChange={e => setNewTag(e.target.value)}
-                      onKeyDown={e => e.key === 'Enter' && addCustomTag()}
-                      className="h-7 text-xs flex-1"
-                    />
+                    <Input placeholder="Custom tag..." value={newTag} onChange={e => setNewTag(e.target.value)} onKeyDown={e => e.key === 'Enter' && addCustomTag()} className="h-7 text-xs flex-1" />
                     <Button size="sm" variant="outline" onClick={addCustomTag} className="h-7 text-xs px-2">
                       <Plus className="w-3 h-3" />
                     </Button>
                   </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="acceptance" className="p-5 space-y-4">
+                <label className="text-xs font-medium text-muted-foreground mb-2 block">
+                  Acceptance Criteria — Define what "Done" means for this story
+                </label>
+                <div className="space-y-2">
+                  {ticket.acceptanceCriteria.map((ac, i) => (
+                    <div key={i} className="flex items-start gap-2 bg-muted/30 rounded-lg p-2.5 group">
+                      <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                      <p className="text-sm flex-1">{ac}</p>
+                      <button onClick={() => removeAC(i)} className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-destructive/10">
+                        <Trash2 className="w-3 h-3 text-destructive" />
+                      </button>
+                    </div>
+                  ))}
+                  {ticket.acceptanceCriteria.length === 0 && (
+                    <p className="text-xs text-muted-foreground text-center py-4">No acceptance criteria defined yet</p>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Add acceptance criterion..."
+                    value={newAC}
+                    onChange={e => setNewAC(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && addAC()}
+                    className="text-xs"
+                  />
+                  <Button size="sm" onClick={addAC} disabled={!newAC.trim()}>
+                    <Plus className="w-3 h-3 mr-1" /> Add
+                  </Button>
                 </div>
               </TabsContent>
 
@@ -211,7 +293,6 @@ const TicketDetailModal = ({ story, onClose, onSave }: TicketDetailModalProps) =
               </TabsContent>
 
               <TabsContent value="comments" className="p-5 space-y-4">
-                {/* Existing comments */}
                 <div className="space-y-3 max-h-[250px] overflow-y-auto">
                   {ticket.comments.length === 0 && (
                     <p className="text-xs text-muted-foreground text-center py-6">No comments yet</p>
@@ -226,15 +307,8 @@ const TicketDetailModal = ({ story, onClose, onSave }: TicketDetailModalProps) =
                     </div>
                   ))}
                 </div>
-                {/* Add comment */}
                 <div className="flex gap-2">
-                  <Input
-                    placeholder="Add a comment..."
-                    value={newComment}
-                    onChange={e => setNewComment(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && addComment()}
-                    className="text-xs"
-                  />
+                  <Input placeholder="Add a comment..." value={newComment} onChange={e => setNewComment(e.target.value)} onKeyDown={e => e.key === 'Enter' && addComment()} className="text-xs" />
                   <Button size="sm" onClick={addComment} disabled={!newComment.trim()}>
                     <MessageSquare className="w-3 h-3 mr-1" /> Add
                   </Button>
@@ -262,10 +336,19 @@ const TicketDetailModal = ({ story, onClose, onSave }: TicketDetailModalProps) =
               <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
                 <Users className="w-3 h-3" /> Assignee
               </label>
+              <select
+                value={assignee}
+                onChange={e => setAssignee(e.target.value)}
+                className="w-full h-8 text-xs rounded-md border border-input bg-background px-2 focus:outline-none focus:ring-2 focus:ring-ring mb-1"
+              >
+                {ASSIGNEE_OPTIONS.map(opt => (
+                  <option key={opt.name} value={opt.name}>{opt.avatar} {opt.name} — {opt.role}</option>
+                ))}
+              </select>
               <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50">
                 <span className="text-lg">{member?.avatar || '👤'}</span>
                 <div>
-                  <p className="text-xs font-semibold">{story.assignee}</p>
+                  <p className="text-xs font-semibold">{assignee}</p>
                   <p className="text-[10px] text-muted-foreground">{member?.role}</p>
                 </div>
               </div>
@@ -293,6 +376,17 @@ const TicketDetailModal = ({ story, onClose, onSave }: TicketDetailModalProps) =
               </label>
               <p className="text-xs font-medium">{ticket.sprint}</p>
             </div>
+
+            {ticket.figmaUrl && (
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
+                  <Link2 className="w-3 h-3" /> Design Attachment
+                </label>
+                <a href={ticket.figmaUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline break-all">
+                  {ticket.figmaUrl.length > 40 ? ticket.figmaUrl.slice(0, 40) + '...' : ticket.figmaUrl}
+                </a>
+              </div>
+            )}
 
             {ticket.tags.length > 0 && (
               <div>
