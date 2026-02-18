@@ -193,13 +193,13 @@ const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps)
             <ArrowRight className="w-4 h-4" />
           </Button>
 
-          {/* Saved Resumes Badges */}
-          {savedResumes.length > 0 && (
-            <div className="space-y-2 pt-2 border-t border-border/50">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <History className="w-3 h-3" />
-                <span>Recent Resumes</span>
-              </div>
+          {/* Saved Resumes Box */}
+          <div className="space-y-2 pt-2 border-t border-border/50">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <History className="w-3 h-3" />
+              <span>Saved Resumes</span>
+            </div>
+            {savedResumes.length > 0 ? (
               <div className="space-y-1.5">
                 {savedResumes.map((r, i) => (
                   <button
@@ -223,8 +223,20 @@ const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps)
                   </button>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <button
+                onClick={() => navigate('/resume-studio')}
+                className="w-full flex items-center gap-2 p-3 rounded-lg border border-dashed border-border hover:border-primary/40 hover:bg-muted/30 transition-colors text-left group"
+              >
+                <FileText className="w-5 h-5 text-muted-foreground group-hover:text-primary shrink-0" />
+                <div className="flex-1">
+                  <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground">No saved resumes yet</span>
+                  <span className="text-[10px] text-muted-foreground block">Create your first resume in the Studio</span>
+                </div>
+                <ArrowRight className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
+              </button>
+            )}
+          </div>
         </Card>
       </div>
 
