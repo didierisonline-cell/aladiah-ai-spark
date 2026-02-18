@@ -3,6 +3,7 @@ import { BarChart3, TrendingUp, Target, Shield, FileText } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { BoardStory, DayScore, ExecutiveReport, RiskItem, SPRINT_SCHEDULE } from './SimulationTypes';
+import PowerMetrics from './PowerMetrics';
 
 interface ReportsDashboardProps {
   stories: BoardStory[];
@@ -194,6 +195,9 @@ const ReportsDashboard = ({ stories, scores, executiveReports, risks, currentDay
             </div>
           </CardContent>
         </Card>
+
+        {/* Power Dashboard — Elite Agile Metrics */}
+        <PowerMetrics stories={stories} scores={scores} currentDay={currentDay} />
       </div>
     </div>
   );
