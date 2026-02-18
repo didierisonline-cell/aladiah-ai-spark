@@ -7,66 +7,88 @@ const corsHeaders = {
 };
 
 const TEAM_MEMBERS = [
-  { name: "Sean", role: "Product Owner", personality: "Business-focused, values ROI, asks tough questions about user value. Experienced but sometimes pushes for too much scope." },
-  { name: "Sebastian", role: "QA Engineer", personality: "Detail-oriented, methodical, raises edge cases. Sometimes pessimistic about timelines but thorough." },
-  { name: "Christo", role: "QA Engineer", personality: "Enthusiastic about automation testing, proactive, suggests testing strategies early." },
-  { name: "Maya", role: "Senior Developer", personality: "Tech lead informally, experienced, gives solid estimates. Sometimes over-engineers solutions." },
-  { name: "James", role: "Developer", personality: "Mid-level, reliable, asks good clarifying questions. Quiet but produces quality work." },
-  { name: "Priya", role: "Developer", personality: "Junior but eager, sometimes underestimates tasks. Great at frontend work, learning backend." },
-  { name: "Carlos", role: "Developer", personality: "Backend specialist, strong opinions on architecture. Can be resistant to change but usually right." },
-  { name: "Aisha", role: "Business Analyst", personality: "Bridge between business and tech. Excellent at writing acceptance criteria. Sometimes adds too many requirements." },
+  { name: "Sean", role: "Product Owner", personality: "Business-focused, values ROI, asks tough questions about user value. Experienced but sometimes pushes for too much scope. Presents prioritized backlog and sprint goals." },
+  { name: "Aisha", role: "Business Analyst", personality: "Bridge between business and tech. Excellent at writing acceptance criteria. Sometimes adds too many requirements. Partners with PO on backlog." },
+  { name: "Maya", role: "Cloud Engineer", personality: "AWS infrastructure expert. Handles VPC, IAM, networking. Gives solid estimates but sometimes over-engineers solutions." },
+  { name: "Carlos", role: "DevOps Engineer", personality: "CI/CD pipeline specialist. Strong opinions on automation and deployment strategies. Manages Terraform and infrastructure-as-code." },
+  { name: "James", role: "Backend Developer", personality: "Mid-level, reliable. Works on authentication service migration. Asks good clarifying questions. Quiet but produces quality work." },
+  { name: "Priya", role: "Security Engineer", personality: "IAM policies, security reviews, compliance. Sometimes cautious about timelines but ensures nothing ships without proper security validation." },
+  { name: "Sebastian", role: "QA Engineer", personality: "Detail-oriented, methodical, raises edge cases. Runs regression testing, validates deployments. Sometimes pessimistic about timelines but thorough." },
 ];
 
-// 10-day sprint schedule (Wed-Fri week1, Mon-Fri week2)
+const BACKLOG_STORIES = [
+  { id: "NEB-101", title: "Provision AWS VPC with private/public subnets", points: 8, epic: "Infrastructure", priority: "Critical", assignee: "Maya" },
+  { id: "NEB-102", title: "Configure IAM roles and policies for migration", points: 5, epic: "Security", priority: "Critical", assignee: "Priya" },
+  { id: "NEB-103", title: "Set up CI/CD pipeline with CodePipeline", points: 8, epic: "DevOps", priority: "High", assignee: "Carlos" },
+  { id: "NEB-104", title: "Migrate Authentication Service to AWS ECS", points: 13, epic: "Migration", priority: "Critical", assignee: "James" },
+  { id: "NEB-105", title: "Configure CloudWatch monitoring & alerts", points: 5, epic: "Observability", priority: "High", assignee: "Carlos" },
+  { id: "NEB-106", title: "Security scan and penetration testing", points: 8, epic: "Security", priority: "High", assignee: "Priya" },
+  { id: "NEB-107", title: "Set up AWS WAF and Shield for DDoS protection", points: 5, epic: "Security", priority: "Medium", assignee: "Maya" },
+  { id: "NEB-108", title: "Database migration plan for RDS PostgreSQL", points: 8, epic: "Migration", priority: "High", assignee: "James" },
+  { id: "NEB-109", title: "Load testing and performance benchmarking", points: 5, epic: "QA", priority: "Medium", assignee: "Sebastian" },
+  { id: "NEB-110", title: "Disaster recovery and failover configuration", points: 8, epic: "Infrastructure", priority: "Medium", assignee: "Maya" },
+  { id: "NEB-111", title: "Write acceptance criteria for auth migration", points: 3, epic: "Analysis", priority: "High", assignee: "Aisha" },
+  { id: "NEB-112", title: "Network peering and firewall rules", points: 5, epic: "Infrastructure", priority: "Critical", assignee: "Maya" },
+];
+
+// 10-day sprint: W1 Wed-Fri, W2 Mon-Fri
 const SPRINT_SCHEDULE = [
-  { day: 1, weekday: "Wednesday", ceremonies: ["sprint_planning"], description: "Sprint Planning Day - Define sprint goal, select backlog items, plan capacity" },
-  { day: 2, weekday: "Thursday", ceremonies: ["daily_scrum"], description: "First development day - Team starts working on sprint items" },
-  { day: 3, weekday: "Friday", ceremonies: ["daily_scrum", "backlog_refinement"], description: "Development continues + Backlog Refinement session" },
-  { day: 4, weekday: "Monday", ceremonies: ["daily_scrum"], description: "Week 2 begins - Check progress and address blockers" },
-  { day: 5, weekday: "Tuesday", ceremonies: ["daily_scrum"], description: "Mid-sprint - Monitor velocity and adjust if needed" },
-  { day: 6, weekday: "Wednesday", ceremonies: ["daily_scrum", "backlog_refinement"], description: "Second Backlog Refinement + continued development" },
-  { day: 7, weekday: "Thursday", ceremonies: ["daily_scrum"], description: "Development push - Ensure stories are on track for completion" },
-  { day: 8, weekday: "Friday", ceremonies: ["daily_scrum"], description: "Final development push - Complete remaining work" },
-  { day: 9, weekday: "Monday", ceremonies: ["daily_scrum", "sprint_review"], description: "Sprint Review - Demo completed work to stakeholders" },
-  { day: 10, weekday: "Tuesday", ceremonies: ["sprint_retro"], description: "Sprint Retrospective - Reflect and improve" },
+  { day: 1, weekday: "Wednesday", ceremonies: ["sprint_planning"], description: "Sprint Planning — Define sprint goal, select backlog items, plan capacity. NO Daily StandUp today." },
+  { day: 2, weekday: "Thursday", ceremonies: ["daily_standup"], description: "Daily StandUp (15 min) FIRST → then development begins. Scrum of Scrums at midday." },
+  { day: 3, weekday: "Friday", ceremonies: ["daily_standup", "backlog_refinement"], description: "Daily StandUp FIRST → Development + Backlog Refinement session. Sprint health check." },
+  { day: 4, weekday: "Monday", ceremonies: ["daily_standup"], description: "Week 2 — Daily StandUp FIRST → Scrum of Scrums. Check progress and blockers." },
+  { day: 5, weekday: "Tuesday", ceremonies: ["daily_standup"], description: "Daily StandUp FIRST → Mid-sprint. Monitor velocity. Board audit." },
+  { day: 6, weekday: "Wednesday", ceremonies: ["daily_standup", "backlog_refinement"], description: "Daily StandUp FIRST → 2nd Backlog Refinement + Pre-Demo Review." },
+  { day: 7, weekday: "Thursday", ceremonies: ["daily_standup"], description: "Daily StandUp FIRST → Stabilization mode. No large stories started. Bug fixes, regression, docs." },
+  { day: 8, weekday: "Friday", ceremonies: ["daily_standup", "sprint_review", "retrospective"], description: "Daily StandUp FIRST → Sprint Review demo → Retrospective → Sprint Close." },
 ];
 
-const SYSTEM_PROMPT = `You are simulating a realistic Scrum team in a 2-week sprint. The student is the Scrum Master.
-
-TEAM MEMBERS:
-${TEAM_MEMBERS.map(m => `- ${m.name} (${m.role}): ${m.personality}`).join('\n')}
+const SYSTEM_PROMPT = `You are simulating a realistic enterprise Scrum team executing a 2-week sprint for an AWS cloud migration program called "Project Nebula". The student is the Scrum Master.
 
 PROJECT CONTEXT:
-The team is building a Task Management Web Application for a mid-size company. The product backlog includes:
-- User authentication and profiles
-- Task creation with priority levels
-- Kanban board view
-- Sprint reporting dashboard
-- Notification system
-- Search and filter functionality
-- Mobile responsive design
-- API integrations with Slack and Jira
+A mid-size enterprise is migrating its legacy Customer Identity Platform from on-premises to AWS. This sprint focuses on provisioning secure infrastructure and migrating the Authentication Service. The program is already underway — teams are executing successive migration waves. Nothing starts from zero.
+
+SPRINT GOAL:
+"Provision secure AWS infrastructure components and migrate the Authentication Service while validating deployment automation, monitoring, and security controls."
+
+TEAM MEMBERS (7 total):
+${TEAM_MEMBERS.map(m => `- ${m.name} (${m.role}): ${m.personality}`).join('\n')}
+
+SPRINT BACKLOG:
+${BACKLOG_STORIES.map(s => `- ${s.id}: ${s.title} (${s.points} pts, ${s.priority}, ${s.epic}, assigned: ${s.assignee})`).join('\n')}
+
+DEFINITION OF DONE:
+✔ Deployed successfully in AWS ✔ Security validated ✔ QA passed ✔ CI/CD integrated ✔ Monitoring active ✔ Acceptance criteria met ✔ Linked to epic ✔ Documentation updated
+
+JIRA BOARD COLUMNS: Backlog → Ready → In Progress → Code Review → QA → Ready for Release → Done
+
+OPERATING LAW: Daily StandUp is ALWAYS the first meeting of the day (15 min), EXCEPT Sprint Planning Wednesday (Day 1).
 
 RULES:
-1. Stay in character as team members. Each member speaks according to their personality.
-2. Create realistic scenarios: blockers, scope creep, team disagreements, estimation debates.
-3. The Scrum Master (student) must facilitate - don't do their job for them.
-4. If the student makes a mistake (e.g., assigns tasks, makes technical decisions), have team members react realistically.
-5. Include realistic Scrum artifacts: user stories, story points, sprint goals, burndown data.
-6. Respond with JSON format: { "messages": [{ "speaker": "name", "content": "..." }], "actions_available": ["action1", "action2"] }
+1. Stay in character. Each member speaks according to their personality and role.
+2. Create realistic enterprise scenarios: blockers from other teams, scope creep from PO, security review delays, infrastructure dependencies, network peering issues, IAM approval delays.
+3. The Scrum Master (student) must facilitate — don't do their job for them.
+4. If the student makes a mistake (assigns tasks, makes technical decisions, skips ceremonies), have team members react realistically.
+5. Include realistic Scrum artifacts: story points, sprint goals, burndown data, velocity.
+6. Respond with JSON format: { "messages": [{ "speaker": "name", "content": "..." }], "actions_available": ["action1", "action2"], "board_updates": [{ "story_id": "NEB-101", "from": "In Progress", "to": "Code Review" }], "emails": [{ "from": "name", "subject": "...", "body": "...", "priority": "high|normal|low" }], "risks": [{ "risk": "...", "impact": "High|Medium|Low", "owner": "...", "mitigation": "..." }] }
 7. The actions_available should be contextual choices the Scrum Master can take.
-8. Create challenges: a developer is sick on day 4, the PO wants to add scope mid-sprint, QA finds critical bugs, etc.
+8. board_updates, emails, and risks are optional — include them when contextually appropriate.
+9. Create challenges: ${getEventForDay()}
 
 SCORING CRITERIA (evaluate the Scrum Master on):
 - Facilitation (0-25): Did they run ceremonies properly? Time-boxed? Everyone participated?
-- Communication (0-25): Clear, servant-leader approach? Removed impediments?
-- Artifacts (0-25): Sprint goal defined? Burndown tracked? Backlog maintained?
-- Decision Making (0-25): Made good calls on scope, priorities, team dynamics?
+- Communication (0-25): Clear, servant-leader approach? Removed impediments? Stakeholder communication?
+- Artifacts (0-25): Sprint goal defined? Board maintained? Backlog clean? Risks visible?
+- Decision Making (0-25): Made good calls on scope, priorities, team dynamics? Escalated appropriately?
 
-When asked to score a day, return JSON: { "score": { "facilitation": N, "communication": N, "artifact": N, "decision": N, "total": N, "feedback": "..." }, "messages": [...] }`;
+When asked to score a day, return JSON: { "score": { "facilitation": N, "communication": N, "artifact": N, "decision": N, "total": N, "feedback": "..." }, "messages": [...], "executive_report": { "health": "green|yellow|red", "summary": "...", "risks": "...", "next_focus": "..." } }`;
+
+function getEventForDay() {
+  return `Day 4: James is out sick. Day 5: Sean (PO) wants to add urgent scope mid-sprint — a new compliance requirement from legal. Day 7: Sebastian finds a critical security vulnerability in the authentication module. Day 3: Network peering approval is delayed by infra team.`;
+}
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") return json(null, 204);
 
   try {
     const authHeader = req.headers.get("Authorization");
@@ -84,7 +106,6 @@ serve(async (req) => {
     const { action, simulation_id, day, message, ceremony } = await req.json();
 
     if (action === "start") {
-      // Create new simulation
       const { data: sim, error } = await supabase
         .from("scrum_simulations")
         .insert({ user_id: user.id })
@@ -92,40 +113,37 @@ serve(async (req) => {
         .single();
       if (error) throw error;
 
-      // Generate opening scene
       const dayInfo = SPRINT_SCHEDULE[0];
-      const openingPrompt = `It's ${dayInfo.weekday}, Day 1 of the sprint. The team has gathered for Sprint Planning. Introduce the scene and have team members greet the Scrum Master. Sean (PO) should present the prioritized backlog items. The team needs to define a sprint goal and select items for the sprint. Present 6-8 user stories from the product backlog with rough descriptions for the team to discuss and estimate. Make it feel real and interactive.`;
+      const openingPrompt = `It's ${dayInfo.weekday}, Day 1 of the sprint. The team has gathered for Sprint Planning in the conference room. This is a continuation from the previous sprint — the AWS migration program is already underway.
+
+Sean (PO) should present the sprint goal and the prioritized backlog. The team needs to discuss capacity, estimate stories, identify dependencies, and commit to the sprint. Present the stories from the backlog for discussion.
+
+Also generate:
+- An initial set of emails (e.g., welcome email from Program Manager, infrastructure readiness update)
+- Initial risk items the team should be aware of
+- Initial board state (all stories in Backlog or Ready)
+
+Make it feel like a real enterprise Sprint Planning session.`;
 
       const aiResponse = await callAI(openingPrompt, []);
-      
-      // Save the AI messages
       const parsed = parseAIResponse(aiResponse);
+
       for (const msg of parsed.messages) {
         await supabase.from("simulation_messages").insert({
-          simulation_id: sim.id,
-          day: 1,
-          role: "team_member",
-          speaker: msg.speaker,
-          content: msg.content,
-          ceremony: "sprint_planning",
+          simulation_id: sim.id, day: 1, role: "team_member",
+          speaker: msg.speaker, content: msg.content, ceremony: "sprint_planning",
         });
       }
 
-      return json({ simulation: sim, day: dayInfo, ...parsed });
+      return json({ simulation: sim, day: dayInfo, ...parsed, backlog: BACKLOG_STORIES });
     }
 
     if (action === "message") {
-      // Save user message
       await supabase.from("simulation_messages").insert({
-        simulation_id,
-        day,
-        role: "user",
-        speaker: "Scrum Master (You)",
-        content: message,
-        ceremony,
+        simulation_id, day, role: "user",
+        speaker: "Scrum Master (You)", content: message, ceremony,
       });
 
-      // Get conversation history for context
       const { data: history } = await supabase
         .from("simulation_messages")
         .select("*")
@@ -139,7 +157,7 @@ serve(async (req) => {
 Current ceremony: ${ceremony || dayInfo.ceremonies[0]}
 The Scrum Master says: "${message}"
 
-Respond in character as the relevant team members. Be realistic and create engaging interactions.`;
+Respond in character as the relevant team members. Be realistic. Include board_updates if stories move, emails if stakeholders communicate, risks if new ones emerge.`;
 
       const conversationHistory = (history || []).map(h => ({
         role: h.role === "user" ? "user" as const : "assistant" as const,
@@ -151,11 +169,8 @@ Respond in character as the relevant team members. Be realistic and create engag
 
       for (const msg of parsed.messages) {
         await supabase.from("simulation_messages").insert({
-          simulation_id,
-          day,
-          role: "team_member",
-          speaker: msg.speaker,
-          content: msg.content,
+          simulation_id, day, role: "team_member",
+          speaker: msg.speaker, content: msg.content,
           ceremony: ceremony || dayInfo.ceremonies[0],
         });
       }
@@ -164,7 +179,6 @@ Respond in character as the relevant team members. Be realistic and create engag
     }
 
     if (action === "end_day") {
-      // Get all messages for the day
       const { data: dayMessages } = await supabase
         .from("simulation_messages")
         .select("*")
@@ -178,15 +192,14 @@ Review the Scrum Master's performance today and provide a score. Here's what hap
 
 ${(dayMessages || []).map(m => `[${m.speaker || m.role}]: ${m.content}`).join('\n')}
 
-Score this day's Scrum Master performance and provide specific, actionable feedback. Return the score JSON.`;
+Score this day's Scrum Master performance. Also generate an executive_report with health status, summary, risks, and next_focus. Return the score JSON and a daily risk broadcast.`;
 
       const aiResponse = await callAI(scorePrompt, []);
       const parsed = parseAIResponse(aiResponse);
 
       if (parsed.score) {
         await supabase.from("simulation_scores").insert({
-          simulation_id,
-          day,
+          simulation_id, day,
           facilitation_score: parsed.score.facilitation,
           communication_score: parsed.score.communication,
           artifact_score: parsed.score.artifact,
@@ -195,9 +208,8 @@ Score this day's Scrum Master performance and provide specific, actionable feedb
           feedback: parsed.score.feedback,
         });
 
-        // Advance to next day
         const nextDay = day + 1;
-        if (nextDay <= 10) {
+        if (nextDay <= 8) {
           await supabase.from("scrum_simulations")
             .update({ current_day: nextDay })
             .eq("id", simulation_id);
@@ -215,21 +227,20 @@ Score this day's Scrum Master performance and provide specific, actionable feedb
       const dayInfo = SPRINT_SCHEDULE[day - 1];
       const prompt = `It's ${dayInfo.weekday}, Day ${day} of the sprint. ${dayInfo.description}.
 Ceremonies today: ${dayInfo.ceremonies.join(', ')}.
-${day === 4 ? 'IMPORTANT: James called in sick today. The team needs to handle this.' : ''}
-${day === 5 ? 'IMPORTANT: Sean (PO) approaches the team wanting to add a new urgent feature mid-sprint.' : ''}
-${day === 8 ? 'IMPORTANT: Sebastian found a critical security bug in the authentication module.' : ''}
-Set the scene and have team members start the day naturally. If there is a Daily Scrum, team members should give their updates (what they did yesterday, what they plan to do today, any blockers).`;
+${day === 4 ? 'CRITICAL EVENT: James (Backend Developer) called in sick today. The authentication migration work is at risk.' : ''}
+${day === 5 ? 'CRITICAL EVENT: Sean (PO) approaches wanting to add an urgent compliance requirement from legal — mid-sprint scope change.' : ''}
+${day === 7 ? 'CRITICAL EVENT: Sebastian found a critical security vulnerability in the authentication module during regression testing.' : ''}
+${day === 3 ? 'EVENT: Network peering approval is delayed. Maya flags this as a blocker for NEB-112.' : ''}
+
+Set the scene. If there's a Daily StandUp (every day except Day 1), team members give updates: what they did yesterday, plan today, blockers. Generate relevant emails and board_updates too.`;
 
       const aiResponse = await callAI(prompt, []);
       const parsed = parseAIResponse(aiResponse);
 
       for (const msg of parsed.messages) {
         await supabase.from("simulation_messages").insert({
-          simulation_id,
-          day,
-          role: "team_member",
-          speaker: msg.speaker,
-          content: msg.content,
+          simulation_id, day, role: "team_member",
+          speaker: msg.speaker, content: msg.content,
           ceremony: dayInfo.ceremonies[0],
         });
       }
@@ -276,9 +287,16 @@ async function callAI(prompt: string, history: { role: "user" | "assistant"; con
   return data.choices?.[0]?.message?.content || "";
 }
 
-function parseAIResponse(content: string): { messages: { speaker: string; content: string }[]; actions_available?: string[]; score?: any } {
+function parseAIResponse(content: string): {
+  messages: { speaker: string; content: string }[];
+  actions_available?: string[];
+  score?: any;
+  board_updates?: { story_id: string; from: string; to: string }[];
+  emails?: { from: string; subject: string; body: string; priority: string }[];
+  risks?: { risk: string; impact: string; owner: string; mitigation: string }[];
+  executive_report?: { health: string; summary: string; risks: string; next_focus: string };
+} {
   try {
-    // Try to extract JSON from the response
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       const parsed = JSON.parse(jsonMatch[0]);
@@ -286,6 +304,10 @@ function parseAIResponse(content: string): { messages: { speaker: string; conten
         messages: parsed.messages || [{ speaker: "Narrator", content }],
         actions_available: parsed.actions_available,
         score: parsed.score,
+        board_updates: parsed.board_updates,
+        emails: parsed.emails,
+        risks: parsed.risks,
+        executive_report: parsed.executive_report,
       };
     }
   } catch {

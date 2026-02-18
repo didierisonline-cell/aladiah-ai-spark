@@ -1,62 +1,40 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { Card, CardContent } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Send, Users, Calendar, Trophy, ArrowRight, ChevronLeft, 
-  MessageSquare, Star, AlertTriangle, CheckCircle, Loader2 
+import {
+  ArrowRight, ChevronLeft, Loader2, Trophy, Star,
+  MessageSquare, LayoutGrid, Mail, AlertTriangle, BarChart3, Cloud
 } from 'lucide-react';
 import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
+import {
+  Message, DayScore, BoardStory, SimEmail, RiskItem, ExecutiveReport,
+  TEAM_MEMBERS, SPRINT_SCHEDULE, INITIAL_BACKLOG
+} from '@/components/simulation/SimulationTypes';
+import MeetingRoom from '@/components/simulation/MeetingRoom';
+import JiraBoard from '@/components/simulation/JiraBoard';
+import EmailInbox from '@/components/simulation/EmailInbox';
+import RiskBoard from '@/components/simulation/RiskBoard';
+import ReportsDashboard from '@/components/simulation/ReportsDashboard';
+import { Progress } from '@/components/ui/progress';
 
-const TEAM_MEMBERS: Record<string, { role: string; avatar: string }> = {
-  "Sean": { role: "Product Owner", avatar: "👔" },
-  "Sebastian": { role: "QA Engineer", avatar: "🔍" },
-  "Christo": { role: "QA Engineer", avatar: "🧪" },
-  "Maya": { role: "Senior Developer", avatar: "👩‍💻" },
-  "James": { role: "Developer", avatar: "💻" },
-  "Priya": { role: "Developer", avatar: "🌟" },
-  "Carlos": { role: "Developer", avatar: "⚙️" },
-  "Aisha": { role: "Business Analyst", avatar: "📋" },
-  "Narrator": { role: "System", avatar: "📢" },
-  "Scrum Master (You)": { role: "You", avatar: "🎯" },
-};
+type SimTab = 'meeting' | 'jira' | 'email' | 'risks' | 'reports';
 
-const SPRINT_SCHEDULE = [
-  { day: 1, weekday: "Wednesday", ceremonies: ["Sprint Planning"], description: "Sprint Planning Day" },
-  { day: 2, weekday: "Thursday", ceremonies: ["Daily Scrum"], description: "First Development Day" },
-  { day: 3, weekday: "Friday", ceremonies: ["Daily Scrum", "Backlog Refinement"], description: "Dev + Refinement" },
-  { day: 4, weekday: "Monday", ceremonies: ["Daily Scrum"], description: "Week 2 Starts" },
-  { day: 5, weekday: "Tuesday", ceremonies: ["Daily Scrum"], description: "Mid-Sprint Check" },
-  { day: 6, weekday: "Wednesday", ceremonies: ["Daily Scrum", "Backlog Refinement"], description: "2nd Refinement" },
-  { day: 7, weekday: "Thursday", ceremonies: ["Daily Scrum"], description: "Development Push" },
-  { day: 8, weekday: "Friday", ceremonies: ["Daily Scrum"], description: "Final Push" },
-  { day: 9, weekday: "Monday", ceremonies: ["Daily Scrum", "Sprint Review"], description: "Sprint Review" },
-  { day: 10, weekday: "Tuesday", ceremonies: ["Sprint Retrospective"], description: "Retrospective" },
+const TABS: { id: SimTab; label: string; icon: any }[] = [
+  { id: 'meeting', label: 'Meeting Room', icon: MessageSquare },
+  { id: 'jira', label: 'Jira Board', icon: LayoutGrid },
+  { id: 'email', label: 'Inbox', icon: Mail },
+  { id: 'risks', label: 'Risk Register', icon: AlertTriangle },
+  { id: 'reports', label: 'Reports', icon: BarChart3 },
 ];
-
-interface Message {
-  id?: string;
-  speaker: string;
-  content: string;
-  role: string;
-}
-
-interface DayScore {
-  facilitation_score: number;
-  communication_score: number;
-  artifact_score: number;
-  decision_score: number;
-  total_score: number;
-  feedback: string;
-}
 
 const ScrumSimulation = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+
   const [simulationId, setSimulationId] = useState<string | null>(null);
   const [currentDay, setCurrentDay] = useState(1);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -66,15 +44,15 @@ const ScrumSimulation = () => {
   const [allScores, setAllScores] = useState<DayScore[]>([]);
   const [actions, setActions] = useState<string[]>([]);
   const [simStatus, setSimStatus] = useState<'idle' | 'active' | 'completed'>('idle');
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const [activeTab, setActiveTab] = useState<SimTab>('meeting');
 
-  useEffect(() => {
-    checkExistingSimulation();
-  }, []);
+  // Simulation data
+  const [stories, setStories] = useState<BoardStory[]>([...INITIAL_BACKLOG]);
+  const [emails, setEmails] = useState<SimEmail[]>([]);
+  const [risks, setRisks] = useState<RiskItem[]>([]);
+  const [executiveReports, setExecutiveReports] = useState<ExecutiveReport[]>([]);
 
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  useEffect(() => { checkExistingSimulation(); }, []);
 
   const checkExistingSimulation = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -93,7 +71,6 @@ const ScrumSimulation = () => {
       setCurrentDay(sim.current_day);
       setSimStatus(sim.status as any);
 
-      // Load existing messages for current day
       const { data: msgs } = await supabase
         .from('simulation_messages')
         .select('*')
@@ -103,20 +80,16 @@ const ScrumSimulation = () => {
 
       if (msgs && msgs.length > 0) {
         setMessages(msgs.map(m => ({
-          id: m.id,
-          speaker: m.speaker || 'Narrator',
-          content: m.content,
-          role: m.role,
+          id: m.id, speaker: m.speaker || 'Narrator', content: m.content, role: m.role,
         })));
       }
 
-      // Load scores
       const { data: scores } = await supabase
         .from('simulation_scores')
         .select('*')
         .eq('simulation_id', sim.id)
         .order('day');
-      
+
       if (scores) setAllScores(scores as DayScore[]);
     }
   };
@@ -138,9 +111,47 @@ const ScrumSimulation = () => {
       const err = await res.json();
       throw new Error(err.error || 'Simulation error');
     }
-
     return res.json();
   };
+
+  const processAIResult = useCallback((result: any) => {
+    if (result.board_updates) {
+      setStories(prev => {
+        const updated = [...prev];
+        for (const upd of result.board_updates) {
+          const idx = updated.findIndex(s => s.id === upd.story_id);
+          if (idx >= 0) updated[idx] = { ...updated[idx], status: upd.to };
+        }
+        return updated;
+      });
+    }
+    if (result.emails) {
+      setEmails(prev => [
+        ...result.emails.map((e: any, i: number) => ({
+          ...e,
+          id: `email-${Date.now()}-${i}`,
+          day: currentDay,
+          read: false,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        })),
+        ...prev,
+      ]);
+    }
+    if (result.risks) {
+      setRisks(prev => [
+        ...prev,
+        ...result.risks.map((r: any, i: number) => ({
+          ...r,
+          id: `risk-${Date.now()}-${i}`,
+          day: currentDay,
+          status: r.status || 'open',
+        })),
+      ]);
+    }
+    if (result.executive_report) {
+      setExecutiveReports(prev => [...prev, { ...result.executive_report, day: currentDay }]);
+    }
+  }, [currentDay]);
 
   const startSimulation = async () => {
     setLoading(true);
@@ -155,6 +166,7 @@ const ScrumSimulation = () => {
         setMessages(result.messages.map((m: any) => ({ speaker: m.speaker, content: m.content, role: 'team_member' })));
       }
       if (result.actions_available) setActions(result.actions_available);
+      processAIResult(result);
     } catch (e: any) {
       toast({ title: 'Error', description: e.message, variant: 'destructive' });
     } finally {
@@ -170,14 +182,15 @@ const ScrumSimulation = () => {
     setLoading(true);
 
     try {
-      const result = await callSimulation('message', { 
-        message: msg, 
-        ceremony: SPRINT_SCHEDULE[currentDay - 1]?.ceremonies[0]?.toLowerCase().replace(/ /g, '_') 
+      const result = await callSimulation('message', {
+        message: msg,
+        ceremony: SPRINT_SCHEDULE[currentDay - 1]?.ceremonies[0]?.toLowerCase().replace(/ /g, '_')
       });
       if (result.messages) {
         setMessages(prev => [...prev, ...result.messages.map((m: any) => ({ speaker: m.speaker, content: m.content, role: 'team_member' }))]);
       }
       if (result.actions_available) setActions(result.actions_available);
+      processAIResult(result);
     } catch (e: any) {
       toast({ title: 'Error', description: e.message, variant: 'destructive' });
     } finally {
@@ -196,6 +209,7 @@ const ScrumSimulation = () => {
       if (result.messages) {
         setMessages(prev => [...prev, ...result.messages.map((m: any) => ({ speaker: m.speaker, content: m.content, role: 'team_member' }))]);
       }
+      processAIResult(result);
     } catch (e: any) {
       toast({ title: 'Error', description: e.message, variant: 'destructive' });
     } finally {
@@ -205,10 +219,7 @@ const ScrumSimulation = () => {
 
   const startNextDay = async () => {
     const nextDay = currentDay + 1;
-    if (nextDay > 10) {
-      setSimStatus('completed');
-      return;
-    }
+    if (nextDay > 8) { setSimStatus('completed'); return; }
     setCurrentDay(nextDay);
     setMessages([]);
     setDayScore(null);
@@ -216,12 +227,12 @@ const ScrumSimulation = () => {
     setLoading(true);
 
     try {
-      // Update simulationId to use the new one
       const result = await callSimulation('start_day', { day: nextDay, simulation_id: simulationId });
       if (result.messages) {
         setMessages(result.messages.map((m: any) => ({ speaker: m.speaker, content: m.content, role: 'team_member' })));
       }
       if (result.actions_available) setActions(result.actions_available);
+      processAIResult(result);
     } catch (e: any) {
       toast({ title: 'Error', description: e.message, variant: 'destructive' });
     } finally {
@@ -229,13 +240,18 @@ const ScrumSimulation = () => {
     }
   };
 
-  const dayInfo = SPRINT_SCHEDULE[currentDay - 1];
+  const markEmailRead = (id: string) => {
+    setEmails(prev => prev.map(e => e.id === id ? { ...e, read: true } : e));
+  };
 
-  // Idle state - start screen
+  const unreadEmails = emails.filter(e => !e.read).length;
+  const openRisks = risks.filter(r => r.status === 'open').length;
+
+  // ===== IDLE STATE =====
   if (simStatus === 'idle' && !simulationId) {
     return (
       <div className="min-h-screen bg-background">
-        <header className="border-b bg-white sticky top-0 z-50">
+        <header className="border-b bg-card sticky top-0 z-50">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <Link to="/courses" className="flex items-center gap-2">
               <ChevronLeft className="w-5 h-5" />
@@ -243,26 +259,55 @@ const ScrumSimulation = () => {
             </Link>
           </div>
         </header>
-        <main className="container mx-auto px-4 py-12 max-w-3xl">
+        <main className="container mx-auto px-4 py-12 max-w-4xl">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-            <div className="text-6xl mb-6">🏃‍♂️</div>
-            <h1 className="text-4xl font-display font-bold mb-4">Live Scrum Project</h1>
-            <p className="text-lg text-muted-foreground mb-8">
-              Step into the role of Scrum Master for a 2-week sprint. Lead a team of 8 professionals
-              through Sprint Planning, Daily Scrums, Backlog Refinement, Sprint Review, and Retrospective.
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              {Object.entries(TEAM_MEMBERS).filter(([k]) => k !== 'Narrator' && k !== 'Scrum Master (You)').map(([name, info]) => (
-                <Card key={name} className="p-3 text-center">
-                  <div className="text-2xl mb-1">{info.avatar}</div>
-                  <p className="font-semibold text-sm">{name}</p>
-                  <p className="text-xs text-muted-foreground">{info.role}</p>
-                </Card>
-              ))}
+            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Cloud className="w-10 h-10 text-primary" />
             </div>
-            <Button size="lg" variant="coral" onClick={startSimulation} disabled={loading}>
+            <h1 className="text-4xl font-display font-bold mb-3">Project Nebula</h1>
+            <p className="text-xl text-muted-foreground mb-2">On-Premises to AWS Cloud Migration</p>
+            <p className="text-sm text-muted-foreground max-w-2xl mx-auto mb-8">
+              Step into the role of Scrum Master for an enterprise cloud migration program.
+              Lead a team of 7 through an 8-day sprint — including Sprint Planning, Daily StandUps,
+              Backlog Refinement, Sprint Review, and Retrospective. Manage a real Jira board,
+              handle emails, track risks, and produce executive reports.
+            </p>
+
+            {/* Sprint overview */}
+            <Card className="mb-8 text-left max-w-2xl mx-auto">
+              <CardContent className="p-6">
+                <h3 className="font-display font-bold text-sm mb-3">🎯 Sprint Goal</h3>
+                <p className="text-sm text-muted-foreground mb-4 italic">
+                  "Provision secure AWS infrastructure and migrate the Authentication Service while
+                  validating deployment automation, monitoring, and security controls."
+                </p>
+                <h3 className="font-display font-bold text-sm mb-3">👥 Your Team</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+                  {Object.entries(TEAM_MEMBERS).filter(([k]) => k !== 'Narrator' && k !== 'Scrum Master (You)').map(([name, info]) => (
+                    <div key={name} className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 text-xs">
+                      <span className="text-lg">{info.avatar}</span>
+                      <div>
+                        <p className="font-semibold">{name}</p>
+                        <p className="text-muted-foreground">{info.role}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <h3 className="font-display font-bold text-sm mb-3">📋 What You'll Use</h3>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                  {TABS.map(tab => (
+                    <div key={tab.id} className="flex items-center gap-2 p-2 rounded-lg bg-primary/5 text-xs">
+                      <tab.icon className="w-4 h-4 text-primary" />
+                      <span className="font-medium">{tab.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Button size="xl" variant="coral" onClick={startSimulation} disabled={loading}>
               {loading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
-              Start Sprint Simulation
+              Launch Sprint Simulation
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </motion.div>
@@ -271,24 +316,20 @@ const ScrumSimulation = () => {
     );
   }
 
-  // Completed state
+  // ===== COMPLETED STATE =====
   if (simStatus === 'completed') {
     const avgScore = allScores.length > 0 ? Math.round(allScores.reduce((s, sc) => s + sc.total_score, 0) / allScores.length) : 0;
-    const avgFacilitation = allScores.length > 0 ? Math.round(allScores.reduce((s, sc) => s + sc.facilitation_score, 0) / allScores.length) : 0;
-    const avgCommunication = allScores.length > 0 ? Math.round(allScores.reduce((s, sc) => s + sc.communication_score, 0) / allScores.length) : 0;
-    const avgArtifact = allScores.length > 0 ? Math.round(allScores.reduce((s, sc) => s + sc.artifact_score, 0) / allScores.length) : 0;
-    const avgDecision = allScores.length > 0 ? Math.round(allScores.reduce((s, sc) => s + sc.decision_score, 0) / allScores.length) : 0;
     const grade = avgScore >= 90 ? 'A' : avgScore >= 80 ? 'B' : avgScore >= 70 ? 'C' : avgScore >= 60 ? 'D' : 'F';
-    const strengths = [
-      { label: 'Facilitation', score: avgFacilitation },
-      { label: 'Communication', score: avgCommunication },
-      { label: 'Artifacts', score: avgArtifact },
-      { label: 'Decision Making', score: avgDecision },
+    const skills = [
+      { label: 'Facilitation', score: allScores.length > 0 ? Math.round(allScores.reduce((s, sc) => s + sc.facilitation_score, 0) / allScores.length) : 0 },
+      { label: 'Communication', score: allScores.length > 0 ? Math.round(allScores.reduce((s, sc) => s + sc.communication_score, 0) / allScores.length) : 0 },
+      { label: 'Artifacts', score: allScores.length > 0 ? Math.round(allScores.reduce((s, sc) => s + sc.artifact_score, 0) / allScores.length) : 0 },
+      { label: 'Decision Making', score: allScores.length > 0 ? Math.round(allScores.reduce((s, sc) => s + sc.decision_score, 0) / allScores.length) : 0 },
     ].sort((a, b) => b.score - a.score);
 
     return (
       <div className="min-h-screen bg-background">
-        <header className="border-b bg-white sticky top-0 z-50">
+        <header className="border-b bg-card sticky top-0 z-50">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <Link to="/courses" className="flex items-center gap-2">
               <ChevronLeft className="w-5 h-5" />
@@ -298,14 +339,13 @@ const ScrumSimulation = () => {
         </header>
         <main className="container mx-auto px-4 py-12 max-w-3xl">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
-            <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+            <Trophy className="w-16 h-16 text-accent mx-auto mb-4" />
             <h1 className="text-4xl font-display font-bold mb-2">Sprint Complete! 🎉</h1>
-            <p className="text-lg text-muted-foreground">You've completed a full 2-week sprint simulation</p>
+            <p className="text-lg text-muted-foreground">Project Nebula — AWS Cloud Migration Sprint</p>
           </motion.div>
 
-          {/* Certificate Card */}
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}>
-            <Card className="mb-8 border-2 border-accent/30 bg-gradient-to-br from-accent/5 to-primary/5 overflow-hidden">
+            <Card className="mb-8 border-2 border-accent/30 bg-gradient-to-br from-accent/5 to-primary/5">
               <CardContent className="p-8 text-center">
                 <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-accent/20 flex items-center justify-center">
                   <span className="text-3xl font-display font-bold text-accent">{grade}</span>
@@ -318,52 +358,27 @@ const ScrumSimulation = () => {
             </Card>
           </motion.div>
 
-          {/* Skills Breakdown */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
             <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
+              <CardContent className="p-6 space-y-4">
+                <h3 className="text-lg font-display font-bold flex items-center gap-2">
                   <Star className="w-5 h-5 text-accent" /> Skills Report
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {strengths.map((skill, i) => (
+                </h3>
+                {skills.map((skill, i) => (
                   <div key={skill.label}>
                     <div className="flex items-center justify-between text-sm mb-1">
                       <span className="font-medium">{i === 0 ? '💪 ' : ''}{skill.label}</span>
                       <span className="font-bold">{skill.score}/100</span>
                     </div>
                     <Progress value={skill.score} className="h-2" />
-                    {i === 0 && <p className="text-xs text-muted-foreground mt-1">Your strongest area</p>}
-                    {i === strengths.length - 1 && skill.score < 70 && (
-                      <p className="text-xs text-secondary mt-1">Focus area for improvement</p>
-                    )}
                   </div>
                 ))}
               </CardContent>
             </Card>
           </motion.div>
 
-          {/* Daily Scores */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-            <h3 className="font-display font-bold text-lg mb-3">Daily Performance</h3>
-            <div className="space-y-3 mb-8">
-              {allScores.map((score, i) => (
-                <Card key={i} className="p-4">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold">Day {i + 1} — {SPRINT_SCHEDULE[i]?.weekday}</span>
-                    <span className={`font-bold ${score.total_score >= 75 ? 'text-primary' : score.total_score >= 50 ? 'text-secondary' : 'text-destructive'}`}>
-                      {score.total_score}/100
-                    </span>
-                  </div>
-                  {score.feedback && <p className="text-sm text-muted-foreground mt-2">{score.feedback}</p>}
-                </Card>
-              ))}
-            </div>
-          </motion.div>
-
           <div className="flex gap-3 justify-center">
-            <Button variant="outline" onClick={() => { setSimStatus('idle'); setSimulationId(null); setAllScores([]); setMessages([]); }}>
+            <Button variant="outline" onClick={() => { setSimStatus('idle'); setSimulationId(null); setAllScores([]); setMessages([]); setStories([...INITIAL_BACKLOG]); setEmails([]); setRisks([]); setExecutiveReports([]); }}>
               Start New Simulation
             </Button>
             <Button onClick={() => navigate('/courses')}>Back to Courses</Button>
@@ -373,174 +388,87 @@ const ScrumSimulation = () => {
     );
   }
 
-  // Active simulation
+  // ===== ACTIVE SIMULATION =====
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <header className="border-b bg-white sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/courses" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-            <ChevronLeft className="w-4 h-4" />
-            Back to Courses
+    <div className="h-screen flex flex-col bg-background">
+      {/* Top header */}
+      <header className="border-b bg-card z-50 flex-shrink-0">
+        <div className="px-4 py-2 flex items-center justify-between">
+          <Link to="/courses" className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground">
+            <ChevronLeft className="w-3 h-3" /> Back
           </Link>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold">Day {currentDay}/10 — {dayInfo?.weekday}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              {dayInfo?.ceremonies.map(c => (
-                <span key={c} className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">{c}</span>
-              ))}
-            </div>
+          <div className="flex items-center gap-2">
+            <Cloud className="w-4 h-4 text-primary" />
+            <span className="text-sm font-display font-bold">Project Nebula</span>
+            <span className="text-xs text-muted-foreground">Day {currentDay}/8 • {SPRINT_SCHEDULE[currentDay - 1]?.weekday}</span>
           </div>
-          <Progress value={(currentDay / 10) * 100} className="w-24 h-2" />
+          <Progress value={(currentDay / 8) * 100} className="w-20 h-1.5" />
         </div>
       </header>
 
-      {/* Main content */}
-      <div className="flex-1 flex">
-        {/* Team sidebar */}
-        <aside className="w-64 border-r bg-muted/20 p-4 hidden lg:block">
-          <h3 className="text-sm font-bold mb-3 flex items-center gap-2"><Users className="w-4 h-4" /> Team</h3>
-          <div className="space-y-2">
-            {Object.entries(TEAM_MEMBERS).filter(([k]) => k !== 'Narrator' && k !== 'Scrum Master (You)').map(([name, info]) => (
-              <div key={name} className="flex items-center gap-2 p-2 rounded-lg bg-card text-sm">
-                <span>{info.avatar}</span>
-                <div>
-                  <p className="font-medium">{name}</p>
-                  <p className="text-xs text-muted-foreground">{info.role}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Scores summary */}
-          {allScores.length > 0 && (
-            <div className="mt-6">
-              <h3 className="text-sm font-bold mb-2 flex items-center gap-2"><Star className="w-4 h-4" /> Scores</h3>
-              {allScores.map((s, i) => (
-                <div key={i} className="flex justify-between text-xs py-1">
-                  <span>Day {i + 1}</span>
-                  <span className="font-semibold">{s.total_score}/100</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </aside>
+      {/* Tab navigation */}
+      <nav className="border-b bg-card flex-shrink-0 px-2 flex items-center gap-1 overflow-x-auto">
+        {TABS.map(tab => {
+          const isActive = activeTab === tab.id;
+          const badge = tab.id === 'email' && unreadEmails > 0 ? unreadEmails
+            : tab.id === 'risks' && openRisks > 0 ? openRisks
+            : null;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium transition-colors border-b-2 relative ${
+                isActive
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+              }`}
+            >
+              <tab.icon className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{tab.label}</span>
+              {badge && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-destructive text-destructive-foreground text-[9px] rounded-full flex items-center justify-center font-bold">
+                  {badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </nav>
 
-        {/* Chat area */}
-        <div className="flex-1 flex flex-col">
-          {/* Day banner */}
-          <div className="px-4 py-3 bg-primary/5 border-b">
-            <p className="text-sm font-semibold text-primary">{dayInfo?.description}</p>
-          </div>
-
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            <AnimatePresence>
-              {messages.map((msg, i) => {
-                const member = TEAM_MEMBERS[msg.speaker] || { role: 'Unknown', avatar: '💬' };
-                const isUser = msg.role === 'user';
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`}
-                  >
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-muted flex items-center justify-center text-lg">
-                      {member.avatar}
-                    </div>
-                    <div className={`max-w-[70%] ${isUser ? 'bg-primary text-primary-foreground' : 'bg-card border'} rounded-2xl px-4 py-3`}>
-                      {!isUser && (
-                        <p className="text-xs font-semibold mb-1 text-muted-foreground">
-                          {msg.speaker} • {member.role}
-                        </p>
-                      )}
-                      <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
-            {loading && (
-              <div className="flex gap-3">
-                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                  <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-                </div>
-                <div className="bg-card border rounded-2xl px-4 py-3">
-                  <p className="text-sm text-muted-foreground">Team is responding...</p>
-                </div>
-              </div>
-            )}
-            <div ref={chatEndRef} />
-          </div>
-
-          {/* Day score overlay */}
-          {dayScore && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-4 border-t bg-card">
-              <div className="max-w-lg mx-auto">
-                <h3 className="font-display font-bold text-lg mb-3 flex items-center gap-2">
-                  <Trophy className="w-5 h-5 text-yellow-500" /> Day {currentDay} Score
-                </h3>
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  {[
-                    { label: 'Facilitation', val: dayScore.facilitation_score },
-                    { label: 'Communication', val: dayScore.communication_score },
-                    { label: 'Artifacts', val: dayScore.artifact_score },
-                    { label: 'Decisions', val: dayScore.decision_score },
-                  ].map(s => (
-                    <div key={s.label} className="bg-muted/50 rounded-lg p-3 text-center">
-                      <p className="text-xs text-muted-foreground">{s.label}</p>
-                      <p className="text-2xl font-bold">{s.val}<span className="text-sm text-muted-foreground">/25</span></p>
-                    </div>
-                  ))}
-                </div>
-                <p className="text-lg font-bold text-center mb-2">Total: {dayScore.total_score}/100</p>
-                {dayScore.feedback && <p className="text-sm text-muted-foreground mb-4">{dayScore.feedback}</p>}
-                <Button className="w-full" onClick={startNextDay} disabled={loading}>
-                  {currentDay >= 10 ? 'Complete Sprint' : `Start Day ${currentDay + 1}`}
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Quick actions */}
-          {actions.length > 0 && !dayScore && (
-            <div className="px-4 py-2 border-t bg-muted/20 flex gap-2 flex-wrap">
-              {actions.map((action, i) => (
-                <Button key={i} variant="outline" size="sm" onClick={() => sendMessage(action)} disabled={loading}>
-                  {action}
-                </Button>
-              ))}
-            </div>
-          )}
-
-          {/* Input area */}
-          {!dayScore && (
-            <div className="p-4 border-t bg-card">
-              <div className="flex gap-2 max-w-3xl mx-auto">
-                <input
-                  type="text"
-                  value={input}
-                  onChange={e => setInput(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && sendMessage()}
-                  placeholder="As Scrum Master, what do you say or do?"
-                  className="flex-1 rounded-xl border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  disabled={loading}
-                />
-                <Button onClick={() => sendMessage()} disabled={loading || !input.trim()} size="icon" className="rounded-xl h-12 w-12">
-                  <Send className="w-5 h-5" />
-                </Button>
-                <Button onClick={endDay} variant="outline" className="rounded-xl" disabled={loading || messages.length < 3}>
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  End Day
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
+      {/* Tab content */}
+      <div className="flex-1 overflow-hidden">
+        {activeTab === 'meeting' && (
+          <MeetingRoom
+            messages={messages}
+            input={input}
+            setInput={setInput}
+            loading={loading}
+            currentDay={currentDay}
+            dayScore={dayScore}
+            actions={actions}
+            onSendMessage={sendMessage}
+            onEndDay={endDay}
+            onStartNextDay={startNextDay}
+          />
+        )}
+        {activeTab === 'jira' && (
+          <JiraBoard stories={stories} currentDay={currentDay} />
+        )}
+        {activeTab === 'email' && (
+          <EmailInbox emails={emails} onMarkRead={markEmailRead} />
+        )}
+        {activeTab === 'risks' && (
+          <RiskBoard risks={risks} currentDay={currentDay} />
+        )}
+        {activeTab === 'reports' && (
+          <ReportsDashboard
+            stories={stories}
+            scores={allScores}
+            executiveReports={executiveReports}
+            risks={risks}
+            currentDay={currentDay}
+          />
+        )}
       </div>
     </div>
   );
