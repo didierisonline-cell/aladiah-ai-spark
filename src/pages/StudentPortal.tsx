@@ -17,6 +17,8 @@ import Header from '@/components/Header';
 import YouTubeRecommendations from '@/components/portal/YouTubeRecommendations';
 import CareerTools from '@/components/portal/CareerTools';
 import LabMode from '@/components/portal/LabMode';
+import VoiceTutor from '@/components/portal/VoiceTutor';
+import KnowledgeGraph from '@/components/portal/KnowledgeGraph';
 import {
   ProgressDetailModal, StreakDetailModal, PointsDetailModal, LabsDetailModal
 } from '@/components/portal/StatDetailModals';
