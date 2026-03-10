@@ -46,6 +46,7 @@ const AppContent = () => {
         <Route path="/refer/:code" element={<ReferralProfile />} />
         <Route path="/portal" element={<StudentPortal />} />
         <Route path="/resume-studio" element={<ResumeStudio />} />
+        <Route path="/interview" element={<InterviewSimulator />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
