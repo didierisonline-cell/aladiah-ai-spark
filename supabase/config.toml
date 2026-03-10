@@ -41,3 +41,15 @@ verify_jwt = false
 
 [functions.enrollment-chat]
 verify_jwt = false
+
+[functions.interview-simulator]
+verify_jwt = false
+
+[functions.elevenlabs-conversation-token]
+verify_jwt = false
+
+[functions.ai-grading]
+verify_jwt = false
+
+[functions.send-study-reminders]
+verify_jwt = false
