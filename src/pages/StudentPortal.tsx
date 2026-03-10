@@ -380,11 +380,24 @@ const StudentPortal = () => {
               </Card>
             )}
 
+            {/* Voice Tutor */}
+            <VoiceTutor studentName={studentName} courseProgress={overallProgress} />
+
+            {/* Knowledge Graph */}
+            <KnowledgeGraph
+              weakAreas={learningProfile ? (learningProfile.weak_areas as string[] || []) : []}
+              strongAreas={learningProfile ? (learningProfile.strong_areas as string[] || []) : []}
+              onTopicSelect={(topic) => {
+                setActiveTab('lab');
+              }}
+            />
+
             {/* Quick Actions */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               {[
                 { label: 'Community', path: '/community', icon: Users },
                 { label: 'Sprint Sim', path: '/simulation', icon: Target },
+                { label: 'Interview', path: '/interview', icon: Mic },
                 { label: 'Referrals', path: '/referral', icon: Award },
                 { label: 'Store', path: '/store', icon: Gift },
               ].map((a, i) => (
