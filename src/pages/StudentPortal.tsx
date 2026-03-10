@@ -381,12 +381,12 @@ const StudentPortal = () => {
             )}
 
             {/* Voice Tutor */}
-            <VoiceTutor studentName={studentName} courseProgress={overallProgress} />
+            <VoiceTutor studentName={firstName} courseProgress={overallProgress} />
 
             {/* Knowledge Graph */}
             <KnowledgeGraph
-              weakAreas={learningProfile ? (learningProfile.weak_areas as string[] || []) : []}
-              strongAreas={learningProfile ? (learningProfile.strong_areas as string[] || []) : []}
+              weakAreas={learningProfile ? (learningProfile.weakAreas?.map((w: any) => typeof w === 'string' ? w : w.topic) || []) : []}
+              strongAreas={learningProfile ? (learningProfile.strongAreas?.map((s: any) => typeof s === 'string' ? s : s.topic) || []) : []}
               onTopicSelect={(topic) => {
                 setActiveTab('lab');
               }}
