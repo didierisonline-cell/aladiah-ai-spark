@@ -26,7 +26,7 @@ import {
   Bot, Send, BookOpen, Trophy, Flame, Target, GraduationCap,
   FlaskConical, Star, Gift, Youtube, Briefcase, Users, MessageCircle,
   TrendingUp, Award, Lightbulb, Sparkles, Clock, ArrowRight, CheckCircle,
-  FileText, ExternalLink
+  FileText, ExternalLink, Brain, Mic
 } from 'lucide-react';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
