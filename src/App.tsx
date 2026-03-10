@@ -21,6 +21,7 @@ import ReferralProfile from "./pages/ReferralProfile";
 import StudentPortal from "./pages/StudentPortal";
 import AdminDashboard from "./pages/AdminDashboard";
 import ResumeStudio from "./pages/ResumeStudio";
+import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
