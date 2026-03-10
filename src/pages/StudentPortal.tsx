@@ -17,6 +17,8 @@ import Header from '@/components/Header';
 import YouTubeRecommendations from '@/components/portal/YouTubeRecommendations';
 import CareerTools from '@/components/portal/CareerTools';
 import LabMode from '@/components/portal/LabMode';
+import VoiceTutor from '@/components/portal/VoiceTutor';
+import KnowledgeGraph from '@/components/portal/KnowledgeGraph';
 import {
   ProgressDetailModal, StreakDetailModal, PointsDetailModal, LabsDetailModal
 } from '@/components/portal/StatDetailModals';
@@ -24,7 +26,7 @@ import {
   Bot, Send, BookOpen, Trophy, Flame, Target, GraduationCap,
   FlaskConical, Star, Gift, Youtube, Briefcase, Users, MessageCircle,
   TrendingUp, Award, Lightbulb, Sparkles, Clock, ArrowRight, CheckCircle,
-  FileText, ExternalLink
+  FileText, ExternalLink, Brain, Mic
 } from 'lucide-react';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
@@ -378,11 +380,24 @@ const StudentPortal = () => {
               </Card>
             )}
 
+            {/* Voice Tutor */}
+            <VoiceTutor studentName={firstName} courseProgress={overallProgress} />
+
+            {/* Knowledge Graph */}
+            <KnowledgeGraph
+              weakAreas={learningProfile ? (learningProfile.weakAreas?.map((w: any) => typeof w === 'string' ? w : w.topic) || []) : []}
+              strongAreas={learningProfile ? (learningProfile.strongAreas?.map((s: any) => typeof s === 'string' ? s : s.topic) || []) : []}
+              onTopicSelect={(topic) => {
+                setActiveTab('lab');
+              }}
+            />
+
             {/* Quick Actions */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               {[
                 { label: 'Community', path: '/community', icon: Users },
                 { label: 'Sprint Sim', path: '/simulation', icon: Target },
+                { label: 'Interview', path: '/interview', icon: Mic },
                 { label: 'Referrals', path: '/referral', icon: Award },
                 { label: 'Store', path: '/store', icon: Gift },
               ].map((a, i) => (
