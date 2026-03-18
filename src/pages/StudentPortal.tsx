@@ -15,6 +15,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useProgress } from '@/hooks/useProgress';
 import { useLearningProfile } from '@/hooks/useLearningProfile';
 import Header from '@/components/Header';
+import AgentSelector from '@/components/portal/AgentSelector';
 import YouTubeRecommendations from '@/components/portal/YouTubeRecommendations';
 import CareerTools from '@/components/portal/CareerTools';
 import LabMode from '@/components/portal/LabMode';
@@ -71,6 +72,7 @@ const StudentPortal = () => {
   const [streakModalOpen, setStreakModalOpen] = useState(false);
   const [showFounderWelcome, setShowFounderWelcome] = useState(false);
   const [selectedProfessor, setSelectedProfessor] = useState('Professor Didier');
+  const [activeAgent, setActiveAgent] = useState('professor');
   const [pointsModalOpen, setPointsModalOpen] = useState(false);
   const [labsModalOpen, setLabsModalOpen] = useState(false);
 
@@ -187,7 +189,7 @@ const StudentPortal = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: chatInput,
-          agentKey: 'professor',
+          agentKey: activeAgent,
           language,
           history: chatMessages.slice(-10).map(m => ({ role: m.role, content: m.content })),
         }),
