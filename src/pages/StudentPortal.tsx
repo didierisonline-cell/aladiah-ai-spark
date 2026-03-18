@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useProgress } from '@/hooks/useProgress';
 import { useLearningProfile } from '@/hooks/useLearningProfile';
 import Header from '@/components/Header';
@@ -23,15 +24,14 @@ import {
   ProgressDetailModal, StreakDetailModal, PointsDetailModal, LabsDetailModal
 } from '@/components/portal/StatDetailModals';
 import {
-  Bot, Send, BookOpen, Trophy, Flame, Target, GraduationCap,
-  FlaskConical, Star, Gift, Youtube, Briefcase, Users, MessageCircle,
-  TrendingUp, Award, Lightbulb, Sparkles, Clock, ArrowRight, CheckCircle,
-  FileText, ExternalLink, Brain, Mic
+  Bot, Send, BookOpen, Trophy, Flame, GraduationCap,
+  FlaskConical, Star, Gift, Briefcase,
+  TrendingUp, Award, Lightbulb, Sparkles, Clock,
+  ArrowRight, CheckCircle, FileText, ExternalLink, Mic
 } from 'lucide-react';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
-// Course display order for the Scrum course
 const COURSE_ORDER = [
   'Professional Scrum Master Certification',
   'Agile Development and Scrum',
@@ -48,6 +48,7 @@ const EXCLUDED_COURSES = ['Rogers-Shaw', 'IT Merger', 'Network Integration'];
 
 const StudentPortal = () => {
   const { user, loading: authLoading } = useAuth();
+  const { language } = useLanguage();
   const navigate = useNavigate();
   const { progress: overallProgress } = useProgress(user?.id);
   const { profile: learningProfile, recordQuestion, getDueReviews } = useLearningProfile(user?.id);
@@ -66,17 +67,38 @@ const StudentPortal = () => {
   const [labTopic, setLabTopic] = useState('');
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Stat detail modals
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [streakModalOpen, setStreakModalOpen] = useState(false);
+  const [showFounderWelcome, setShowFounderWelcome] = useState(false);
+  const [selectedProfessor, setSelectedProfessor] = useState('Professor Didier');
   const [pointsModalOpen, setPointsModalOpen] = useState(false);
   const [labsModalOpen, setLabsModalOpen] = useState(false);
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] || 'Student';
+  const handleCloseFounderWelcome = () => {
+    if (!user) return;
+    const welcomeKey = `founder-welcome-seen-${user.id}`;
+    localStorage.setItem(welcomeKey, 'true');
+    setShowFounderWelcome(false);
+  };
 
   useEffect(() => {
-    if (user) loadPortalData();
-  }, [user, authLoading]);
+  if (user) {
+    loadPortalData();
+
+  }
+}, [user, authLoading]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const welcomeKey = `founder-welcome-seen-${user.id}`;
+    const alreadySeen = localStorage.getItem(welcomeKey);
+
+    if (!alreadySeen) {
+      setShowFounderWelcome(true);
+    }
+  }, [user]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -99,11 +121,11 @@ const StudentPortal = () => {
     setLabs(labsRes.data || []);
     setSuggestions(suggestionsRes.data || []);
 
-    // Calculate streak
     const dates = (progressRes.data || [])
       .map(p => new Date(p.completed_at).toDateString())
       .filter((v, i, a) => a.indexOf(v) === i)
       .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+
     let s = 0;
     const today = new Date();
     for (let i = 0; i < dates.length; i++) {
@@ -114,7 +136,6 @@ const StudentPortal = () => {
     }
     setStreak(s);
 
-    // Course progress - filter out excluded courses, sort by order
     const passedQuizIds = (progressRes.data || []).map(p => p.quiz_id as string);
     const filteredCourses = (coursesRes.data || []).filter(course =>
       !EXCLUDED_COURSES.some(ex => course.title.includes(ex))
@@ -123,8 +144,11 @@ const StudentPortal = () => {
     const progresses = filteredCourses.map(course => {
       const courseChapters = (chaptersRes.data || []).filter(ch => ch.course_id === course.id);
       const courseVideos = (videosRes.data || []).filter(v => courseChapters.some(ch => ch.id === v.chapter_id));
-      const miniQuizzes = (quizzesRes.data || []).filter(q => courseVideos.some(v => v.id === q.video_id) && q.quiz_type === 'mini_video');
+      const miniQuizzes = (quizzesRes.data || []).filter(
+        q => courseVideos.some(v => v.id === q.video_id) && q.quiz_type === 'mini_video'
+      );
       const completed = miniQuizzes.filter(q => passedQuizIds.includes(q.id)).length;
+
       return {
         courseId: course.id,
         title: course.title,
@@ -140,7 +164,6 @@ const StudentPortal = () => {
       };
     });
 
-    // Sort by defined order
     progresses.sort((a, b) => {
       const aIdx = COURSE_ORDER.findIndex(name => a.title.toLowerCase().includes(name.toLowerCase()));
       const bIdx = COURSE_ORDER.findIndex(name => b.title.toLowerCase().includes(name.toLowerCase()));
@@ -157,85 +180,63 @@ const StudentPortal = () => {
     setChatInput('');
     setIsStreaming(true);
     recordQuestion();
-
-    let assistantSoFar = '';
     const allMessages = [...chatMessages, userMsg];
-
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/student-assistant`, {
+      const res = await fetch('http://localhost:3001/ai', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: allMessages.map(m => ({ role: m.role, content: m.content })),
-          studentContext: {
-            courseProgress: overallProgress,
-            points: totalPoints,
-            streak,
-            weakAreas: learningProfile?.weakAreas || [],
-            strongAreas: learningProfile?.strongAreas || [],
-            learningStyle: learningProfile?.learningStyle || 'balanced',
-            preferredDifficulty: learningProfile?.preferredDifficulty || 'beginner',
-            engagementScore: learningProfile?.engagementScore || 50,
-            consecutiveFailures: learningProfile?.consecutiveFailures || 0,
-            dueReviews: getDueReviews(),
-            quizAccuracyTrend: learningProfile?.quizAccuracyTrend?.slice(-5) || [],
-            videoRewatchCount: learningProfile?.videoRewatchCount || 0,
-            labCompletionRate: learningProfile?.labCompletionRate || 0,
-            totalQuestionsAsked: learningProfile?.totalQuestionsAsked || 0,
-          },
-          mode: 'chat',
+          message: chatInput,
+          agentKey: 'professor',
+          language,
+          history: chatMessages.slice(-10).map(m => ({ role: m.role, content: m.content })),
         }),
       });
-
-      if (!resp.ok || !resp.body) throw new Error('Stream failed');
-
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-
-        let nlIdx: number;
-        while ((nlIdx = buffer.indexOf('\n')) !== -1) {
-          let line = buffer.slice(0, nlIdx);
-          buffer = buffer.slice(nlIdx + 1);
-          if (line.endsWith('\r')) line = line.slice(0, -1);
-          if (!line.startsWith('data: ')) continue;
-          const json = line.slice(6).trim();
-          if (json === '[DONE]') break;
-          try {
-            const parsed = JSON.parse(json);
-            const content = parsed.choices?.[0]?.delta?.content;
-            if (content) {
-              assistantSoFar += content;
-              setChatMessages(prev => {
-                const last = prev[prev.length - 1];
-                if (last?.role === 'assistant') {
-                  return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar } : m);
-                }
-                return [...prev, { role: 'assistant', content: assistantSoFar }];
-              });
-            }
-          } catch { buffer = line + '\n' + buffer; break; }
-        }
-      }
+      if (!res.ok) throw new Error('Brain error');
+      const data = await res.json();
+      setChatMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
     } catch (e) {
       console.error(e);
-      setChatMessages(prev => [...prev, { role: 'assistant', content: '¡Ay! Something went wrong. Please try again, mi gente! 🙏' }]);
+      setChatMessages(prev => [...prev, { role: 'assistant', content: 'Connection error. Make sure the brain server is running on port 3001.' }]);
     } finally {
       setIsStreaming(false);
     }
-  }, [chatInput, isStreaming, chatMessages, user, overallProgress, totalPoints, streak, learningProfile, getDueReviews, recordQuestion]);
+  }, [chatInput, isStreaming, chatMessages, language, recordQuestion]);
 
   if (authLoading) {
-    return <div className="min-h-screen bg-background flex items-center justify-center"><GraduationCap className="w-12 h-12 text-primary animate-pulse" /></div>;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <GraduationCap className="w-12 h-12 text-primary animate-pulse" />
+      </div>
+    );
   }
+
+  const reminders = [
+    {
+      id: 1,
+      title: 'Assignment deadline approaching',
+      message: 'Your next assignment is coming up soon. Click to continue where you left off.',
+      actionLabel: 'Go to Assignment',
+      action: () => navigate('/courses'),
+      type: 'assignment',
+    },
+    {
+      id: 2,
+      title: 'Payment reminder',
+      message: 'A payment deadline is approaching. Click here to review your billing details.',
+      actionLabel: 'Go to Payment',
+      action: () => navigate('/dashboard'),
+      type: 'payment',
+    },
+    {
+      id: 3,
+      title: 'Join the community',
+      message: 'Share your progress, learn from others, and stay motivated with the Aladiah community.',
+      actionLabel: 'Open Community',
+      action: () => navigate('/community'),
+      type: 'community',
+    },
+  ];
 
   const stats = [
     { icon: TrendingUp, label: 'Progress', value: `${overallProgress}%`, color: 'text-primary', onClick: () => setProgressModalOpen(true) },
@@ -247,8 +248,57 @@ const StudentPortal = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+
+      {showFounderWelcome && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+          <div className="w-full max-w-3xl rounded-2xl bg-background border shadow-2xl p-6 md:p-8">
+            <div className="flex items-start gap-4">
+              <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <GraduationCap className="w-10 h-10 text-primary" />
+              </div>
+
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold mb-2">
+                  Welcome to Aladiah, {firstName}
+                </h2>
+
+                <p className="text-muted-foreground mb-4">
+                  Thank you for choosing this path to success.
+                </p>
+
+                <div className="space-y-3 text-sm leading-6">
+                  <p>
+                    I’m Professor Didier, and I want to personally welcome you.
+                    I will be with you every step of your journey here at Aladiah.
+                  </p>
+
+                  <p>
+                    This platform is designed to help you grow, practice, and succeed.
+                    We welcome your feedback and encourage you to participate in the community.
+                  </p>
+
+                  <p>
+                    You can stay with me as your main professor, or explore other professors
+                    to experience different teaching styles.
+                  </p>
+                </div>
+
+                <div className="mt-6 flex gap-3">
+                  <Button onClick={handleCloseFounderWelcome}>
+                    Enter My Portal
+                  </Button>
+
+                  <Button variant="outline" onClick={() => navigate('/community')}>
+                    Go to Community
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="container mx-auto px-4 py-8 pt-24">
-        {/* Hero Welcome */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -256,13 +306,16 @@ const StudentPortal = () => {
                 <Sparkles className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-display font-bold">
-                  {firstName}'s AI Learning Portal
-                </h1>
-                <p className="text-muted-foreground text-sm">Powered by your personal AI assistant</p>
+               <h1 className="text-2xl md:text-3xl font-display font-bold">
+  {firstName}'s Aladiah Success Portal
+</h1>
+
+<p className="text-muted-foreground text-sm">
+  Guided by Professor Didier — Founder & Your Default AI Mentor · Language: {language}
+</p>
               </div>
             </div>
-            {/* Guide Buttons */}
+
             <div className="flex gap-2">
               <a
                 href="https://scrumguides.org/docs/scrumguide/v2020/2020-Scrum-Guide-US.pdf"
@@ -275,6 +328,7 @@ const StudentPortal = () => {
                   <ExternalLink className="w-3 h-3" />
                 </Button>
               </a>
+
               <a
                 href="https://davidfrico.com/safe-6.0-intro.pdf"
                 target="_blank"
@@ -290,7 +344,38 @@ const StudentPortal = () => {
           </div>
         </motion.div>
 
-        {/* Clickable Stats */}
+        <Card className="mb-6">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Clock className="w-5 h-5 text-primary" />
+              Action Center
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Stay on top of your assignments, deadlines, and important actions.
+            </p>
+          </CardHeader>
+
+          <CardContent className="space-y-3">
+            {reminders.map((reminder) => (
+              <div
+                key={reminder.id}
+                className="rounded-xl border p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 hover:bg-muted/40 transition"
+              >
+                <div>
+                  <p className="font-medium">{reminder.title}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {reminder.message}
+                  </p>
+                </div>
+
+                <Button onClick={reminder.action} variant="outline">
+                  {reminder.actionLabel}
+                </Button>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {stats.map((s, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
@@ -310,7 +395,6 @@ const StudentPortal = () => {
           ))}
         </div>
 
-        {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid grid-cols-5 w-full">
             <TabsTrigger value="overview" className="text-xs"><BookOpen className="w-3 h-3 mr-1" />Overview</TabsTrigger>
@@ -320,9 +404,7 @@ const StudentPortal = () => {
             <TabsTrigger value="rewards" className="text-xs"><Gift className="w-3 h-3 mr-1" />Rewards</TabsTrigger>
           </TabsList>
 
-          {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-4">
-            {/* Course Progress - sorted and clickable */}
             <Card>
               <CardHeader className="pb-3 cursor-pointer group" onClick={() => navigate('/courses')}>
                 <CardTitle className="text-lg flex items-center gap-2 group-hover:text-primary transition-colors">
@@ -330,6 +412,7 @@ const StudentPortal = () => {
                   <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors ml-auto" />
                 </CardTitle>
               </CardHeader>
+
               <CardContent className="space-y-4">
                 {courseProgresses.map((cp, idx) => (
                   <button
@@ -363,42 +446,42 @@ const StudentPortal = () => {
               </CardContent>
             </Card>
 
-            {/* AI Suggestions */}
             {suggestions.length > 0 && (
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2"><Lightbulb className="w-5 h-5 text-accent" /> AI Suggestions</CardTitle>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Lightbulb className="w-5 h-5 text-accent" /> AI Suggestions
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {suggestions.slice(0, 5).map(s => (
                     <div key={s.id} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
                       <Badge variant="outline" className="text-[10px] mt-0.5">{s.suggestion_type}</Badge>
-                      <p className="text-sm flex-1">{typeof s.content === 'object' ? JSON.stringify(s.content) : s.content}</p>
+                      <p className="text-sm flex-1">
+                        {typeof s.content === 'object' ? JSON.stringify(s.content) : s.content}
+                      </p>
                     </div>
                   ))}
                 </CardContent>
               </Card>
             )}
 
-            {/* Voice Tutor */}
             <VoiceTutor studentName={firstName} courseProgress={overallProgress} />
 
-            {/* Knowledge Graph */}
             <KnowledgeGraph
               weakAreas={learningProfile ? (learningProfile.weakAreas?.map((w: any) => typeof w === 'string' ? w : w.topic) || []) : []}
               strongAreas={learningProfile ? (learningProfile.strongAreas?.map((s: any) => typeof s === 'string' ? s : s.topic) || []) : []}
-              onTopicSelect={(topic) => {
-                setActiveTab('lab');
+              onTopicSelect={() => {
+                setActiveTab('labs');
               }}
             />
 
-            {/* Quick Actions */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               {[
-                { label: 'Community', path: '/community', icon: Users },
-                { label: 'Sprint Sim', path: '/simulation', icon: Target },
+                { label: 'Community', path: '/community', icon: Award },
+                { label: 'Sprint Sim', path: '/simulation', icon: GraduationCap },
                 { label: 'Interview', path: '/interview', icon: Mic },
-                { label: 'Referrals', path: '/referral', icon: Award },
+                { label: 'Referrals', path: '/referral', icon: Trophy },
                 { label: 'Store', path: '/store', icon: Gift },
               ].map((a, i) => (
                 <Card key={i} className="p-3 cursor-pointer hover:shadow-md transition-shadow text-center" onClick={() => navigate(a.path)}>
@@ -409,24 +492,28 @@ const StudentPortal = () => {
             </div>
           </TabsContent>
 
-          {/* AI Assistant Tab */}
           <TabsContent value="assistant">
             <Card className="h-[600px] flex flex-col">
               <CardHeader className="pb-3 border-b">
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Bot className="w-5 h-5 text-primary" /> Your Personal AI Assistant
+                  <Bot className="w-5 h-5 text-primary" />
+                  {selectedProfessor}
                 </CardTitle>
-                <p className="text-xs text-muted-foreground">Ask me anything about Scrum, your career, or your studies!</p>
+                <p className="text-xs text-muted-foreground">
+                  Your main professor is {selectedProfessor}. Ask about Scrum, Agile, assignments, interviews, and your learning journey.
+                </p>
               </CardHeader>
+
               <ScrollArea className="flex-1 p-4">
                 <div className="space-y-4">
                   {chatMessages.length === 0 && (
                     <div className="text-center py-12 space-y-4">
                       <Bot className="w-16 h-16 mx-auto text-primary/30" />
                       <div>
-                        <p className="font-medium text-muted-foreground">¡Hola! I'm your AI learning assistant</p>
+                        <p className="font-medium text-muted-foreground">¡Hola! I'm {selectedProfessor}, your AI professor</p>
                         <p className="text-sm text-muted-foreground mt-1">Try asking me:</p>
                       </div>
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-w-md mx-auto">
                         {[
                           'Explain the Scrum framework',
@@ -434,13 +521,14 @@ const StudentPortal = () => {
                           'What topics should I focus on?',
                           'Suggest YouTube videos for Sprint Planning',
                         ].map(q => (
-                          <Button key={q} variant="outline" size="sm" className="text-xs h-auto py-2 whitespace-normal" onClick={() => { setChatInput(q); }}>
+                          <Button key={q} variant="outline" size="sm" className="text-xs h-auto py-2 whitespace-normal" onClick={() => setChatInput(q)}>
                             {q}
                           </Button>
                         ))}
                       </div>
                     </div>
                   )}
+
                   {chatMessages.map((m, i) => (
                     <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                       <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${
@@ -458,22 +546,29 @@ const StudentPortal = () => {
                       </div>
                     </div>
                   ))}
+
                   {isStreaming && chatMessages[chatMessages.length - 1]?.role !== 'assistant' && (
                     <div className="flex justify-start">
                       <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-2.5">
-                        <div className="flex gap-1"><div className="w-2 h-2 bg-primary/40 rounded-full animate-bounce" /><div className="w-2 h-2 bg-primary/40 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} /><div className="w-2 h-2 bg-primary/40 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} /></div>
+                        <div className="flex gap-1">
+                          <div className="w-2 h-2 bg-primary/40 rounded-full animate-bounce" />
+                          <div className="w-2 h-2 bg-primary/40 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                          <div className="w-2 h-2 bg-primary/40 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                        </div>
                       </div>
                     </div>
                   )}
+
                   <div ref={chatEndRef} />
                 </div>
               </ScrollArea>
+
               <div className="p-4 border-t">
                 <form onSubmit={e => { e.preventDefault(); sendChat(); }} className="flex gap-2">
                   <Input
                     value={chatInput}
                     onChange={e => setChatInput(e.target.value)}
-                    placeholder="Ask your AI assistant anything..."
+                    placeholder="Ask your professor anything..."
                     disabled={isStreaming}
                     className="flex-1"
                   />
@@ -485,7 +580,6 @@ const StudentPortal = () => {
             </Card>
           </TabsContent>
 
-          {/* Labs Tab */}
           <TabsContent value="labs" className="space-y-4">
             <AnimatePresence mode="wait">
               {labModeActive ? (
@@ -502,15 +596,16 @@ const StudentPortal = () => {
                 />
               ) : (
                 <motion.div key="lab-list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
-                  {/* Search + Lab Button */}
                   <Card className="p-4">
                     <div className="flex items-center gap-2 mb-3">
                       <FlaskConical className="w-5 h-5 text-primary" />
                       <h3 className="font-bold text-lg">Enter Lab Mode</h3>
                     </div>
+
                     <p className="text-sm text-muted-foreground mb-4">
                       Type any topic you want to master — AI will break it down, quiz you, and suggest improvements.
                     </p>
+
                     <form
                       onSubmit={e => {
                         e.preventDefault();
@@ -532,7 +627,7 @@ const StudentPortal = () => {
                         Lab
                       </Button>
                     </form>
-                    {/* Quick topic pills */}
+
                     <div className="flex flex-wrap gap-2 mt-3">
                       {['Scrum Events', 'Product Owner Role', 'Sprint Retrospective', 'Agile vs Waterfall', 'User Stories'].map(t => (
                         <Button
@@ -548,10 +643,11 @@ const StudentPortal = () => {
                     </div>
                   </Card>
 
-                  {/* Previous Labs - clickable to re-enter */}
                   <Card>
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-lg flex items-center gap-2"><BookOpen className="w-5 h-5 text-primary" /> Previous Labs</CardTitle>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <BookOpen className="w-5 h-5 text-primary" /> Previous Labs
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       {labs.length === 0 ? (
@@ -596,7 +692,6 @@ const StudentPortal = () => {
             </AnimatePresence>
           </TabsContent>
 
-          {/* Career Tab */}
           <TabsContent value="career" className="space-y-4">
             <CareerTools
               overallProgress={overallProgress}
@@ -611,14 +706,16 @@ const StudentPortal = () => {
             />
           </TabsContent>
 
-          {/* Rewards Tab - Updated points */}
           <TabsContent value="rewards" className="space-y-4">
             <Card className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-xl font-bold flex items-center gap-2"><Star className="w-5 h-5 text-accent" /> Your Points</h3>
+                  <h3 className="text-xl font-bold flex items-center gap-2">
+                    <Star className="w-5 h-5 text-accent" /> Your Points
+                  </h3>
                   <p className="text-sm text-muted-foreground">Earn points by engaging with the platform</p>
                 </div>
+
                 <div className="text-right cursor-pointer" onClick={() => setPointsModalOpen(true)}>
                   <p className="text-3xl font-display font-bold text-accent">{totalPoints}</p>
                   <p className="text-xs text-muted-foreground">Total Points</p>
@@ -627,12 +724,12 @@ const StudentPortal = () => {
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
                 {[
-                  { action: 'Comment on Blog', points: '+5', icon: MessageCircle },
+                  { action: 'Comment on Blog', points: '+5', icon: Bot },
                   { action: 'Complete a Lab', points: '+5', icon: FlaskConical },
                   { action: 'Pass a Quiz', points: '+5', icon: Trophy },
                   { action: 'Daily Login', points: '+1', icon: Flame },
-                  { action: 'Refer a Student', points: '+200', icon: Users },
-                  { action: 'Collaborate with Students', points: '+2', icon: Award },
+                  { action: 'Refer a Student', points: '+200', icon: Award },
+                  { action: 'Collaborate with Students', points: '+2', icon: BookOpen },
                 ].map((item, i) => (
                   <div key={i} className="p-3 rounded-lg border text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => setPointsModalOpen(true)}>
                     <item.icon className="w-5 h-5 mx-auto mb-1 text-primary" />
@@ -666,7 +763,6 @@ const StudentPortal = () => {
         </Tabs>
       </main>
 
-      {/* Stat Detail Modals */}
       <ProgressDetailModal
         open={progressModalOpen}
         onOpenChange={setProgressModalOpen}
