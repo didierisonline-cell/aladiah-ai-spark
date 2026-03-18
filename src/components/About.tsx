@@ -185,8 +185,32 @@ const About = () => {
           ))}
         </div>
       </div>
-    </section>
+  
+      <div className="container mx-auto px-4 mt-20 pb-16">
+        <div className="text-center mb-12">
+          <h3 className="text-2xl sm:text-3xl font-display font-bold text-foreground mb-3">Meet the AI Professors</h3>
+          <p className="text-muted-foreground max-w-xl mx-auto">Powered by AI. Built around real expertise. Here to guide you every step of the way.</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {professors.map((prof, index) => (
+            <div key={prof.name} className="group rounded-2xl overflow-hidden border border-border/50 hover:shadow-lg transition-all duration-500">
+              <div className="relative h-64 overflow-hidden">
+                <img src={prof.photo} alt={prof.name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" />
+                <div className="absolute bottom-3 left-3 px-2 py-1 rounded-full text-xs font-semibold" style={{ background: prof.border, color: '#fff' }}>
+                  {prof.origin}
+                </div>
+              </div>
+              <div className="p-4" style={{ background: prof.bg }}>
+                <h4 className="font-bold text-lg" style={{ color: prof.color }}>{prof.name}</h4>
+                <p className="text-sm font-medium" style={{ color: prof.border }}>{prof.title}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+  </section>
   );
 };
+
 
 export default About;
