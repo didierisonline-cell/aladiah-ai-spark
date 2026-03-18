@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import TeamSection from '@/components/TeamSection';
 import { Award, Sparkles, Users, Shield, Ship, Briefcase, GraduationCap, Globe, Linkedin, Quote } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import founderPhoto from '@/assets/founder-photo.png';
