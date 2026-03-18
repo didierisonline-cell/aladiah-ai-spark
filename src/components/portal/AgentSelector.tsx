@@ -5,10 +5,10 @@ type AgentKey = 'professor' | 'career' | 'interview' | 'resume' | 'scrum';
 
 const AGENTS = [
   { key: 'professor' as AgentKey, name: 'Prof. Didier', title: 'Founder & Lead Mentor', specialty: 'Agile · Scrum · PM Strategy', initials: 'PD', color: '#085041', bg: '#E1F5EE', border: '#1D9E75' },
-  { key: 'career' as AgentKey, name: 'Career Advisor', title: 'Career Strategist', specialty: 'Job Search · Salary · LinkedIn', initials: 'CA', color: '#3C3489', bg: '#EEEDFE', border: '#534AB7' },
-  { key: 'interview' as AgentKey, name: 'Interview Coach', title: 'Interview Specialist', specialty: 'Mock Interviews · Behavioral', initials: 'IC', color: '#712B13', bg: '#FAECE7', border: '#D85A30' },
-  { key: 'resume' as AgentKey, name: 'Resume Builder', title: 'Resume Specialist', specialty: 'ATS · Impact Bullets', initials: 'RB', color: '#633806', bg: '#FAEEDA', border: '#BA7517' },
-  { key: 'scrum' as AgentKey, name: 'Scrum Expert', title: 'Scrum Master Coach', specialty: 'Ceremonies · Backlog · SAFe', initials: 'SE', color: '#0C447C', bg: '#E6F1FB', border: '#185FA5' },
+  { key: 'career' as AgentKey, name: 'Bettyna', title: 'Career Strategist', specialty: 'Job Search · Salary · LinkedIn', initials: 'CA', color: '#3C3489', bg: '#EEEDFE', border: '#534AB7' },
+  { key: 'interview' as AgentKey, name: 'Charly', title: 'Interview Specialist', specialty: 'Mock Interviews · Behavioral', initials: 'IC', color: '#712B13', bg: '#FAECE7', border: '#D85A30' },
+  { key: 'resume' as AgentKey, name: 'Juan Carlos', title: 'Resume Specialist', specialty: 'ATS · Impact Bullets', initials: 'RB', color: '#633806', bg: '#FAEEDA', border: '#BA7517' },
+  { key: 'scrum' as AgentKey, name: 'Maria', title: 'Scrum Master Coach', specialty: 'Ceremonies · Backlog · SAFe', initials: 'SE', color: '#0C447C', bg: '#E6F1FB', border: '#185FA5' },
 ];
 
 interface Props {
