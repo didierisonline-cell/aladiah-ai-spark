@@ -497,13 +497,8 @@ const StudentPortal = () => {
           <TabsContent value="assistant">
             <Card className="h-[600px] flex flex-col">
               <CardHeader className="pb-3 border-b">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Bot className="w-5 h-5 text-primary" />
-                  {selectedProfessor}
-                </CardTitle>
-                <p className="text-xs text-muted-foreground">
-                  Your main professor is {selectedProfessor}. Ask about Scrum, Agile, assignments, interviews, and your learning journey.
-                </p>
+                <AgentSelector activeAgent={activeAgent as any} onSelect={(a) => { setActiveAgent(a); setSelectedProfessor(a); }} />
+
               </CardHeader>
 
               <ScrollArea className="flex-1 p-4">
