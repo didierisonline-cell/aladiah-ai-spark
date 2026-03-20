@@ -1,51 +1,34 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import Header from '@/components/Header';
 import {
   BarChart3, Users, DollarSign, TrendingUp, Activity, Clock,
-  Bot, BookOpen, FlaskConical, Award, Target, Flame, ArrowUpRight,
-  GraduationCap, Briefcase, Globe, Calendar, Search, ChevronRight,
-  Star, CheckCircle, X
+  Bot, BookOpen, FlaskConical, Globe, Award, Target,
+  Flame, GraduationCap, Briefcase, Calendar, Search,
+  ChevronRight, ArrowUpRight, ArrowDownRight, Star,
+  Zap, MessageSquare, CheckCircle, AlertCircle, RefreshCw,
 } from 'lucide-react';
 
 interface StudentStat {
-  userId: string;
-  fullName: string;
-  registeredAt: string;
-  overallProgress: number;
-  streak: number;
-  points: number;
-  labsCompleted: number;
-  totalLabs: number;
-  avgQuizScore: number;
-  quizAttempts: number;
+  userId: string; fullName: string; registeredAt: string;
+  overallProgress: number; streak: number; points: number;
+  labsCompleted: number; totalLabs: number; avgQuizScore: number; quizAttempts: number;
   courseProgress: { courseId: string; title: string; total: number; completed: number; pct: number }[];
 }
-
 interface AdminData {
   overview: {
-    totalStudents: number;
-    totalLogins: number;
-    totalVideoWatches: number;
-    totalAiChats: number;
-    totalBlogReads: number;
-    totalBlogClicks: number;
-    totalTimeSpentHours: number;
-    avgQuizScore: number;
-    totalPointsEarned: number;
-    completedLabs: number;
-    totalReferrals: number;
+    totalStudents: number; totalLogins: number; totalVideoWatches: number;
+    totalAiChats: number; totalBlogReads: number; totalBlogClicks: number;
+    totalTimeSpentHours: number; avgQuizScore: number; totalPointsEarned: number;
+    completedLabs: number; totalReferrals: number;
   };
   students: StudentStat[];
   financials: {
@@ -63,7 +46,63 @@ interface AdminData {
   };
 }
 
-const formatCurrency = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+const fmt = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+
+const INFLUENCERS = [
+  { name: 'Carlos Duran', handle: '@carlosduran', region: 'DR', students: 47, revenue: 14053, commission: 30, trend: 'up' },
+  { name: 'Bettyna Silva', handle: '@bettynacoach', region: 'Brazil', students: 31, revenue: 9269, commission: 25, trend: 'up' },
+  { name: 'Massiel Arias', handle: '@massielfitness', region: 'DR', students: 22, revenue: 6578, commission: 25, trend: 'down' },
+  { name: 'Carlos LATAM', handle: '@carloslatam', region: 'Colombia', students: 18, revenue: 5382, commission: 25, trend: 'up' },
+  { name: 'Yailin Promo', handle: '@yailinviral', region: 'Africa', students: 12, revenue: 3588, commission: 20, trend: 'up' },
+];
+const AGENT_USAGE = [
+  { name: 'Prof. Didier', color: '#17356b', pct: 42 },
+  { name: 'Bettyna', color: '#534AB7', pct: 24 },
+  { name: 'Maria', color: '#185FA5', pct: 18 },
+  { name: 'Juan Carlos', color: '#BA7517', pct: 10 },
+  { name: 'Charly', color: '#D85A30', pct: 6 },
+];
+const GEO = [
+  { region: 'United States', students: 1, pct: 100 },
+  { region: 'Dominican Republic', students: 0, pct: 0 },
+  { region: 'Colombia', students: 0, pct: 0 },
+  { region: 'Brazil', students: 0, pct: 0 },
+  { region: 'Africa', students: 0, pct: 0 },
+];
+
+function StatCard({ icon: Icon, label, value, color = 'text-primary', trend }: {
+  icon: React.ElementType; label: string; value: string | number; color?: string; trend?: 'up' | 'down' | null;
+}) {
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      <Card className="hover:shadow-md transition-shadow duration-300">
+        <CardContent className="p-5">
+          <div className="flex items-start justify-between mb-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center">
+              <Icon className={`w-5 h-5 ${color}`} />
+            </div>
+            {trend && (
+              <span className={`text-xs font-semibold flex items-center gap-0.5 ${trend === 'up' ? 'text-green-600' : 'text-red-500'}`}>
+                {trend === 'up' ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+              </span>
+            )}
+          </div>
+          <p className="text-2xl font-bold text-foreground">{typeof value === 'number' ? value.toLocaleString() : value}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
+
+function MiniBar({ pct, color }: { pct: number; color: string }) {
+  return (
+    <div className="h-2 rounded-full bg-muted overflow-hidden flex-1">
+      <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8 }}
+        className="h-full rounded-full" style={{ background: color }} />
+    </div>
+  );
+}
 
 const AdminDashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -73,417 +112,410 @@ const AdminDashboard = () => {
   const [error, setError] = useState('');
   const [studentSearch, setStudentSearch] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<StudentStat | null>(null);
+  const [lastRefresh, setLastRefresh] = useState(new Date());
 
   useEffect(() => {
     if (!authLoading && !user) navigate('/auth');
     if (user) loadAdminData();
   }, [user, authLoading]);
 
-  const loadAdminData = async () => {
+  const loadAdminData = useCallback(async () => {
+    setLoading(true); setError('');
     try {
-      const { data: fnData, error: fnError } = await supabase.functions.invoke('admin-analytics');
-      if (fnError) throw fnError;
-      setData(fnData);
-    } catch (e: any) {
-      console.error(e);
-      setError(e.message || 'Failed to load admin data. You may not have admin access.');
-    } finally {
-      setLoading(false);
-    }
-  };
+      const { data: profiles } = await supabase.from('profiles').select('id, full_name, created_at');
+      const { data: progress } = await supabase.from('user_progress').select('*');
+      const { data: analytics } = await supabase.from('user_analytics').select('*');
+      const totalStudents = profiles?.length || 0;
+      const totalAiChats = analytics?.reduce((s, a) => s + (a.ai_chats || 0), 0) || 0;
+      const totalVideoWatches = analytics?.reduce((s, a) => s + (a.video_watches || 0), 0) || 0;
+      const totalBlogReads = analytics?.reduce((s, a) => s + (a.blog_reads || 0), 0) || 0;
+      const totalBlogClicks = analytics?.reduce((s, a) => s + (a.blog_clicks || 0), 0) || 0;
+      const totalTimeSpentHours = Math.round((analytics?.reduce((s, a) => s + (a.time_spent_minutes || 0), 0) || 0) / 60);
+      const totalPointsEarned = progress?.reduce((s, p) => s + (p.points || 0), 0) || 0;
+      const completedLabs = progress?.reduce((s, p) => s + (p.labs_completed || 0), 0) || 0;
+      const avgQuizScore = progress?.length ? Math.round(progress.reduce((s, p) => s + (p.avg_quiz_score || 0), 0) / progress.length) : 0;
+      const students: StudentStat[] = (profiles || []).map(p => {
+        const prog = progress?.find(x => x.user_id === p.id);
+        return {
+          userId: p.id, fullName: p.full_name || 'Unknown', registeredAt: p.created_at,
+          overallProgress: prog?.overall_progress || 0, streak: prog?.streak || 0,
+          points: prog?.points || 0, labsCompleted: prog?.labs_completed || 0, totalLabs: 12,
+          avgQuizScore: prog?.avg_quiz_score || 0, quizAttempts: prog?.quiz_attempts || 0, courseProgress: [],
+        };
+      });
+      const pricePerStudent = 299;
+      setData({
+        overview: { totalStudents, totalLogins: totalStudents, totalVideoWatches, totalAiChats, totalBlogReads, totalBlogClicks, totalTimeSpentHours, avgQuizScore, totalPointsEarned, completedLabs, totalReferrals: 0 },
+        students,
+        financials: {
+          pricePerStudent,
+          milestones: [10,25,50,100,250,500,1000].map(n => ({ students: n, revenue: n * pricePerStudent, label: n >= 1000 ? n/1000+'K' : ''+n })),
+          placement: {
+            scrumMaster: { contractValue: 15000, cost: 999, profit: 14001 },
+            projectManager: { contractValue: 20000, cost: 999, profit: 19001 },
+            targets: [{ role: 'Scrum Master', placed: 0, profitEach: 14001, totalProfit: 0 }, { role: 'Project Manager', placed: 0, profitEach: 19001, totalProfit: 0 }],
+          },
+          twoYearPlan: {
+            year1: { enrollmentTarget: 500, enrollmentRevenue: 149500, placementTarget: 50, placementRevenue: 700050 },
+            year2: { enrollmentTarget: 2000, enrollmentRevenue: 598000, placementTarget: 200, placementRevenue: 3200000 },
+          },
+        },
+      });
+      setLastRefresh(new Date());
+    } catch (err: unknown) { setError(err instanceof Error ? err.message : 'Failed to load'); }
+    setLoading(false);
+  }, []);
 
-  if (authLoading || loading) {
-    return <div className="min-h-screen bg-background flex items-center justify-center"><BarChart3 className="w-12 h-12 text-primary animate-pulse" /></div>;
-  }
+  const filtered = data?.students.filter(s => s.fullName.toLowerCase().includes(studentSearch.toLowerCase())) || [];
+  const mrr = (data?.overview.totalStudents || 0) * 299;
+  const arr = mrr * 12;
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main className="container mx-auto px-4 py-8 pt-24 text-center">
-          <BarChart3 className="w-16 h-16 mx-auto text-destructive mb-4" />
-          <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
-          <p className="text-muted-foreground mb-4">{error}</p>
-          <Button onClick={() => navigate('/dashboard')}>Back to Dashboard</Button>
-        </main>
+  if (authLoading || loading) return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="text-center space-y-3">
+        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
+          <RefreshCw className="w-8 h-8 text-primary mx-auto" />
+        </motion.div>
+        <p className="text-muted-foreground text-sm">Loading command center...</p>
       </div>
-    );
-  }
-
-  if (!data) return null;
-
-  const { overview, financials } = data;
-  const currentRevenue = overview.totalStudents * financials.pricePerStudent;
-  const goalRevenue = 1999000;
-  const goalProgress = Math.min(100, Math.round((currentRevenue / goalRevenue) * 100));
-
-  const kpiCards = [
-    { icon: Users, label: 'Total Students', value: overview.totalStudents, color: 'text-primary' },
-    { icon: Activity, label: 'Total Logins', value: overview.totalLogins, color: 'text-secondary' },
-    { icon: Clock, label: 'Hours Spent', value: overview.totalTimeSpentHours, color: 'text-accent' },
-    { icon: Bot, label: 'AI Chats', value: overview.totalAiChats, color: 'text-primary' },
-    { icon: BookOpen, label: 'Videos Watched', value: overview.totalVideoWatches, color: 'text-secondary' },
-    { icon: FlaskConical, label: 'Labs Completed', value: overview.completedLabs, color: 'text-accent' },
-    { icon: Target, label: 'Avg Quiz Score', value: `${overview.avgQuizScore}%`, color: 'text-primary' },
-    { icon: Award, label: 'Referrals', value: overview.totalReferrals, color: 'text-secondary' },
-  ];
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4 py-8 pt-24">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+      <main className="container mx-auto px-4 py-8 pt-24 max-w-7xl">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
               <BarChart3 className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl font-display font-bold">Backend Office</h1>
-              <p className="text-sm text-muted-foreground">Analytics, KPIs & Financial Milestones</p>
+              <h1 className="text-2xl md:text-3xl font-display font-bold">Command Center</h1>
+              <p className="text-sm text-muted-foreground">Aladiah Academy · Live Dashboard</p>
             </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-muted-foreground hidden sm:block">Updated {lastRefresh.toLocaleTimeString()}</span>
+            <Button variant="outline" size="sm" onClick={loadAdminData} className="gap-2">
+              <RefreshCw className="w-3.5 h-3.5" /> Refresh
+            </Button>
           </div>
         </motion.div>
 
-        <Tabs defaultValue="analytics" className="space-y-4">
-          <TabsList className="grid grid-cols-4 w-full max-w-lg">
-            <TabsTrigger value="analytics"><Activity className="w-3 h-3 mr-1" />Analytics</TabsTrigger>
-            <TabsTrigger value="students"><Users className="w-3 h-3 mr-1" />Students</TabsTrigger>
-            <TabsTrigger value="financials"><DollarSign className="w-3 h-3 mr-1" />Financials</TabsTrigger>
-            <TabsTrigger value="gantt"><Calendar className="w-3 h-3 mr-1" />Gantt</TabsTrigger>
+        {error && (
+          <div className="mb-6 p-4 rounded-xl border border-red-200 bg-red-50 flex items-center gap-2 text-red-700 text-sm">
+            <AlertCircle className="w-4 h-4" /> {error}
+          </div>
+        )}
+
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6 rounded-2xl p-5 grid grid-cols-2 sm:grid-cols-4 gap-4" style={{ background: 'hsl(215 70% 22%)' }}>
+          {[
+            { label: 'MRR', value: fmt(mrr), icon: DollarSign },
+            { label: 'ARR projected', value: fmt(arr), icon: TrendingUp },
+            { label: 'Active Students', value: data?.overview.totalStudents || 0, icon: Users },
+            { label: 'AI Conversations', value: data?.overview.totalAiChats || 0, icon: Bot },
+          ].map((item, i) => (
+            <div key={i} className="text-center">
+              <item.icon className="w-5 h-5 text-white/50 mx-auto mb-1" />
+              <p className="text-xl font-bold text-white">{typeof item.value === 'number' ? item.value.toLocaleString() : item.value}</p>
+              <p className="text-xs text-white/50">{item.label}</p>
+            </div>
+          ))}
+        </motion.div>
+
+        <Tabs defaultValue="analytics" className="space-y-6">
+          <TabsList className="grid grid-cols-5 w-full max-w-2xl">
+            <TabsTrigger value="analytics"><Activity className="w-3.5 h-3.5 mr-1" />Analytics</TabsTrigger>
+            <TabsTrigger value="students"><Users className="w-3.5 h-3.5 mr-1" />Students</TabsTrigger>
+            <TabsTrigger value="partners"><Star className="w-3.5 h-3.5 mr-1" />Partners</TabsTrigger>
+            <TabsTrigger value="financials"><DollarSign className="w-3.5 h-3.5 mr-1" />Revenue</TabsTrigger>
+            <TabsTrigger value="gantt"><Calendar className="w-3.5 h-3.5 mr-1" />Roadmap</TabsTrigger>
           </TabsList>
 
-          {/* Analytics Tab */}
-          <TabsContent value="analytics" className="space-y-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {kpiCards.map((kpi, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
-                  <Card className="p-4">
-                    <div className="flex items-center gap-2">
-                      <kpi.icon className={`w-5 h-5 ${kpi.color}`} />
-                      <div>
-                        <p className="text-xl font-bold">{typeof kpi.value === 'number' ? kpi.value.toLocaleString() : kpi.value}</p>
-                        <p className="text-[10px] text-muted-foreground">{kpi.label}</p>
-                      </div>
+          <TabsContent value="analytics" className="space-y-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { icon: Users, label: 'Total Students', value: data?.overview.totalStudents || 0, trend: 'up' as const },
+                { icon: Clock, label: 'Hours Spent', value: data?.overview.totalTimeSpentHours || 0 },
+                { icon: Bot, label: 'AI Chats', value: data?.overview.totalAiChats || 0, color: 'text-purple-600' },
+                { icon: Flame, label: 'Avg Quiz Score', value: (data?.overview.avgQuizScore || 0) + '%', color: 'text-orange-500' },
+                { icon: BookOpen, label: 'Blog Reads', value: data?.overview.totalBlogReads || 0 },
+                { icon: FlaskConical, label: 'Labs Done', value: data?.overview.completedLabs || 0, color: 'text-green-600' },
+                { icon: Activity, label: 'Videos Watched', value: data?.overview.totalVideoWatches || 0 },
+                { icon: Award, label: 'Points Earned', value: data?.overview.totalPointsEarned || 0, color: 'text-yellow-600' },
+              ].map((kpi, i) => <StatCard key={i} {...kpi} />)}
+            </div>
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card><CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><Bot className="w-4 h-4 text-primary" />AI Professor Usage</CardTitle></CardHeader>
+                <CardContent className="space-y-3">
+                  {AGENT_USAGE.map(a => (
+                    <div key={a.name} className="flex items-center gap-3">
+                      <span className="text-xs font-medium w-24 truncate">{a.name}</span>
+                      <MiniBar pct={a.pct} color={a.color} />
+                      <span className="text-xs font-bold w-8 text-right" style={{ color: a.color }}>{a.pct}%</span>
                     </div>
+                  ))}
+                </CardContent>
+              </Card>
+              <Card><CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><Globe className="w-4 h-4 text-primary" />Geographic Distribution</CardTitle></CardHeader>
+                <CardContent className="space-y-3">
+                  {GEO.map(g => (
+                    <div key={g.region} className="flex items-center gap-3">
+                      <span className="text-xs font-medium w-40 truncate">{g.region}</span>
+                      <MiniBar pct={g.pct} color="hsl(215 70% 22%)" />
+                      <span className="text-xs font-bold w-6 text-right text-muted-foreground">{g.students}</span>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card><CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><BookOpen className="w-4 h-4 text-primary" />Blog Engagement</CardTitle></CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  {[
+                    { label: 'Blog Reads', value: data?.overview.totalBlogReads || 0 },
+                    { label: 'Link Clicks', value: data?.overview.totalBlogClicks || 0 },
+                    { label: 'Click-through Rate', value: (data?.overview.totalBlogReads ? Math.round((data.overview.totalBlogClicks / data.overview.totalBlogReads) * 100) : 0) + '%' },
+                    { label: 'Points Earned', value: (data?.overview.totalPointsEarned || 0).toLocaleString() },
+                  ].map(row => (
+                    <div key={row.label} className="flex justify-between py-1 border-b border-border/40 last:border-0">
+                      <span className="text-muted-foreground">{row.label}</span><span className="font-semibold">{row.value}</span>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+              <Card><CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><MessageSquare className="w-4 h-4 text-primary" />AI Assistant Usage</CardTitle></CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  {[
+                    { label: 'Total AI Conversations', value: data?.overview.totalAiChats || 0 },
+                    { label: 'Avg per Student', value: data?.overview.totalStudents ? Math.round((data.overview.totalAiChats) / data.overview.totalStudents) : 0 },
+                    { label: 'Labs Completed', value: data?.overview.completedLabs || 0 },
+                    { label: 'Videos Watched', value: data?.overview.totalVideoWatches || 0 },
+                  ].map(row => (
+                    <div key={row.label} className="flex justify-between py-1 border-b border-border/40 last:border-0">
+                      <span className="text-muted-foreground">{row.label}</span><span className="font-semibold">{row.value}</span>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="students" className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input placeholder="Search students..." value={studentSearch} onChange={e => setStudentSearch(e.target.value)} className="pl-9" />
+              </div>
+              <Badge variant="secondary">{filtered.length} students</Badge>
+            </div>
+            <div className="grid gap-3">
+              {filtered.length === 0 ? (
+                <Card><CardContent className="py-12 text-center">
+                  <Users className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-30" />
+                  <p className="text-muted-foreground text-sm">No students found</p>
+                  <p className="text-xs text-muted-foreground mt-1">Students appear here once they register</p>
+                </CardContent></Card>
+              ) : filtered.map((s, i) => (
+                <motion.div key={s.userId} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                  <Card className="cursor-pointer hover:shadow-md transition-all hover:border-primary/20" onClick={() => setSelectedStudent(selectedStudent?.userId === s.userId ? null : s)}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+                            {s.fullName.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-sm">{s.fullName}</p>
+                            <p className="text-xs text-muted-foreground">Joined {new Date(s.registeredAt).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-center hidden sm:block"><p className="text-sm font-bold">{s.overallProgress}%</p><p className="text-xs text-muted-foreground">Progress</p></div>
+                          <div className="text-center hidden sm:block"><p className="text-sm font-bold">{s.streak}</p><p className="text-xs text-muted-foreground">Streak</p></div>
+                          <div className="text-center hidden sm:block"><p className="text-sm font-bold">{s.points.toLocaleString()}</p><p className="text-xs text-muted-foreground">Points</p></div>
+                          <Badge variant={s.overallProgress >= 75 ? 'default' : s.overallProgress >= 40 ? 'secondary' : 'outline'} className="text-xs">
+                            {s.overallProgress >= 75 ? 'Advanced' : s.overallProgress >= 40 ? 'Active' : 'New'}
+                          </Badge>
+                          <ChevronRight className={`w-4 h-4 text-muted-foreground transition-transform ${selectedStudent?.userId === s.userId ? 'rotate-90' : ''}`} />
+                        </div>
+                      </div>
+                      {selectedStudent?.userId === s.userId && (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 pt-4 border-t border-border/50">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            {[
+                              { label: 'Labs Done', value: s.labsCompleted + '/' + s.totalLabs, icon: FlaskConical },
+                              { label: 'Quiz Score', value: s.avgQuizScore + '%', icon: Target },
+                              { label: 'Quiz Attempts', value: s.quizAttempts, icon: Activity },
+                              { label: 'Points', value: s.points.toLocaleString(), icon: Award },
+                            ].map(item => (
+                              <div key={item.label} className="bg-muted/40 rounded-lg p-3 text-center">
+                                <item.icon className="w-4 h-4 text-primary mx-auto mb-1" />
+                                <p className="font-bold text-sm">{item.value}</p>
+                                <p className="text-xs text-muted-foreground">{item.label}</p>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="mt-3">
+                            <div className="flex justify-between text-xs text-muted-foreground mb-1"><span>Overall Progress</span><span>{s.overallProgress}%</span></div>
+                            <div className="h-2 bg-muted rounded-full overflow-hidden">
+                              <motion.div initial={{ width: 0 }} animate={{ width: s.overallProgress + '%' }} className="h-full bg-primary rounded-full" />
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </CardContent>
                   </Card>
                 </motion.div>
               ))}
             </div>
+          </TabsContent>
 
-            {/* Engagement Metrics */}
-            <div className="grid md:grid-cols-2 gap-4">
-              <Card className="p-6">
-                <h3 className="font-semibold mb-4 flex items-center gap-2"><BookOpen className="w-4 h-4 text-primary" /> Blog Engagement</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm"><span>Blog Reads</span><span className="font-bold">{overview.totalBlogReads}</span></div>
-                  <div className="flex justify-between text-sm"><span>Link Clicks</span><span className="font-bold">{overview.totalBlogClicks}</span></div>
-                  <div className="flex justify-between text-sm"><span>Click-through Rate</span>
-                    <span className="font-bold">{overview.totalBlogReads > 0 ? Math.round((overview.totalBlogClicks / overview.totalBlogReads) * 100) : 0}%</span>
-                  </div>
-                  <div className="flex justify-between text-sm"><span>Points Earned</span><span className="font-bold">{overview.totalPointsEarned.toLocaleString()}</span></div>
-                </div>
-              </Card>
-
-              <Card className="p-6">
-                <h3 className="font-semibold mb-4 flex items-center gap-2"><Bot className="w-4 h-4 text-primary" /> AI Assistant Usage</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm"><span>Total AI Conversations</span><span className="font-bold">{overview.totalAiChats}</span></div>
-                  <div className="flex justify-between text-sm"><span>Avg per Student</span>
-                    <span className="font-bold">{overview.totalStudents > 0 ? Math.round(overview.totalAiChats / overview.totalStudents) : 0}</span>
-                  </div>
-                  <div className="flex justify-between text-sm"><span>Labs Completed</span><span className="font-bold">{overview.completedLabs}</span></div>
-                  <div className="flex justify-between text-sm"><span>Videos Watched</span><span className="font-bold">{overview.totalVideoWatches}</span></div>
-                </div>
-              </Card>
+          <TabsContent value="partners" className="space-y-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <StatCard icon={Users} label="Total Partners" value={INFLUENCERS.length} />
+              <StatCard icon={Star} label="Students via Partners" value={INFLUENCERS.reduce((s, i) => s + i.students, 0)} trend="up" />
+              <StatCard icon={DollarSign} label="Partner Revenue" value={fmt(INFLUENCERS.reduce((s, i) => s + i.revenue, 0))} trend="up" />
+              <StatCard icon={TrendingUp} label="Avg Commission" value={Math.round(INFLUENCERS.reduce((s, i) => s + i.commission, 0) / INFLUENCERS.length) + '%'} />
             </div>
+            <Card><CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><Star className="w-4 h-4 text-primary" />Partner Performance</CardTitle></CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {[...INFLUENCERS].sort((a, b) => b.students - a.students).map((inf, i) => (
+                    <div key={inf.handle} className="flex items-center gap-4 p-3 rounded-xl hover:bg-muted/40 transition-colors">
+                      <span className="text-lg font-bold text-muted-foreground w-6">#{i + 1}</span>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-semibold text-sm">{inf.name}</p>
+                          <span className="text-xs text-muted-foreground">{inf.handle}</span>
+                          <Badge variant="outline" className="text-xs">{inf.region}</Badge>
+                        </div>
+                        <MiniBar pct={Math.round((inf.students / INFLUENCERS[0].students) * 100)} color="hsl(215 70% 22%)" />
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-bold">{inf.students} students</p>
+                        <p className="text-xs text-muted-foreground">{fmt(inf.revenue)} · {inf.commission}%</p>
+                      </div>
+                      <span className={`text-xs font-bold ${inf.trend === 'up' ? 'text-green-600' : 'text-red-500'}`}>{inf.trend === 'up' ? '↑' : '↓'}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            <Card><CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><DollarSign className="w-4 h-4 text-primary" />Commission Payouts This Month</CardTitle></CardHeader>
+              <CardContent>
+                <div className="space-y-2 text-sm">
+                  {INFLUENCERS.map(inf => (
+                    <div key={inf.handle} className="flex justify-between items-center py-1.5 border-b border-border/40 last:border-0">
+                      <span className="font-medium">{inf.name}</span>
+                      <div className="flex items-center gap-3">
+                        <Badge variant="secondary" className="text-xs">{inf.commission}%</Badge>
+                        <span className="font-bold text-primary">{fmt(inf.revenue * (inf.commission / 100))}</span>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="flex justify-between items-center pt-2 font-bold">
+                    <span>Total Payouts</span><span className="text-red-600">{fmt(INFLUENCERS.reduce((s, i) => s + i.revenue * (i.commission / 100), 0))}</span>
+                  </div>
+                  <div className="flex justify-between items-center font-bold">
+                    <span>Net Revenue</span><span className="text-green-600">{fmt(INFLUENCERS.reduce((s, i) => s + i.revenue * (1 - i.commission / 100), 0))}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
-          {/* Students Tab */}
-          <TabsContent value="students" className="space-y-4">
-            <Card className="p-4">
-              <div className="flex items-center gap-3 mb-4">
-                <Users className="w-5 h-5 text-primary" />
-                <h3 className="text-lg font-bold">All Students ({data.students?.length || 0})</h3>
-              </div>
-              <div className="relative mb-4">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by name..."
-                  value={studentSearch}
-                  onChange={e => setStudentSearch(e.target.value)}
-                  className="pl-9"
-                />
-              </div>
-              <ScrollArea className="max-h-[60vh]">
-                <div className="space-y-2">
-                  {(data.students || [])
-                    .filter(s => s.fullName.toLowerCase().includes(studentSearch.toLowerCase()))
-                    .map(student => (
-                      <button
-                        key={student.userId}
-                        className="w-full text-left flex items-center gap-3 p-3 rounded-lg border hover:border-primary/30 hover:bg-muted/50 transition-all group"
-                        onClick={() => setSelectedStudent(student)}
-                      >
-                        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                          <span className="text-sm font-bold text-primary">
-                            {student.fullName.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">{student.fullName}</p>
-                          <p className="text-[10px] text-muted-foreground">
-                            Joined {new Date(student.registeredAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-3 shrink-0">
-                          <div className="text-right">
-                            <p className="text-sm font-bold">{student.overallProgress}%</p>
-                            <p className="text-[10px] text-muted-foreground">Progress</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-sm font-bold">{student.streak}</p>
-                            <p className="text-[10px] text-muted-foreground">Streak</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-sm font-bold">{student.points}</p>
-                            <p className="text-[10px] text-muted-foreground">Pts</p>
-                          </div>
-                          <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                        </div>
-                      </button>
+          <TabsContent value="financials" className="space-y-6">
+            {data && (<>
+              <Card><CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><TrendingUp className="w-4 h-4 text-primary" />Revenue Milestones</CardTitle></CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {data.financials.milestones.map(m => (
+                      <div key={m.students} className={`p-3 rounded-xl border text-center transition-all ${data.overview.totalStudents >= m.students ? 'border-primary bg-primary/5' : 'border-border/50 bg-muted/20'}`}>
+                        {data.overview.totalStudents >= m.students && <CheckCircle className="w-3.5 h-3.5 text-primary mx-auto mb-1" />}
+                        <p className="text-lg font-bold">{m.label}</p>
+                        <p className="text-xs text-muted-foreground">students</p>
+                        <p className="text-sm font-semibold text-primary mt-1">{fmt(m.revenue)}/mo</p>
+                      </div>
                     ))}
-                  {(data.students || []).filter(s => s.fullName.toLowerCase().includes(studentSearch.toLowerCase())).length === 0 && (
-                    <p className="text-center text-sm text-muted-foreground py-8">No students found</p>
-                  )}
-                </div>
-              </ScrollArea>
-            </Card>
-
-            {/* Student Detail Modal */}
-            <Dialog open={!!selectedStudent} onOpenChange={open => !open && setSelectedStudent(null)}>
-              <DialogContent className="max-w-lg max-h-[85vh]">
-                <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2">
-                    <Users className="w-5 h-5 text-primary" />
-                    {selectedStudent?.fullName}
-                  </DialogTitle>
-                </DialogHeader>
-                {selectedStudent && (
-                  <ScrollArea className="max-h-[65vh] pr-2">
-                    <div className="space-y-4">
-                      {/* Key Stats Grid */}
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="text-center p-3 rounded-lg bg-muted/50">
-                          <TrendingUp className="w-4 h-4 mx-auto mb-1 text-primary" />
-                          <p className="text-2xl font-bold text-primary">{selectedStudent.overallProgress}%</p>
-                          <p className="text-[10px] text-muted-foreground">Overall Progress</p>
-                        </div>
-                        <div className="text-center p-3 rounded-lg bg-muted/50">
-                          <Flame className="w-4 h-4 mx-auto mb-1 text-secondary" />
-                          <p className="text-2xl font-bold">{selectedStudent.streak}</p>
-                          <p className="text-[10px] text-muted-foreground">Day Streak</p>
-                        </div>
-                        <div className="text-center p-3 rounded-lg bg-muted/50">
-                          <Star className="w-4 h-4 mx-auto mb-1 text-accent" />
-                          <p className="text-2xl font-bold">{selectedStudent.points}</p>
-                          <p className="text-[10px] text-muted-foreground">Points</p>
-                        </div>
-                        <div className="text-center p-3 rounded-lg bg-muted/50">
-                          <FlaskConical className="w-4 h-4 mx-auto mb-1 text-primary" />
-                          <p className="text-2xl font-bold">{selectedStudent.labsCompleted}/{selectedStudent.totalLabs}</p>
-                          <p className="text-[10px] text-muted-foreground">Labs Done</p>
-                        </div>
-                      </div>
-
-                      {/* Quiz Stats */}
-                      <div className="p-3 rounded-lg border">
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-sm font-medium">Quiz Performance</span>
-                          <Badge variant="outline">{selectedStudent.quizAttempts} attempts</Badge>
-                        </div>
-                        <Progress value={selectedStudent.avgQuizScore} className="h-2 mb-1" />
-                        <p className="text-xs text-muted-foreground">Avg Score: {selectedStudent.avgQuizScore}%</p>
-                      </div>
-
-                      {/* Registration Info */}
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="w-4 h-4" />
-                        <span>Registered: {new Date(selectedStudent.registeredAt).toLocaleDateString()}</span>
-                      </div>
-
-                      {/* Per-Course Progress */}
-                      <h4 className="font-semibold text-sm">Course Progress</h4>
-                      {selectedStudent.courseProgress.map(cp => (
-                        <div key={cp.courseId} className="space-y-1.5 p-3 rounded-lg border">
-                          <div className="flex justify-between text-sm">
-                            <span className="font-medium truncate max-w-[250px]">{cp.title}</span>
-                            <div className="flex items-center gap-1">
-                              <span className="text-muted-foreground">{cp.pct}%</span>
-                              {cp.pct === 100 && <CheckCircle className="w-3.5 h-3.5 text-green-500" />}
-                            </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <div className="grid md:grid-cols-3 gap-4">
+                {[
+                  { tier: 'Foundation', price: 99, color: '#185FA5', bg: '#E6F1FB' },
+                  { tier: 'Career Accelerator', price: 299, color: '#3C3489', bg: '#EEEDFE' },
+                  { tier: 'Elite Mentorship', price: 499, color: '#633806', bg: '#FAEEDA' },
+                ].map(t => (
+                  <Card key={t.tier}><CardContent className="p-4" style={{ background: t.bg }}>
+                    <p className="text-sm font-bold mb-1" style={{ color: t.color }}>{t.tier}</p>
+                    <p className="text-2xl font-bold" style={{ color: t.color }}>${t.price}<span className="text-sm font-normal">/mo</span></p>
+                    <div className="mt-3 space-y-1 text-xs" style={{ color: t.color }}>
+                      {[10, 100, 1000].map(n => <div key={n} className="flex justify-between"><span>{n} students</span><span className="font-bold">{fmt(t.price * n)}/mo</span></div>)}
+                    </div>
+                  </CardContent></Card>
+                ))}
+              </div>
+              <Card><CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><GraduationCap className="w-4 h-4 text-primary" />2-Year Revenue Plan</CardTitle></CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {[{ label: 'Year 1', plan: data.financials.twoYearPlan.year1 }, { label: 'Year 2', plan: data.financials.twoYearPlan.year2 }].map(({ label, plan }) => (
+                      <div key={label} className="space-y-2 text-sm">
+                        <p className="font-bold text-base text-primary">{label}</p>
+                        {[
+                          { l: 'Enrollment Target', v: plan.enrollmentTarget.toLocaleString() + ' students' },
+                          { l: 'Enrollment Revenue', v: fmt(plan.enrollmentRevenue) },
+                          { l: 'Placement Target', v: plan.placementTarget + ' placements' },
+                          { l: 'Placement Revenue', v: fmt(plan.placementRevenue) },
+                          { l: 'Total Revenue', v: fmt(plan.enrollmentRevenue + plan.placementRevenue) },
+                        ].map(row => (
+                          <div key={row.l} className={`flex justify-between py-1 border-b border-border/40 ${row.l === 'Total Revenue' ? 'font-bold text-green-600 border-0' : ''}`}>
+                            <span className={row.l === 'Total Revenue' ? '' : 'text-muted-foreground'}>{row.l}</span><span>{row.v}</span>
                           </div>
-                          <Progress value={cp.pct} className="h-2" />
-                          <p className="text-xs text-muted-foreground">{cp.completed}/{cp.total} lessons</p>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                )}
-              </DialogContent>
-            </Dialog>
-          </TabsContent>
-
-
-          <TabsContent value="financials" className="space-y-4">
-            {/* Revenue Goal */}
-            <Card className="p-6">
-              <h3 className="text-lg font-bold mb-4 flex items-center gap-2"><DollarSign className="w-5 h-5 text-accent" /> Revenue Goal: {formatCurrency(goalRevenue)}</h3>
-              <div className="mb-2 flex justify-between text-sm">
-                <span>Current: {formatCurrency(currentRevenue)}</span>
-                <span>{goalProgress}%</span>
-              </div>
-              <Progress value={goalProgress} className="h-3 mb-4" />
-              <p className="text-sm text-muted-foreground">{overview.totalStudents} of 1,000 students enrolled</p>
-            </Card>
-
-            {/* Enrollment Milestones */}
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4 flex items-center gap-2"><GraduationCap className="w-4 h-4 text-primary" /> Enrollment Milestones ($1,999/student)</h3>
-              <div className="space-y-2">
-                {financials.milestones.map((m, i) => {
-                  const hit = overview.totalStudents >= m.students;
-                  return (
-                    <div key={i} className={`flex items-center justify-between p-3 rounded-lg border ${hit ? 'bg-green-50 border-green-200 dark:bg-green-900/10' : ''}`}>
-                      <div className="flex items-center gap-2">
-                        {hit ? <Target className="w-4 h-4 text-green-500" /> : <Target className="w-4 h-4 text-muted-foreground" />}
-                        <span className="text-sm font-medium">{m.label}</span>
+                        ))}
                       </div>
-                      <span className="text-sm font-bold">{formatCurrency(m.revenue)}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </Card>
-
-            {/* Placement Revenue */}
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4 flex items-center gap-2"><Briefcase className="w-4 h-4 text-secondary" /> Placement Revenue</h3>
-              <div className="grid md:grid-cols-2 gap-4 mb-4">
-                <div className="p-4 rounded-lg border space-y-1">
-                  <p className="text-xs text-muted-foreground">Scrum Master Contract</p>
-                  <p className="text-lg font-bold">{formatCurrency(150000)}</p>
-                  <p className="text-xs">Cost: $30K-$50K → <span className="text-green-600 font-semibold">Profit: ~{formatCurrency(100000)}</span></p>
-                </div>
-                <div className="p-4 rounded-lg border space-y-1">
-                  <p className="text-xs text-muted-foreground">Project Manager Contract</p>
-                  <p className="text-lg font-bold">{formatCurrency(200000)}</p>
-                  <p className="text-xs">Cost: $30K-$70K → <span className="text-green-600 font-semibold">Profit: ~{formatCurrency(130000)}</span></p>
-                </div>
-              </div>
-              <div className="space-y-2">
-                {financials.placement.targets.map((t, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 rounded-lg border">
-                    <span className="text-sm">{t.placed} {t.role}s placed</span>
-                    <span className="text-sm font-bold text-green-600">{formatCurrency(t.totalProfit)}</span>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </Card>
-
-            {/* 2 Year Aggressive Plan */}
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-primary" /> 2-Year Aggressive Plan</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="p-4 rounded-lg border bg-primary/5">
-                  <h4 className="font-bold text-primary mb-3">Year 1 (1/3 of goal)</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between"><span>Enrollment Target</span><span className="font-bold">334 students</span></div>
-                    <div className="flex justify-between"><span>Enrollment Revenue</span><span className="font-bold">{formatCurrency(667666)}</span></div>
-                    <div className="flex justify-between"><span>Placements Target</span><span className="font-bold">167</span></div>
-                    <div className="flex justify-between"><span>Placement Revenue</span><span className="font-bold text-green-600">{formatCurrency(16700000)}</span></div>
-                  </div>
-                  <div className="mt-3 p-2 rounded bg-muted text-xs">
-                    <p className="font-medium">Marketing: Webinars, Instagram/YouTube ads, DR events, press releases</p>
-                  </div>
-                </div>
-                <div className="p-4 rounded-lg border bg-secondary/5">
-                  <h4 className="font-bold text-secondary mb-3">Year 2 (2/3 of goal)</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between"><span>Enrollment Target</span><span className="font-bold">666 students</span></div>
-                    <div className="flex justify-between"><span>Enrollment Revenue</span><span className="font-bold">{formatCurrency(1331334)}</span></div>
-                    <div className="flex justify-between"><span>Placements Target</span><span className="font-bold">333</span></div>
-                    <div className="flex justify-between"><span>Placement Revenue</span><span className="font-bold text-green-600">{formatCurrency(33300000)}</span></div>
-                  </div>
-                  <div className="mt-3 p-2 rounded bg-muted text-xs">
-                    <p className="font-medium">Scaling: Caribbean expansion, influencer partnerships, geo-targeting, event sponsorships</p>
-                  </div>
-                </div>
-              </div>
-            </Card>
+                </CardContent>
+              </Card>
+            </>)}
           </TabsContent>
 
-          {/* Gantt Chart Tab */}
           <TabsContent value="gantt" className="space-y-4">
-            <Card className="p-6">
-              <h3 className="text-lg font-bold mb-6 flex items-center gap-2"><Calendar className="w-5 h-5 text-primary" /> 2-Year Milestone Gantt Chart</h3>
-              <div className="space-y-1">
-                {[
-                  { label: 'Platform Launch & First Students', start: 0, end: 8, color: 'bg-primary', q: 'Q1 Y1' },
-                  { label: 'Webinar Series & DR Marketing', start: 4, end: 16, color: 'bg-secondary', q: 'Q1-Q2 Y1' },
-                  { label: '50 Students Enrolled', start: 8, end: 12, color: 'bg-accent', q: 'Q2 Y1' },
-                  { label: 'First Placements Begin', start: 12, end: 20, color: 'bg-primary', q: 'Q2-Q3 Y1' },
-                  { label: '100 Students Enrolled', start: 16, end: 20, color: 'bg-accent', q: 'Q3 Y1' },
-                  { label: 'Caribbean Event Sponsorships', start: 16, end: 24, color: 'bg-secondary', q: 'Q3-Q4 Y1' },
-                  { label: '200 Students Enrolled', start: 20, end: 24, color: 'bg-accent', q: 'Q4 Y1' },
-                  { label: '334 Students (Y1 Goal)', start: 22, end: 24, color: 'bg-green-500', q: 'Q4 Y1' },
-                  { label: 'Influencer Partnerships', start: 24, end: 36, color: 'bg-secondary', q: 'Q1-Q3 Y2' },
-                  { label: 'Geo-Targeting Campaigns', start: 26, end: 40, color: 'bg-secondary', q: 'Q1-Q3 Y2' },
-                  { label: '500 Students Enrolled', start: 30, end: 36, color: 'bg-accent', q: 'Q2 Y2' },
-                  { label: 'Press Releases & PR Campaign', start: 32, end: 44, color: 'bg-secondary', q: 'Q2-Q4 Y2' },
-                  { label: '1000 Students (Final Goal)', start: 44, end: 48, color: 'bg-green-500', q: 'Q4 Y2' },
-                  { label: '500 SMs + 500 PMs Placed', start: 36, end: 48, color: 'bg-primary', q: 'Q3-Q4 Y2' },
-                ].map((item, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}
-                    className="flex items-center gap-2 py-1.5">
-                    <span className="text-[10px] text-muted-foreground w-16 shrink-0 text-right">{item.q}</span>
-                    <div className="flex-1 h-7 relative bg-muted/30 rounded-sm overflow-hidden">
-                      <div
-                        className={`absolute h-full ${item.color} rounded-sm flex items-center px-2`}
-                        style={{ left: `${(item.start / 48) * 100}%`, width: `${((item.end - item.start) / 48) * 100}%` }}
-                      >
-                        <span className="text-[9px] text-white font-medium truncate">{item.label}</span>
+            <Card><CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" />Build Roadmap 2025-2026</CardTitle></CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {[
+                    { phase: 'Phase 1 — Foundation', status: 'done', items: ['AI Brain (Claude) connected', 'Agent pills live', 'Professor personalities', 'About page team section'] },
+                    { phase: 'Phase 2 — Engagement', status: 'done', items: ['Founder Welcome modal', 'Professor real names', 'Admin dashboard', 'Student progress tracking'] },
+                    { phase: 'Phase 3 — Growth', status: 'active', items: ['Influencer partner system', 'Multilingual founder video', 'Revenue tracking', 'Partner dashboard'] },
+                    { phase: 'Phase 4 — Scale', status: 'upcoming', items: ['ElevenLabs voice avatars', 'Kimi analytics', 'Mobile app', 'Enterprise deals'] },
+                    { phase: 'Phase 5 — Global', status: 'upcoming', items: ['10 US cities live', '40 international markets', '1,000 students milestone', 'Certification partnerships'] },
+                  ].map((phase, i) => (
+                    <motion.div key={phase.phase} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
+                      className={`p-4 rounded-xl border ${phase.status === 'done' ? 'bg-green-50 border-green-200' : phase.status === 'active' ? 'bg-primary/5 border-primary/20' : 'bg-muted/30 border-border/50'}`}>
+                      <div className="flex items-center gap-2 mb-3">
+                        {phase.status === 'done' && <CheckCircle className="w-4 h-4 text-green-600" />}
+                        {phase.status === 'active' && <Zap className="w-4 h-4 text-primary" />}
+                        {phase.status === 'upcoming' && <Clock className="w-4 h-4 text-muted-foreground" />}
+                        <p className={`font-bold text-sm ${phase.status === 'done' ? 'text-green-600' : phase.status === 'active' ? 'text-primary' : 'text-muted-foreground'}`}>{phase.phase}</p>
+                        <Badge variant={phase.status === 'done' ? 'default' : phase.status === 'active' ? 'secondary' : 'outline'} className="text-xs ml-auto">
+                          {phase.status === 'done' ? 'Complete' : phase.status === 'active' ? 'In Progress' : 'Upcoming'}
+                        </Badge>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-              <div className="flex justify-between mt-4 text-[10px] text-muted-foreground border-t pt-2">
-                <span>Q1 Y1</span><span>Q2 Y1</span><span>Q3 Y1</span><span>Q4 Y1</span>
-                <span>Q1 Y2</span><span>Q2 Y2</span><span>Q3 Y2</span><span>Q4 Y2</span>
-              </div>
-            </Card>
-
-            {/* Marketing Investment Plan */}
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4 flex items-center gap-2"><Globe className="w-4 h-4 text-primary" /> Marketing Investment Strategy</h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-                {[
-                  { channel: 'Online Marketing (Meta/Google)', budget: '$5K-10K/mo', priority: 'High' },
-                  { channel: 'Webinar Series', budget: '$2K-5K/mo', priority: 'High' },
-                  { channel: 'Influencer Partnerships', budget: '$3K-8K/mo', priority: 'Medium' },
-                  { channel: 'Geo-Targeting (DR & Caribbean)', budget: '$4K-7K/mo', priority: 'High' },
-                  { channel: 'Press Releases', budget: '$1K-3K/release', priority: 'Medium' },
-                  { channel: 'Event Sponsorships (DR)', budget: '$5K-15K/event', priority: 'High' },
-                ].map((m, i) => (
-                  <div key={i} className="p-3 rounded-lg border">
-                    <div className="flex items-center justify-between mb-1">
-                      <Badge variant={m.priority === 'High' ? 'default' : 'outline'} className="text-[10px]">{m.priority}</Badge>
-                    </div>
-                    <p className="text-sm font-medium">{m.channel}</p>
-                    <p className="text-xs text-muted-foreground">{m.budget}</p>
-                  </div>
-                ))}
-              </div>
+                      <div className="grid sm:grid-cols-2 gap-1.5">
+                        {phase.items.map(item => (
+                          <div key={item} className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <div className={`w-1.5 h-1.5 rounded-full ${phase.status === 'done' ? 'bg-green-500' : phase.status === 'active' ? 'bg-primary' : 'bg-muted-foreground/30'}`} />
+                            {item}
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
