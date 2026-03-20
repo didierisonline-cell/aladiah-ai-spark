@@ -48,7 +48,7 @@ interface AdminData {
 
 const fmt = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
 
-const INFLUENCERS = [
+const DEFAULT_INFLUENCERS = [
   { name: 'Carlos Duran', handle: '@carlosduran', region: 'DR', students: 47, revenue: 14053, commission: 30, trend: 'up' },
   { name: 'Bettyna Silva', handle: '@bettynacoach', region: 'Brazil', students: 31, revenue: 9269, commission: 25, trend: 'up' },
   { name: 'Massiel Arias', handle: '@massielfitness', region: 'DR', students: 22, revenue: 6578, commission: 25, trend: 'down' },
@@ -113,6 +113,9 @@ const AdminDashboard = () => {
   const [studentSearch, setStudentSearch] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<StudentStat | null>(null);
   const [lastRefresh, setLastRefresh] = useState(new Date());
+  const [influencers, setInfluencers] = useState(DEFAULT_INFLUENCERS);
+  const [editingIdx, setEditingIdx] = useState<number | null>(null);
+  const [editRow, setEditRow] = useState<{name:string;handle:string;region:string}>({name:'',handle:'',region:''});
 
   useEffect(() => {
     if (!authLoading && !user) navigate('/auth');
@@ -374,24 +377,49 @@ const AdminDashboard = () => {
 
           <TabsContent value="partners" className="space-y-6">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <StatCard icon={Users} label="Total Partners" value={INFLUENCERS.length} />
-              <StatCard icon={Star} label="Students via Partners" value={INFLUENCERS.reduce((s, i) => s + i.students, 0)} trend="up" />
-              <StatCard icon={DollarSign} label="Partner Revenue" value={fmt(INFLUENCERS.reduce((s, i) => s + i.revenue, 0))} trend="up" />
-              <StatCard icon={TrendingUp} label="Avg Commission" value={Math.round(INFLUENCERS.reduce((s, i) => s + i.commission, 0) / INFLUENCERS.length) + '%'} />
+              <StatCard icon={Users} label="Total Partners" value={influencers.length} />
+              <StatCard icon={Star} label="Students via Partners" value={influencers.reduce((s, i) => s + i.students, 0)} trend="up" />
+              <StatCard icon={DollarSign} label="Partner Revenue" value={fmt(influencers.reduce((s, i) => s + i.revenue, 0))} trend="up" />
+              <StatCard icon={TrendingUp} label="Avg Commission" value={Math.round(influencers.reduce((s, i) => s + i.commission, 0) / influencers.length) + '%'} />
             </div>
             <Card><CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><Star className="w-4 h-4 text-primary" />Partner Performance</CardTitle></CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {[...INFLUENCERS].sort((a, b) => b.students - a.students).map((inf, i) => (
+                  {[...influencers].sort((a, b) => b.students - a.students).map((inf, i) => (
                     <div key={inf.handle} className="flex items-center gap-4 p-3 rounded-xl hover:bg-muted/40 transition-colors">
                       <span className="text-lg font-bold text-muted-foreground w-6">#{i + 1}</span>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <p className="font-semibold text-sm">{inf.name}</p>
+                          {editingIdx === i ? (
+                            <input
+                              autoFocus
+                              className="font-semibold text-sm border-b border-primary outline-none bg-transparent w-32"
+                              value={editVal}
+                              onChange={e => setEditVal(e.target.value)}
+                              onBlur={() => {
+                                const updated = [...influencers].sort((a,b) => b.students - a.students);
+                                const origIdx = influencers.findIndex(x => x.handle === updated[i].handle);
+                                const newList = [...influencers];
+                                newList[origIdx] = { ...newList[origIdx], name: editVal };
+                                setInfluencers(newList);
+                                setEditingIdx(null);
+                              }}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+                                if (e.key === 'Escape') setEditingIdx(null);
+                              }}
+                            />
+                          ) : (
+                            <p
+                              className="font-semibold text-sm cursor-pointer hover:text-primary hover:underline transition-colors"
+                              title="Click to edit name"
+                              onClick={() => { setEditingIdx(i); setEditVal(inf.name); }}
+                            >{inf.name}</p>
+                          )}
                           <span className="text-xs text-muted-foreground">{inf.handle}</span>
-                          <Badge variant="outline" className="text-xs">{inf.region}</Badge>
+                          <Badge variant="outline" className="text-xs cursor-pointer" onClick={() => { setEditingIdx(i); setEditRow({name: inf.name, handle: inf.handle, region: inf.region}); }}>{inf.region} ✎</Badge>
                         </div>
-                        <MiniBar pct={Math.round((inf.students / INFLUENCERS[0].students) * 100)} color="hsl(215 70% 22%)" />
+                        <MiniBar pct={Math.round((inf.students / influencers[0].students) * 100)} color="hsl(215 70% 22%)" />
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-bold">{inf.students} students</p>
@@ -406,7 +434,7 @@ const AdminDashboard = () => {
             <Card><CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><DollarSign className="w-4 h-4 text-primary" />Commission Payouts This Month</CardTitle></CardHeader>
               <CardContent>
                 <div className="space-y-2 text-sm">
-                  {INFLUENCERS.map(inf => (
+                  {influencers.map(inf => (
                     <div key={inf.handle} className="flex justify-between items-center py-1.5 border-b border-border/40 last:border-0">
                       <span className="font-medium">{inf.name}</span>
                       <div className="flex items-center gap-3">
@@ -416,10 +444,10 @@ const AdminDashboard = () => {
                     </div>
                   ))}
                   <div className="flex justify-between items-center pt-2 font-bold">
-                    <span>Total Payouts</span><span className="text-red-600">{fmt(INFLUENCERS.reduce((s, i) => s + i.revenue * (i.commission / 100), 0))}</span>
+                    <span>Total Payouts</span><span className="text-red-600">{fmt(influencers.reduce((s, i) => s + i.revenue * (i.commission / 100), 0))}</span>
                   </div>
                   <div className="flex justify-between items-center font-bold">
-                    <span>Net Revenue</span><span className="text-green-600">{fmt(INFLUENCERS.reduce((s, i) => s + i.revenue * (1 - i.commission / 100), 0))}</span>
+                    <span>Net Revenue</span><span className="text-green-600">{fmt(influencers.reduce((s, i) => s + i.revenue * (1 - i.commission / 100), 0))}</span>
                   </div>
                 </div>
               </CardContent>
