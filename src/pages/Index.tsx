@@ -66,26 +66,6 @@ const Index = () => {
 
       <Footer />
 
-      <div style={{ padding: '20px', background: '#111', color: 'white' }}>
-        <h2>Aladiah AI Professor</h2>
-        <p>Your private Agile and Scrum teaching assistant.</p>
-
-        <input
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Ask about Scrum, Agile, interviews, ceremonies, roles..."
-          style={{ width: '100%', padding: '10px', marginBottom: '10px', color: 'black' }}
-        />
-
-        <button onClick={askAI} style={{ padding: '10px 20px', color: 'black' }}>
-          {loading ? 'Professor is thinking...' : 'Ask Professor'}
-        </button>
-
-        <div style={{ marginTop: '20px' }}>
-          <strong>Response:</strong>
-          <p>{response}</p>
-        </div>
-      </div>
 
       <EnrollmentChatbot />
     </div>

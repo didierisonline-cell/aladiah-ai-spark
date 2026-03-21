@@ -43,7 +43,7 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
   };
 
   return (
-    <footer ref={ref} className="bg-foreground text-background relative overflow-hidden">
+    <footer ref={ref} className="relative overflow-hidden" style={{background:"linear-gradient(135deg,#0a1628,#0d1f3c)",borderTop:"1px solid rgba(59,130,246,0.2)",color:"rgba(255,255,255,0.85)"}}>
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20 pointer-events-none" />
       

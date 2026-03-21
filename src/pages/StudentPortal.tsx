@@ -21,7 +21,6 @@ import ProfessorSelector from '@/components/portal/ProfessorSelector';
 import YouTubeRecommendations from '@/components/portal/YouTubeRecommendations';
 import CareerTools from '@/components/portal/CareerTools';
 import LabMode from '@/components/portal/LabMode';
-import VoiceTutor from '@/components/portal/VoiceTutor';
 import KnowledgeGraph from '@/components/portal/KnowledgeGraph';
 import {
   ProgressDetailModal, StreakDetailModal, PointsDetailModal, LabsDetailModal
@@ -536,7 +535,6 @@ const StudentPortal = () => {
               </Card>
             )}
 
-            <VoiceTutor studentName={firstName} courseProgress={overallProgress} />
 
             <KnowledgeGraph
               weakAreas={learningProfile ? (learningProfile.weakAreas?.map((w: any) => typeof w === 'string' ? w : w.topic) || []) : []}
