@@ -9,11 +9,11 @@ const BACKEND = "http://localhost:3001";
 // Professor → HeyGen avatar ID mapping
 // Update these with real HeyGen avatar IDs from your account
 const PROFESSOR_AVATARS: Record<string, { avatarId: string; voiceId: string; name: string; color: string }> = {
-  professor: { avatarId: "Daisy-inskirt-20220818", voiceId: "1bd001e7e50f421d891986aad5158bc8", name: "Professor Didier", color: "from-blue-600 to-cyan-500" },
-  career:    { avatarId: "Daisy-inskirt-20220818", voiceId: "2d5b0e6cf36f460aa7fc47e3eee4ba54", name: "Bettyna", color: "from-pink-500 to-rose-500" },
-  interview: { avatarId: "Eric_public_pro2_20230608", voiceId: "1bd001e7e50f421d891986aad5158bc8", name: "Charly", color: "from-slate-600 to-blue-700" },
-  resume:    { avatarId: "Eric_public_pro2_20230608", voiceId: "2d5b0e6cf36f460aa7fc47e3eee4ba54", name: "Juan Carlos", color: "from-orange-500 to-amber-500" },
-  scrum:     { avatarId: "Daisy-inskirt-20220818", voiceId: "1bd001e7e50f421d891986aad5158bc8", name: "Maria", color: "from-emerald-500 to-teal-500" },
+  professor: { avatarId: "Armando_Suit_Front_public", voiceId: "", name: "Professor Didier", color: "from-blue-600 to-cyan-500" },
+  career:    { avatarId: "Adriana_Business_Front_public", voiceId: "", name: "Bettyna", color: "from-pink-500 to-rose-500" },
+  interview: { avatarId: "Adrian_public_2_20240312", voiceId: "", name: "Charly", color: "from-slate-600 to-blue-700" },
+  resume:    { avatarId: "Aditya_public_1", voiceId: "", name: "Juan Carlos", color: "from-orange-500 to-amber-500" },
+  scrum:     { avatarId: "Abigail_expressive_2024112501", voiceId: "", name: "Maria", color: "from-emerald-500 to-teal-500" },
 };
 
 interface Props {
