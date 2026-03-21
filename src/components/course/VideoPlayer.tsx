@@ -19,6 +19,7 @@ import professorCarmenImg from '@/assets/professor-carmen.png';
 import professorRafaelImg from '@/assets/professor-rafael.png';
 import professorLuciaImg from '@/assets/professor-lucia.png';
 import classroomBg from '@/assets/classroom-bg.jpg';
+import HeyGenAvatar from './HeyGenAvatar';
 
 const professors = [
   {
@@ -83,6 +84,7 @@ const VideoPlayer = ({
 }: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showHeyGen, setShowHeyGen] = useState(false);
   const [progress, setProgress] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
   const [script, setScript] = useState<string>('');
@@ -475,6 +477,24 @@ const VideoPlayer = ({
                 alt={professor.name}
                 className="w-full h-full object-contain drop-shadow-2xl"
               />
+              {showHeyGen && (
+                <div className="absolute inset-0 z-20">
+                  <HeyGenAvatar
+                    agentKey="professor"
+                    lessonText={description}
+                    language="English"
+                    onClose={() => setShowHeyGen(false)}
+                  />
+                </div>
+              )}
+              {showHeyGen === false && (
+                <button
+                  onClick={() => setShowHeyGen(true)}
+                  className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg transition-all"
+                >
+                  <span>Live Avatar</span>
+                </button>
+              )}
               <AnimatePresence>
                 {isPlaying && (
                   <motion.div
