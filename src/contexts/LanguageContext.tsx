@@ -148,6 +148,8 @@ const translations: Record<Language, Record<string, string>> = {
     'career.highlight3': 'Compliant, transparent process — no guarantees, only merit-based consideration',
     'career.disclaimer': 'Disclaimer: Course completion does not constitute a guarantee, promise, or obligation of employment. Aladiah Management may, at its sole discretion, extend employment or contract opportunities to select graduates. This provision does not entitle any student to placement. All hiring decisions are subject to applicable laws, visa requirements, and business conditions.',
     'career.cta': 'Start Your Journey',
+    'career.enrolled': 'Already Enrolled',
+    'career.enrolledSub': 'You have full access to your courses',
     'career.ctaSub': 'Excel in your studies and stand out for career opportunities',
 
     // Referral
@@ -332,6 +334,8 @@ const translations: Record<Language, Record<string, string>> = {
     'career.highlight3': 'Proceso transparente y conforme — sin garantías, solo consideración basada en mérito',
     'career.disclaimer': 'Aviso: La finalización del curso no constituye una garantía, promesa u obligación de empleo. Aladiah Management puede, a su exclusiva discreción, extender oportunidades de empleo o contrato a graduados selectos. Esta disposición no otorga a ningún estudiante derecho a colocación. Todas las decisiones de contratación están sujetas a leyes aplicables, requisitos de visa y condiciones comerciales.',
     'career.cta': 'Comienza Tu Camino',
+    'career.enrolled': 'Ya Inscrito',
+    'career.enrolledSub': 'Tienes acceso completo a tus cursos',
     'career.ctaSub': 'Destaca en tus estudios y sobresale para oportunidades profesionales',
 
     // Referral
@@ -516,6 +520,8 @@ const translations: Record<Language, Record<string, string>> = {
     'career.highlight3': '透明合规的流程——无保证，仅基于绩效的考量',
     'career.disclaimer': '免责声明：课程完成不构成就业的保证、承诺或义务。Aladiah Management可自行决定向选定的毕业生提供就业或合同机会。此条款不赋予任何学生安置权利。所有招聘决策受适用法律、签证要求和商业条件约束。',
     'career.cta': '开始您的旅程',
+    'career.enrolled': '已注册',
+    'career.enrolledSub': '您可以完全访问您的课程',
     'career.ctaSub': '在学业中脱颖而出，争取职业机会',
 
     // Referral
@@ -700,6 +706,8 @@ const translations: Record<Language, Record<string, string>> = {
     'career.highlight3': 'عملية شفافة ومتوافقة — بدون ضمانات، فقط تقييم قائم على الجدارة',
     'career.disclaimer': 'إخلاء مسؤولية: لا يشكل إكمال الدورة ضمانًا أو وعدًا أو التزامًا بالتوظيف. قد تقوم Aladiah Management، وفقًا لتقديرها الخاص، بتمديد فرص التوظيف أو التعاقد لخريجين مختارين. لا يمنح هذا الحكم أي طالب حق التوظيف. تخضع جميع قرارات التوظيف للقوانين المعمول بها ومتطلبات التأشيرة والظروف التجارية.',
     'career.cta': 'ابدأ رحلتك',
+    'career.enrolled': 'مسجل بالفعل',
+    'career.enrolledSub': 'لديك وصول كامل إلى دوراتك',
     'career.ctaSub': 'تفوق في دراستك وتميز للحصول على فرص مهنية',
 
     // Referral
@@ -884,6 +892,8 @@ const translations: Record<Language, Record<string, string>> = {
     'career.highlight3': 'Processus transparent et conforme — aucune garantie, uniquement une considération basée sur le mérite',
     'career.disclaimer': 'Avertissement : L\'achèvement du cours ne constitue pas une garantie, une promesse ou une obligation d\'emploi. Aladiah Management peut, à sa seule discrétion, offrir des opportunités d\'emploi ou de contrat à des diplômés sélectionnés. Cette disposition ne donne droit à aucun étudiant à un placement. Toutes les décisions d\'embauche sont soumises aux lois applicables, aux exigences de visa et aux conditions commerciales.',
     'career.cta': 'Commencez Votre Parcours',
+    'career.enrolled': 'Déjà Inscrit',
+    'career.enrolledSub': 'Vous avez un accès complet à vos cours',
     'career.ctaSub': 'Excellez dans vos études et démarquez-vous pour des opportunités de carrière',
 
     // Referral
@@ -1068,6 +1078,8 @@ const translations: Record<Language, Record<string, string>> = {
     'career.highlight3': 'Transparenter, konformer Prozess — keine Garantien, nur leistungsbasierte Berücksichtigung',
     'career.disclaimer': 'Haftungsausschluss: Der Kursabschluss stellt keine Garantie, kein Versprechen oder keine Verpflichtung zur Beschäftigung dar. Aladiah Management kann nach eigenem Ermessen ausgewählten Absolventen Beschäftigungs- oder Vertragsmöglichkeiten anbieten. Diese Bestimmung berechtigt keinen Studenten zur Vermittlung. Alle Einstellungsentscheidungen unterliegen geltenden Gesetzen, Visaanforderungen und Geschäftsbedingungen.',
     'career.cta': 'Starten Sie Ihre Reise',
+    'career.enrolled': 'Bereits Eingeschrieben',
+    'career.enrolledSub': 'Sie haben vollen Zugang zu Ihren Kursen',
     'career.ctaSub': 'Glänzen Sie in Ihrem Studium und heben Sie sich für Karrierechancen ab',
 
     // Referral
@@ -1252,6 +1264,8 @@ const translations: Record<Language, Record<string, string>> = {
     'career.highlight3': '透明でコンプライアンスに準拠したプロセス——保証なし、実力に基づく検討のみ',
     'career.disclaimer': '免責事項：コースの修了は、雇用の保証、約束、または義務を構成するものではありません。Aladiah Managementは、独自の裁量により、選ばれた卒業生に雇用または契約の機会を提供する場合があります。この規定は、いかなる学生にも配置の権利を付与するものではありません。すべての採用決定は、適用される法律、ビザ要件、およびビジネス条件に従います。',
     'career.cta': '旅を始めましょう',
+    'career.enrolled': '登録済み',
+    'career.enrolledSub': 'コースに完全アクセスできます',
     'career.ctaSub': '学業で卓越し、キャリア機会のために際立ちましょう',
 
     // Referral
