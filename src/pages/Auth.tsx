@@ -47,7 +47,12 @@ const Auth = () => {
         }
 
         // Regular student — send OTP and show verification screen
-        await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+        const { error: otpError } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+        if (otpError) {
+          console.error('OTP error:', otpError);
+          toast({ title: 'OTP Error', description: otpError.message, variant: 'destructive' });
+          return;
+        }
         setIsAdmin(false);
         setStep('otp');
         toast({ title: '🔐 Verification code sent!', description: 'Check ' + email + ' for your 6-digit code.' });

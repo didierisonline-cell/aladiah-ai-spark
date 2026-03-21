@@ -56,11 +56,11 @@ const DEFAULT_INFLUENCERS = [
   { name: 'Yailin Promo', handle: '@yailinviral', region: 'Africa', students: 12, revenue: 3588, commission: 20, trend: 'up' },
 ];
 const AGENT_USAGE = [
-  { name: 'Prof. Didier', color: '#17356b', pct: 42 },
-  { name: 'Bettyna', color: '#534AB7', pct: 24 },
-  { name: 'Maria', color: '#185FA5', pct: 18 },
-  { name: 'Juan Carlos', color: '#BA7517', pct: 10 },
-  { name: 'Charly', color: '#D85A30', pct: 6 },
+  { name: 'Scrum Master', color: '#17356b', pct: 42 },
+  { name: 'Agile & Scrum', color: '#534AB7', pct: 24 },
+  { name: 'Jira Training', color: '#185FA5', pct: 18 },
+  { name: 'SAFe 6.0', color: '#BA7517', pct: 10 },
+  { name: 'Managing AI', color: '#D85A30', pct: 6 },
 ];
 const GEO = [
   { region: 'United States', students: 1, pct: 100 },
@@ -250,7 +250,7 @@ const AdminDashboard = () => {
               ].map((kpi, i) => <StatCard key={i} {...kpi} />)}
             </div>
             <div className="grid md:grid-cols-2 gap-6">
-              <Card><CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><Bot className="w-4 h-4 text-primary" />AI Professor Usage</CardTitle></CardHeader>
+              <Card><CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><BookOpen className="w-4 h-4 text-primary" />Top Courses by Enrollment</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
                   {AGENT_USAGE.map(a => (
                     <div key={a.name} className="flex items-center gap-3">
