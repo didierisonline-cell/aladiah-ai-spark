@@ -15,3 +15,12 @@
 .portal-root input, .portal-root textarea { background: rgba(255,255,255,0.07) !important; color: white !important; }
 .portal-glow-1 { position: fixed; top: 10%; right: 5%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(37,99,235,0.08), transparent 70%); pointer-events: none; z-index: 0; border-radius: 50%; }
 .portal-glow-2 { position: fixed; bottom: 15%; left: 3%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(59,130,246,0.06), transparent 70%); pointer-events: none; z-index: 0; border-radius: 50%; }
+.portal-root button { color: white; }
+.portal-root .text-foreground { color: white; }
+.portal-root [class*="text-muted"] { color: rgba(255,255,255,0.6); }
+.portal-root [class*="font-medium"] { color: white; }
+.portal-root [class*="font-bold"] { color: white; }
+.portal-root [class*="font-semibold"] { color: white; }
+.portal-root p { color: rgba(255,255,255,0.8); }
+.portal-root span { color: rgba(255,255,255,0.8); }
+.portal-root small { color: rgba(255,255,255,0.5); }

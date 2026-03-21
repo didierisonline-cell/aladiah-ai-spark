@@ -94,7 +94,7 @@ const KnowledgeGraph = ({ weakAreas = [], strongAreas = [], onTopicSelect }: Kno
           <div className="space-y-3">
             {Object.entries(categories).map(([cat, catNodes]) => (
               <div key={cat}>
-                <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-1.5">{cat}</p>
+                <p className="text-[11px] uppercase tracking-wider text-white font-bold mb-1.5">{cat}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {catNodes.map(node => {
                     const cfg = statusConfig[node.status];
@@ -107,9 +107,9 @@ const KnowledgeGraph = ({ weakAreas = [], strongAreas = [], onTopicSelect }: Kno
                         }}
                         className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 border ${
                           selectedNode === node.id
-                            ? 'border-primary bg-primary/10 text-primary'
+                            ? 'border-blue-400 bg-blue-500/20 text-white'
                             : node.status === 'locked'
-                            ? 'border-border bg-muted/30 text-muted-foreground/50 cursor-not-allowed'
+                            ? 'border-white/20 bg-white/5 text-white/40 cursor-not-allowed'
                             : 'border-border bg-card text-foreground hover:border-primary/30 hover:bg-primary/5'
                         }`}
                         disabled={node.status === 'locked'}
