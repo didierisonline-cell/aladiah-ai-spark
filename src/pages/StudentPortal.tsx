@@ -207,7 +207,7 @@ const StudentPortal = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="portal-root min-h-screen flex items-center justify-center">
         <GraduationCap className="w-12 h-12 text-primary animate-pulse" />
       </div>
     );
@@ -248,7 +248,7 @@ const StudentPortal = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="portal-root min-h-screen">
       <Header />
 
       {showFounderWelcome && (
@@ -370,9 +370,10 @@ const StudentPortal = () => {
                   </p>
                 </div>
 
-                <Button onClick={reminder.action} variant="outline">
-                  {reminder.actionLabel}
-                </Button>
+                <Button onClick={reminder.action} style={{
+    background: reminder.type === 'assignment' ? 'linear-gradient(135deg,#2563eb,#3b82f6)' : reminder.type === 'payment' ? 'linear-gradient(135deg,#d97706,#f59e0b)' : 'linear-gradient(135deg,#059669,#10b981)',
+    color: 'white', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+  }}>{reminder.actionLabel}</Button>
               </div>
             ))}
           </CardContent>
