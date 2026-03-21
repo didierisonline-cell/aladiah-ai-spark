@@ -11,10 +11,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
+import { PROFESSORS } from '@/data/professors';
 
 type Language = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja';
 
-const Header = () => {
+interface HeaderProps {
+  selectedProfessor?: string;
+  onProfessorChange?: (id: string) => void;
+}
+
+const Header = ({ selectedProfessor = 'james', onProfessorChange }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
@@ -27,6 +33,8 @@ const Header = () => {
     { key: 'nav.community', href: '/community', isRoute: true },
     { key: 'nav.store', href: '/store', isRoute: true },
   ];
+
+  const currentProf = PROFESSORS.find(p => p.id === selectedProfessor) || PROFESSORS[0];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#4a90b8] backdrop-blur-xl border-b border-border/30 overflow-hidden">
@@ -79,6 +87,53 @@ const Header = () => {
 
           {/* Right Actions */}
           <div className="flex items-center gap-2">
+            {/* Professor Switcher — TODO: replace emojis with mini photos in final validation */}
+            {onProfessorChange && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <motion.button
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors text-sm font-medium text-muted-foreground hover:text-foreground"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.25 }}
+                    style={{ border: '1px solid rgba(59,130,246,0.3)', borderRadius: '10px' }}
+                  >
+                    <span style={{ fontSize: '16px' }}>{currentProf.emoji || '🎓'}</span>
+                    <span className="text-xs font-semibold hidden sm:inline">{currentProf.name}</span>
+                    <ChevronDown className="w-3 h-3" />
+                  </motion.button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" style={{ background: '#0d1f3c', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '12px', padding: '6px', minWidth: '200px' }}>
+                  <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '4px 8px 6px', fontWeight: 600 }}>
+                    Change Professor
+                  </p>
+                  {PROFESSORS.map(prof => (
+                    <DropdownMenuItem
+                      key={prof.id}
+                      onClick={() => onProfessorChange(prof.id)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '10px',
+                        padding: '8px 10px', borderRadius: '8px', cursor: 'pointer',
+                        background: prof.id === selectedProfessor ? prof.bgColor : 'transparent',
+                        border: prof.id === selectedProfessor ? `1px solid \${prof.borderColor}` : '1px solid transparent',
+                        marginBottom: '2px',
+                      }}
+                    >
+                      <span style={{ fontSize: '20px' }}>{prof.emoji || '🎓'}</span>
+                      <div>
+                        <p style={{ fontSize: '12px', fontWeight: 600, color: prof.id === selectedProfessor ? '#fff' : 'rgba(255,255,255,0.7)', margin: 0 }}>
+                          {prof.name} {prof.flag}
+                        </p>
+                        <p style={{ fontSize: '10px', color: prof.id === selectedProfessor ? prof.accentColor : 'rgba(255,255,255,0.3)', margin: 0 }}>
+                          {prof.origin}
+                        </p>
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
             {/* Language Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

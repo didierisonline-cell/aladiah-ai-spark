@@ -16,6 +16,7 @@ import { useProgress } from '@/hooks/useProgress';
 import { useLearningProfile } from '@/hooks/useLearningProfile';
 import Header from '@/components/Header';
 import AgentSelector from '@/components/portal/AgentSelector';
+import ProfessorSelector from '@/components/portal/ProfessorSelector';
 import YouTubeRecommendations from '@/components/portal/YouTubeRecommendations';
 import CareerTools from '@/components/portal/CareerTools';
 import LabMode from '@/components/portal/LabMode';
@@ -71,12 +72,28 @@ const StudentPortal = () => {
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [streakModalOpen, setStreakModalOpen] = useState(false);
   const [showFounderWelcome, setShowFounderWelcome] = useState(false);
-  const [selectedProfessor, setSelectedProfessor] = useState('Professor Didier');
+  const [selectedProfessor, setSelectedProfessor] = useState('james');
   const [activeAgent, setActiveAgent] = useState('professor');
   const [pointsModalOpen, setPointsModalOpen] = useState(false);
   const [labsModalOpen, setLabsModalOpen] = useState(false);
+  const [linkedInUrl, setLinkedInUrl] = useState('');
+  const [showLinkedInInput, setShowLinkedInInput] = useState(false);
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] || 'Student';
+  
+  // Load saved LinkedIn URL
+  useEffect(() => {
+    if (user) {
+      const saved = localStorage.getItem('linkedin-url-' + user.id);
+      if (saved) setLinkedInUrl(saved);
+    }
+  }, [user]);
+
+  const saveLinkedIn = (url: string) => {
+    setLinkedInUrl(url);
+    if (user) localStorage.setItem('linkedin-url-' + user.id, url);
+    setShowLinkedInInput(false);
+  };
   const handleCloseFounderWelcome = () => {
     if (!user) return;
     const welcomeKey = `founder-welcome-seen-${user.id}`;
@@ -249,7 +266,7 @@ const StudentPortal = () => {
 
   return (
     <div className="portal-root min-h-screen">
-      <Header />
+      <Header selectedProfessor={selectedProfessor} onProfessorChange={setSelectedProfessor} />
 
       {showFounderWelcome && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
@@ -311,6 +328,52 @@ const StudentPortal = () => {
                <h1 className="text-2xl md:text-3xl font-display font-bold">
   {firstName}'s Aladiah Success Portal
 </h1>
+                {/* LinkedIn Badge — TODO: replace emoji with icon in final validation */}
+                <div style={{display:'flex',alignItems:'center',gap:'8px',marginTop:'6px'}}>
+                  {linkedInUrl ? (
+                    <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                      <a href={linkedInUrl.startsWith('http') ? linkedInUrl : 'https://'+linkedInUrl}
+                        target="_blank" rel="noopener noreferrer"
+                        onContextMenu={(e)=>{e.preventDefault();setShowLinkedInInput(true);}}
+                        onMouseDown={(e)=>{
+                          if(e.button===0){
+                            const t=setTimeout(()=>setShowLinkedInInput(true),600);
+                            e.currentTarget.addEventListener('mouseup',()=>clearTimeout(t),{once:true});
+                          }
+                        }}
+                        title="Click to open • Hold to edit"
+                        style={{display:'flex',alignItems:'center',gap:'6px',background:'rgba(10,102,194,0.15)',border:'1px solid rgba(10,102,194,0.4)',borderRadius:'20px',padding:'4px 12px',textDecoration:'none',fontSize:'12px',color:'#60a5fa',fontWeight:600,cursor:'pointer'}}>
+                        <span>💼</span> LinkedIn Profile
+                      </a>
+                    </div>
+                  ) : (
+                    <button onClick={()=>setShowLinkedInInput(true)}
+                      style={{display:'flex',alignItems:'center',gap:'6px',background:'rgba(10,102,194,0.1)',border:'1px dashed rgba(10,102,194,0.4)',borderRadius:'20px',padding:'4px 12px',fontSize:'12px',color:'rgba(255,255,255,0.5)',cursor:'pointer'}}>
+                      <span>💼</span> + Add LinkedIn Profile
+                    </button>
+                  )}
+                </div>
+                {showLinkedInInput && (
+                  <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    <div style={{background:'#0d1f3c',border:'1px solid rgba(59,130,246,0.3)',borderRadius:'16px',padding:'28px',width:'100%',maxWidth:'400px'}}>
+                      <h3 style={{color:'#fff',fontWeight:700,fontSize:'16px',marginBottom:'8px'}}>💼 Your LinkedIn Profile</h3>
+                      <p style={{color:'rgba(255,255,255,0.5)',fontSize:'12px',marginBottom:'16px'}}>Add your LinkedIn URL for quick access and AI profile suggestions.</p>
+                      <input type="url" placeholder="https://linkedin.com/in/yourname"
+                        defaultValue={linkedInUrl} id="linkedin-input"
+                        style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(59,130,246,0.3)',borderRadius:'10px',padding:'10px 14px',color:'#fff',fontSize:'13px',outline:'none',boxSizing:'border-box',marginBottom:'16px'}} />
+                      <div style={{display:'flex',gap:'10px'}}>
+                        <button onClick={()=>{const v=(document.getElementById('linkedin-input') as HTMLInputElement)?.value;if(v)saveLinkedIn(v);}}
+                          style={{flex:1,background:'linear-gradient(135deg,#0a66c2,#1e40af)',color:'#fff',border:'none',borderRadius:'10px',padding:'10px',fontSize:'13px',fontWeight:700,cursor:'pointer'}}>
+                          Save Profile
+                        </button>
+                        <button onClick={()=>setShowLinkedInInput(false)}
+                          style={{background:'rgba(255,255,255,0.07)',color:'rgba(255,255,255,0.6)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'10px 16px',fontSize:'13px',cursor:'pointer'}}>
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
 <p className="text-muted-foreground text-sm">
   Guided by Professor Didier — Founder & Your Default AI Mentor · Language: {language}
