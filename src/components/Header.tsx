@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import aladiahLogo from '@/assets/aladiah-header-logo-v2.png';
+import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
 
 type Language = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja';
 
@@ -29,7 +29,7 @@ const Header = () => {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[hsl(220_20%_96%)] backdrop-blur-xl border-b border-border/30 overflow-hidden">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#4a90b8] backdrop-blur-xl border-b border-border/30 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20 lg:h-24">
           {/* Logo */}
@@ -47,7 +47,7 @@ const Header = () => {
               }
             }}
           >
-            <img src={aladiahLogo} alt="Aladiah Academy" className="h-[7.9rem] lg:h-[9.2rem] w-auto object-contain py-1 mix-blend-multiply" style={{ imageRendering: '-webkit-optimize-contrast', filter: 'contrast(1.15) saturate(1.15) drop-shadow(0 0 0.3px rgba(0,0,0,0.3))' }} />
+            <img src={aladiahLogo} alt="Aladiah Academy" className="h-20 lg:h-24 w-auto object-contain" style={{}} />
           </motion.a>
 
           {/* Desktop Navigation */}
