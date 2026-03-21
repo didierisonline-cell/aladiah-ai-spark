@@ -11,6 +11,7 @@ import {
   ChevronRight, Trophy, AlertCircle
 } from 'lucide-react';
 import Quiz from '@/components/course/Quiz';
+import InteractiveLessonEngine from '@/components/course/InteractiveLessonEngine';
 import VideoPlayer from '@/components/course/VideoPlayer';
 import { 
   courseUITranslations, 
@@ -80,6 +81,7 @@ const ChapterView = () => {
   const [currentQuiz, setCurrentQuiz] = useState<QuizData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showChapterQuiz, setShowChapterQuiz] = useState(false);
+  const [showEngine, setShowEngine] = useState(false);
 
   // Get translations with fallback to English
   const supportedLanguages: SupportedLanguage[] = ['en', 'es', 'zh', 'ar', 'fr', 'de', 'ja'];
@@ -325,6 +327,45 @@ const ChapterView = () => {
                   </div>
                 </Card>
               )}
+
+              {/* Interactive Lesson Engine Toggle */}
+              <div className="mt-4">
+                <button
+                  onClick={() => setShowEngine(v => !v)}
+                  className="w-full flex items-center justify-between px-5 py-3 rounded-xl font-semibold text-sm text-white transition-all"
+                  style={{ background: showEngine ? 'linear-gradient(135deg,#1e3a8a,#2563eb)' : 'rgba(30,58,138,0.15)', border: '1px solid rgba(59,130,246,0.3)' }}
+                >
+                  <div className="flex items-center gap-2">
+                    <span style={{ fontSize: 16 }}>🎓</span>
+                    <span>{showEngine ? 'Hide' : 'Start'} Interactive Lesson with Professor Didier</span>
+                  </div>
+                  <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 18 }}>{showEngine ? '▲' : '▼'}</span>
+                </button>
+
+                {showEngine && (
+                  <div className="mt-2 rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(59,130,246,0.2)', minHeight: 600 }}>
+                    <InteractiveLessonEngine
+                      courseTitle={courseContent.title}
+                      moduleTitle={chapterContent.title}
+                      lessonTitle={getVideoContent(currentVideo || videos[0]).title}
+                      lessonIndex={currentVideo ? currentVideo.order_index - 1 : 0}
+                      totalLessons={videos.length}
+                      onComplete={(score) => {
+                        if (score && score >= 70) {
+                          handleVideoComplete();
+                        }
+                      }}
+                      onBack={() => setShowEngine(false)}
+                      onGoHome={() => window.location.href = '/portal'}
+                      onNextLesson={() => {
+                        const next = videos.find(v => v.order_index === (currentVideo?.order_index || 0) + 1);
+                        if (next) { setCurrentVideo(next); setShowEngine(false); setTimeout(() => setShowEngine(true), 100); }
+                        else setShowEngine(false);
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </motion.div>
           </div>
 
