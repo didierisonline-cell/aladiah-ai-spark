@@ -88,19 +88,19 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Content */}
           <div className="space-y-8">
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-row items-center gap-3">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-secondary/10 border border-secondary/20 backdrop-blur-sm"
               >
-                <Sparkles className="w-4 h-4 text-secondary" />
-                <span className="text-sm font-semibold text-secondary tracking-wide">{t('hero.badge')}</span>
+                <Sparkles className="w-4 h-4 text-secondary flex-shrink-0" />
+                <span className="text-sm font-semibold text-secondary tracking-wide">{t("hero.badge")}</span>
               </motion.div>
 
               <motion.a
-                href="https://aladiahmanagement.com"
+                href="http://localhost:8084"
                 target="_blank"
                 rel="noopener noreferrer"
                 initial={{ opacity: 0, y: 20 }}
@@ -108,7 +108,7 @@ const Hero = () => {
                 transition={{ duration: 0.6, delay: 0.05 }}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-primary/30 bg-primary/5 backdrop-blur-sm hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 group"
               >
-                <Building2 className="w-4 h-4 text-primary" />
+                <Building2 className="w-4 h-4 text-primary flex-shrink-0" />
                 <span className="text-sm font-semibold text-primary tracking-wide uppercase">Boutique IT Staffing & Consulting</span>
                 <ArrowRight className="w-3.5 h-3.5 text-primary opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
               </motion.a>

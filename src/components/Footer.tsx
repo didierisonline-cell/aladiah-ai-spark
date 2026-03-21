@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useState } from 'react';
-import { Mail, MapPin, Phone, Linkedin, ArrowUpRight, Shield } from 'lucide-react';
+import { Mail, MapPin, Phone, Linkedin, Instagram, Facebook, Twitter, ArrowUpRight, Shield } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -62,15 +62,11 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
                 {t('footer.company')}
               </p>
               {/* Social */}
-              <div className="flex items-center gap-3">
-                <a 
-                  href="https://linkedin.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110"
-                >
-                  <Linkedin className="w-4 h-4 text-white/70" />
-                </a>
+                            <div className="flex items-center gap-3 flex-wrap">
+                <a key="li" href="https://linkedin.com/company/aladiahacademy" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110"><Linkedin className="w-4 h-4 text-white/70" /></a>
+                <a key="ig" href="https://instagram.com/aladiahacademy" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110"><Instagram className="w-4 h-4 text-white/70" /></a>
+                <a key="fb" href="https://facebook.com/aladiahacademy" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110"><Facebook className="w-4 h-4 text-white/70" /></a>
+                <a key="tw" href="https://x.com/aladiahacademy" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110"><Twitter className="w-4 h-4 text-white/70" /></a>
               </div>
             </div>
 

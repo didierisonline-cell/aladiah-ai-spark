@@ -76,7 +76,7 @@ const Header = ({ selectedProfessor = 'james', onProfessorChange, onProfileClick
                     el?.scrollIntoView({ behavior: 'smooth' });
                   }
                 }}
-                className="px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 font-medium text-sm"
+                className="px-4 py-2 rounded-lg text-white hover:text-white/80 hover:bg-white/10 transition-all duration-200 font-medium text-sm"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}

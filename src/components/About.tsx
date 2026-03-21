@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Award, Sparkles, Users, Shield, Ship, Briefcase, GraduationCap, Globe, Linkedin, Quote } from 'lucide-react';
+import { Award, Sparkles, Users, Shield, Ship, Briefcase, GraduationCap, Globe, Linkedin, Instagram, Facebook, Twitter, Quote } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import founderPhoto from '@/assets/founder-photo.png';
 import bettynaPhoto from '@/assets/professors/bettyna.jpg';
@@ -105,15 +105,11 @@ const About = () => {
               <p className="text-primary-foreground/80 font-medium mb-1">{t('about.founder')}</p>
               <p className="text-primary-foreground/50 text-sm mb-6">Aladiah Management</p>
               
-              <div className="flex items-center gap-3">
-                <a 
-                  href="https://linkedin.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="w-11 h-11 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 flex items-center justify-center transition-all duration-300 hover:scale-110"
-                >
-                  <Linkedin className="w-5 h-5 text-primary-foreground" />
-                </a>
+                            <div className="flex items-center gap-3 flex-wrap">
+                <a key="li" href="https://linkedin.com/in/didier-aladiah" target="_blank" rel="noopener noreferrer" className="w-11 h-11 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 flex items-center justify-center transition-all duration-300 hover:scale-110"><Linkedin className="w-5 h-5 text-primary-foreground" /></a>
+                <a key="ig" href="https://instagram.com/aladiahacademy" target="_blank" rel="noopener noreferrer" className="w-11 h-11 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 flex items-center justify-center transition-all duration-300 hover:scale-110"><Instagram className="w-5 h-5 text-primary-foreground" /></a>
+                <a key="fb" href="https://facebook.com/aladiahacademy" target="_blank" rel="noopener noreferrer" className="w-11 h-11 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 flex items-center justify-center transition-all duration-300 hover:scale-110"><Facebook className="w-5 h-5 text-primary-foreground" /></a>
+                <a key="tw" href="https://x.com/aladiahacademy" target="_blank" rel="noopener noreferrer" className="w-11 h-11 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 flex items-center justify-center transition-all duration-300 hover:scale-110"><Twitter className="w-5 h-5 text-primary-foreground" /></a>
               </div>
 
               {/* Quote on the left panel */}
@@ -127,6 +123,7 @@ const About = () => {
 
             {/* Right: Bio + Credentials */}
             <div className="lg:col-span-8 p-8 lg:p-12 flex flex-col justify-center">
+              <h3 className="text-3xl font-display font-bold text-foreground mb-1">Didier</h3>
               <h4 className="text-2xl font-display font-bold text-foreground mb-6">
                 {t('founder.bio.title')}
               </h4>
@@ -188,8 +185,8 @@ const About = () => {
   
       <div className="container mx-auto px-4 mt-20 pb-16">
         <div className="text-center mb-12">
-          <h3 className="text-2xl sm:text-3xl font-display font-bold text-foreground mb-3">Meet the AI Professors</h3>
-          <p className="text-muted-foreground max-w-xl mx-auto">Powered by AI. Built around real expertise. Here to guide you every step of the way.</p>
+          <h3 className="text-2xl sm:text-3xl font-display font-bold text-foreground mb-3">Meet the Academic Staff</h3>
+          <p className="text-muted-foreground max-w-xl mx-auto">Real professionals. Real experience. Here to support your learning journey.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {professors.map((prof, index) => (
