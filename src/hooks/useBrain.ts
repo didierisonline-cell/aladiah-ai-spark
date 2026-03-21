@@ -18,7 +18,7 @@ export interface BrainAnalytics {
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
-export function useBrain(defaultAgent: AgentKey = "professor") {
+export function useBrain(defaultAgent: AgentKey = "professor", professorId: string = "james") {
   const { language } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
@@ -39,6 +39,7 @@ export function useBrain(defaultAgent: AgentKey = "professor") {
           body: JSON.stringify({
             message: userMessage,
             agentKey: activeAgent,
+            professorId,
             language,
             history: messages.slice(-10).map((m) => ({ role: m.role, content: m.content })),
           }),

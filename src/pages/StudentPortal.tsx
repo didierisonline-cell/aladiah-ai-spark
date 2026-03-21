@@ -209,6 +209,7 @@ const StudentPortal = () => {
         body: JSON.stringify({
           message: chatInput,
           agentKey: activeAgent,
+          professorId: selectedProfessor,
           language,
           history: chatMessages.slice(-10).map(m => ({ role: m.role, content: m.content })),
         }),
@@ -574,7 +575,7 @@ const StudentPortal = () => {
                     <div className="text-center py-12 space-y-4">
                       <Bot className="w-16 h-16 mx-auto text-primary/30" />
                       <div>
-                        <p className="font-medium text-muted-foreground">¡Hola! I'm {selectedProfessor}, your AI professor</p>
+                        <p className="font-medium text-muted-foreground">Hello! Your professor is ready to help.</p>
                         <p className="text-sm text-muted-foreground mt-1">Try asking me:</p>
                       </div>
 
