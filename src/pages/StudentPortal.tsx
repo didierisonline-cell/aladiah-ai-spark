@@ -16,6 +16,7 @@ import { useProgress } from '@/hooks/useProgress';
 import { useLearningProfile } from '@/hooks/useLearningProfile';
 import Header from '@/components/Header';
 import AgentSelector from '@/components/portal/AgentSelector';
+import StudentProfileWidget from '@/components/portal/StudentProfileWidget';
 import ProfessorSelector from '@/components/portal/ProfessorSelector';
 import YouTubeRecommendations from '@/components/portal/YouTubeRecommendations';
 import CareerTools from '@/components/portal/CareerTools';
@@ -78,6 +79,7 @@ const StudentPortal = () => {
   const [labsModalOpen, setLabsModalOpen] = useState(false);
   const [linkedInUrl, setLinkedInUrl] = useState('');
   const [showLinkedInInput, setShowLinkedInInput] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] || 'Student';
   
@@ -266,7 +268,7 @@ const StudentPortal = () => {
 
   return (
     <div className="portal-root min-h-screen">
-      <Header selectedProfessor={selectedProfessor} onProfessorChange={setSelectedProfessor} />
+      <Header selectedProfessor={selectedProfessor} onProfessorChange={setSelectedProfessor} onProfileClick={() => setShowProfile(true)} />
 
       {showFounderWelcome && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
@@ -317,6 +319,7 @@ const StudentPortal = () => {
         </div>
       )}
 
+      {showProfile && <StudentProfileWidget user={user} onClose={() => setShowProfile(false)} />}
       <main className="container mx-auto px-4 py-8 pt-24">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <div className="flex items-center justify-between">

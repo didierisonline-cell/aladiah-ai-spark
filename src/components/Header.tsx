@@ -18,9 +18,10 @@ type Language = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja';
 interface HeaderProps {
   selectedProfessor?: string;
   onProfessorChange?: (id: string) => void;
+  onProfileClick?: () => void;
 }
 
-const Header = ({ selectedProfessor = 'james', onProfessorChange }: HeaderProps) => {
+const Header = ({ selectedProfessor = 'james', onProfessorChange, onProfileClick }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
@@ -132,6 +133,20 @@ const Header = ({ selectedProfessor = 'james', onProfessorChange }: HeaderProps)
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
+            )}
+
+            {/* Profile Button */}
+            {onProfileClick && (
+              <motion.button
+                onClick={onProfileClick}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors text-sm font-medium text-muted-foreground hover:text-foreground"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px' }}
+              >
+                <span style={{ fontSize: '16px' }}>👤</span>
+              </motion.button>
             )}
 
             {/* Language Switcher */}
