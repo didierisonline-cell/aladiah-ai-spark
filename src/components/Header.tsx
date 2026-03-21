@@ -38,7 +38,7 @@ const Header = ({ selectedProfessor = 'james', onProfessorChange, onProfileClick
   const currentProf = PROFESSORS.find(p => p.id === selectedProfessor) || PROFESSORS[0];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#4a90b8] backdrop-blur-xl border-b border-border/30 overflow-hidden">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white backdrop-blur-xl border-b border-border/30 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20 lg:h-24">
           {/* Logo */}
@@ -56,7 +56,7 @@ const Header = ({ selectedProfessor = 'james', onProfessorChange, onProfileClick
               }
             }}
           >
-            <img src={aladiahLogo} alt="Aladiah Academy" className="h-20 lg:h-24 w-auto object-contain" style={{}} />
+            <img src={aladiahLogo} alt="Aladiah Academy" className="h-20 lg:h-24 w-auto object-contain" />
           </motion.a>
 
           {/* Desktop Navigation */}
@@ -76,7 +76,7 @@ const Header = ({ selectedProfessor = 'james', onProfessorChange, onProfileClick
                     el?.scrollIntoView({ behavior: 'smooth' });
                   }
                 }}
-                className="px-4 py-2 rounded-lg text-white hover:text-white/80 hover:bg-white/10 transition-all duration-200 font-medium text-sm"
+                className="px-4 py-2 rounded-lg text-primary hover:text-primary/80 hover:bg-primary/10 transition-all duration-200 font-medium text-sm"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}

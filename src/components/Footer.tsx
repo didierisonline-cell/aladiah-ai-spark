@@ -43,7 +43,7 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
   };
 
   return (
-    <footer ref={ref} className="relative overflow-hidden" style={{background:"linear-gradient(135deg,#0a1628,#0d1f3c)",borderTop:"1px solid rgba(59,130,246,0.2)",color:"rgba(255,255,255,0.85)"}}>
+    <footer ref={ref} className="relative overflow-hidden" style={{background:"#ffffff",borderTop:"1px solid rgba(0,0,0,0.1)",color:"#0a1628"}}>
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20 pointer-events-none" />
       
@@ -55,24 +55,24 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
               <div className="mb-6">
                 <img src={aladiahLogo} alt="Aladiah Academy" className="h-[12.5rem] w-auto object-contain mix-blend-screen" />
               </div>
-              <p className="text-white/60 max-w-md mb-6 leading-relaxed">
+              <p className="text-gray-600 max-w-md mb-6 leading-relaxed">
                 {t('footer.description')}
               </p>
-              <p className="text-sm text-white/40 mb-6">
+              <p className="text-sm text-gray-500 mb-6">
                 {t('footer.company')}
               </p>
               {/* Social */}
                             <div className="flex items-center gap-3 flex-wrap">
-                <a key="li" href="https://linkedin.com/company/aladiahacademy" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110"><Linkedin className="w-4 h-4 text-white/70" /></a>
-                <a key="ig" href="https://instagram.com/aladiahacademy" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110"><Instagram className="w-4 h-4 text-white/70" /></a>
-                <a key="fb" href="https://facebook.com/aladiahacademy" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110"><Facebook className="w-4 h-4 text-white/70" /></a>
-                <a key="tw" href="https://x.com/aladiahacademy" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110"><Twitter className="w-4 h-4 text-white/70" /></a>
+                <a key="li" href="https://linkedin.com/company/aladiahacademy" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all duration-300 hover:scale-110"><Linkedin className="w-4 h-4 text-gray-700" /></a>
+                <a key="ig" href="https://instagram.com/aladiahacademy" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all duration-300 hover:scale-110"><Instagram className="w-4 h-4 text-gray-700" /></a>
+                <a key="fb" href="https://facebook.com/aladiahacademy" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all duration-300 hover:scale-110"><Facebook className="w-4 h-4 text-gray-700" /></a>
+                <a key="tw" href="https://x.com/aladiahacademy" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all duration-300 hover:scale-110"><Twitter className="w-4 h-4 text-gray-700" /></a>
               </div>
             </div>
 
             {/* Quick Links */}
             <div>
-              <h4 className="font-display font-bold text-white mb-6 text-sm uppercase tracking-wider">{t('footer.quickLinks')}</h4>
+              <h4 className="font-display font-bold text-primary mb-6 text-sm uppercase tracking-wider">{t('footer.quickLinks')}</h4>
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.key}>
@@ -86,7 +86,7 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
                           handleHashLink(e, link.href);
                         }
                       }}
-                      className="text-white/60 hover:text-white transition-colors flex items-center gap-1 group"
+                      className="text-gray-600 hover:text-primary transition-colors flex items-center gap-1 group"
                     >
                       {(link as any).raw ? link.key : t(link.key)}
                       <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -98,22 +98,22 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
 
             {/* Contact */}
             <div>
-              <h4 className="font-display font-bold text-white mb-6 text-sm uppercase tracking-wider">{t('footer.contact')}</h4>
+              <h4 className="font-display font-bold text-primary mb-6 text-sm uppercase tracking-wider">{t('footer.contact')}</h4>
               <ul className="space-y-4">
-                <li className="flex items-center gap-3 text-white/60">
-                  <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                <li className="flex items-center gap-3 text-gray-600">
+                  <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
                     <MapPin className="w-4 h-4 text-secondary" />
                   </div>
                   <span className="text-sm">{t('footer.location')}</span>
                 </li>
-                <li className="flex items-center gap-3 text-white/60">
-                  <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                <li className="flex items-center gap-3 text-gray-600">
+                  <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
                     <Mail className="w-4 h-4 text-secondary" />
                   </div>
                   <span className="text-sm">info@aladiahacademy.com</span>
                 </li>
-                <li className="flex items-center gap-3 text-white/60">
-                  <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                <li className="flex items-center gap-3 text-gray-600">
+                  <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
                     <Phone className="w-4 h-4 text-secondary" />
                   </div>
                   <span className="text-sm">+1 (809) 555-0123</span>
@@ -124,15 +124,15 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-white/10 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-white/40 text-sm">
+        <div className="border-t border-gray-200 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-gray-500 text-sm">
             © {new Date().getFullYear()} Aladiah Academy. {t('footer.rights')}
           </p>
           <div className="flex items-center gap-4">
             {user && (
               <button
                 onClick={() => navigate('/portal')}
-                className="text-white/40 hover:text-white text-xs transition-colors"
+                className="text-gray-500 hover:text-primary text-xs transition-colors"
               >
                 My Portal
               </button>
@@ -140,13 +140,13 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
             {isAdmin && (
               <button
                 onClick={() => navigate('/admin')}
-                className="flex items-center gap-1 text-white/40 hover:text-secondary text-xs transition-colors"
+                className="flex items-center gap-1 text-gray-500 hover:text-secondary text-xs transition-colors"
               >
                 <Shield className="w-3 h-3" />
                 Admin
               </button>
             )}
-            <p className="text-white/30 text-xs">
+            <p className="text-gray-400 text-xs">
               Powered by AI Innovation
             </p>
           </div>
