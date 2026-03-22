@@ -20,6 +20,7 @@ import professorRafaelImg from '@/assets/professor-rafael.png';
 import professorLuciaImg from '@/assets/professor-lucia.png';
 import classroomBg from '@/assets/classroom-bg.jpg';
 import HeyGenAvatar from './HeyGenAvatar';
+import LiveClassroom from './LiveClassroom';
 
 const professors = [
   {
@@ -85,6 +86,7 @@ const VideoPlayer = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showHeyGen, setShowHeyGen] = useState(false);
+  const [showLiveClass, setShowLiveClass] = useState(false);
   const [progress, setProgress] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
   const [script, setScript] = useState<string>('');
