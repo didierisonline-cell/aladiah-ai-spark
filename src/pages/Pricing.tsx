@@ -233,7 +233,7 @@ const Pricing = () => {
 
         {/* Trust badges */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} style={{ display: "flex", justifyContent: "center", gap: "32px", marginTop: "60px", flexWrap: "wrap" }}>
-          {["🔒 Secure payment via Stripe", "📧 Cancel anytime", "🌍 Available in 7 languages", "✅ 30-day money back"].map((badge) => (
+          {["🔒 Secure payment via Stripe", "📧 Cancel anytime", "🌍 Available in 7 languages", "✅ 7-day money back guarantee"].map((badge) => (
             <span key={badge} style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>{badge}</span>
           ))}
         </motion.div>
