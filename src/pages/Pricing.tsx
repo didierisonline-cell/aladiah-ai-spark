@@ -82,6 +82,15 @@ const PLANS = [
 const Pricing = () => {
   const [annual, setAnnual] = useState(false);
   const { t } = useLanguage();
+
+  const PLANS = PLAN_META.map(p => ({
+    ...p,
+    tier: t(`pricing.${p.tierKey}.tier`),
+    name: t(`pricing.${p.tierKey}.name`),
+    cta: t(`pricing.${p.tierKey}.cta`),
+    features: Array.from({length: p.tierKey === "t1" ? 7 : p.tierKey === "t2" ? 8 : 9}, (_, i) => t(`pricing.${p.tierKey}.f${i+1}`)),
+    missing: Array.from({length: p.missingCount}, (_, i) => t(`pricing.${p.tierKey}.m${i+1}`)),
+  }));
   const [loading, setLoading] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -210,7 +219,7 @@ const Pricing = () => {
                     opacity: loading === plan.id ? 0.7 : 1,
                   }}
                 >
-                  {loading === plan.id ? {t('pricing.redirecting')} : plan.cta}
+                  {loading === plan.id ? t('pricing.redirecting') : plan.cta}
                 </button>
 
                 {/* Features */}
