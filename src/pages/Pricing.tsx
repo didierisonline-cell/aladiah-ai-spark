@@ -79,6 +79,12 @@ const PLANS = [
   },
 ];
 
+const PLAN_META = [
+  { id: "foundation", price: 99, priceId: import.meta.env.VITE_STRIPE_PRICE_FOUNDATION || "price_1TEFgA0CtfIq2xPfWJdun1vH", icon: Shield, color: "#3b82f6", glow: "rgba(59,130,246,0.3)", popular: false, tierKey: "t1", missingCount: 3 },
+  { id: "accelerator", price: 299, priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || "price_1TEFgm0CtfIq2xPfkuYGY5sI", icon: Zap, color: "#f59e0b", glow: "rgba(245,158,11,0.3)", popular: true, tierKey: "t2", missingCount: 1 },
+  { id: "elite", price: 499, priceId: import.meta.env.VITE_STRIPE_PRICE_ELITE || "price_1TEFhA0CtfIq2xPfZOXBhYlN", icon: Crown, color: "#10b981", glow: "rgba(16,185,129,0.3)", popular: false, tierKey: "t3", missingCount: 0 },
+];
+
 const Pricing = () => {
   const [annual, setAnnual] = useState(false);
   const { t } = useLanguage();
