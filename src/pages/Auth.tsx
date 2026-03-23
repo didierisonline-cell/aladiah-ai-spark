@@ -42,10 +42,9 @@ const Auth = () => {
           .eq('user_id', data.user.id).eq('role', 'admin').maybeSingle();
 
         if (roleData) {
-          // Admin bypasses OTP — goes straight to admin dashboard
-          toast({ title: t('auth.welcome'), description: 'Redirecting to your dashboard.' });
-          navigate('/admin');
-          return;
+          // Admin goes to portal like everyone else
+          // Access /admin directly via URL
+          toast({ title: t('auth.welcome'), description: 'Redirecting to your portal.' });
         }
 
         // Regular student — send OTP and show verification screen
