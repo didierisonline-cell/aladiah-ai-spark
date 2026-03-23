@@ -50,6 +50,8 @@ const EXCLUDED_COURSES = ['Rogers-Shaw', 'IT Merger', 'Network Integration'];
 
 const StudentPortal = () => {
   const { user, loading: authLoading } = useAuth();
+  const { language, t } = useLanguage();
+  const navigate = useNavigate();
 
   // Auth guard — redirect to /auth if not logged in
   useEffect(() => {
@@ -57,8 +59,6 @@ const StudentPortal = () => {
       navigate('/auth');
     }
   }, [user, authLoading, navigate]);
-  const { language } = useLanguage();
-  const navigate = useNavigate();
   const { progress: overallProgress } = useProgress(user?.id);
   const { profile: learningProfile, recordQuestion, getDueReviews } = useLearningProfile(user?.id);
 
@@ -225,7 +225,7 @@ const StudentPortal = () => {
       setChatMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
     } catch (e) {
       console.error(e);
-      setChatMessages(prev => [...prev, { role: 'assistant', content: 'Connection error. Make sure the brain server is running on port 3001.' }]);
+      setChatMessages(prev => [...prev, { role: 'assistant', content: t('portal.chat.error') }]);
     } finally {
       setIsStreaming(false);
     }
@@ -242,35 +242,35 @@ const StudentPortal = () => {
   const reminders = [
     {
       id: 1,
-      title: 'Assignment deadline approaching',
-      message: 'Your next assignment is coming up soon. Click to continue where you left off.',
-      actionLabel: 'Go to Assignment',
+      title: t('portal.reminder.assignment.title'),
+      message: t('portal.reminder.assignment.msg'),
+      actionLabel: t('portal.reminder.assignment.btn'),
       action: () => navigate('/courses'),
       type: 'assignment',
     },
     {
       id: 2,
-      title: 'Payment reminder',
-      message: 'A payment deadline is approaching. Click here to review your billing details.',
-      actionLabel: 'Go to Payment',
+      title: t('portal.reminder.payment.title'),
+      message: t('portal.reminder.payment.msg'),
+      actionLabel: t('portal.reminder.payment.btn'),
       action: () => navigate('/dashboard'),
       type: 'payment',
     },
     {
       id: 3,
-      title: 'Join the community',
-      message: 'Share your progress, learn from others, and stay motivated with the Aladiah community.',
-      actionLabel: 'Open Community',
+      title: t('portal.reminder.community.title'),
+      message: t('portal.reminder.community.msg'),
+      actionLabel: t('portal.reminder.community.btn'),
       action: () => navigate('/community'),
       type: 'community',
     },
   ];
 
   const stats = [
-    { icon: TrendingUp, label: 'Progress', value: `${overallProgress}%`, color: 'text-primary', onClick: () => setProgressModalOpen(true) },
-    { icon: Flame, label: 'Streak', value: `${streak} days`, color: 'text-secondary', onClick: () => setStreakModalOpen(true) },
-    { icon: Star, label: 'Points', value: totalPoints.toLocaleString(), color: 'text-accent', onClick: () => setPointsModalOpen(true) },
-    { icon: FlaskConical, label: 'Labs Done', value: labs.filter(l => l.completed).length.toString(), color: 'text-primary', onClick: () => setLabsModalOpen(true) },
+    { icon: TrendingUp, label: t('portal.stat.progress'), value: `${overallProgress}%`, color: 'text-primary', onClick: () => setProgressModalOpen(true) },
+    { icon: Flame, label: t('portal.stat.streak'), value: t('portal.stat.streak.days').replace('{n}', String(streak)), color: 'text-secondary', onClick: () => setStreakModalOpen(true) },
+    { icon: Star, label: t('portal.stat.points'), value: totalPoints.toLocaleString(), color: 'text-accent', onClick: () => setPointsModalOpen(true) },
+    { icon: FlaskConical, label: t('portal.stat.labs'), value: labs.filter(l => l.completed).length.toString(), color: 'text-primary', onClick: () => setLabsModalOpen(true) },
   ];
 
   return (
@@ -287,37 +287,26 @@ const StudentPortal = () => {
 
               <div className="flex-1">
                 <h2 className="text-2xl font-bold mb-2">
-                  Welcome to Aladiah, {firstName}
+                  {t(‘portal.welcome.title’).replace(‘{name}’, firstName)}
                 </h2>
 
                 <p className="text-muted-foreground mb-4">
-                  Thank you for choosing this path to success.
+                  {t(‘portal.welcome.sub’)}
                 </p>
 
                 <div className="space-y-3 text-sm leading-6">
-                  <p>
-                    I’m Professor Didier, and I want to personally welcome you.
-                    I will be with you every step of your journey here at Aladiah.
-                  </p>
-
-                  <p>
-                    This platform is designed to help you grow, practice, and succeed.
-                    We welcome your feedback and encourage you to participate in the community.
-                  </p>
-
-                  <p>
-                    You can stay with me as your main professor, or explore other professors
-                    to experience different teaching styles.
-                  </p>
+                  <p>{t(‘portal.welcome.p1’)}</p>
+                  <p>{t(‘portal.welcome.p2’)}</p>
+                  <p>{t(‘portal.welcome.p3’)}</p>
                 </div>
 
                 <div className="mt-6 flex gap-3">
                   <Button onClick={handleCloseFounderWelcome}>
-                    Enter My Portal
+                    {t(‘portal.welcome.enter’)}
                   </Button>
 
-                  <Button variant="outline" onClick={() => navigate('/community')}>
-                    Go to Community
+                  <Button variant="outline" onClick={() => navigate(‘/community’)}>
+                    {t(‘portal.welcome.community’)}
                   </Button>
                 </div>
               </div>
@@ -336,7 +325,7 @@ const StudentPortal = () => {
               </div>
               <div>
                <h1 className="text-2xl md:text-3xl font-display font-bold">
-  {firstName}'s Aladiah Success Portal
+  {t('portal.title').replace('{name}', firstName)}
 </h1>
                 {/* LinkedIn Badge — TODO: replace emoji with icon in final validation */}
                 <div style={{display:'flex',alignItems:'center',gap:'8px',marginTop:'6px'}}>
@@ -353,32 +342,32 @@ const StudentPortal = () => {
                         }}
                         title="Click to open • Hold to edit"
                         style={{display:'flex',alignItems:'center',gap:'6px',background:'rgba(10,102,194,0.15)',border:'1px solid rgba(10,102,194,0.4)',borderRadius:'20px',padding:'4px 12px',textDecoration:'none',fontSize:'12px',color:'#60a5fa',fontWeight:600,cursor:'pointer'}}>
-                        <span>💼</span> LinkedIn Profile
+                        <span>💼</span> {t('portal.linkedin.badge')}
                       </a>
                     </div>
                   ) : (
                     <button onClick={()=>setShowLinkedInInput(true)}
                       style={{display:'flex',alignItems:'center',gap:'6px',background:'rgba(10,102,194,0.1)',border:'1px dashed rgba(10,102,194,0.4)',borderRadius:'20px',padding:'4px 12px',fontSize:'12px',color:'rgba(255,255,255,0.5)',cursor:'pointer'}}>
-                      <span>💼</span> + Add LinkedIn Profile
+                      <span>💼</span> {t('portal.linkedin.add')}
                     </button>
                   )}
                 </div>
                 {showLinkedInInput && (
                   <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center'}}>
                     <div style={{background:'#0d1f3c',border:'1px solid rgba(59,130,246,0.3)',borderRadius:'16px',padding:'28px',width:'100%',maxWidth:'400px'}}>
-                      <h3 style={{color:'#fff',fontWeight:700,fontSize:'16px',marginBottom:'8px'}}>💼 Your LinkedIn Profile</h3>
-                      <p style={{color:'rgba(255,255,255,0.5)',fontSize:'12px',marginBottom:'16px'}}>Add your LinkedIn URL for quick access and AI profile suggestions.</p>
+                      <h3 style={{color:'#fff',fontWeight:700,fontSize:'16px',marginBottom:'8px'}}>💼 {t('portal.linkedin.title')}</h3>
+                      <p style={{color:'rgba(255,255,255,0.5)',fontSize:'12px',marginBottom:'16px'}}>{t('portal.linkedin.desc')}</p>
                       <input type="url" placeholder="https://linkedin.com/in/yourname"
                         defaultValue={linkedInUrl} id="linkedin-input"
                         style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(59,130,246,0.3)',borderRadius:'10px',padding:'10px 14px',color:'#fff',fontSize:'13px',outline:'none',boxSizing:'border-box',marginBottom:'16px'}} />
                       <div style={{display:'flex',gap:'10px'}}>
                         <button onClick={()=>{const v=(document.getElementById('linkedin-input') as HTMLInputElement)?.value;if(v)saveLinkedIn(v);}}
                           style={{flex:1,background:'linear-gradient(135deg,#0a66c2,#1e40af)',color:'#fff',border:'none',borderRadius:'10px',padding:'10px',fontSize:'13px',fontWeight:700,cursor:'pointer'}}>
-                          Save Profile
+                          {t('portal.linkedin.save')}
                         </button>
                         <button onClick={()=>setShowLinkedInInput(false)}
                           style={{background:'rgba(255,255,255,0.07)',color:'rgba(255,255,255,0.6)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'10px 16px',fontSize:'13px',cursor:'pointer'}}>
-                          Cancel
+                          {t('portal.linkedin.cancel')}
                         </button>
                       </div>
                     </div>
@@ -386,7 +375,7 @@ const StudentPortal = () => {
                 )}
 
 <p className="text-muted-foreground text-sm">
-  Guided by Professor Didier — Founder & Your Default AI Mentor · Language: {language}
+  {t('portal.guided_by').replace('{lang}', language)}
 </p>
               </div>
             </div>
@@ -399,7 +388,7 @@ const StudentPortal = () => {
               >
                 <Button variant="outline" className="gap-2">
                   <FileText className="w-4 h-4" />
-                  <span className="hidden sm:inline">Scrum Guide</span>
+                  <span className="hidden sm:inline">{t('portal.scrum_guide')}</span>
                   <ExternalLink className="w-3 h-3" />
                 </Button>
               </a>
@@ -411,7 +400,7 @@ const StudentPortal = () => {
               >
                 <Button variant="outline" className="gap-2">
                   <FileText className="w-4 h-4" />
-                  <span className="hidden sm:inline">SAFe 6.0</span>
+                  <span className="hidden sm:inline">{t('portal.safe_guide')}</span>
                   <ExternalLink className="w-3 h-3" />
                 </Button>
               </a>
@@ -423,10 +412,10 @@ const StudentPortal = () => {
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
               <Clock className="w-5 h-5 text-primary" />
-              Action Center
+              {t('portal.action_center')}
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Stay on top of your assignments, deadlines, and important actions.
+              {t('portal.action_center.sub')}
             </p>
           </CardHeader>
 
@@ -473,18 +462,18 @@ const StudentPortal = () => {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid grid-cols-5 w-full">
-            <TabsTrigger value="overview" className="text-xs"><BookOpen className="w-3 h-3 mr-1" />Overview</TabsTrigger>
-            <TabsTrigger value="assistant" className="text-xs"><Bot className="w-3 h-3 mr-1" />Assistant</TabsTrigger>
-            <TabsTrigger value="labs" className="text-xs"><FlaskConical className="w-3 h-3 mr-1" />Labs</TabsTrigger>
-            <TabsTrigger value="career" className="text-xs"><Briefcase className="w-3 h-3 mr-1" />Career</TabsTrigger>
-            <TabsTrigger value="rewards" className="text-xs"><Gift className="w-3 h-3 mr-1" />Rewards</TabsTrigger>
+            <TabsTrigger value="overview" className="text-xs"><BookOpen className="w-3 h-3 mr-1" />{t('portal.tab.overview')}</TabsTrigger>
+            <TabsTrigger value="assistant" className="text-xs"><Bot className="w-3 h-3 mr-1" />{t('portal.tab.assistant')}</TabsTrigger>
+            <TabsTrigger value="labs" className="text-xs"><FlaskConical className="w-3 h-3 mr-1" />{t('portal.tab.labs')}</TabsTrigger>
+            <TabsTrigger value="career" className="text-xs"><Briefcase className="w-3 h-3 mr-1" />{t('portal.tab.career')}</TabsTrigger>
+            <TabsTrigger value="rewards" className="text-xs"><Gift className="w-3 h-3 mr-1" />{t('portal.tab.rewards')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
             <Card>
               <CardHeader className="pb-3 cursor-pointer group" onClick={() => navigate('/courses')}>
                 <CardTitle className="text-lg flex items-center gap-2 group-hover:text-primary transition-colors">
-                  <GraduationCap className="w-5 h-5 text-primary" /> Course Progress
+                  <GraduationCap className="w-5 h-5 text-primary" /> {t('portal.course.progress')}
                   <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors ml-auto" />
                 </CardTitle>
               </CardHeader>
@@ -506,7 +495,7 @@ const StudentPortal = () => {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground">
-                          {cp.pct === 100 ? 'Completed' : cp.pct > 0 ? 'Continue' : 'Start'}
+                          {cp.pct === 100 ? t('portal.course.completed') : cp.pct > 0 ? t('portal.course.continue') : t('portal.course.start')}
                         </span>
                         {cp.pct === 100 ? (
                           <CheckCircle className="w-4 h-4 text-green-500" />
@@ -516,7 +505,7 @@ const StudentPortal = () => {
                       </div>
                     </div>
                     <Progress value={cp.pct} className="h-2" />
-                    <p className="text-[10px] text-muted-foreground">{cp.pct}% complete · {cp.completed}/{cp.total} lessons</p>
+                    <p className="text-[10px] text-muted-foreground">{t('portal.course.pct').replace('{pct}', String(cp.pct)).replace('{done}', String(cp.completed)).replace('{total}', String(cp.total))}</p>
                   </button>
                 ))}
               </CardContent>
@@ -526,7 +515,7 @@ const StudentPortal = () => {
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <Lightbulb className="w-5 h-5 text-accent" /> AI Suggestions
+                    <Lightbulb className="w-5 h-5 text-accent" /> {t('portal.ai.suggestions')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
@@ -553,11 +542,11 @@ const StudentPortal = () => {
 
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               {[
-                { label: 'Community', path: '/community', icon: Award },
-                { label: 'Sprint Sim', path: '/simulation', icon: GraduationCap },
-                { label: 'Interview', path: '/interview', icon: Mic },
-                { label: 'Referrals', path: '/referral', icon: Trophy },
-                { label: 'Store', path: '/store', icon: Gift },
+                { label: t('portal.nav.community'), path: '/community', icon: Award },
+                { label: t('portal.nav.sprint_sim'), path: '/simulation', icon: GraduationCap },
+                { label: t('portal.nav.interview'), path: '/interview', icon: Mic },
+                { label: t('portal.nav.referrals'), path: '/referral', icon: Trophy },
+                { label: t('portal.nav.store'), path: '/store', icon: Gift },
               ].map((a, i) => (
                 <Card key={i} className="p-3 cursor-pointer hover:shadow-md transition-shadow text-center" onClick={() => navigate(a.path)}>
                   <a.icon className="w-5 h-5 mx-auto mb-1 text-primary" />
@@ -580,8 +569,8 @@ const StudentPortal = () => {
                     <div className="text-center py-12 space-y-4">
                       <Bot className="w-16 h-16 mx-auto text-primary/30" />
                       <div>
-                        <p className="font-medium text-muted-foreground">Hello! Your professor is ready to help.</p>
-                        <p className="text-sm text-muted-foreground mt-1">Try asking me:</p>
+                        <p className="font-medium text-muted-foreground">{t('portal.chat.empty')}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{t('portal.chat.try')}</p>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-w-md mx-auto">
@@ -638,7 +627,7 @@ const StudentPortal = () => {
                   <Input
                     value={chatInput}
                     onChange={e => setChatInput(e.target.value)}
-                    placeholder="Ask your professor anything..."
+                    placeholder={t('portal.chat.placeholder')}
                     disabled={isStreaming}
                     className="flex-1"
                   />
@@ -669,11 +658,11 @@ const StudentPortal = () => {
                   <Card className="p-4">
                     <div className="flex items-center gap-2 mb-3">
                       <FlaskConical className="w-5 h-5 text-primary" />
-                      <h3 className="font-bold text-lg">Enter Lab Mode</h3>
+                      <h3 className="font-bold text-lg">{t('portal.labs.title')}</h3>
                     </div>
 
                     <p className="text-sm text-muted-foreground mb-4">
-                      Type any topic you want to master — AI will break it down, quiz you, and suggest improvements.
+                      {t('portal.labs.desc')}
                     </p>
 
                     <form
@@ -689,12 +678,12 @@ const StudentPortal = () => {
                       <Input
                         value={labSearch}
                         onChange={e => setLabSearch(e.target.value)}
-                        placeholder="e.g. Sprint Planning, Product Backlog, Daily Scrum..."
+                        placeholder={t('portal.labs.placeholder')}
                         className="flex-1"
                       />
                       <Button type="submit" className="gap-2">
                         <FlaskConical className="w-4 h-4" />
-                        Lab
+                        {t('portal.labs.btn')}
                       </Button>
                     </form>
 
@@ -716,14 +705,14 @@ const StudentPortal = () => {
                   <Card>
                     <CardHeader className="pb-3">
                       <CardTitle className="text-lg flex items-center gap-2">
-                        <BookOpen className="w-5 h-5 text-primary" /> Previous Labs
+                        <BookOpen className="w-5 h-5 text-primary" /> {t('portal.labs.previous')}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       {labs.length === 0 ? (
                         <div className="text-center py-8 space-y-3">
                           <FlaskConical className="w-12 h-12 mx-auto text-muted-foreground/30" />
-                          <p className="text-sm text-muted-foreground">No labs yet! Enter a topic above to start your first lab.</p>
+                          <p className="text-sm text-muted-foreground">{t('portal.labs.empty')}</p>
                         </div>
                       ) : (
                         <div className="space-y-3">
@@ -742,13 +731,13 @@ const StudentPortal = () => {
                               >
                                 <div className="flex items-center justify-between mb-2">
                                   <Badge variant={lab.completed ? 'default' : 'outline'}>
-                                    {lab.completed ? <><CheckCircle className="w-3 h-3 mr-1" /> Complete</> : lab.difficulty_level}
+                                    {lab.completed ? <><CheckCircle className="w-3 h-3 mr-1" /> {t('portal.labs.complete')}</> : lab.difficulty_level}
                                   </Badge>
                                   {lab.score > 0 && <span className="text-sm font-medium">{lab.score}%</span>}
                                 </div>
                                 <p className="text-sm font-medium">{topic}</p>
                                 <p className="text-xs text-muted-foreground mt-1">
-                                  {new Date(lab.created_at).toLocaleDateString()} • Click to re-enter
+                                  {new Date(lab.created_at).toLocaleDateString()} • {t('portal.labs.reenter')}
                                 </p>
                               </div>
                             );
@@ -781,25 +770,25 @@ const StudentPortal = () => {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-bold flex items-center gap-2">
-                    <Star className="w-5 h-5 text-accent" /> Your Points
+                    <Star className="w-5 h-5 text-accent" /> {t('portal.rewards.title')}
                   </h3>
-                  <p className="text-sm text-muted-foreground">Earn points by engaging with the platform</p>
+                  <p className="text-sm text-muted-foreground">{t('portal.rewards.sub')}</p>
                 </div>
 
                 <div className="text-right cursor-pointer" onClick={() => setPointsModalOpen(true)}>
                   <p className="text-3xl font-display font-bold text-accent">{totalPoints}</p>
-                  <p className="text-xs text-muted-foreground">Total Points</p>
+                  <p className="text-xs text-muted-foreground">{t('portal.rewards.total')}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
                 {[
-                  { action: 'Comment on Blog', points: '+5', icon: Bot },
-                  { action: 'Complete a Lab', points: '+5', icon: FlaskConical },
-                  { action: 'Pass a Quiz', points: '+5', icon: Trophy },
-                  { action: 'Daily Login', points: '+1', icon: Flame },
-                  { action: 'Refer a Student', points: '+200', icon: Award },
-                  { action: 'Collaborate with Students', points: '+2', icon: BookOpen },
+                  { action: t('portal.rewards.comment'), points: '+5', icon: Bot },
+                  { action: t('portal.rewards.lab'), points: '+5', icon: FlaskConical },
+                  { action: t('portal.rewards.quiz'), points: '+5', icon: Trophy },
+                  { action: t('portal.rewards.login'), points: '+1', icon: Flame },
+                  { action: t('portal.rewards.refer'), points: '+200', icon: Award },
+                  { action: t('portal.rewards.collab'), points: '+2', icon: BookOpen },
                 ].map((item, i) => (
                   <div key={i} className="p-3 rounded-lg border text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => setPointsModalOpen(true)}>
                     <item.icon className="w-5 h-5 mx-auto mb-1 text-primary" />
@@ -809,13 +798,13 @@ const StudentPortal = () => {
                 ))}
               </div>
 
-              <h4 className="font-semibold mb-3">Redeem Points</h4>
+              <h4 className="font-semibold mb-3">{t('portal.rewards.redeem')}</h4>
               <div className="space-y-2">
                 {[
-                  { title: 'Store Discount (10%)', cost: 500, icon: Gift },
-                  { title: '1-on-1 Career Session', cost: 1000, icon: Briefcase },
-                  { title: 'Exclusive Merchandise', cost: 750, icon: Award },
-                  { title: 'Certificate Frame', cost: 300, icon: GraduationCap },
+                  { title: t('portal.rewards.discount'), cost: 500, icon: Gift },
+                  { title: t('portal.rewards.session'), cost: 1000, icon: Briefcase },
+                  { title: t('portal.rewards.merch'), cost: 750, icon: Award },
+                  { title: t('portal.rewards.frame'), cost: 300, icon: GraduationCap },
                 ].map((reward, i) => (
                   <div key={i} className="flex items-center justify-between p-3 rounded-lg border">
                     <div className="flex items-center gap-3">
