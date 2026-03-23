@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, createPortal, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -66,6 +66,8 @@ interface VideoPlayerProps {
   isCompleted: boolean;
   courseTitle?: string;
   chapterTitle?: string;
+  agentKey?: string;
+  language?: string;
 }
 
 interface QAMessage {
@@ -81,7 +83,9 @@ const VideoPlayer = ({
   onComplete, 
   isCompleted,
   courseTitle,
-  chapterTitle
+  chapterTitle,
+  agentKey,
+  language
 }: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -166,6 +170,13 @@ const VideoPlayer = ({
   const generateAndSpeak = async () => {
     setIsLoading(true);
     try {
+      // Audio disabled - using HeyGen live avatar instead
+      setScript(description);
+      setHasStarted(true);
+      setIsPlaying(true);
+      setIsLoading(false);
+      startProgressTracking();
+      return;
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-lesson-audio`,
         {
@@ -491,12 +502,13 @@ const VideoPlayer = ({
               )}
               {showHeyGen === false && (
                 <button
-                  onClick={() => setShowHeyGen(true)}
-                  className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg transition-all"
-                >
-                  <span>Live Avatar</span>
-                </button>
+                    onClick={() => setShowLiveClass(true)}
+                    className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 bg-secondary hover:bg-secondary/80 text-white text-xs font-bold px-5 py-2 rounded-full shadow-lg transition-all"
+                  >
+                    🎓 Start Live Class
+                  </button>
               )}
+
               <AnimatePresence>
                 {isPlaying && (
                   <motion.div
@@ -777,6 +789,19 @@ const VideoPlayer = ({
           chapterTitle={chapterTitle}
           onPauseForLab={pauseAndAsk}
           onNavigateToLab={() => window.open('/portal?tab=labs', '_blank')}
+        />
+      )}
+      {showLiveClass && (
+        <LiveClassroom
+          videoId={videoId}
+          title={title}
+          description={description}
+          chapterTitle={chapterTitle || ''}
+          courseTitle={courseTitle || ''}
+          agentKey={agentKey || 'professor'}
+          language={language || 'English'}
+          onComplete={() => { setShowLiveClass(false); setProgress(100); setHasStarted(true); }}
+          onClose={() => setShowLiveClass(false)}
         />
       )}
     </div>
