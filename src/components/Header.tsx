@@ -274,7 +274,7 @@ function AuthNavButton({ navigate }: { navigate: (path: string) => void }) {
 
   return (
     <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.4 }} className="hidden sm:block">
-      <Button variant="hero" size="sm" onClick={() => navigate('/portal')}>Get Busy</Button>
+      <Button variant="hero" size="sm" onClick={() => navigate('/auth')}>Get Busy</Button>
     </motion.div>
   );
 }
@@ -315,7 +315,7 @@ function MobileAuthButton({ navigate, onClose }: { navigate: (path: string) => v
   }
 
   return (
-    <Button variant="hero" size="lg" className="mt-4" onClick={() => { onClose(); navigate('/portal'); }}>
+    <Button variant="hero" size="lg" className="mt-4" onClick={() => { onClose(); navigate('/auth'); }}>
       Get Busy
     </Button>
   );

@@ -1,16 +1,17 @@
 import { useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { ChevronLeft, ChevronRight, Globe, TrendingUp, Calendar, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import BlogSection from "@/components/BlogSection";
 import AfricaITBlog from "@/components/AfricaITBlog";
 
-const posts = [
+const posts = (t: (k: string) => string) => [
   {
     id: 1,
-    category: "Scrum Insights",
-    date: "January 2026",
-    readTime: "8 min read",
-    title: "The Rise of Scrum in the Dominican Republic",
+    category: t("blog.post1.category"),
+    date: t("blog.post1.date"),
+    readTime: t("blog.post1.read"),
+    title: t("blog.post1.title"),
     icon: TrendingUp,
     color: "text-primary",
     border: "border-primary/30",
@@ -18,10 +19,10 @@ const posts = [
   },
   {
     id: 2,
-    category: "Africa Tech",
-    date: "March 2026",
-    readTime: "6 min read",
-    title: "Why Africa Is the Next Frontier for IT Talent & Agile Transformation",
+    category: t("blog.post2.category"),
+    date: t("blog.post2.date"),
+    readTime: t("blog.post2.read"),
+    title: t("blog.post2.title"),
     icon: Globe,
     color: "text-secondary",
     border: "border-secondary/30",
@@ -31,6 +32,7 @@ const posts = [
 
 const BlogHub = () => {
   const [current, setCurrent] = useState(0);
+  const { t } = useLanguage();
 
   return (
     <div>
@@ -38,11 +40,11 @@ const BlogHub = () => {
       <div className="bg-background pt-16 pb-0">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
-            <span className="text-xs font-semibold text-secondary tracking-widest uppercase">Our Blog</span>
-            <h2 className="text-3xl font-display font-bold text-foreground mt-2 mb-8">Insights & Resources</h2>
+            <span className="text-xs font-semibold text-secondary tracking-widest uppercase">{t("blog.hub.label")}</span>
+            <h2 className="text-3xl font-display font-bold text-foreground mt-2 mb-8">{t("blog.hub.title")}</h2>
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-3xl mx-auto">
-            {posts.map((post, i) => {
+            {posts(t).map((post, i) => {
               const Icon = post.icon;
               return (
                 <button key={post.id} onClick={() => setCurrent(i)}

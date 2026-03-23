@@ -50,6 +50,13 @@ const EXCLUDED_COURSES = ['Rogers-Shaw', 'IT Merger', 'Network Integration'];
 
 const StudentPortal = () => {
   const { user, loading: authLoading } = useAuth();
+
+  // Auth guard — redirect to /auth if not logged in
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth');
+    }
+  }, [user, authLoading, navigate]);
   const { language } = useLanguage();
   const navigate = useNavigate();
   const { progress: overallProgress } = useProgress(user?.id);

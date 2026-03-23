@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { GraduationCap, Mail, Lock, User, Linkedin, Phone, ShieldCheck } from 'lucide-react';
 import Header from '@/components/Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type Step = 'auth' | 'otp';
 
@@ -25,6 +26,7 @@ const Auth = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +43,7 @@ const Auth = () => {
 
         if (roleData) {
           // Admin bypasses OTP — goes straight to admin dashboard
-          toast({ title: 'Welcome back, Admin!', description: 'Redirecting to your dashboard.' });
+          toast({ title: t('auth.welcome'), description: 'Redirecting to your dashboard.' });
           navigate('/admin');
           return;
         }
@@ -50,12 +52,12 @@ const Auth = () => {
         const { error: otpError } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
         if (otpError) {
           console.error('OTP error:', otpError);
-          toast({ title: 'OTP Error', description: otpError.message, variant: 'destructive' });
+          toast({ title: t('auth.error'), description: otpError.message, variant: 'destructive' });
           return;
         }
         setIsAdmin(false);
         setStep('otp');
-        toast({ title: '🔐 Verification code sent!', description: 'Check ' + email + ' for your 6-digit code.' });
+        toast({ title: '🔐 ' + t('auth.otp.sent'), description: t('auth.otp.sent.sub') });
       } else {
         const { error } = await supabase.auth.signUp({
           email, password,
@@ -65,11 +67,11 @@ const Auth = () => {
           },
         });
         if (error) throw error;
-        toast({ title: '🎉 Account created!', description: 'Please check your email to verify your account, then sign in.' });
+        toast({ title: '🎉 ' + t('auth.account.created'), description: t('auth.account.created.sub') });
         setIsLogin(true);
       }
     } catch (error: any) {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      toast({ title: t('auth.error'), description: error.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -81,10 +83,10 @@ const Auth = () => {
     try {
       const { error } = await supabase.auth.verifyOtp({ email, token: otp, type: 'email' });
       if (error) throw error;
-      toast({ title: '✅ Identity verified!', description: 'Welcome to your portal!' });
+      toast({ title: '✅ ' + t('auth.verified'), description: t('auth.verified.sub') });
       navigate('/portal');
     } catch (error: any) {
-      toast({ title: 'Invalid code', description: 'Please check your email and try again.', variant: 'destructive' });
+      toast({ title: t('auth.otp.invalid'), description: t('auth.otp.invalid.sub'), variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -92,7 +94,7 @@ const Auth = () => {
 
   const resendOtp = async () => {
     await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
-    toast({ title: '📧 Code resent!', description: 'New verification code sent to ' + email });
+    toast({ title: '📧 ' + t('auth.otp.sent'), description: t('auth.otp.sent.sub') });
   };
 
   return (
@@ -110,10 +112,10 @@ const Auth = () => {
                       <GraduationCap className="w-8 h-8 text-primary" />
                     </div>
                     <CardTitle className="text-2xl font-display">
-                      {isLogin ? 'Welcome Back' : 'Join Aladiah Academy'}
+                      {isLogin ? t('auth.welcome') : t('auth.join')}
                     </CardTitle>
                     <CardDescription>
-                      {isLogin ? 'Sign in to continue your learning journey' : 'Start your Scrum Master certification today'}
+                      {isLogin ? t('auth.signin.sub') : t('auth.register.sub')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -121,10 +123,10 @@ const Auth = () => {
                       {!isLogin && (
                         <>
                           <div className="space-y-2">
-                            <Label htmlFor="fullName">Full Name</Label>
+                            <Label htmlFor="fullName">{t('auth.fullname')}</Label>
                             <div className="relative">
                               <User className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                              <Input id="fullName" type="text" placeholder="Your full name" value={fullName}
+                              <Input id="fullName" type="text" {...{placeholder: t('auth.fullname.placeholder')}} value={fullName}
                                 onChange={(e) => setFullName(e.target.value)} required className="pl-9" />
                             </div>
                           </div>
@@ -147,7 +149,7 @@ const Auth = () => {
                         </>
                       )}
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="email">{t('auth.email')}</Label>
                         <div className="relative">
                           <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                           <Input id="email" type="email" placeholder="you@example.com" value={email}
@@ -155,7 +157,7 @@ const Auth = () => {
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="password">Password</Label>
+                        <Label htmlFor="password">{t('auth.password')}</Label>
                         <div className="relative">
                           <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                           <Input id="password" type="password" placeholder="••••••••" value={password}
@@ -166,18 +168,18 @@ const Auth = () => {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: 'rgba(59,130,246,0.08)', borderRadius: '10px', border: '1px solid rgba(59,130,246,0.2)' }}>
                           <ShieldCheck className="w-4 h-4 text-primary flex-shrink-0" />
                           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: 0 }}>
-                            A 6-digit verification code will be sent to your email after signing in.
+                            {t('auth.2fa.info')}
                           </p>
                         </div>
                       )}
                       <Button type="submit" className="w-full" variant="coral" disabled={loading}>
-                        {loading ? 'Please wait...' : isLogin ? 'Sign In & Verify →' : 'Create Account'}
+                        {loading ? t('auth.loading') : isLogin ? t('auth.signin.btn') : t('auth.register.btn')}
                       </Button>
                     </form>
                     <div className="mt-6 text-center">
                       <button type="button" onClick={() => setIsLogin(!isLogin)}
                         className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                        {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+                        {isLogin ? t('auth.switch.to.register') : t('auth.switch.to.login')}
                       </button>
                     </div>
                   </CardContent>
@@ -193,31 +195,31 @@ const Auth = () => {
                       style={{ background: 'rgba(59,130,246,0.15)', border: '2px solid rgba(59,130,246,0.4)' }}>
                       <ShieldCheck className="w-8 h-8 text-primary" />
                     </div>
-                    <CardTitle className="text-2xl font-display">Verify Your Identity</CardTitle>
+                    <CardTitle className="text-2xl font-display">{t('auth.otp.title')}</CardTitle>
                     <CardDescription>
-                      We sent a 6-digit code to<br />
+                      {t('auth.otp.sub')}<br />
                       <strong style={{ color: 'hsl(var(--primary))' }}>{email}</strong>
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleOtpVerify} className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="otp">Verification Code</Label>
+                        <Label htmlFor="otp">{t('auth.otp.label')}</Label>
                         <Input id="otp" type="text" placeholder="000000" value={otp} maxLength={6}
                           onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))} required
                           style={{ textAlign: 'center', fontSize: '28px', letterSpacing: '10px', fontWeight: 700 }} />
                       </div>
                       <Button type="submit" className="w-full" variant="coral" disabled={loading || otp.length < 6}>
-                        {loading ? 'Verifying...' : '✅ Verify & Enter Portal'}
+                        {loading ? t('auth.otp.verifying') : t('auth.otp.verify.btn')}
                       </Button>
                       <div className="text-center space-y-2 pt-2">
                         <button type="button" onClick={resendOtp}
                           className="text-sm text-muted-foreground hover:text-primary transition-colors block w-full">
-                          Didn't get the code? Resend
+                          {t('auth.otp.resend')}
                         </button>
                         <button type="button" onClick={() => setStep('auth')}
                           className="text-xs text-muted-foreground hover:text-primary transition-colors block w-full">
-                          ← Back to sign in
+                          {t('auth.otp.back')}
                         </button>
                       </div>
                     </form>
