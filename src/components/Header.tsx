@@ -12,6 +12,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
 import { PROFESSORS } from '@/data/professors';
+import { supabase } from '@/integrations/supabase/client';
+import { useEffect, useState as useStateAuth } from 'react';
 
 type Language = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja';
 
@@ -177,17 +179,8 @@ const Header = ({ selectedProfessor = 'james', onProfessorChange, onProfileClick
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* CTA Button */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="hidden sm:block"
-            >
-              <Button variant="hero" size="sm" onClick={() => navigate('/portal')}>
-                Get Busy
-              </Button>
-            </motion.div>
+            {/* CTA Button — swaps to Log Out when authenticated */}
+            <AuthNavButton navigate={navigate} />
 
             {/* Mobile Menu Button */}
             <button
@@ -231,9 +224,7 @@ const Header = ({ selectedProfessor = 'james', onProfessorChange, onProfileClick
                   {t(item.key)}
                 </a>
               ))}
-              <Button variant="hero" size="lg" className="mt-4" onClick={() => { setIsMenuOpen(false); navigate('/portal'); }}>
-                Get Busy
-              </Button>
+              <MobileAuthButton navigate={navigate} onClose={() => setIsMenuOpen(false)} />
             </nav>
           </motion.div>
         )}
@@ -241,5 +232,93 @@ const Header = ({ selectedProfessor = 'james', onProfessorChange, onProfileClick
     </header>
   );
 };
+
+function AuthNavButton({ navigate }: { navigate: (path: string) => void }) {
+  const [user, setUser] = useStateAuth<any>(null);
+  const { t } = useLanguage();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
+
+  if (user) {
+    return (
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className="hidden sm:block">
+        <button
+          onClick={handleLogout}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '6px',
+            padding: '8px 18px', borderRadius: '10px', fontSize: '14px', fontWeight: 600,
+            background: 'linear-gradient(135deg, #10b981, #059669)',
+            color: '#fff', border: 'none', cursor: 'pointer',
+            boxShadow: '0 0 16px rgba(16,185,129,0.4)',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 0 24px rgba(16,185,129,0.7)')}
+          onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 0 16px rgba(16,185,129,0.4)')}
+        >
+          <span style={{ fontSize: '15px' }}>👋</span> {t('nav.logout')}
+        </button>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.4 }} className="hidden sm:block">
+      <Button variant="hero" size="sm" onClick={() => navigate('/portal')}>Get Busy</Button>
+    </motion.div>
+  );
+}
+
+function MobileAuthButton({ navigate, onClose }: { navigate: (path: string) => void; onClose: () => void }) {
+  const [user, setUser] = useStateAuth<any>(null);
+  const { t } = useLanguage();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    onClose();
+    await supabase.auth.signOut();
+    navigate('/');
+  };
+
+  if (user) {
+    return (
+      <button
+        onClick={handleLogout}
+        style={{
+          marginTop: '16px', width: '100%', padding: '14px',
+          borderRadius: '12px', fontSize: '15px', fontWeight: 600,
+          background: 'linear-gradient(135deg, #10b981, #059669)',
+          color: '#fff', border: 'none', cursor: 'pointer',
+          boxShadow: '0 0 16px rgba(16,185,129,0.35)',
+        }}
+      >
+        👋 {t('nav.logout')}
+      </button>
+    );
+  }
+
+  return (
+    <Button variant="hero" size="lg" className="mt-4" onClick={() => { onClose(); navigate('/portal'); }}>
+      Get Busy
+    </Button>
+  );
+}
 
 export default Header;

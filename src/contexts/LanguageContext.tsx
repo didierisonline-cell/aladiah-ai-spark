@@ -22,6 +22,7 @@ const translations: Record<Language, Record<string, string>> = {
   en: {
     // Navigation
     'nav.home': 'Home',
+    'nav.logout': 'Log Out',
     'nav.programs': 'Programs',
     'nav.about': 'About',
     'nav.contact': 'Contact',
@@ -208,6 +209,7 @@ const translations: Record<Language, Record<string, string>> = {
   es: {
     // Navigation
     'nav.home': 'Inicio',
+    'nav.logout': 'Cerrar Sesión',
     'nav.programs': 'Programas',
     'nav.about': 'Nosotros',
     'nav.contact': 'Contacto',
@@ -394,6 +396,7 @@ const translations: Record<Language, Record<string, string>> = {
   zh: {
     // Navigation
     'nav.home': '首页',
+    'nav.logout': '退出登录',
     'nav.programs': '课程',
     'nav.about': '关于我们',
     'nav.contact': '联系我们',
@@ -580,6 +583,7 @@ const translations: Record<Language, Record<string, string>> = {
   ar: {
     // Navigation
     'nav.home': 'الرئيسية',
+    'nav.logout': 'تسجيل الخروج',
     'nav.programs': 'البرامج',
     'nav.about': 'من نحن',
     'nav.contact': 'اتصل بنا',
@@ -766,6 +770,7 @@ const translations: Record<Language, Record<string, string>> = {
   fr: {
     // Navigation
     'nav.home': 'Accueil',
+    'nav.logout': 'Se Déconnecter',
     'nav.programs': 'Programmes',
     'nav.about': 'À propos',
     'nav.contact': 'Contact',
@@ -952,6 +957,7 @@ const translations: Record<Language, Record<string, string>> = {
   de: {
     // Navigation
     'nav.home': 'Startseite',
+    'nav.logout': 'Abmelden',
     'nav.programs': 'Programme',
     'nav.about': 'Über uns',
     'nav.contact': 'Kontakt',
@@ -1138,6 +1144,7 @@ const translations: Record<Language, Record<string, string>> = {
   ja: {
     // Navigation
     'nav.home': 'ホーム',
+    'nav.logout': 'ログアウト',
     'nav.programs': 'プログラム',
     'nav.about': '私たちについて',
     'nav.contact': 'お問い合わせ',
