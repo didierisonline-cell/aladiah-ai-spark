@@ -4,75 +4,76 @@ import { useNavigate } from "react-router-dom";
 import { CheckCircle, Star, Zap, Crown, Shield, Globe } from "lucide-react";
 import Header from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 
 const PLANS = [
   {
     id: "foundation",
-    name: "Foundation Builder",
-    tier: "TIER 1",
+    name: t('pricing.t1.name'),
+    tier: t('pricing.t1.tier'),
     price: 99,
     priceId: import.meta.env.VITE_STRIPE_PRICE_FOUNDATION || "price_1TEFgA0CtfIq2xPfWJdun1vH",
     icon: Shield,
     color: "#3b82f6",
     glow: "rgba(59,130,246,0.3)",
-    cta: "Get Started",
+    cta: t('pricing.t1.cta'),
     popular: false,
     features: [
-      "Full Scrum Master curriculum",
-      "Full PM curriculum",
-      "AI-powered personalized lessons",
-      "Progress tracker + homework",
-      "Community access",
-      "Academy shop access",
-      "Available in 7 languages",
+      t('pricing.t1.f1'),
+      t('pricing.t1.f2'),
+      t('pricing.t1.f3'),
+      t('pricing.t1.f4'),
+      t('pricing.t1.f5'),
+      t('pricing.t1.f6'),
+      t('pricing.t1.f7'),
     ],
-    missing: ["AI Interview Coach", "Resume Builder", "1-on-1 mentorship"],
+    missing: [t('pricing.t1.m1'), t('pricing.t1.m2'), t('pricing.t1.m3')],
   },
   {
     id: "accelerator",
-    name: "Career Accelerator",
-    tier: "TIER 2",
+    name: t('pricing.t2.name'),
+    tier: t('pricing.t2.tier'),
     price: 299,
     priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || "price_1TEFgm0CtfIq2xPfkuYGY5sI",
     icon: Zap,
     color: "#f59e0b",
     glow: "rgba(245,158,11,0.3)",
-    cta: "Accelerate My Career",
+    cta: t('pricing.t2.cta'),
     popular: true,
     features: [
-      "Everything in Foundation",
-      "AI Interview Coach (unlimited)",
-      "AI Resume Builder",
-      "Career Advisor (AI-guided)",
-      "Real-world simulations",
-      "Advanced strategies",
-      "Priority community access",
-      "Available in 7 languages",
+      t('pricing.t2.f1'),
+      t('pricing.t2.f2'),
+      t('pricing.t2.f3'),
+      t('pricing.t2.f4'),
+      t('pricing.t2.f5'),
+      t('pricing.t2.f6'),
+      t('pricing.t2.f7'),
+      t('pricing.t1.f7'),
     ],
-    missing: ["Weekly 1-on-1 with Didier"],
+    missing: [t('pricing.t2.m1')],
   },
   {
     id: "elite",
-    name: "Elite Mentorship",
-    tier: "TIER 3",
+    name: t('pricing.t3.name'),
+    tier: t('pricing.t3.tier'),
     price: 499,
     priceId: import.meta.env.VITE_STRIPE_PRICE_ELITE || "price_1TEFhA0CtfIq2xPfZOXBhYlN",
     icon: Crown,
     color: "#10b981",
     glow: "rgba(16,185,129,0.3)",
-    cta: "Apply for Elite",
+    cta: t('pricing.t3.cta'),
     popular: false,
     features: [
-      "Everything in Accelerator",
-      "Weekly 1-on-1 with Didier (1hr)",
-      "Personalized strategy session",
-      "Direct feedback on your work",
-      "Job search accountability",
-      "VIP community status",
-      "Early access to new features",
-      "Certification prep support",
-      "Placement support network",
+      t('pricing.t3.f1'),
+      t('pricing.t3.f2'),
+      t('pricing.t3.f3'),
+      t('pricing.t3.f4'),
+      t('pricing.t3.f5'),
+      t('pricing.t3.f6'),
+      t('pricing.t3.f7'),
+      t('pricing.t3.f8'),
+      t('pricing.t3.f9'),
     ],
     missing: [],
   },
@@ -80,6 +81,7 @@ const PLANS = [
 
 const Pricing = () => {
   const [annual, setAnnual] = useState(false);
+  const { t } = useLanguage();
   const [loading, setLoading] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -119,14 +121,14 @@ const Pricing = () => {
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: "center", marginBottom: "60px" }}>
           <p style={{ color: "#f59e0b", fontSize: "13px", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "16px" }}>
-            PRICING
+            {t('pricing.label')}
           </p>
           <h1 style={{ fontSize: "clamp(36px, 6vw, 64px)", fontWeight: 800, lineHeight: 1.1, marginBottom: "16px" }}>
-            Invest in Your Future.{" "}
-            <span style={{ color: "#f59e0b" }}>Start at $99/month.</span>
+            {t('pricing.title')}{" "}
+            <span style={{ color: "#f59e0b" }}>{t('pricing.subtitle')}</span>
           </h1>
           <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "16px", maxWidth: "560px", margin: "0 auto 32px" }}>
-            Project Managers earn $80K–$150K+ globally. Your monthly subscription is the highest ROI investment you will ever make. Period.
+            {t('pricing.desc')}
           </p>
 
           {/* Annual toggle */}
@@ -167,7 +169,7 @@ const Pricing = () => {
               >
                 {plan.popular && (
                   <div style={{ position: "absolute", top: "-14px", left: "50%", transform: "translateX(-50%)", background: "#f59e0b", color: "#000", fontSize: "11px", fontWeight: 800, padding: "4px 16px", borderRadius: "100px", letterSpacing: "0.1em", whiteSpace: "nowrap" }}>
-                    MOST POPULAR
+                    {t('pricing.popular')}
                   </div>
                 )}
 
@@ -186,11 +188,11 @@ const Pricing = () => {
                 <div style={{ marginBottom: "8px" }}>
                   <span style={{ fontSize: "16px", color: "rgba(255,255,255,0.5)", verticalAlign: "top", marginTop: "8px", display: "inline-block" }}>$</span>
                   <span style={{ fontSize: "56px", fontWeight: 800, lineHeight: 1, color: "#fff" }}>{getPrice(plan.price)}</span>
-                  <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "14px", marginLeft: "4px" }}>/{annual ? "year" : "month"}</span>
+                  <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "14px", marginLeft: "4px" }}>{'/'}{ annual ? t('pricing.year') : t('pricing.month')}</span>
                 </div>
                 {annual && (
                   <p style={{ color: "#10b981", fontSize: "12px", fontWeight: 600, marginBottom: "24px" }}>
-                    ✓ Save ${Math.round(plan.price * 12 * 0.2)}/year with annual plan
+                    {t('pricing.save')} ${Math.round(plan.price * 12 * 0.2)}/year with annual plan
                   </p>
                 )}
 
@@ -208,7 +210,7 @@ const Pricing = () => {
                     opacity: loading === plan.id ? 0.7 : 1,
                   }}
                 >
-                  {loading === plan.id ? "Redirecting..." : plan.cta}
+                  {loading === plan.id ? {t('pricing.redirecting')} : plan.cta}
                 </button>
 
                 {/* Features */}
@@ -233,7 +235,7 @@ const Pricing = () => {
 
         {/* Trust badges */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} style={{ display: "flex", justifyContent: "center", gap: "32px", marginTop: "60px", flexWrap: "wrap" }}>
-          {["🔒 Secure payment via Stripe", "📧 Cancel anytime", "🌍 Available in 7 languages", "✅ 7-day money back guarantee"].map((badge) => (
+          {[t('pricing.badge1'), t('pricing.badge2'), t('pricing.badge3'), t('pricing.badge4')].map((badge) => (
             <span key={badge} style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>{badge}</span>
           ))}
         </motion.div>
