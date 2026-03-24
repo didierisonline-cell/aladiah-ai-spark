@@ -64,7 +64,7 @@ const INTERACTIVE_SIMULATION_IDS = [
 // Courses that should appear after simulations (in this order)
 const AFTER_SIMULATION_IDS = [
   'cccccccc-dddd-eeee-ffff-111111111111', // Agile, Scrum & SAFe 6.0 Mastery
-  'dddddddd-eeee-ffff-1111-222222222222', // Managing AI Projects
+  'dddddddd-eeee-ffff-1111-222222222222', // AI Mastery for Scrum Masters & Project Managers
 ];
 
 // Courses to hide entirely

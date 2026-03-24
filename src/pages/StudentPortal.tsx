@@ -42,8 +42,8 @@ const COURSE_ORDER = [
   'Projects & Simulations',
   'Agile, Scrum & SAFe 6.0 Mastery',
   'Agile, Scrum & Safe 6.0 Mastery',
-  'Managing AI Projects',
-  'Managing Ai Projects',
+  'AI Mastery for Scrum Masters',
+  'AI Mastery for Scrum Masters & Project Managers',
 ];
 
 const EXCLUDED_COURSES = ['Rogers-Shaw', 'IT Merger', 'Network Integration'];
