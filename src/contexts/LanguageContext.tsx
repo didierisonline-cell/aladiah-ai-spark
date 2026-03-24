@@ -199,7 +199,9 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.feedback': 'Feedback',
     'nav.store': 'Store',
     'nav.talent': 'Aladiah Management',
-    
+    'nav.getbusy': 'Get Busy',
+    'nav.change_professor': 'Change Professor',
+
     // Hero
     'hero.badge': 'AI-Powered Professional Training',
     'hero.title.line1': 'Master Agile Leadership',
@@ -553,7 +555,9 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.feedback': 'Comentarios',
     'nav.store': 'Tienda',
     'nav.talent': 'Aladiah Management',
-    
+    'nav.getbusy': 'Empieza Ya',
+    'nav.change_professor': 'Cambiar Profesor',
+
     // Hero
     'hero.badge': 'Formación Profesional con IA',
     'hero.title.line1': 'Domina el Liderazgo Ágil',
@@ -907,7 +911,9 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.feedback': '反馈',
     'nav.store': '商店',
     'nav.talent': 'Aladiah Management',
-    
+    'nav.getbusy': '开始学习',
+    'nav.change_professor': '更换教授',
+
     // Hero
     'hero.badge': 'AI驱动的专业培训',
     'hero.title.line1': '掌握敏捷领导力',
@@ -1261,7 +1267,9 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.feedback': 'ملاحظات',
     'nav.store': 'المتجر',
     'nav.talent': 'Aladiah Management',
-    
+    'nav.getbusy': 'ابدأ الآن',
+    'nav.change_professor': 'تغيير الأستاذ',
+
     // Hero
     'hero.badge': 'تدريب مهني مدعوم بالذكاء الاصطناعي',
     'hero.title.line1': 'أتقن القيادة الرشيقة',
@@ -1615,7 +1623,9 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.feedback': 'Avis',
     'nav.store': 'Boutique',
     'nav.talent': 'Aladiah Management',
-    
+    'nav.getbusy': 'Commencer',
+    'nav.change_professor': 'Changer de Professeur',
+
     // Hero
     'hero.badge': 'Formation Professionnelle Alimentée par l\'IA',
     'hero.title.line1': 'Maîtrisez le Leadership Agile',
@@ -1969,7 +1979,9 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.feedback': 'Feedback',
     'nav.store': 'Shop',
     'nav.talent': 'Aladiah Management',
-    
+    'nav.getbusy': 'Loslegen',
+    'nav.change_professor': 'Professor Wechseln',
+
     // Hero
     'hero.badge': 'KI-gestützte Berufsausbildung',
     'hero.title.line1': 'Meistere Agile Führung',
@@ -2323,7 +2335,9 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.feedback': 'フィードバック',
     'nav.store': 'ストア',
     'nav.talent': 'Aladiah Management',
-    
+    'nav.getbusy': '始めよう',
+    'nav.change_professor': '教授を変更',
+
     // Hero
     'hero.badge': 'AI駆動のプロフェッショナルトレーニング',
     'hero.title.line1': 'アジャイルリーダーシップをマスター',

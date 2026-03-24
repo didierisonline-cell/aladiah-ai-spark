@@ -108,7 +108,7 @@ const Header = ({ selectedProfessor = 'james', onProfessorChange, onProfileClick
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" style={{ background: '#0d1f3c', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '12px', padding: '6px', minWidth: '200px' }}>
                   <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '4px 8px 6px', fontWeight: 600 }}>
-                    Change Professor
+                    {t('nav.change_professor')}
                   </p>
                   {PROFESSORS.map(prof => (
                     <DropdownMenuItem
@@ -274,7 +274,7 @@ function AuthNavButton({ navigate }: { navigate: (path: string) => void }) {
 
   return (
     <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.4 }} className="hidden sm:block">
-      <Button variant="hero" size="sm" onClick={() => navigate('/auth')}>Get Busy</Button>
+      <Button variant="hero" size="sm" onClick={() => navigate('/auth')}>{t('nav.getbusy')}</Button>
     </motion.div>
   );
 }
@@ -316,7 +316,7 @@ function MobileAuthButton({ navigate, onClose }: { navigate: (path: string) => v
 
   return (
     <Button variant="hero" size="lg" className="mt-4" onClick={() => { onClose(); navigate('/auth'); }}>
-      Get Busy
+      {t('nav.getbusy')}
     </Button>
   );
 }

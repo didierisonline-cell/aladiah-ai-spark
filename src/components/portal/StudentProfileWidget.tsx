@@ -124,8 +124,8 @@ export default function StudentProfileWidget({ user, onClose }: Props) {
             {activeTab === 'security' && (
               <motion.div key="security" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div style={{ padding: '14px', background: 'rgba(59,130,246,0.08)', borderRadius: '10px', border: '1px solid rgba(59,130,246,0.2)' }}>
-                  <p style={{ color: '#60a5fa', fontSize: '12px', fontWeight: 600, margin: '0 0 4px' }}>🔐 Email OTP Verification</p>
-                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', margin: 0 }}>Your account is protected with email verification on every login.</p>
+                  <p style={{ color: '#60a5fa', fontSize: '12px', fontWeight: 600, margin: '0 0 4px' }}>🔐 Magic Link Verification</p>
+                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', margin: 0 }}>Your account is protected with a secure login link sent to your email on every login.</p>
                 </div>
                 <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', fontWeight: 600, margin: 0 }}>Change Password</p>
                 <div style={{ position: 'relative' }}>
