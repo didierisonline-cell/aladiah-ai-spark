@@ -24,16 +24,18 @@ const Auth = () => {
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [waitingForLink, setWaitingForLink] = useState(false);
+  // Prevents auto-redirect during the login flow (password verify → signOut → send magic link)
+  const submittingRef = useRef(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
   const { user, loading: authLoading } = useAuth();
 
-  // If already authenticated (or magic link clicked in same browser), go to portal
+  // If already authenticated (page load or magic link polling), go to portal
+  // But skip during the login submission flow to avoid premature redirect
   useEffect(() => {
-    if (!authLoading && user) {
-      // Clean up polling if active
+    if (!authLoading && user && !submittingRef.current) {
       if (pollRef.current) clearInterval(pollRef.current);
       navigate('/portal');
     }
@@ -49,11 +51,9 @@ const Auth = () => {
   // Start polling for session after magic link is sent
   const startSessionPolling = () => {
     setWaitingForLink(true);
-    // Poll every 3 seconds to detect when user clicks the magic link
     pollRef.current = setInterval(async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        // Magic link was clicked — session is now active
         if (pollRef.current) clearInterval(pollRef.current);
         setWaitingForLink(false);
         toast({ title: t('auth.magiclink.verified'), description: t('auth.magiclink.verified.sub') });
@@ -67,6 +67,9 @@ const Auth = () => {
     setLoading(true);
     try {
       if (isLogin) {
+        // Lock: prevent useEffect auto-redirect while we do password → signOut → magic link
+        submittingRef.current = true;
+
         // Step 1: Verify credentials are correct
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -83,6 +86,9 @@ const Auth = () => {
           },
         });
         if (magicError) throw magicError;
+
+        // Unlock: now allow auto-redirect (for when magic link creates a session)
+        submittingRef.current = false;
 
         setStep('magic-link-sent');
         startSessionPolling();
@@ -101,6 +107,7 @@ const Auth = () => {
         setIsLogin(true);
       }
     } catch (error: any) {
+      submittingRef.current = false;
       toast({ title: t('auth.error'), description: error.message, variant: 'destructive' });
     } finally {
       setLoading(false);
@@ -119,7 +126,6 @@ const Auth = () => {
       });
       if (error) throw error;
       toast({ title: t('auth.magiclink.resent'), description: t('auth.magiclink.resent.sub') });
-      // Restart polling
       if (pollRef.current) clearInterval(pollRef.current);
       startSessionPolling();
     } catch (error: any) {
@@ -239,7 +245,6 @@ const Auth = () => {
                       <p className="text-xs text-muted-foreground">{t('auth.magiclink.spam')}</p>
                     </div>
 
-                    {/* Waiting indicator */}
                     {waitingForLink && (
                       <div className="flex items-center justify-center gap-2 py-2">
                         <Loader2 className="w-4 h-4 text-primary animate-spin" />
