@@ -287,26 +287,26 @@ const StudentPortal = () => {
 
               <div className="flex-1">
                 <h2 className="text-2xl font-bold mb-2">
-                  {t(‘portal.welcome.title’).replace(‘{name}’, firstName)}
+                  {t("portal.welcome.title").replace("{name}", firstName)}
                 </h2>
 
                 <p className="text-muted-foreground mb-4">
-                  {t(‘portal.welcome.sub’)}
+                  {t('portal.welcome.sub')}
                 </p>
 
                 <div className="space-y-3 text-sm leading-6">
-                  <p>{t(‘portal.welcome.p1’)}</p>
-                  <p>{t(‘portal.welcome.p2’)}</p>
-                  <p>{t(‘portal.welcome.p3’)}</p>
+                  <p>{t('portal.welcome.p1')}</p>
+                  <p>{t('portal.welcome.p2')}</p>
+                  <p>{t('portal.welcome.p3')}</p>
                 </div>
 
                 <div className="mt-6 flex gap-3">
                   <Button onClick={handleCloseFounderWelcome}>
-                    {t(‘portal.welcome.enter’)}
+                    {t('portal.welcome.enter')}
                   </Button>
 
-                  <Button variant="outline" onClick={() => navigate(‘/community’)}>
-                    {t(‘portal.welcome.community’)}
+                  <Button variant="outline" onClick={() => navigate('/community')}>
+                    {t('portal.welcome.community')}
                   </Button>
                 </div>
               </div>
@@ -336,8 +336,8 @@ const StudentPortal = () => {
                         onContextMenu={(e)=>{e.preventDefault();setShowLinkedInInput(true);}}
                         onMouseDown={(e)=>{
                           if(e.button===0){
-                            const t=setTimeout(()=>setShowLinkedInInput(true),600);
-                            e.currentTarget.addEventListener('mouseup',()=>clearTimeout(t),{once:true});
+                            const timer=setTimeout(()=>setShowLinkedInInput(true),600);
+                            e.currentTarget.addEventListener('mouseup',()=>clearTimeout(timer),{once:true});
                           }
                         }}
                         title="Click to open • Hold to edit"
