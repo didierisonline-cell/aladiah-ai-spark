@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
+import { PAGE_SUBTITLE_CLASS, CARD_SUBTITLE_CLASS } from '@/lib/typography';
 import ReactMarkdown from 'react-markdown';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -133,6 +134,7 @@ const StudentPortal = () => {
 
   const loadPortalData = async () => {
     if (!user) return;
+    try {
     const [pointsRes, labsRes, suggestionsRes, coursesRes, chaptersRes, videosRes, quizzesRes, progressRes] = await Promise.all([
       supabase.from('student_points').select('points').eq('user_id', user.id),
       supabase.from('student_labs').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
@@ -198,6 +200,9 @@ const StudentPortal = () => {
     });
 
     setCourseProgresses(progresses);
+    } catch (err: any) {
+      console.error('Portal load failed:', err);
+    }
   };
 
   const sendChat = useCallback(async () => {
@@ -209,7 +214,7 @@ const StudentPortal = () => {
     recordQuestion();
     const allMessages = [...chatMessages, userMsg];
     try {
-      const res = await fetch('http://localhost:3001/ai', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/ai`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -327,7 +332,10 @@ const StudentPortal = () => {
                <h1 className="text-2xl md:text-3xl font-display font-bold">
   {t('portal.title').replace('{name}', firstName)}
 </h1>
-                {/* LinkedIn Badge — TODO: replace emoji with icon in final validation */}
+                <p className={PAGE_SUBTITLE_CLASS}>
+                  {t('portal.guided_by').replace('{lang}', language)}
+                </p>
+                {/* LinkedIn Badge */}
                 <div style={{display:'flex',alignItems:'center',gap:'8px',marginTop:'6px'}}>
                   {linkedInUrl ? (
                     <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
@@ -374,9 +382,7 @@ const StudentPortal = () => {
                   </div>
                 )}
 
-<p className="text-muted-foreground text-sm">
-  {t('portal.guided_by').replace('{lang}', language)}
-</p>
+
               </div>
             </div>
 
@@ -414,9 +420,7 @@ const StudentPortal = () => {
               <Clock className="w-5 h-5 text-primary" />
               {t('portal.action_center')}
             </CardTitle>
-            <p className="text-sm text-muted-foreground">
-              {t('portal.action_center.sub')}
-            </p>
+            <p className={CARD_SUBTITLE_CLASS}>{t('portal.action_center.sub')}</p>
           </CardHeader>
 
           <CardContent className="space-y-3">
@@ -432,10 +436,13 @@ const StudentPortal = () => {
                   </p>
                 </div>
 
-                <Button onClick={reminder.action} style={{
-    background: reminder.type === 'assignment' ? 'linear-gradient(135deg,#2563eb,#3b82f6)' : reminder.type === 'payment' ? 'linear-gradient(135deg,#d97706,#f59e0b)' : 'linear-gradient(135deg,#059669,#10b981)',
-    color: 'white', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-  }}>{reminder.actionLabel}</Button>
+                <Button
+                  onClick={reminder.action}
+                  variant={reminder.type === 'assignment' ? 'default' : reminder.type === 'payment' ? 'secondary' : 'outline'}
+                  className="shrink-0"
+                >
+                  {reminder.actionLabel}
+                </Button>
               </div>
             ))}
           </CardContent>

@@ -4,7 +4,7 @@ import { Mic, MicOff, Send, X, Loader2, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const BACKEND = "http://localhost:3001";
+const BACKEND = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 // Professor → HeyGen avatar ID mapping
 // Update these with real HeyGen avatar IDs from your account

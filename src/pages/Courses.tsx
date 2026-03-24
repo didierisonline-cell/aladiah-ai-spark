@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PAGE_SUBTITLE_CLASS, SECTION_SUBTITLE_CLASS } from '@/lib/typography';
 import ProgressBar from '@/components/ProgressBar';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -434,9 +435,7 @@ const Courses = () => {
           <h1 className="text-3xl font-display font-bold text-foreground mb-2">
             {t.myCourses}
           </h1>
-          <p className="text-muted-foreground">
-            {t.subtitle}
-          </p>
+          <p className={PAGE_SUBTITLE_CLASS}>{t.subtitle}</p>
         </motion.div>
 
         {/* 1. Professional Certification Courses - FIRST */}
@@ -451,6 +450,9 @@ const Courses = () => {
               Professional Certification Courses
             </h2>
           </div>
+          <p className={SECTION_SUBTITLE_CLASS}>
+            {t.certificationSubtitle || "Master globally recognized Agile and Scrum certifications"}
+          </p>
         </motion.div>
 
         {certificationCourses.map((course, i) => (
@@ -467,7 +469,7 @@ const Courses = () => {
                 <FlaskConical className="w-8 h-8 text-primary" />
                 <h2 className="text-3xl font-display font-bold text-foreground">{t.projectsAndSimulations}</h2>
               </div>
-              <p className="text-muted-foreground">{t.projectsSubtitle}</p>
+              <p className={SECTION_SUBTITLE_CLASS}>{t.projectsSubtitle}</p>
             </motion.div>
 
             {simulationCourses.map((course, i) => (
