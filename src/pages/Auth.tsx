@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -7,11 +7,12 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { GraduationCap, Mail, Lock, User, Linkedin, Phone, ShieldCheck } from 'lucide-react';
 import Header from '@/components/Header';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-type Step = 'auth' | 'otp';
+type Step = 'auth' | 'magic-link-sent';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -21,52 +22,54 @@ const Auth = () => {
   const [fullName, setFullName] = useState('');
   const [linkedIn, setLinkedIn] = useState('');
   const [phone, setPhone] = useState('');
-  const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { user, loading: authLoading } = useAuth();
+
+  // If already authenticated, go to portal
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate('/portal');
+    }
+  }, [user, authLoading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       if (isLogin) {
-        const { error, data } = await supabase.auth.signInWithPassword({ email, password });
+        // Step 1: Verify credentials with password
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
-        // Check admin
-        const { data: roleData } = await supabase
-          .from('user_roles').select('role')
-          .eq('user_id', data.user.id).eq('role', 'admin').maybeSingle();
+        // Step 2: Sign out so session doesn't persist before magic link
+        await supabase.auth.signOut();
 
-        if (roleData) {
-          // Admin goes to portal like everyone else
-          // Access /admin directly via URL
-          toast({ title: t('auth.welcome'), description: 'Redirecting to your portal.' });
-        }
+        // Step 3: Send magic link for secure login
+        const { error: magicError } = await supabase.auth.signInWithOtp({
+          email,
+          options: {
+            shouldCreateUser: false,
+            emailRedirectTo: `${window.location.origin}/portal`,
+          },
+        });
+        if (magicError) throw magicError;
 
-        // Regular student — send OTP and show verification screen
-        const { error: otpError } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
-        if (otpError) {
-          console.error('OTP error:', otpError);
-          toast({ title: t('auth.error'), description: otpError.message, variant: 'destructive' });
-          return;
-        }
-        setIsAdmin(false);
-        setStep('otp');
-        toast({ title: '🔐 ' + t('auth.otp.sent'), description: t('auth.otp.sent.sub') });
+        setStep('magic-link-sent');
+        toast({ title: t('auth.magiclink.sent'), description: t('auth.magiclink.sent.sub') });
       } else {
+        // Registration
         const { error } = await supabase.auth.signUp({
           email, password,
           options: {
             data: { full_name: fullName, linkedin_url: linkedIn, phone_number: phone },
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: `${window.location.origin}/portal`,
           },
         });
         if (error) throw error;
-        toast({ title: '🎉 ' + t('auth.account.created'), description: t('auth.account.created.sub') });
+        toast({ title: t('auth.account.created'), description: t('auth.account.created.sub') });
         setIsLogin(true);
       }
     } catch (error: any) {
@@ -76,24 +79,23 @@ const Auth = () => {
     }
   };
 
-  const handleOtpVerify = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const resendMagicLink = async () => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.verifyOtp({ email, token: otp, type: 'email' });
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: false,
+          emailRedirectTo: `${window.location.origin}/portal`,
+        },
+      });
       if (error) throw error;
-      toast({ title: '✅ ' + t('auth.verified'), description: t('auth.verified.sub') });
-      navigate('/portal');
+      toast({ title: t('auth.magiclink.resent'), description: t('auth.magiclink.resent.sub') });
     } catch (error: any) {
-      toast({ title: t('auth.otp.invalid'), description: t('auth.otp.invalid.sub'), variant: 'destructive' });
+      toast({ title: t('auth.error'), description: error.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
-  };
-
-  const resendOtp = async () => {
-    await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
-    toast({ title: '📧 ' + t('auth.otp.sent'), description: t('auth.otp.sent.sub') });
   };
 
   return (
@@ -125,12 +127,12 @@ const Auth = () => {
                             <Label htmlFor="fullName">{t('auth.fullname')}</Label>
                             <div className="relative">
                               <User className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                              <Input id="fullName" type="text" {...{placeholder: t('auth.fullname.placeholder')}} value={fullName}
+                              <Input id="fullName" type="text" placeholder={t('auth.fullname.placeholder')} value={fullName}
                                 onChange={(e) => setFullName(e.target.value)} required className="pl-9" />
                             </div>
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="linkedin">LinkedIn Profile <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                            <Label htmlFor="linkedin">{t('auth.linkedin')} <span className="text-muted-foreground text-xs">({t('auth.optional')})</span></Label>
                             <div className="relative">
                               <Linkedin className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                               <Input id="linkedin" type="url" placeholder="https://linkedin.com/in/yourname"
@@ -138,7 +140,7 @@ const Auth = () => {
                             </div>
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="phone">Phone Number <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                            <Label htmlFor="phone">{t('auth.phone')} <span className="text-muted-foreground text-xs">({t('auth.optional')})</span></Label>
                             <div className="relative">
                               <Phone className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                               <Input id="phone" type="tel" placeholder="+1 (555) 000-0000"
@@ -159,7 +161,7 @@ const Auth = () => {
                         <Label htmlFor="password">{t('auth.password')}</Label>
                         <div className="relative">
                           <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                          <Input id="password" type="password" placeholder="••••••••" value={password}
+                          <Input id="password" type="password" placeholder="********" value={password}
                             onChange={(e) => setPassword(e.target.value)} required minLength={6} className="pl-9" />
                         </div>
                       </div>
@@ -167,7 +169,7 @@ const Auth = () => {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: 'rgba(59,130,246,0.08)', borderRadius: '10px', border: '1px solid rgba(59,130,246,0.2)' }}>
                           <ShieldCheck className="w-4 h-4 text-primary flex-shrink-0" />
                           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: 0 }}>
-                            {t('auth.2fa.info')}
+                            {t('auth.magiclink.info')}
                           </p>
                         </div>
                       )}
@@ -186,42 +188,35 @@ const Auth = () => {
               </motion.div>
             )}
 
-            {step === 'otp' && (
-              <motion.div key="otp" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+            {step === 'magic-link-sent' && (
+              <motion.div key="magic-link" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                 <Card className="shadow-large border-primary/10">
                   <CardHeader className="text-center">
                     <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4"
                       style={{ background: 'rgba(59,130,246,0.15)', border: '2px solid rgba(59,130,246,0.4)' }}>
-                      <ShieldCheck className="w-8 h-8 text-primary" />
+                      <Mail className="w-8 h-8 text-primary" />
                     </div>
-                    <CardTitle className="text-2xl font-display">{t('auth.otp.title')}</CardTitle>
+                    <CardTitle className="text-2xl font-display">{t('auth.magiclink.title')}</CardTitle>
                     <CardDescription>
-                      {t('auth.otp.sub')}<br />
+                      {t('auth.magiclink.sub')}<br />
                       <strong style={{ color: 'hsl(var(--primary))' }}>{email}</strong>
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleOtpVerify} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="otp">{t('auth.otp.label')}</Label>
-                        <Input id="otp" type="text" placeholder="000000" value={otp} maxLength={6}
-                          onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))} required
-                          style={{ textAlign: 'center', fontSize: '28px', letterSpacing: '10px', fontWeight: 700 }} />
-                      </div>
-                      <Button type="submit" className="w-full" variant="coral" disabled={loading || otp.length < 6}>
-                        {loading ? t('auth.otp.verifying') : t('auth.otp.verify.btn')}
-                      </Button>
-                      <div className="text-center space-y-2 pt-2">
-                        <button type="button" onClick={resendOtp}
-                          className="text-sm text-muted-foreground hover:text-primary transition-colors block w-full">
-                          {t('auth.otp.resend')}
-                        </button>
-                        <button type="button" onClick={() => setStep('auth')}
-                          className="text-xs text-muted-foreground hover:text-primary transition-colors block w-full">
-                          {t('auth.otp.back')}
-                        </button>
-                      </div>
-                    </form>
+                  <CardContent className="space-y-4">
+                    <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-center space-y-2">
+                      <p className="text-sm font-medium">{t('auth.magiclink.instructions')}</p>
+                      <p className="text-xs text-muted-foreground">{t('auth.magiclink.spam')}</p>
+                    </div>
+                    <div className="text-center space-y-2 pt-2">
+                      <button type="button" onClick={resendMagicLink} disabled={loading}
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors block w-full">
+                        {t('auth.magiclink.resend.btn')}
+                      </button>
+                      <button type="button" onClick={() => setStep('auth')}
+                        className="text-xs text-muted-foreground hover:text-primary transition-colors block w-full">
+                        {t('auth.magiclink.back')}
+                      </button>
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>
