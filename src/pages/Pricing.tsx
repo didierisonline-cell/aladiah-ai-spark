@@ -50,7 +50,7 @@ const Pricing = () => {
       if (error || !data?.url) throw new Error(error?.message || "Checkout failed");
       window.location.href = data.url;
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: t('auth.error'), description: err.message, variant: "destructive" });
     } finally {
       setLoading(null);
     }
@@ -80,13 +80,13 @@ const Pricing = () => {
               onClick={() => setAnnual(false)}
               style={{ padding: "6px 16px", borderRadius: "100px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "13px", background: !annual ? "#1d4ed8" : "transparent", color: !annual ? "#fff" : "rgba(255,255,255,0.5)", transition: "all 0.2s" }}
             >
-              Monthly
+              {t('pricing.monthly')}
             </button>
             <button
               onClick={() => setAnnual(true)}
               style={{ padding: "6px 16px", borderRadius: "100px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "13px", background: annual ? "#f59e0b" : "transparent", color: annual ? "#000" : "rgba(255,255,255,0.5)", transition: "all 0.2s" }}
             >
-              Annual — Save 20%
+              {t('pricing.annual')}
             </button>
           </div>
         </motion.div>
@@ -135,7 +135,7 @@ const Pricing = () => {
                 </div>
                 {annual && (
                   <p style={{ color: "#10b981", fontSize: "12px", fontWeight: 600, marginBottom: "24px" }}>
-                    {t('pricing.save')} ${Math.round(plan.price * 12 * 0.2)}/year with annual plan
+                    {t('pricing.save')} ${Math.round(plan.price * 12 * 0.2)}/{t('pricing.year')}
                   </p>
                 )}
 
