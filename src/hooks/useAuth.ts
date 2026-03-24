@@ -7,31 +7,35 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Listen for auth state changes (magic link detection, sign in/out, etc.)
+    // Listen for auth state changes (magic link, sign in/out, token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    // Check for existing session — but if the URL contains a hash fragment
-    // (magic link redirect), give the Supabase client time to process it
-    // before concluding there's no session.
-    const hasAuthFragment = window.location.hash.includes('access_token') ||
-                            window.location.hash.includes('type=magiclink') ||
-                            window.location.hash.includes('type=signup');
+    // Check if the URL contains auth callback params (magic link redirect).
+    // Supabase PKCE flow uses ?code= in query string.
+    // Implicit flow uses #access_token= in hash.
+    const url = window.location.href;
+    const hasAuthCallback = url.includes('code=') ||
+                            url.includes('access_token') ||
+                            url.includes('type=magiclink') ||
+                            url.includes('type=signup');
 
-    if (hasAuthFragment) {
-      // Let onAuthStateChange handle it — don't call getSession immediately
-      // as the hash is still being processed. Set a timeout fallback.
+    if (hasAuthCallback) {
+      // Let onAuthStateChange handle the token exchange.
+      // Fallback: check session after 3s if onAuthStateChange hasn't fired.
       const timeout = setTimeout(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
-          setUser(session?.user ?? null);
+          if (session?.user) {
+            setUser(session.user);
+          }
           setLoading(false);
         });
-      }, 2000);
-      return () => { timeout && clearTimeout(timeout); subscription.unsubscribe(); };
+      }, 3000);
+      return () => { clearTimeout(timeout); subscription.unsubscribe(); };
     } else {
-      // No hash fragment — safe to check session immediately
+      // No auth callback — safe to check session immediately
       supabase.auth.getSession().then(({ data: { session } }) => {
         setUser(session?.user ?? null);
         setLoading(false);

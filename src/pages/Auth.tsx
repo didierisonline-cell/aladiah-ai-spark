@@ -82,7 +82,7 @@ const Auth = () => {
           email,
           options: {
             shouldCreateUser: false,
-            emailRedirectTo: `${window.location.origin}/portal`,
+            emailRedirectTo: `${window.location.origin}/auth`,
           },
         });
         if (magicError) throw magicError;
@@ -99,7 +99,7 @@ const Auth = () => {
           email, password,
           options: {
             data: { full_name: fullName, linkedin_url: linkedIn, phone_number: phone },
-            emailRedirectTo: `${window.location.origin}/portal`,
+            emailRedirectTo: `${window.location.origin}/auth`,
           },
         });
         if (error) throw error;
@@ -121,7 +121,7 @@ const Auth = () => {
         email,
         options: {
           shouldCreateUser: false,
-          emailRedirectTo: `${window.location.origin}/portal`,
+          emailRedirectTo: `${window.location.origin}/auth`,
         },
       });
       if (error) throw error;
