@@ -124,6 +124,19 @@ const Courses = () => {
         return;
       }
 
+      // Seed AI course if it's missing
+      const aiCourseId = 'dddddddd-eeee-ffff-1111-222222222222';
+      if (!coursesData.some(c => c.id === aiCourseId)) {
+        try {
+          await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/seed-ai-pm-course`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+          });
+          loadData();
+          return;
+        } catch (e) { console.error('AI course seed failed:', e); }
+      }
+
       setCourses(coursesData as Course[]);
 
       const { data: chaptersData } = await supabase
@@ -172,18 +185,17 @@ const Courses = () => {
   const seedCourse = async () => {
     setSeeding(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/seed-scrum-course`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-        }
-      );
-      
-      const result = await response.json();
+      // Seed both courses in parallel
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      };
+      const [scrumRes, aiRes] = await Promise.all([
+        fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/seed-scrum-course`, { method: 'POST', headers }),
+        fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/seed-ai-pm-course`, { method: 'POST', headers }),
+      ]);
+
+      const result = await scrumRes.json();
       if (result.error) throw new Error(result.error);
       
       toast({
