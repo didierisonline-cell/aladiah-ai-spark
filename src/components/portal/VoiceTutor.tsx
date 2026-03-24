@@ -32,7 +32,10 @@ const VoiceTutor = ({ studentName, courseProgress }: VoiceTutorProps) => {
   const startConversation = useCallback(async () => {
     setIsConnecting(true);
     try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Safari requires explicit audio constraints — { audio: true } throws "Invalid constraint"
+      await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      });
 
       const { data, error } = await supabase.functions.invoke('elevenlabs-conversation-token');
       if (error || !data?.token) {
@@ -41,7 +44,6 @@ const VoiceTutor = ({ studentName, courseProgress }: VoiceTutorProps) => {
 
       await conversation.startSession({
         conversationToken: data.token,
-        connectionType: 'webrtc',
       });
     } catch (error: any) {
       console.error('Failed to start voice session:', error);

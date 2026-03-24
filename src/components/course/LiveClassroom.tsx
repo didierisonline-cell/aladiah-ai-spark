@@ -55,10 +55,12 @@ const LiveClassroom = ({
   const startClass = useCallback(async () => {
     setIsConnecting(true);
     try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Safari requires explicit audio constraints — { audio: true } throws "Invalid constraint"
+      await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      });
       await conversation.startSession({
         agentId: "agent_8801kkd1edrbet2rhmnsjynyk80q",
-        connectionType: "websocket",
       });
     } catch (error: any) {
       if (error.name === "NotAllowedError") {
