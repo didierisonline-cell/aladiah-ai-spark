@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { GraduationCap, Mail, Lock, User, Linkedin, Phone, ShieldCheck } from 'lucide-react';
+import { GraduationCap, Mail, Lock, User, Linkedin, Phone, ShieldCheck, Loader2 } from 'lucide-react';
 import Header from '@/components/Header';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -23,31 +23,58 @@ const Auth = () => {
   const [linkedIn, setLinkedIn] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
+  const [waitingForLink, setWaitingForLink] = useState(false);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
   const { user, loading: authLoading } = useAuth();
 
-  // If already authenticated, go to portal
+  // If already authenticated (or magic link clicked in same browser), go to portal
   useEffect(() => {
     if (!authLoading && user) {
+      // Clean up polling if active
+      if (pollRef.current) clearInterval(pollRef.current);
       navigate('/portal');
     }
   }, [user, authLoading, navigate]);
+
+  // Clean up polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, []);
+
+  // Start polling for session after magic link is sent
+  const startSessionPolling = () => {
+    setWaitingForLink(true);
+    // Poll every 3 seconds to detect when user clicks the magic link
+    pollRef.current = setInterval(async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        // Magic link was clicked — session is now active
+        if (pollRef.current) clearInterval(pollRef.current);
+        setWaitingForLink(false);
+        toast({ title: t('auth.magiclink.verified'), description: t('auth.magiclink.verified.sub') });
+        navigate('/portal');
+      }
+    }, 3000);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       if (isLogin) {
-        // Step 1: Verify credentials with password
+        // Step 1: Verify credentials are correct
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
-        // Step 2: Sign out so session doesn't persist before magic link
+        // Step 2: Sign out so session doesn't persist before email verification
         await supabase.auth.signOut();
 
-        // Step 3: Send magic link for secure login
+        // Step 3: Send magic link for secure verified login
         const { error: magicError } = await supabase.auth.signInWithOtp({
           email,
           options: {
@@ -58,6 +85,7 @@ const Auth = () => {
         if (magicError) throw magicError;
 
         setStep('magic-link-sent');
+        startSessionPolling();
         toast({ title: t('auth.magiclink.sent'), description: t('auth.magiclink.sent.sub') });
       } else {
         // Registration
@@ -91,6 +119,9 @@ const Auth = () => {
       });
       if (error) throw error;
       toast({ title: t('auth.magiclink.resent'), description: t('auth.magiclink.resent.sub') });
+      // Restart polling
+      if (pollRef.current) clearInterval(pollRef.current);
+      startSessionPolling();
     } catch (error: any) {
       toast({ title: t('auth.error'), description: error.message, variant: 'destructive' });
     } finally {
@@ -207,12 +238,21 @@ const Auth = () => {
                       <p className="text-sm font-medium">{t('auth.magiclink.instructions')}</p>
                       <p className="text-xs text-muted-foreground">{t('auth.magiclink.spam')}</p>
                     </div>
+
+                    {/* Waiting indicator */}
+                    {waitingForLink && (
+                      <div className="flex items-center justify-center gap-2 py-2">
+                        <Loader2 className="w-4 h-4 text-primary animate-spin" />
+                        <p className="text-sm text-muted-foreground">{t('auth.magiclink.waiting')}</p>
+                      </div>
+                    )}
+
                     <div className="text-center space-y-2 pt-2">
                       <button type="button" onClick={resendMagicLink} disabled={loading}
                         className="text-sm text-muted-foreground hover:text-primary transition-colors block w-full">
                         {t('auth.magiclink.resend.btn')}
                       </button>
-                      <button type="button" onClick={() => setStep('auth')}
+                      <button type="button" onClick={() => { if (pollRef.current) clearInterval(pollRef.current); setWaitingForLink(false); setStep('auth'); }}
                         className="text-xs text-muted-foreground hover:text-primary transition-colors block w-full">
                         {t('auth.magiclink.back')}
                       </button>
