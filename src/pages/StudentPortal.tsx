@@ -60,6 +60,27 @@ const StudentPortal = () => {
       navigate('/auth');
     }
   }, [user, authLoading, navigate]);
+
+  useEffect(() => {
+    if (!user) return;
+    const checkSub = async () => {
+      const { data } = await supabase
+        .from('subscriptions')
+        .select('status')
+        .eq('user_id', user.id)
+        .single();
+      setSubStatus(data?.status === 'active' ? 'active' : 'none');
+    };
+    // Check URL for fresh payment success
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'success') {
+      setSubStatus('active');
+      window.history.replaceState({}, '', '/portal');
+    } else {
+      checkSub();
+    }
+  }, [user]);
+
   const { progress: overallProgress } = useProgress(user?.id);
   const { profile: learningProfile, recordQuestion, getDueReviews } = useLearningProfile(user?.id);
 
@@ -277,6 +298,67 @@ const StudentPortal = () => {
     { icon: Star, label: t('portal.stat.points'), value: totalPoints.toLocaleString(), color: 'text-accent', onClick: () => setPointsModalOpen(true) },
     { icon: FlaskConical, label: t('portal.stat.labs'), value: labs.filter(l => l.completed).length.toString(), color: 'text-primary', onClick: () => setLabsModalOpen(true) },
   ];
+
+  // Payment gate — block portal if no active subscription
+  if (subStatus === 'loading' && user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{background:'#0a0f1e'}}>
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-white/60 text-sm">Verifying your access...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (subStatus === 'none') {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6" style={{background:'linear-gradient(135deg,#0a0f1e,#0d1b3e)'}}>
+        <div className="w-full max-w-lg text-center">
+          <div className="mb-6 text-6xl">🎓</div>
+          <h1 className="text-3xl font-bold text-white mb-3">Complete Your Enrollment</h1>
+          <p className="text-white/60 mb-8 leading-relaxed">
+            You need an active subscription to access the Aladiah Academy portal. Choose your plan to get started.
+          </p>
+          <div className="grid gap-4 mb-8">
+            {[
+              { name: 'Foundation Builder', price: 99, priceId: import.meta.env.VITE_STRIPE_PRICE_FOUNDATION, color: '#3b82f6', features: ['Full Scrum + PM curriculum', 'AI-powered lessons', 'Community access'] },
+              { name: 'Career Accelerator', price: 299, priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR, color: '#C4A44A', popular: true, features: ['Everything in Foundation', 'AI Interview Coach', 'AI Resume Builder', 'Career Advisor'] },
+              { name: 'Elite Mentorship', price: 499, priceId: import.meta.env.VITE_STRIPE_PRICE_ELITE, color: '#a855f7', features: ['Everything in Accelerator', 'Weekly 1-on-1 with Didier', 'VIP community status'] },
+            ].map(plan => (
+              <div key={plan.name} className="rounded-2xl p-5 text-left relative" style={{background:`${plan.color}15`, border:`1px solid ${plan.color}40`}}>
+                {plan.popular && <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-bold" style={{background:plan.color,color:'#0a0f1e'}}>MOST POPULAR</span>}
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-white font-bold">{plan.name}</span>
+                  <span className="font-bold text-xl" style={{color:plan.color}}>${plan.price}/mo</span>
+                </div>
+                <div className="space-y-1 mb-4">
+                  {plan.features.map((f,i) => <p key={i} className="text-xs" style={{color:'rgba(255,255,255,0.6)'}}>✓ {f}</p>)}
+                </div>
+                <button
+                  onClick={async () => {
+                    if (!user) return;
+                    const res = await fetch(`${import.meta.env.VITE_API_URL}/create-checkout-session`, {
+                      method: 'POST',
+                      headers: {'Content-Type':'application/json'},
+                      body: JSON.stringify({ priceId: plan.priceId, userId: user.id, email: user.email }),
+                    });
+                    const data = await res.json();
+                    if (data.url) window.location.href = data.url;
+                  }}
+                  className="w-full py-2.5 rounded-xl font-bold text-sm transition-all"
+                  style={{background:plan.color, color: plan.color === '#C4A44A' ? '#0a0f1e' : '#fff'}}
+                >
+                  Get Started — ${plan.price}/mo
+                </button>
+              </div>
+            ))}
+          </div>
+          <p className="text-white/30 text-xs">🔒 Secure payment via Stripe · Cancel anytime · 7-day money back guarantee</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="portal-root min-h-screen">
