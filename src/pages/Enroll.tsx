@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Shield, Clock, Users, CheckCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Shield, Clock, Users, CheckCircle, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,38 +10,56 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import WaitlistModal from '@/components/WaitlistModal';
-import { enrollTranslations, type SupportedLanguage } from '@/utils/enrollTranslations';
+
+const SEAL_SVG = `<svg width="460" height="460" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"><circle cx="250" cy="250" r="248" fill="none" stroke="#C4A44A" stroke-width="3.5"/><circle cx="250" cy="250" r="243" fill="none" stroke="#C4A44A" stroke-width="1.2"/><circle cx="250" cy="250" r="230" fill="none" stroke="#C4A44A" stroke-width="2"/><circle cx="250" cy="250" r="160" fill="none" stroke="#C4A44A" stroke-width="1.5"/><text x="250" y="450" text-anchor="middle" dominant-baseline="central" fill="#C4A44A" font-family="Times New Roman, serif" font-weight="700" font-size="28" letter-spacing="5">2026</text><path d="M 188,160 L 188,280 Q 188,330 218,353 Q 234,365 250,373 Q 266,365 282,353 Q 312,330 312,280 L 312,160 Z" fill="none" stroke="#C4A44A" stroke-width="2.5"/><path d="M 190,162 L 190,197 Q 220,210 250,197 Q 280,210 310,197 L 310,162 Z" fill="#C4A44A" opacity="0.6"/></svg>`;
+
+const PLANS = [
+  {
+    id: 'foundation',
+    tier: 'TIER 1',
+    name: 'Foundation Builder',
+    price: 99,
+    color: '#3b82f6',
+    features: ['Full Scrum Master curriculum', 'Full PM curriculum', 'AI-powered personalized lessons', 'Progress tracker + homework', 'Community access', 'Academy shop access', 'Available in 7 languages'],
+  },
+  {
+    id: 'accelerator',
+    tier: 'TIER 2',
+    name: 'Career Accelerator',
+    price: 299,
+    color: '#f59e0b',
+    popular: true,
+    features: ['Everything in Foundation', 'AI Interview Coach (unlimited)', 'AI Resume Builder', 'Career Advisor (AI-guided)', 'Real-world simulations', 'Advanced strategies', 'Priority community access'],
+  },
+  {
+    id: 'elite',
+    tier: 'TIER 3',
+    name: 'Elite Mentorship',
+    price: 499,
+    color: '#8b5cf6',
+    features: ['Everything in Accelerator', 'Weekly 1-on-1 with Didier (1hr)', 'Personalized strategy session', 'Direct feedback on your work', 'Job search accountability', 'VIP community status', 'Placement support network'],
+  },
+];
 
 const enrollmentSchema = z.object({
-  fullName: z.string().trim().min(1, 'Full name is required').max(100),
-  email: z.string().trim().email('Invalid email address').max(255),
-  phone: z.string().trim().min(7, 'Phone number is required').max(20),
+  fullName: z.string().trim().min(1).max(100),
+  email: z.string().trim().email().max(255),
+  phone: z.string().trim().min(7).max(20),
   company: z.string().trim().max(100).optional(),
   jobTitle: z.string().trim().max(100).optional(),
-  country: z.string().trim().min(1, 'Country is required').max(100),
+  country: z.string().trim().min(1).max(100),
 });
 
 const countries = [
-  'Afghanistan','Albania','Algeria','Andorra','Angola','Antigua and Barbuda','Argentina','Armenia','Australia','Austria',
-  'Azerbaijan','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bhutan',
-  'Bolivia','Bosnia and Herzegovina','Botswana','Brazil','Brunei','Bulgaria','Burkina Faso','Burundi','Cabo Verde','Cambodia',
-  'Cameroon','Canada','Central African Republic','Chad','Chile','China','Colombia','Comoros','Congo','Costa Rica',
-  'Croatia','Cuba','Cyprus','Czech Republic','Democratic Republic of the Congo','Denmark','Djibouti','Dominica','Dominican Republic','East Timor',
-  'Ecuador','Egypt','El Salvador','Equatorial Guinea','Eritrea','Estonia','Eswatini','Ethiopia','Fiji','Finland',
-  'France','Gabon','Gambia','Georgia','Germany','Ghana','Greece','Grenada','Guatemala','Guinea',
-  'Guinea-Bissau','Guyana','Haiti','Honduras','Hungary','Iceland','India','Indonesia','Iran','Iraq',
-  'Ireland','Israel','Italy','Ivory Coast','Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kiribati',
-  'Kosovo','Kuwait','Kyrgyzstan','Laos','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein',
-  'Lithuania','Luxembourg','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands','Mauritania',
-  'Mauritius','Mexico','Micronesia','Moldova','Monaco','Mongolia','Montenegro','Morocco','Mozambique','Myanmar',
-  'Namibia','Nauru','Nepal','Netherlands','New Zealand','Nicaragua','Niger','Nigeria','North Korea','North Macedonia',
-  'Norway','Oman','Pakistan','Palau','Palestine','Panama','Papua New Guinea','Paraguay','Peru','Philippines',
-  'Poland','Portugal','Qatar','Romania','Russia','Rwanda','Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines','Samoa',
-  'San Marino','São Tomé and Príncipe','Saudi Arabia','Senegal','Serbia','Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia',
-  'Solomon Islands','Somalia','South Africa','South Korea','South Sudan','Spain','Sri Lanka','Sudan','Suriname','Sweden',
-  'Switzerland','Syria','Taiwan','Tajikistan','Tanzania','Thailand','Togo','Tonga','Trinidad and Tobago','Tunisia',
-  'Turkey','Turkmenistan','Tuvalu','Uganda','Ukraine','United Arab Emirates','United Kingdom','United States','Uruguay','Uzbekistan',
-  'Vanuatu','Vatican City','Venezuela','Vietnam','Yemen','Zambia','Zimbabwe',
+  'Afghanistan','Albania','Algeria','Argentina','Australia','Austria','Bangladesh','Belgium','Bolivia','Brazil',
+  'Cambodia','Cameroon','Canada','Chile','China','Colombia','Costa Rica','Croatia','Cuba','Czech Republic',
+  'Denmark','Dominican Republic','Ecuador','Egypt','Ethiopia','Finland','France','Germany','Ghana','Greece',
+  'Guatemala','Haiti','Honduras','Hungary','India','Indonesia','Iran','Iraq','Ireland','Israel',
+  'Italy','Jamaica','Japan','Jordan','Kenya','South Korea','Lebanon','Malaysia','Mexico','Morocco',
+  'Netherlands','New Zealand','Nigeria','Norway','Pakistan','Panama','Peru','Philippines','Poland','Portugal',
+  'Romania','Russia','Saudi Arabia','Senegal','Singapore','South Africa','Spain','Sri Lanka','Sweden','Switzerland',
+  'Taiwan','Tanzania','Thailand','Trinidad and Tobago','Tunisia','Turkey','Uganda','Ukraine','United Arab Emirates',
+  'United Kingdom','United States','Uruguay','Venezuela','Vietnam','Zambia','Zimbabwe',
 ];
 
 const Enroll = () => {
@@ -49,61 +67,33 @@ const Enroll = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const courseParam = searchParams.get('course') || 'scrum';
 
-  const supportedLangs: SupportedLanguage[] = ['en', 'es', 'zh', 'ar', 'fr', 'de', 'ja'];
-  const currentLang = supportedLangs.includes(language as SupportedLanguage) ? (language as SupportedLanguage) : 'en';
-  const et = enrollTranslations[currentLang];
-
+  const [selectedPlan, setSelectedPlan] = useState(PLANS[1]);
   const [waitlistOpen, setWaitlistOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    company: '',
-    jobTitle: '',
-    country: '',
-  });
+  const [form, setForm] = useState({ fullName: '', email: '', phone: '', company: '', jobTitle: '', country: '' });
 
-  const isScrum = courseParam === 'scrum';
-
-  const updateField = (field: string, value: string) => {
-    setForm(prev => ({ ...prev, [field]: value }));
-  };
+  const updateField = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const result = enrollmentSchema.safeParse(form);
     if (!result.success) {
       toast({ title: result.error.errors[0].message, variant: 'destructive' });
       return;
     }
-
-    if (!isScrum) {
-      setWaitlistOpen(true);
-      return;
-    }
-
     setLoading(true);
     try {
       const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({ ...result.data, course: courseParam }),
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        body: JSON.stringify({ ...result.data, plan: selectedPlan.id, price: selectedPlan.price }),
       });
       const data = await resp.json();
       if (data.url) {
         window.location.href = data.url;
       } else {
-        toast({
-          title: et.welcome,
-          description: 'Payment integration is being configured. Please check back soon!',
-        });
+        toast({ title: 'Application received!', description: 'Payment integration is being configured. We will contact you shortly.' });
       }
     } catch (err: any) {
       toast({ title: err.message || 'Something went wrong', variant: 'destructive' });
@@ -113,186 +103,181 @@ const Enroll = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0a0f1e 0%, #0d1535 40%, #0f1f3d 100%)' }}>
+
+      {/* Seal watermark */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.06 }}>
+        <div style={{ width: 600, height: 600 }} dangerouslySetInnerHTML={{ __html: SEAL_SVG }} />
+      </div>
+
+      {/* Gold top border */}
+      <div style={{ height: 3, background: 'linear-gradient(90deg, transparent, #C4A44A, #f0d060, #C4A44A, transparent)' }} />
+
       {/* Header */}
-      <div className="bg-gradient-ocean text-primary-foreground py-6">
-        <div className="container mx-auto px-4">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground transition-colors mb-4"
-          >
+      <div className="relative z-10 py-6 px-4 border-b" style={{ borderColor: 'rgba(196,164,74,0.2)' }}>
+        <div className="container mx-auto max-w-6xl">
+          <button onClick={() => navigate('/')} className="flex items-center gap-2 mb-4 transition-colors" style={{ color: 'rgba(196,164,74,0.7)' }}>
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm font-medium">{et.backToHome}</span>
+            <span className="text-sm font-medium">Back to Home</span>
           </button>
-          <h1 className="text-2xl sm:text-3xl font-display font-bold">
-            {isScrum ? et.scrumTitle : et.pmpTitle}
-          </h1>
-          <p className="text-primary-foreground/80 mt-1">{et.enrollmentApplication}</p>
+          <div className="flex items-center gap-4">
+            <div dangerouslySetInnerHTML={{ __html: SEAL_SVG }} style={{ width: 56, height: 56, opacity: 0.9 }} />
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: '#f0d060', fontFamily: 'Playfair Display, Times New Roman, serif' }}>
+                Aladiah Academy
+              </h1>
+              <p style={{ color: 'rgba(196,164,74,0.7)', fontSize: 13 }}>Professional Enrollment Application</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid lg:grid-cols-3 gap-12 max-w-6xl mx-auto">
-          {/* Form */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="lg:col-span-2"
-          >
-            <div className="bg-card rounded-2xl p-8 shadow-soft border border-border/50">
-              <h2 className="text-xl font-display font-bold text-foreground mb-6">
-                {et.yourInfo}
-              </h2>
+      <div className="relative z-10 container mx-auto px-4 py-10 max-w-6xl">
 
+        {/* Plan selector */}
+        <div className="mb-10">
+          <h2 className="text-center text-white font-bold text-xl mb-2">Select Your Plan</h2>
+          <p className="text-center mb-6" style={{ color: 'rgba(196,164,74,0.7)', fontSize: 13 }}>Save up to 20% with annual billing</p>
+          <div className="grid md:grid-cols-3 gap-4">
+            {PLANS.map(plan => (
+              <motion.div
+                key={plan.id}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setSelectedPlan(plan)}
+                className="relative rounded-2xl p-5 cursor-pointer transition-all duration-300"
+                style={{
+                  border: selectedPlan.id === plan.id ? `2px solid ${plan.color}` : '2px solid rgba(255,255,255,0.08)',
+                  background: selectedPlan.id === plan.id ? `${plan.color}18` : 'rgba(255,255,255,0.03)',
+                  boxShadow: selectedPlan.id === plan.id ? `0 0 24px ${plan.color}33` : 'none',
+                }}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-bold" style={{ background: plan.color, color: '#fff' }}>
+                    MOST POPULAR
+                  </div>
+                )}
+                <div className="text-xs font-bold mb-1" style={{ color: plan.color }}>{plan.tier}</div>
+                <div className="text-white font-bold text-lg mb-2">{plan.name}</div>
+                <div className="flex items-baseline gap-1 mb-4">
+                  <span style={{ color: plan.color, fontSize: 36, fontWeight: 800 }}>${plan.price}</span>
+                  <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>/month</span>
+                </div>
+                <div className="space-y-1.5">
+                  {plan.features.slice(0, 4).map((f, i) => (
+                    <div key={i} className="flex items-center gap-2 text-xs" style={{ color: 'rgba(255,255,255,0.65)' }}>
+                      <CheckCircle className="w-3 h-3 flex-shrink-0" style={{ color: plan.color }} />
+                      {f}
+                    </div>
+                  ))}
+                  {plan.features.length > 4 && (
+                    <div className="text-xs" style={{ color: plan.color }}>+{plan.features.length - 4} more benefits</div>
+                  )}
+                </div>
+                {selectedPlan.id === plan.id && (
+                  <div className="mt-3 flex items-center gap-1 text-xs font-semibold" style={{ color: plan.color }}>
+                    <CheckCircle className="w-3.5 h-3.5" /> Selected
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Form */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="lg:col-span-2">
+            <div className="rounded-2xl p-8" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(196,164,74,0.2)' }}>
+              <h2 className="text-white font-bold text-xl mb-6">Your Information</h2>
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <Label htmlFor="fullName">{et.fullName} *</Label>
-                    <Input
-                      id="fullName"
-                      value={form.fullName}
-                      onChange={e => updateField('fullName', e.target.value)}
-                      placeholder={et.fullNamePlaceholder}
-                      required
-                      maxLength={100}
-                    />
+                    <Label className="text-white/70 text-sm">Full Name *</Label>
+                    <Input value={form.fullName} onChange={e => updateField('fullName', e.target.value)} placeholder="John Doe" required maxLength={100} className="bg-white/5 border-white/10 text-white placeholder:text-white/30" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email">{et.emailAddress} *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={form.email}
-                      onChange={e => updateField('email', e.target.value)}
-                      placeholder={et.emailPlaceholder}
-                      required
-                      maxLength={255}
-                    />
+                    <Label className="text-white/70 text-sm">Email Address *</Label>
+                    <Input type="email" value={form.email} onChange={e => updateField('email', e.target.value)} placeholder="john@company.com" required maxLength={255} className="bg-white/5 border-white/10 text-white placeholder:text-white/30" />
                   </div>
                 </div>
-
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <Label htmlFor="phone">{et.phoneNumber} *</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      value={form.phone}
-                      onChange={e => updateField('phone', e.target.value)}
-                      placeholder={et.phonePlaceholder}
-                      required
-                      maxLength={20}
-                    />
+                    <Label className="text-white/70 text-sm">Phone Number *</Label>
+                    <Input type="tel" value={form.phone} onChange={e => updateField('phone', e.target.value)} placeholder="+1 (555) 123-4567" required maxLength={20} className="bg-white/5 border-white/10 text-white placeholder:text-white/30" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="country">{et.country} *</Label>
+                    <Label className="text-white/70 text-sm">Country *</Label>
                     <Select value={form.country} onValueChange={v => updateField('country', v)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder={et.selectCountry} />
+                      <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                        <SelectValue placeholder="Select your country" />
                       </SelectTrigger>
                       <SelectContent>
-                        {countries.map(c => (
-                          <SelectItem key={c} value={c}>{c}</SelectItem>
-                        ))}
+                        {countries.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
-
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <Label htmlFor="company">{et.company} <span className="text-muted-foreground text-xs">({et.optional})</span></Label>
-                    <Input
-                      id="company"
-                      value={form.company}
-                      onChange={e => updateField('company', e.target.value)}
-                      placeholder={et.companyPlaceholder}
-                      maxLength={100}
-                    />
+                    <Label className="text-white/70 text-sm">Company <span className="text-white/30 text-xs">(optional)</span></Label>
+                    <Input value={form.company} onChange={e => updateField('company', e.target.value)} placeholder="Acme Corp" maxLength={100} className="bg-white/5 border-white/10 text-white placeholder:text-white/30" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="jobTitle">{et.jobTitle} <span className="text-muted-foreground text-xs">({et.optional})</span></Label>
-                    <Input
-                      id="jobTitle"
-                      value={form.jobTitle}
-                      onChange={e => updateField('jobTitle', e.target.value)}
-                      placeholder={et.jobTitlePlaceholder}
-                      maxLength={100}
-                    />
+                    <Label className="text-white/70 text-sm">Job Title <span className="text-white/30 text-xs">(optional)</span></Label>
+                    <Input value={form.jobTitle} onChange={e => updateField('jobTitle', e.target.value)} placeholder="Software Engineer" maxLength={100} className="bg-white/5 border-white/10 text-white placeholder:text-white/30" />
                   </div>
                 </div>
-
                 <div className="pt-4">
-                  {isScrum ? (
-                    <Button type="submit" variant="coral" size="lg" className="w-full" disabled={loading}>
-                      {loading ? et.processing : et.proceedToPayment}
-                      <ArrowRight className="w-4 h-4" />
-                    </Button>
-                  ) : (
-                    <Button type="submit" variant="default" size="lg" className="w-full" disabled={loading}>
-                      {loading ? et.processing : et.joinWaitlist}
-                      <ArrowRight className="w-4 h-4" />
-                    </Button>
-                  )}
+                  <button type="submit" disabled={loading} className="w-full py-4 rounded-2xl font-bold text-base text-white transition-all duration-300 flex items-center justify-center gap-2"
+                    style={{ background: loading ? 'rgba(196,164,74,0.3)' : 'linear-gradient(135deg, #C4A44A, #f0d060, #C4A44A)', color: '#0a0f1e', boxShadow: loading ? 'none' : '0 4px 24px rgba(196,164,74,0.4)' }}>
+                    {loading ? 'Processing...' : <>Proceed to Payment — ${selectedPlan.price}/mo <ArrowRight className="w-4 h-4" /></>}
+                  </button>
                 </div>
               </form>
             </div>
           </motion.div>
 
           {/* Sidebar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="space-y-6"
-          >
-            {/* Course Summary */}
-            <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50">
-              <h3 className="font-display font-bold text-foreground mb-4">
-                {isScrum ? et.scrumTitle : et.pmpTitle}
-              </h3>
-
-              <div className="space-y-3 text-sm">
-                <div className="flex items-center gap-3 text-muted-foreground">
-                  <Clock className="w-4 h-4 flex-shrink-0" />
-                  <span>{isScrum ? et.weeks8 : et.weeks12}</span>
-                </div>
-                <div className="flex items-center gap-3 text-muted-foreground">
-                  <Users className="w-4 h-4 flex-shrink-0" />
-                  <span>{et.onlineLearning}</span>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-5">
+            {/* Selected plan summary */}
+            <div className="rounded-2xl p-5" style={{ background: `${selectedPlan.color}12`, border: `1px solid ${selectedPlan.color}40` }}>
+              <div className="flex items-center gap-3 mb-4">
+                <div style={{ width: 40, height: 40 }} dangerouslySetInnerHTML={{ __html: SEAL_SVG.replace('width="460" height="460"', 'width="40" height="40"') }} />
+                <div>
+                  <div className="text-white font-bold text-sm">{selectedPlan.name}</div>
+                  <div className="text-xs" style={{ color: selectedPlan.color }}>{selectedPlan.tier}</div>
                 </div>
               </div>
-
-              {isScrum && (
-                <div className="mt-6 pt-4 border-t border-border">
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground text-sm">{et.total}</span>
-                    <span className="text-2xl font-display font-bold text-foreground">$1,999</span>
-                  </div>
-                </div>
-              )}
+              <div className="flex justify-between items-center py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>Monthly Total</span>
+                <span className="font-bold text-2xl" style={{ color: selectedPlan.color }}>${selectedPlan.price}/mo</span>
+              </div>
+              <div className="text-xs mt-1" style={{ color: 'rgba(196,164,74,0.6)' }}>✓ Save up to 20% with annual plan</div>
             </div>
 
-            {/* Trust signals */}
-            <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50 space-y-4">
-              <h4 className="font-display font-semibold text-foreground text-sm">{et.whatsIncluded}</h4>
-              {[et.fullAccess, et.liveProjects, et.aiTools, et.communityAccess].map((item, i) => (
-                <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <CheckCircle className="w-4 h-4 text-secondary flex-shrink-0 mt-0.5" />
-                  <span>{item}</span>
-                </div>
-              ))}
+            {/* What's included */}
+            <div className="rounded-2xl p-5" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <h4 className="text-white font-semibold text-sm mb-3">What's Included</h4>
+              <div className="space-y-2">
+                {selectedPlan.features.map((f, i) => (
+                  <div key={i} className="flex items-start gap-2 text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                    <CheckCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: selectedPlan.color }} />
+                    {f}
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Security */}
-            <div className="flex items-center gap-3 text-xs text-muted-foreground px-2">
-              <Shield className="w-4 h-4 flex-shrink-0" />
-              <span>{et.securePayment}</span>
+            <div className="flex items-center gap-3 text-xs px-2" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              <Shield className="w-4 h-4 flex-shrink-0" style={{ color: '#C4A44A' }} />
+              Secure payment processing. Your data is encrypted and protected.
             </div>
           </motion.div>
         </div>
       </div>
+
+      {/* Gold bottom border */}
+      <div style={{ height: 3, background: 'linear-gradient(90deg, transparent, #C4A44A, #f0d060, #C4A44A, transparent)', marginTop: 40 }} />
 
       <WaitlistModal open={waitlistOpen} onOpenChange={setWaitlistOpen} />
     </div>
