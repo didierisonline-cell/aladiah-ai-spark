@@ -18,7 +18,6 @@ import { useLearningProfile } from '@/hooks/useLearningProfile';
 import Header from '@/components/Header';
 import AgentSelector from '@/components/portal/AgentSelector';
 import StudentProfileWidget from '@/components/portal/StudentProfileWidget';
-import ProfessorSelector from '@/components/portal/ProfessorSelector';
 import YouTubeRecommendations from '@/components/portal/YouTubeRecommendations';
 import CareerTools from '@/components/portal/CareerTools';
 import LabMode from '@/components/portal/LabMode';
@@ -101,7 +100,6 @@ const StudentPortal = () => {
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [streakModalOpen, setStreakModalOpen] = useState(false);
   const [showFounderWelcome, setShowFounderWelcome] = useState(false);
-  const [selectedProfessor, setSelectedProfessor] = useState('james');
   const [activeAgent, setActiveAgent] = useState('professor');
   const [pointsModalOpen, setPointsModalOpen] = useState(false);
   const [labsModalOpen, setLabsModalOpen] = useState(false);
@@ -241,7 +239,7 @@ const StudentPortal = () => {
         body: JSON.stringify({
           message: chatInput,
           agentKey: activeAgent,
-          professorId: selectedProfessor,
+          professorId: 'didier',
           language,
           history: chatMessages.slice(-10).map(m => ({ role: m.role, content: m.content })),
         }),
@@ -362,7 +360,7 @@ const StudentPortal = () => {
 
   return (
     <div className="portal-root min-h-screen">
-      <Header selectedProfessor={selectedProfessor} onProfessorChange={setSelectedProfessor} onProfileClick={() => setShowProfile(true)} />
+      <Header onProfileClick={() => setShowProfile(true)} />
 
       {showFounderWelcome && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">

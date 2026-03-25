@@ -18,7 +18,7 @@ export interface BrainAnalytics {
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
-export function useBrain(defaultAgent: AgentKey = "professor", professorId: string = "james") {
+export function useBrain(defaultAgent: AgentKey = "professor", professorId: string = "didier") {
   const { language } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
