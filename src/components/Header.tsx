@@ -229,21 +229,20 @@ function AuthNavButton({ navigate }: { navigate: (path: string) => void }) {
 
   if (user) {
     return (
-      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className="hidden sm:block">
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className="hidden sm:flex items-center gap-2">
+        <Button variant="hero" size="sm" onClick={() => navigate('/portal')}>{t('nav.portal')}</Button>
         <button
           onClick={handleLogout}
           style={{
-            display: 'flex', alignItems: 'center', gap: '6px',
-            padding: '8px 18px', borderRadius: '10px', fontSize: '14px', fontWeight: 600,
-            background: 'linear-gradient(135deg, #10b981, #059669)',
-            color: '#fff', border: 'none', cursor: 'pointer',
-            boxShadow: '0 0 16px rgba(16,185,129,0.4)',
+            padding: '8px 12px', borderRadius: '10px', fontSize: '12px', fontWeight: 600,
+            background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)',
+            border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer',
             transition: 'all 0.2s ease',
           }}
-          onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 0 24px rgba(16,185,129,0.7)')}
-          onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 0 16px rgba(16,185,129,0.4)')}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = '#fff'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; }}
         >
-          <span style={{ fontSize: '15px' }}>👋</span> {t('nav.logout')}
+          {t('nav.logout')}
         </button>
       </motion.div>
     );
@@ -276,18 +275,22 @@ function MobileAuthButton({ navigate, onClose }: { navigate: (path: string) => v
 
   if (user) {
     return (
-      <button
-        onClick={handleLogout}
-        style={{
-          marginTop: '16px', width: '100%', padding: '14px',
-          borderRadius: '12px', fontSize: '15px', fontWeight: 600,
-          background: 'linear-gradient(135deg, #10b981, #059669)',
-          color: '#fff', border: 'none', cursor: 'pointer',
-          boxShadow: '0 0 16px rgba(16,185,129,0.35)',
-        }}
-      >
-        👋 {t('nav.logout')}
-      </button>
+      <div className="mt-4 space-y-2">
+        <Button variant="hero" size="lg" className="w-full" onClick={() => { onClose(); navigate('/portal'); }}>
+          {t('nav.portal')}
+        </Button>
+        <button
+          onClick={handleLogout}
+          style={{
+            width: '100%', padding: '10px',
+            borderRadius: '10px', fontSize: '13px', fontWeight: 600,
+            background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)',
+            border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer',
+          }}
+        >
+          {t('nav.logout')}
+        </button>
+      </div>
     );
   }
 

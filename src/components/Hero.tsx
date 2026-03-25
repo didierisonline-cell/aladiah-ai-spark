@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Sparkles, Users, TrendingUp, Building2, Play, Pause, Volume2, VolumeX, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,7 @@ const sceneSources = [scene1, scene2, scene3, scene4, scene5];
 
 const Hero = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   const scenes = sceneSources.map((src, i) => ({
     src,
@@ -140,7 +142,7 @@ const Hero = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-4"
             >
-              <Button variant="hero" size="xl" className="shadow-large">
+              <Button variant="hero" size="xl" className="shadow-large" onClick={() => navigate('/auth')}>
                 {t('hero.cta.primary')}
                 <ArrowRight className="w-5 h-5" />
               </Button>

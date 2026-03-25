@@ -204,6 +204,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.store': 'Store',
     'nav.talent': 'Aladiah Management',
     'nav.getbusy': 'Get Busy',
+    'nav.portal': 'My Portal',
     'nav.change_professor': 'Change Professor',
 
     // Hero
@@ -564,6 +565,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.store': 'Tienda',
     'nav.talent': 'Aladiah Management',
     'nav.getbusy': 'Empieza Ya',
+    'nav.portal': 'Mi Portal',
     'nav.change_professor': 'Cambiar Profesor',
 
     // Hero
@@ -924,6 +926,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.store': '商店',
     'nav.talent': 'Aladiah Management',
     'nav.getbusy': '开始学习',
+    'nav.portal': '我的门户',
     'nav.change_professor': '更换教授',
 
     // Hero
@@ -1284,6 +1287,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.store': 'المتجر',
     'nav.talent': 'Aladiah Management',
     'nav.getbusy': 'ابدأ الآن',
+    'nav.portal': 'بوابتي',
     'nav.change_professor': 'تغيير الأستاذ',
 
     // Hero
@@ -1644,6 +1648,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.store': 'Boutique',
     'nav.talent': 'Aladiah Management',
     'nav.getbusy': 'Commencer',
+    'nav.portal': 'Mon Portail',
     'nav.change_professor': 'Changer de Professeur',
 
     // Hero
@@ -2004,6 +2009,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.store': 'Shop',
     'nav.talent': 'Aladiah Management',
     'nav.getbusy': 'Loslegen',
+    'nav.portal': 'Mein Portal',
     'nav.change_professor': 'Professor Wechseln',
 
     // Hero
@@ -2364,6 +2370,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.store': 'ストア',
     'nav.talent': 'Aladiah Management',
     'nav.getbusy': '始めよう',
+    'nav.portal': 'マイポータル',
     'nav.change_professor': '教授を変更',
 
     // Hero

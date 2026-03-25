@@ -63,7 +63,7 @@ const CTA = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <Button variant="coral" size="xl" className="group shadow-large text-lg px-12" onClick={() => navigate('/portal')}>
+            <Button variant="coral" size="xl" className="group shadow-large text-lg px-12" onClick={() => navigate('/auth')}>
               Get Busy
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
