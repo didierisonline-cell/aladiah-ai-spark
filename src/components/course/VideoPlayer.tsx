@@ -476,19 +476,51 @@ const VideoPlayer = ({
               )}
             </div>
 
-            {/* Professor Character */}
+            {/* Professor Character with Flag Crown */}
             <motion.div
-              className="relative z-10 w-44 h-44 sm:w-56 sm:h-56 mb-0"
-              animate={isPlaying ? {
-                y: [0, -8, 0],
-                rotate: [0, -1.5, 1.5, 0],
-              } : {}}
+              className="relative z-10 mb-0"
+              style={{ width: 240, height: 240 }}
+              animate={isPlaying ? { y: [0, -8, 0] } : {}}
               transition={{ duration: 2, repeat: isPlaying ? Infinity : 0, ease: "easeInOut" }}
             >
-              <img 
-                src={professor.image} 
+              {/* Sun glow */}
+              <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'radial-gradient(circle, rgba(251,191,36,0.45) 0%, rgba(251,146,60,0.25) 45%, transparent 70%)', transform: 'scale(1.2)', pointerEvents: 'none' }} />
+
+              {/* Rotating sun rays */}
+              <motion.div
+                style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
+                animate={{ rotate: 360 }}
+                transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+              >
+                {[...Array(12)].map((_, i) => (
+                  <div key={i} style={{ position: 'absolute', width: 3, height: 22, background: 'rgba(251,191,36,0.5)', left: '50%', top: '50%', transformOrigin: '0 -108px', transform: `rotate(${i * 30}deg) translateX(-50%)`, borderRadius: 2 }} />
+                ))}
+              </motion.div>
+
+              {/* Flag crown — 8 professor flags in a circle */}
+              {[...Array(8)].map((_, i) => {
+                const flags = ['🇺🇸','🇩🇴','🇫🇷','🇩🇪','🇨🇳','🇲🇦','🇰🇷','🇮🇹'];
+                const angle = (i / 8) * 2 * Math.PI - Math.PI / 2;
+                const radius = 100;
+                const x = Math.cos(angle) * radius + 120 - 20;
+                const y = Math.sin(angle) * radius + 120 - 20;
+                return (
+                  <motion.div
+                    key={i}
+                    style={{ position: 'absolute', left: x, top: y, width: 40, height: 40, fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.7))', pointerEvents: 'none' }}
+                    animate={{ scale: isPlaying ? [1, 1.25, 1] : 1, y: isPlaying ? [0, -4, 0] : 0 }}
+                    transition={{ duration: 2, repeat: isPlaying ? Infinity : 0, delay: i * 0.15, ease: 'easeInOut' }}
+                  >
+                    {flags[i]}
+                  </motion.div>
+                );
+              })}
+
+              {/* Professor image */}
+              <img
+                src={professor.image}
                 alt={professor.name}
-                className="w-full h-full object-contain drop-shadow-2xl"
+                style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -45%)', width: 160, height: 160, objectFit: 'contain', filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.8))' }}
               />
               {showHeyGen && (
                 <div className="absolute inset-0 z-20">
