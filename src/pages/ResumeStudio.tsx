@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
+import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import BackToPortal from '@/components/portal/BackToPortal';
@@ -39,6 +40,7 @@ const defaultResume: ResumeData = {
 
 const ResumeStudio = () => {
   const { user, loading: authLoading } = useAuth();
+  const { hasFeature } = useSubscription();
   const navigate = useNavigate();
   const [resume, setResume] = useState<ResumeData>(defaultResume);
   const [aiSuggestion, setAiSuggestion] = useState('');
@@ -208,6 +210,14 @@ ${resume.projects}
       <Header />
       <main className="container mx-auto px-4 py-8 pt-24">
         <BackToPortal />
+        {!hasFeature('resume_builder') ? (
+          <div className="text-center py-20">
+            <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+            <h2 className="text-2xl font-bold mb-2">Resume Builder — Accelerator Plan</h2>
+            <p className="text-muted-foreground mb-6">Upgrade to Accelerator or Elite to access the AI Resume Builder.</p>
+            <Button variant="coral" onClick={() => navigate('/pricing')}>View Plans</Button>
+          </div>
+        ) : (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
@@ -350,6 +360,7 @@ ${resume.projects}
             </div>
           </div>
         </motion.div>
+        )}
       </main>
     </div>
   );

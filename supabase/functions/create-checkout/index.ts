@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { priceId, email, successUrl, cancelUrl } = await req.json();
+    const { priceId, email, tier, userId, successUrl, cancelUrl } = await req.json();
 
     const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
     if (!STRIPE_SECRET_KEY) throw new Error("Stripe not configured");
@@ -26,6 +26,17 @@ serve(async (req) => {
       cancel_url: cancelUrl || `${req.headers.get("origin")}/pricing`,
       customer_email: email,
       allow_promotion_codes: true,
+      metadata: {
+        tier: tier || "t1",
+        user_id: userId || "",
+        email: email || "",
+      },
+      subscription_data: {
+        metadata: {
+          tier: tier || "t1",
+          user_id: userId || "",
+        },
+      },
     });
 
     return new Response(JSON.stringify({ url: session.url }), {

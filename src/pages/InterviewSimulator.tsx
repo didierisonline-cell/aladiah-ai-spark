@@ -10,6 +10,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import Header from '@/components/Header';
 import BackToPortal from '@/components/portal/BackToPortal';
 import { useAuth } from '@/hooks/useAuth';
+import { useSubscription } from '@/hooks/useSubscription';
+import { Lock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Mic, MicOff, Play, RotateCcw, Trophy, Target, MessageSquare,
@@ -45,6 +47,7 @@ const INTERVIEW_SCENARIOS = [
 
 const InterviewSimulator = () => {
   const { user } = useAuth();
+  const { hasFeature, tierName } = useSubscription();
   const [phase, setPhase] = useState<'select' | 'interview' | 'scoring' | 'results'>('select');
   const [selectedScenario, setSelectedScenario] = useState<string | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -151,6 +154,14 @@ const InterviewSimulator = () => {
       <Header />
       <div className="max-w-5xl mx-auto px-4 py-8">
         <BackToPortal />
+        {!hasFeature('interview_coach') ? (
+          <div className="text-center py-20">
+            <Lock className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+            <h2 className="text-2xl font-bold mb-2">Interview Coach — Accelerator Plan</h2>
+            <p className="text-muted-foreground mb-6">Upgrade to Accelerator or Elite to access the AI Interview Simulator.</p>
+            <Button variant="coral" onClick={() => window.location.href = '/pricing'}>View Plans</Button>
+          </div>
+        ) : (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center gap-3 mb-8">
             <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
@@ -333,6 +344,7 @@ const InterviewSimulator = () => {
             )}
           </AnimatePresence>
         </motion.div>
+        )}
       </div>
     </div>
   );

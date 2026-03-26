@@ -11,6 +11,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useSubscription } from '@/hooks/useSubscription';
+import { Lock } from 'lucide-react';
 
 interface CareerToolsProps {
   overallProgress: number;
@@ -22,6 +24,23 @@ interface SavedResume {
   fullName: string;
   updatedAt: string;
 }
+
+const TierLock = ({ feature, children, tierName }: { feature: string; children: React.ReactNode; tierName: string }) => {
+  const { hasFeature } = useSubscription();
+  if (hasFeature(feature)) return <>{children}</>;
+  return (
+    <div className="relative">
+      <div className="opacity-40 pointer-events-none">{children}</div>
+      <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-sm rounded-xl">
+        <div className="text-center p-4">
+          <Lock className="w-6 h-6 mx-auto mb-2 text-muted-foreground" />
+          <p className="text-sm font-medium text-muted-foreground">Upgrade to {tierName}+</p>
+          <a href="/pricing" className="text-xs text-primary hover:underline">View Plans</a>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps) => {
   const navigate = useNavigate();
@@ -173,7 +192,8 @@ const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps)
           </div>
         </Card>
 
-        {/* Resume Builder - Links to Studio */}
+        {/* Resume Builder - Links to Studio (Tier 2+) */}
+        <TierLock feature="resume_builder" tierName="Accelerator">
         <Card className="p-6 space-y-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
@@ -238,6 +258,7 @@ const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps)
             )}
           </div>
         </Card>
+        </TierLock>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">

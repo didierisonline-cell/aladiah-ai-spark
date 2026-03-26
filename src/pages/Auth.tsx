@@ -93,11 +93,13 @@ const Auth = () => {
         if (error) throw error;
 
         // Step 2: Redirect to Stripe checkout
-        const tier = TIERS.find(t => t.id === selectedTier)!;
+        const tierObj = TIERS.find(ti => ti.id === selectedTier)!;
         const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-checkout', {
           body: {
-            priceId: tier.priceId,
+            priceId: tierObj.priceId,
             email,
+            tier: tierObj.key,
+            userId: signUpData.user?.id || '',
             successUrl: `${window.location.origin}/auth?payment=success`,
             cancelUrl: `${window.location.origin}/auth`,
           },
