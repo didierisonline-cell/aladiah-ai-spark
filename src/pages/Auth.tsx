@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -57,15 +57,16 @@ const Auth = () => {
   const [phone, setPhone] = useState('');
   const [selectedTier, setSelectedTier] = useState('accelerator');
   const [loading, setLoading] = useState(false);
+  const registering = useRef(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { t } = useLanguage();
   const { user, loading: authLoading } = useAuth();
 
-  // If already authenticated, go to portal
+  // If already authenticated, go to portal (but not during registration → Stripe flow)
   useEffect(() => {
-    if (!authLoading && user) {
+    if (!authLoading && user && !registering.current) {
       navigate('/portal');
     }
   }, [user, authLoading, navigate]);
@@ -74,10 +75,14 @@ const Auth = () => {
   useEffect(() => {
     if (searchParams.get('payment') === 'success') {
       toast({ title: t('auth.payment.success'), description: t('auth.payment.success.sub') });
-      // If already logged in, go to portal
-      if (user) navigate('/portal');
+      if (user) {
+        navigate('/portal');
+      } else {
+        // Session may have been lost during Stripe redirect — show login with success message
+        setIsLogin(true);
+      }
     }
-  }, [searchParams]);
+  }, [searchParams, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,6 +94,9 @@ const Auth = () => {
         toast({ title: t('auth.welcome'), description: t('auth.magiclink.verified.sub') });
         navigate('/portal');
       } else {
+        // Block auto-redirect during registration → Stripe flow
+        registering.current = true;
+
         // Step 1: Create account
         const { data: signUpData, error } = await supabase.auth.signUp({
           email, password,
@@ -112,16 +120,18 @@ const Auth = () => {
         });
 
         if (checkoutError || !checkoutData?.url) {
-          // If checkout fails, still create the account — they can pay later
-          toast({ title: t('auth.account.created'), description: t('auth.account.created.sub') });
-          setIsLogin(true);
+          // Stripe checkout unavailable — send student to portal directly
+          registering.current = false;
+          toast({ title: t('auth.account.created'), description: t('auth.payment.success.sub') });
+          navigate('/portal');
           return;
         }
 
-        // Redirect to Stripe
+        // Redirect to Stripe checkout
         window.location.href = checkoutData.url;
       }
     } catch (error: any) {
+      registering.current = false;
       toast({ title: t('auth.error'), description: error.message, variant: 'destructive' });
     } finally {
       setLoading(false);
