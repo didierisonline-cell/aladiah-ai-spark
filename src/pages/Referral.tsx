@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ReferralLinkCard from '@/components/ReferralLinkCard';
+import BackToPortal from '@/components/portal/BackToPortal';
 
 const Referral = () => {
   const { t } = useLanguage();
@@ -30,6 +31,7 @@ const Referral = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="pt-24 lg:pt-28">
+        <BackToPortal />
         {/* Hero */}
         <section className="relative py-20 lg:py-28 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-ocean opacity-95" />

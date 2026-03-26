@@ -13,6 +13,7 @@ import storeSealBlue from '@/assets/store-seal-blue.png';
 import storeMerch1 from '@/assets/store-merch-1.png';
 import storeMerch2 from '@/assets/store-merch-2.jpeg';
 import storeMerch3 from '@/assets/store-merch-3.png';
+import BackToPortal from '@/components/portal/BackToPortal';
 
 const Store = () => {
   const { t } = useLanguage();
@@ -54,6 +55,7 @@ const Store = () => {
       <Header />
       <main className="pt-24 lg:pt-32 pb-24">
         <div className="container mx-auto px-4">
+          <BackToPortal />
           {/* Header */}
           <div className="flex items-center justify-between mb-12">
             <div>

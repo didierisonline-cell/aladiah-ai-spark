@@ -22,6 +22,7 @@ import ReportsDashboard from '@/components/simulation/ReportsDashboard';
 import SimulationGlossary from '@/components/simulation/SimulationGlossary';
 import { DAILY_RISK_EMAILS } from '@/components/simulation/DailyEmails';
 import { Progress } from '@/components/ui/progress';
+import BackToPortal from '@/components/portal/BackToPortal';
 
 type SimTab = 'meeting' | 'jira' | 'email' | 'risks' | 'reports';
 
@@ -282,6 +283,7 @@ const ScrumSimulation = () => {
           </div>
         </header>
         <main className="container mx-auto px-4 py-12 max-w-4xl">
+          <BackToPortal />
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
             <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-primary/10 flex items-center justify-center">
               <Cloud className="w-10 h-10 text-primary" />

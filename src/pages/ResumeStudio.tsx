@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
+import BackToPortal from '@/components/portal/BackToPortal';
 import {
   ArrowLeft, FileText, Sparkles, Download, Save, Loader2,
   User, Briefcase, GraduationCap, Award, Bot, Send
@@ -206,6 +207,7 @@ ${resume.projects}
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 py-8 pt-24">
+        <BackToPortal />
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           {/* Header */}
           <div className="flex items-center justify-between mb-6">

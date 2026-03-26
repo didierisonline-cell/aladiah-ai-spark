@@ -13,6 +13,7 @@ import PostCard from '@/components/community/PostCard';
 import { GraduationCap, LogOut, Send, MessageCircle, Sparkles } from 'lucide-react';
 import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
 import { communityTranslations, type SupportedLanguage } from '@/utils/communityTranslations';
+import BackToPortal from '@/components/portal/BackToPortal';
 
 interface PostData {
   id: string;
@@ -220,6 +221,7 @@ const Community = () => {
       <ProgressBar />
 
       <main className="container mx-auto px-4 py-8 pt-16">
+        <BackToPortal />
         {!hasCompletedIntro ? (
           <IntroForm
             userId={user!.id}

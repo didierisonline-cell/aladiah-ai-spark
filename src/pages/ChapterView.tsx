@@ -10,6 +10,7 @@ import {
   GraduationCap, ArrowLeft, Play, CheckCircle, Lock, 
   ChevronRight, Trophy, AlertCircle
 } from 'lucide-react';
+import BackToPortal from '@/components/portal/BackToPortal';
 import Quiz from '@/components/course/Quiz';
 import InteractiveLessonEngine from '@/components/course/InteractiveLessonEngine';
 import VideoPlayer from '@/components/course/VideoPlayer';
@@ -290,10 +291,13 @@ const ChapterView = () => {
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/courses" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            {t.backToCourses}
-          </Link>
+          <div className="flex items-center gap-4">
+            <BackToPortal />
+            <Link to="/courses" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="w-4 h-4" />
+              {t.backToCourses}
+            </Link>
+          </div>
           <div className="flex items-center gap-2">
             <GraduationCap className="w-6 h-6 text-primary" />
             <span className="font-display font-bold">Aladiah Academy</span>

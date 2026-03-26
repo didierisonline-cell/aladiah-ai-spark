@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Header from '@/components/Header';
+import BackToPortal from '@/components/portal/BackToPortal';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -149,6 +150,7 @@ const InterviewSimulator = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <div className="max-w-5xl mx-auto px-4 py-8">
+        <BackToPortal />
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center gap-3 mb-8">
             <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">

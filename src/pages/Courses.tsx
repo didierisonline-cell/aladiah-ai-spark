@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GraduationCap, BookOpen, ChevronRight, LogOut, Play, CheckCircle, Lock, ShieldCheck, FlaskConical } from 'lucide-react';
+import BackToPortal from '@/components/portal/BackToPortal';
 import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
 import { 
   courseUITranslations, 
@@ -427,6 +428,7 @@ const Courses = () => {
       <ProgressBar />
 
       <main className="container mx-auto px-4 py-8 mt-8">
+        <BackToPortal />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
