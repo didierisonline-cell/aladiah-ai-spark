@@ -85,35 +85,6 @@ const Header = ({ onProfileClick }: HeaderProps) => {
 
           {/* Right Actions */}
           <div className="flex items-center gap-2">
-            {/* Professor Switcher — TODO: replace emojis with mini photos in final validation */}
-              </p>
-                  {PROFESSORS.map(prof => (
-                    <DropdownMenuItem
-                      key={prof.id}
-                      onClick={() => onProfessorChange(prof.id)}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: '10px',
-                        padding: '8px 10px', borderRadius: '8px', cursor: 'pointer',
-                        background: prof.id === selectedProfessor ? prof.bgColor : 'transparent',
-                        border: prof.id === selectedProfessor ? `1px solid \${prof.borderColor}` : '1px solid transparent',
-                        marginBottom: '2px',
-                      }}
-                    >
-                      <span style={{ fontSize: '20px' }}>{prof.emoji || '🎓'}</span>
-                      <div>
-                        <p style={{ fontSize: '12px', fontWeight: 600, color: prof.id === selectedProfessor ? '#fff' : 'rgba(255,255,255,0.7)', margin: 0 }}>
-                          {prof.name} {prof.flag}
-                        </p>
-                        <p style={{ fontSize: '10px', color: prof.id === selectedProfessor ? prof.accentColor : 'rgba(255,255,255,0.3)', margin: 0 }}>
-                          {prof.origin}
-                        </p>
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-
             {/* Profile Button */}
             {onProfileClick && (
               <motion.button

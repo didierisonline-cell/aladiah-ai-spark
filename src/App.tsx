@@ -24,8 +24,16 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
+import ProfDidierFloat from "@/components/ProfDidierFloat";
+import { useLocation } from "react-router-dom";
 
 const queryClient = new QueryClient();
+
+const RouterAwareFloat = () => {
+  const { pathname } = useLocation();
+  const isPortal = pathname.startsWith("/portal") || pathname.startsWith("/course") || pathname.startsWith("/dashboard");
+  return <ProfDidierFloat mode={isPortal ? "professor" : "enrollment"} />;
+};
 
 const AppContent = () => {
   useCartSync();
@@ -52,6 +60,7 @@ const AppContent = () => {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <RouterAwareFloat />
     </BrowserRouter>
   );
 };

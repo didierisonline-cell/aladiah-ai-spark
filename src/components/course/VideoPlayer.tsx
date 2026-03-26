@@ -1,3 +1,4 @@
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useState, useEffect, useRef, createPortal, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -74,6 +75,39 @@ interface QAMessage {
   role: 'student' | 'professor';
   content: string;
 }
+
+const LANG_OPTIONS_VP = [
+  { code: 'en', flag: '🇺🇸', label: 'EN' },
+  { code: 'es', flag: '🇪🇸', label: 'ES' },
+  { code: 'fr', flag: '🇫🇷', label: 'FR' },
+  { code: 'de', flag: '🇩🇪', label: 'DE' },
+  { code: 'zh', flag: '🇨🇳', label: 'ZH' },
+  { code: 'ar', flag: '🇸🇦', label: 'AR' },
+  { code: 'ja', flag: '🇯🇵', label: 'JA' },
+];
+
+const VPLanguageSwitcher = () => {
+  const { language, setLanguage } = useLanguage();
+  return (
+    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 6 }}>
+      {LANG_OPTIONS_VP.map(l => (
+        <button
+          key={l.code}
+          onClick={() => setLanguage(l.code as any)}
+          style={{
+            padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 600,
+            cursor: 'pointer', border: '1px solid',
+            borderColor: language === l.code ? 'rgba(96,165,250,0.8)' : 'rgba(255,255,255,0.3)',
+            background: language === l.code ? 'rgba(96,165,250,0.2)' : 'rgba(0,0,0,0.4)',
+            color: language === l.code ? '#60a5fa' : 'rgba(255,255,255,0.7)',
+          }}
+        >
+          {l.flag} {l.label}
+        </button>
+      ))}
+    </div>
+  );
+};
 
 const VideoPlayer = ({ 
   videoId, 
@@ -533,12 +567,15 @@ const VideoPlayer = ({
                 </div>
               )}
               {showHeyGen === false && (
-                <button
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1">
+                  <VPLanguageSwitcher />
+                  <button
                     onClick={() => setShowLiveClass(true)}
-                    className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 bg-secondary hover:bg-secondary/80 text-white text-xs font-bold px-5 py-2 rounded-full shadow-lg transition-all"
+                    className="bg-secondary hover:bg-secondary/80 text-white text-xs font-bold px-5 py-2 rounded-full shadow-lg transition-all"
                   >
                     🎓 Start Live Class
                   </button>
+                </div>
               )}
 
               <AnimatePresence>

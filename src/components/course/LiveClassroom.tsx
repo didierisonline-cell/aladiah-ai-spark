@@ -1,4 +1,5 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useConversation } from "@elevenlabs/react";
 import { X, Phone, PhoneOff, Loader2, Volume2, Mic, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,25 @@ const PROFESSOR_NAMES: Record<string, string> = {
   scrum: "Maria",
 };
 
-const CROWN_FLAGS = ["\u{1F1FA}\u{1F1F8}", "\u{1F1EA}\u{1F1F8}", "\u{1F1EB}\u{1F1F7}", "\u{1F1E9}\u{1F1EA}", "\u{1F1E8}\u{1F1F3}", "\u{1F1F8}\u{1F1E6}", "\u{1F1EF}\u{1F1F5}"];
+const LANG_LABELS: Record<string, { startClass: string; askProf: string; speakNaturally: string }> = {
+  English: { startClass: 'Start Live Class', pauseClass: 'Stop Class', resumeClass: 'Start Over', endQuiz: 'End & Quiz', askProf: 'Ask Prof. Didier', speakNaturally: 'Speak naturally in English' },
+  Spanish: { startClass: 'Iniciar Clase en Vivo', pauseClass: 'Pausar Clase', resumeClass: 'Empezar de nuevo', endQuiz: 'Terminar y Quiz', askProf: 'Preguntar al Prof. Didier', speakNaturally: 'Habla naturalmente en Español' },
+  French: { startClass: 'Démarrer le Cours', pauseClass: 'Pause', resumeClass: 'Recommencer', endQuiz: 'Terminer et Quiz', askProf: 'Demander au Prof. Didier', speakNaturally: 'Parlez naturellement en Français' },
+  German: { startClass: 'Live-Kurs starten', pauseClass: 'Pause', resumeClass: 'Neu starten', endQuiz: 'Beenden und Quiz', askProf: 'Prof. Didier fragen', speakNaturally: 'Sprechen Sie natürlich auf Deutsch' },
+  Chinese: { startClass: '开始直播课', pauseClass: '暂停', resumeClass: '重新开始', endQuiz: '结束并测验', askProf: '问迪迪埃教授', speakNaturally: '用中文自然交流' },
+  Arabic: { startClass: 'بدء الدرس المباشر', pauseClass: 'إيقاف مؤقت', resumeClass: 'ابدأ من جديد', endQuiz: 'إنهاء واختبار', askProf: 'اسأل الأستاذ ديدييه', speakNaturally: 'تحدث بشكل طبيعي بالعربية' },
+  Japanese: { startClass: 'ライブ授業を開始', pauseClass: '一時停止', resumeClass: 'やり直す', endQuiz: '終了してクイズ', askProf: 'ディディエ先生に質問', speakNaturally: '日本語で自然に話してください' },
+};
+
+const LANG_OPTIONS = [
+  { code: 'English', flag: '🇺🇸', label: 'EN' },
+  { code: 'Spanish', flag: '🇪🇸', label: 'ES' },
+  { code: 'French', flag: '🇫🇷', label: 'FR' },
+  { code: 'German', flag: '🇩🇪', label: 'DE' },
+  { code: 'Chinese', flag: '🇨🇳', label: 'ZH' },
+  { code: 'Arabic', flag: '🇸🇦', label: 'AR' },
+  { code: 'Japanese', flag: '🇯🇵', label: 'JA' },
+];
 
 const LiveClassroom = ({
   title, description, chapterTitle, courseTitle,
@@ -34,17 +53,50 @@ const LiveClassroom = ({
   onComplete, onClose
 }: Props) => {
   const [isConnecting, setIsConnecting] = useState(false);
+  const { language: globalLanguage, setLanguage: setGlobalLanguage } = useLanguage();
+  const langCodeToName: Record<string, string> = {
+    en: "English", es: "Spanish", fr: "French",
+    de: "German", zh: "Chinese", ar: "Arabic", ja: "Japanese"
+  };
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    langCodeToName[globalLanguage] || language || "English"
+  );
+
+  const handleLanguageChange = (lang: string) => {
+    setSelectedLanguage(lang);
+    const langMap: Record<string, string> = {
+      'English': 'en', 'Spanish': 'es', 'French': 'fr',
+      'German': 'de', 'Chinese': 'zh', 'Arabic': 'ar', 'Japanese': 'ja'
+    };
+    if (langMap[lang]) setGlobalLanguage(langMap[lang] as any);
+  };
   const [showQuizCTA, setShowQuizCTA] = useState(false);
+  const [sessionStarted, setSessionStarted] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [classEnded, setClassEnded] = useState(false);
+  const [lastCaption, setLastCaption] = useState('');
+  const sessionStartTime = useRef<number | null>(null);
   const { toast } = useToast();
   const professorName = PROFESSOR_NAMES[agentKey] || "Professor Didier";
 
   const conversation = useConversation({
     onConnect: () => {
-      toast({ title: "\u{1F399}\uFE0F Live Class Started!", description: `${professorName} is ready for you.` });
+      sessionStartTime.current = Date.now();
+      toast({ title: "🎙️ Live Class Started!", description: `${professorName} is ready for you.` });
+    },
+    onMessage: (props: any) => {
+      if (props.source === 'ai' && props.message) {
+        setLastCaption(props.message);
+        setTimeout(() => setLastCaption(''), 10000);
+      }
     },
     onDisconnect: () => {
-      setShowQuizCTA(true);
-      onComplete();
+      const duration = sessionStartTime.current ? Date.now() - sessionStartTime.current : 0;
+      if (sessionStarted && duration > 30000) {
+        setShowQuizCTA(true);
+        onComplete();
+      }
     },
     onError: (error) => {
       console.error("Voice error:", error);
@@ -57,14 +109,20 @@ const LiveClassroom = ({
   const startClass = useCallback(async () => {
     setIsConnecting(true);
     try {
-      try {
-        await navigator.mediaDevices.getUserMedia({
-          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
-        });
-      } catch {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
-      }
-      await conversation.startSession({ agentId: "agent_8801kkd1edrbet2rhmnsjynyk80q" });
+      await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      });
+      setSessionStarted(true);
+      const langMap: Record<string, string> = {
+        English: "en", Spanish: "es", French: "fr",
+        German: "de", Chinese: "zh", Arabic: "ar", Japanese: "ja"
+      };
+      await conversation.startSession({
+        agentId: "agent_2001kmf3cdyaem4t7fej8z81jp1b",
+        overrides: {
+          agent: { language: langMap[selectedLanguage] || "en" }
+        }
+      });
     } catch (error: any) {
       if (error.name === "NotAllowedError") {
         toast({ title: "Microphone required", description: "Please allow microphone access.", variant: "destructive" });
@@ -76,107 +134,174 @@ const LiveClassroom = ({
     }
   }, [conversation, toast]);
 
-  const endClass = useCallback(async () => { await conversation.endSession(); }, [conversation]);
+  const endClass = useCallback(async () => {
+    await conversation.endSession();
+  }, [conversation]);
 
-  const crownFlags = ["\u{1F1FA}\u{1F1F8}", "\u{1F1EA}\u{1F1F8}", "\u{1F1EB}\u{1F1F7}", "\u{1F1E9}\u{1F1EA}", "\u{1F1E8}\u{1F1F3}", "\u{1F1F8}\u{1F1E6}", "\u{1F1EF}\u{1F1F5}"];
+  const pauseClass = useCallback(async () => {
+    await conversation.endSession();
+    setIsPaused(true);
+  }, [conversation]);
+
+  const resumeClass = useCallback(async () => {
+    setIsPaused(false);
+    setSessionStarted(false);
+    try {
+      const langMap: Record<string, string> = {
+        English: "en", Spanish: "es", French: "fr",
+        German: "de", Chinese: "zh", Arabic: "ar", Japanese: "ja"
+      };
+      await conversation.startSession({
+        agentId: "agent_2001kmf3cdyaem4t7fej8z81jp1b",
+        overrides: {
+          agent: { language: langMap[selectedLanguage] || "en" }
+        }
+      });
+      setSessionStarted(true);
+    } catch (e) {
+      console.error(e);
+    }
+  }, [conversation]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl bg-[#0a0f1e] rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
+
+        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div>
             <h2 className="text-white font-bold text-lg">{title}</h2>
-            <p className="text-white/40 text-sm">{chapterTitle} \u2022 {courseTitle}</p>
+            <p className="text-white/40 text-sm">{chapterTitle} • {courseTitle}</p>
           </div>
           <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-all">
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="flex flex-col items-center py-10 px-6">
-          <div className="relative mb-8" style={{ width: 220, height: 220 }}>
-            <div className="absolute inset-0 rounded-full" style={{ background: isActive ? "radial-gradient(circle, rgba(251,191,36,0.4) 0%, rgba(251,146,60,0.2) 50%, transparent 75%)" : "radial-gradient(circle, rgba(251,191,36,0.2) 0%, rgba(59,130,246,0.1) 50%, transparent 75%)", transform: "scale(1.3)", transition: "background 0.5s ease" }} />
-            <motion.div className="absolute inset-0" animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }}>
-              {[...Array(12)].map((_, i) => (
-                <div key={i} className="absolute" style={{ width: 2, height: 18, background: isActive ? "rgba(251,191,36,0.5)" : "rgba(251,191,36,0.2)", left: "50%", top: "50%", transformOrigin: "0 -90px", transform: `rotate(${i * 30}deg) translateX(-50%)`, borderRadius: 2 }} />
-              ))}
-            </motion.div>
-            {crownFlags.map((flag, i) => {
-              const angle = (i / crownFlags.length) * 2 * Math.PI - Math.PI / 2;
-              const radius = 88;
-              const x = Math.cos(angle) * radius + 110 - 18;
-              const y = Math.sin(angle) * radius + 110 - 18;
-              return (
-                <motion.div key={i} className="absolute flex items-center justify-center" style={{ left: x, top: y, width: 36, height: 36, fontSize: 22, filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.6))" }} animate={{ scale: isActive ? [1, 1.2, 1] : 1, y: isActive ? [0, -3, 0] : 0 }} transition={{ duration: 2, repeat: isActive ? Infinity : 0, delay: i * 0.2, ease: "easeInOut" }}>
-                  {flag}
-                </motion.div>
-              );
-            })}
-            <div className="absolute" style={{ left: 110 - 52, top: 110 - 52, width: 104, height: 104 }}>
-              <div className={`w-full h-full rounded-full flex items-center justify-center text-4xl font-bold text-white shadow-2xl transition-all duration-500 ${isActive ? "bg-gradient-to-br from-amber-400 to-orange-500 ring-4 ring-amber-400/50 ring-offset-4 ring-offset-[#0a0f1e]" : "bg-gradient-to-br from-blue-600 to-cyan-500"}`}>
+        {/* Cinematic Board */}
+        <div className="w-full rounded-t-2xl overflow-hidden relative" style={{minHeight: 200}}>
+          <div className="absolute inset-0" style={{backgroundImage: 'url(/yaounde-monument.png)', backgroundSize: 'cover', backgroundPosition: 'center top'}}>
+            <div className="absolute inset-0" style={{backgroundImage: 'radial-gradient(1px 1px at 20% 15%, white 0%, transparent 100%), radial-gradient(1px 1px at 80% 25%, white 0%, transparent 100%), radial-gradient(1.5px 1.5px at 50% 10%, white 0%, transparent 100%), radial-gradient(1px 1px at 35% 40%, rgba(255,255,255,0.5) 0%, transparent 100%), radial-gradient(1px 1px at 70% 35%, rgba(255,255,255,0.6) 0%, transparent 100%), radial-gradient(1px 1px at 15% 60%, rgba(255,255,255,0.3) 0%, transparent 100%)', opacity: 0.8}} />
+            <div className="absolute bottom-0 left-0 right-0 h-20 opacity-25" style={{background: 'linear-gradient(180deg, transparent, #0a1628)', borderTop: '1px solid rgba(255,255,255,0.05)'}} />
+          </div>
+          <div className="relative z-10 flex flex-col items-center pt-6 pb-4 px-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className={`relative w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold text-white shadow-xl ${isActive ? "bg-gradient-to-br from-secondary to-orange-500 ring-2 ring-secondary/50" : "bg-gradient-to-br from-blue-600 to-cyan-500"}`}>
                 {professorName[0]}
+                {isActive && <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-green-400 border-2 border-[#060d1f] flex items-center justify-center">
+                  {conversation.isSpeaking ? <Volume2 className="w-2 h-2 text-white" /> : <Mic className="w-2 h-2 text-white" />}
+                </div>}
               </div>
-              {isActive && (
-                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-green-500 border-2 border-[#0a0f1e] flex items-center justify-center">
-                  {conversation.isSpeaking ? <Volume2 className="w-4 h-4 text-white" /> : <Mic className="w-4 h-4 text-white" />}
-                </motion.div>
-              )}
+              <div>
+                <p className="text-white font-bold">{professorName}</p>
+                <p className="text-blue-300 text-xs">Live Interactive Professor</p>
+              </div>
+              {isActive && <div className="flex items-center gap-1 bg-red-500/20 border border-red-400/40 rounded-full px-2 py-0.5 ml-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                <span className="text-red-300 text-xs font-bold">LIVE</span>
+              </div>}
+            </div>
+            {isActive && (
+              <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium mb-2 ${conversation.isSpeaking ? "bg-secondary/20 text-secondary border border-secondary/30" : "bg-green-500/20 text-green-400 border border-green-400/30"}`}>
+                <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${conversation.isSpeaking ? "bg-secondary" : "bg-green-400"}`} />
+                {conversation.isSpeaking ? `${professorName} is speaking...` : "Your turn — speak now"}
+              </div>
+            )}
+
+            {/* Subtitle / CC board */}
+            <div className="w-full bg-black/60 backdrop-blur-sm rounded-xl px-4 py-2 min-h-12 flex items-center justify-center border border-white/10">
+              <p className="text-white text-sm text-center leading-relaxed">
+                {isActive && lastCaption ? lastCaption : (description || title || 'Ready to start your live class')}
+              </p>
             </div>
           </div>
+        </div>
 
-          <h3 className="text-white font-bold text-xl mb-1">{professorName}</h3>
-          <p className="text-white/50 text-sm mb-2">Live Interactive Professor</p>
-
-          {isActive && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-4 text-center">
-              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${conversation.isSpeaking ? "bg-amber-500/20 text-amber-400" : "bg-green-500/20 text-green-400"}`}>
-                <div className={`w-2 h-2 rounded-full animate-pulse ${conversation.isSpeaking ? "bg-amber-400" : "bg-green-400"}`} />
-                {conversation.isSpeaking ? `${professorName} is speaking...` : "Your turn \u2014 speak now"}
-              </div>
-            </motion.div>
-          )}
-
+        <div className="px-6 pt-4">
           {!isActive && !showQuizCTA && (
-            <div className="w-full bg-white/5 rounded-2xl p-4 mb-6 text-center">
+            <div className="w-full bg-white/5 rounded-2xl p-4 mb-4 text-center">
               <p className="text-white/60 text-sm leading-relaxed line-clamp-3">{description}</p>
             </div>
           )}
 
+          {/* Voice waveform when active */}
           {isActive && (
             <div className="flex gap-1 items-end h-12 mb-6">
               {[...Array(16)].map((_, i) => (
-                <motion.div key={i} className={`w-1.5 rounded-full ${conversation.isSpeaking ? "bg-amber-400" : "bg-blue-400"}`} animate={{ height: conversation.isSpeaking ? [4, Math.random() * 36 + 8, 4] : 4 }} transition={{ duration: 0.5, repeat: Infinity, delay: i * 0.05 }} />
+                <motion.div
+                  key={i}
+                  className={`w-1.5 rounded-full ${conversation.isSpeaking ? "bg-secondary" : "bg-blue-400"}`}
+                  animate={{ height: conversation.isSpeaking ? [4, Math.random() * 36 + 8, 4] : 4 }}
+                  transition={{ duration: 0.5, repeat: Infinity, delay: i * 0.05 }}
+                />
               ))}
             </div>
           )}
 
+          {/* Quiz CTA */}
           <AnimatePresence>
             {showQuizCTA && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 rounded-2xl p-5 mb-6 text-center">
-                <CheckCircle className="w-10 h-10 text-amber-400 mx-auto mb-3" />
-                <h3 className="text-white font-bold text-lg mb-1">Lesson Complete! \u{1F389}</h3>
-                <p className="text-white/60 text-sm mb-4">Lock in your learning \u2014 take the quiz now while it&apos;s fresh</p>
-                <Button onClick={() => { onClose(); setTimeout(() => document.querySelector("[data-quiz-btn]")?.dispatchEvent(new MouseEvent("click")), 100); }} className="bg-amber-500 hover:bg-amber-400 text-white font-bold px-8">
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full bg-gradient-to-r from-secondary/20 to-orange-500/20 border border-secondary/30 rounded-2xl p-5 mb-6 text-center relative">
+                <button onClick={onClose} className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all text-sm">✕</button>
+                <CheckCircle className="w-10 h-10 text-secondary mx-auto mb-3" />
+                <h3 className="text-white font-bold text-lg mb-1">Lesson Complete! 🎉</h3>
+                <p className="text-white/60 text-sm mb-4">Lock in your learning — take the quiz now while it&apos;s fresh</p>
+                <Button onClick={() => { onClose(); setTimeout(() => document.querySelector("[data-quiz-btn]")?.dispatchEvent(new MouseEvent("click")), 100); }} className="bg-secondary hover:bg-secondary/80 text-white font-bold px-8">
                   Take the Quiz Now <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </motion.div>
             )}
           </AnimatePresence>
 
+          {/* Language switcher */}
+          {!isActive && (
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 16 }}>
+              {LANG_OPTIONS.map(l => (
+                <button
+                  key={l.code}
+                  onClick={() => handleLanguageChange(l.code)}
+                  style={{
+                    padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600,
+                    cursor: 'pointer', border: '1px solid',
+                    borderColor: selectedLanguage === l.code ? 'rgba(96,165,250,0.6)' : 'rgba(255,255,255,0.15)',
+                    background: selectedLanguage === l.code ? 'rgba(96,165,250,0.15)' : 'transparent',
+                    color: selectedLanguage === l.code ? '#60a5fa' : 'rgba(255,255,255,0.4)',
+                  }}
+                >
+                  {l.flag} {l.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Action button */}
           {!showQuizCTA && (
-            !isActive ? (
-              <Button onClick={startClass} disabled={isConnecting} size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold px-10 py-4 text-base rounded-2xl shadow-lg border-0">
-                {isConnecting ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Connecting...</> : <><Phone className="w-5 h-5 mr-2" /> Start Live Class</>}
-              </Button>
-            ) : (
+            classEnded ? (
               <Button onClick={endClass} variant="destructive" size="lg" className="px-10 py-4 text-base rounded-2xl">
-                <PhoneOff className="w-5 h-5 mr-2" /> End Class
+                <PhoneOff className="w-5 h-5 mr-2" /> End Class & Take Quiz
+              </Button>
+            ) : !isActive && !isPaused ? (
+              <Button onClick={startClass} disabled={isConnecting} size="lg" className="bg-secondary hover:bg-secondary/80 text-white font-bold px-10 py-4 text-base rounded-2xl shadow-lg">
+                {isConnecting ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Connecting...</> : <><Phone className="w-5 h-5 mr-2" />{LANG_LABELS[selectedLanguage]?.startClass || "Start Live Class"}</>}
+              </Button>
+            ) : isPaused ? (
+              <div className="flex gap-3">
+                <Button onClick={resumeClass} size="lg" className="bg-secondary hover:bg-secondary/80 text-white font-bold px-10 py-4 text-base rounded-2xl">
+                  <Phone className="w-5 h-5 mr-2" />{LANG_LABELS[selectedLanguage]?.resumeClass || "Start Over"}
+                </Button>
+                <Button onClick={endClass} variant="destructive" size="lg" className="px-6 py-4 text-base rounded-2xl">
+                  {LANG_LABELS[selectedLanguage]?.endQuiz || "End & Quiz"}
+                </Button>
+              </div>
+            ) : (
+              <Button onClick={pauseClass} size="lg" className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold px-10 py-4 text-base rounded-2xl">
+                <PhoneOff className="w-5 h-5 mr-2" />{LANG_LABELS[selectedLanguage]?.pauseClass || "Stop Class"}
               </Button>
             )
           )}
 
           <p className="text-white/30 text-xs mt-4 text-center max-w-sm">
-            {isActive ? `Speak naturally in ${language} \u2014 ${professorName} will guide you through the lesson` : "Real-time voice conversation \u2022 Speak in your language"}
+            {isActive ? `${LANG_LABELS[selectedLanguage]?.speakNaturally || "Speak naturally"} — ${professorName} will guide you through the lesson` : "Real-time voice conversation • Speak in your language"}
           </p>
         </div>
       </div>
