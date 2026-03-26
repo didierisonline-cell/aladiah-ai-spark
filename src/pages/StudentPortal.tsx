@@ -12,9 +12,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useProgress } from '@/hooks/useProgress';
 import { useLearningProfile } from '@/hooks/useLearningProfile';
+import { useSubscription } from '@/hooks/useSubscription';
 import Header from '@/components/Header';
 import AgentSelector from '@/components/portal/AgentSelector';
 import StudentProfileWidget from '@/components/portal/StudentProfileWidget';
@@ -29,7 +31,7 @@ import {
   Bot, Send, BookOpen, Trophy, Flame, GraduationCap,
   FlaskConical, Star, Gift, Briefcase,
   TrendingUp, Award, Lightbulb, Sparkles, Clock,
-  ArrowRight, CheckCircle, FileText, ExternalLink, Mic
+  ArrowRight, CheckCircle, FileText, ExternalLink, Mic, Crown
 } from 'lucide-react';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
@@ -51,6 +53,8 @@ const EXCLUDED_COURSES = ['Rogers-Shaw', 'IT Merger', 'Network Integration'];
 const StudentPortal = () => {
   const { user, loading: authLoading } = useAuth();
   const { language, t } = useLanguage();
+  const { tier, tierName, hasFeature } = useSubscription();
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   // Auth guard — redirect to /auth if not logged in
@@ -935,6 +939,57 @@ const StudentPortal = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Elite Mentorship — Weekly 1-on-1 Booking Calendar */}
+        {tier === 't3' && (
+          <Card className="mt-6 p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                <Crown className="w-5 h-5 text-emerald-500" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg flex items-center gap-2">
+                  Weekly 1-on-1 with Professor Didier
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500 text-black">ELITE</span>
+                </h3>
+                <p className="text-sm text-muted-foreground">Book your weekly mentorship session (1 hour)</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="rounded-xl border p-4 space-y-3">
+                <p className="text-sm font-medium">Next Available Slots</p>
+                {['Monday 10:00 AM EST', 'Wednesday 2:00 PM EST', 'Friday 11:00 AM EST'].map((slot, i) => (
+                  <button
+                    key={i}
+                    className="w-full flex items-center justify-between p-3 rounded-lg border hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all text-left"
+                    onClick={() => {
+                      toast({ title: 'Session Booked!', description: `Your 1-on-1 with Professor Didier is confirmed for ${slot}.` });
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-emerald-500" />
+                      <span className="text-sm">{slot}</span>
+                    </div>
+                    <span className="text-xs text-emerald-500 font-medium">Book</span>
+                  </button>
+                ))}
+              </div>
+              <div className="rounded-xl border p-4 space-y-3">
+                <p className="text-sm font-medium">Your Mentorship</p>
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <p>• 1 session per week (60 minutes)</p>
+                  <p>• Personalized career strategy</p>
+                  <p>• Direct feedback on your work</p>
+                  <p>• Job search accountability</p>
+                  <p>• Certification prep guidance</p>
+                </div>
+                <div className="pt-2 border-t">
+                  <p className="text-xs text-muted-foreground">Sessions reset every Monday. Unused sessions don't roll over.</p>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
       </main>
 
       <ProgressDetailModal

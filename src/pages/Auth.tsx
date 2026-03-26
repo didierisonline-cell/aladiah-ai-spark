@@ -14,37 +14,19 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 const TIERS = [
   {
-    id: 'foundation',
-    key: 't1',
-    price: 99,
+    id: 'foundation', key: 't1', price: 99,
     priceId: import.meta.env.VITE_STRIPE_PRICE_FOUNDATION || 'price_1TEFgA0CtfIq2xPfWJdun1vH',
-    icon: Shield,
-    color: '#3b82f6',
-    popular: false,
-    featureCount: 7,
-    missingCount: 3,
+    icon: Shield, color: '#3b82f6', popular: false, featureCount: 7, missingCount: 3,
   },
   {
-    id: 'accelerator',
-    key: 't2',
-    price: 299,
+    id: 'accelerator', key: 't2', price: 299,
     priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TEFgm0CtfIq2xPfkuYGY5sI',
-    icon: Zap,
-    color: '#f59e0b',
-    popular: true,
-    featureCount: 8,
-    missingCount: 1,
+    icon: Zap, color: '#f59e0b', popular: true, featureCount: 8, missingCount: 1,
   },
   {
-    id: 'elite',
-    key: 't3',
-    price: 499,
+    id: 'elite', key: 't3', price: 499,
     priceId: import.meta.env.VITE_STRIPE_PRICE_ELITE || 'price_1TEFhA0CtfIq2xPfZOXBhYlN',
-    icon: Crown,
-    color: '#10b981',
-    popular: false,
-    featureCount: 9,
-    missingCount: 0,
+    icon: Crown, color: '#10b981', popular: false, featureCount: 9, missingCount: 0,
   },
 ];
 
@@ -64,25 +46,22 @@ const Auth = () => {
   const { t } = useLanguage();
   const { user, loading: authLoading } = useAuth();
 
-  // If already authenticated, go to portal (but not during registration → Stripe flow)
+  // If already authenticated AND has paid (or returning from payment), go to portal
   useEffect(() => {
     if (!authLoading && user && !registering.current) {
-      navigate('/portal');
-    }
-  }, [user, authLoading, navigate]);
-
-  // Handle return from Stripe payment
-  useEffect(() => {
-    if (searchParams.get('payment') === 'success') {
-      toast({ title: t('auth.payment.success'), description: t('auth.payment.success.sub') });
-      if (user) {
+      // Check if returning from Stripe or already a subscriber
+      const isPaymentReturn = searchParams.get('payment') === 'success';
+      if (isPaymentReturn) {
+        toast({ title: t('auth.payment.success'), description: t('auth.payment.success.sub') });
         navigate('/portal');
-      } else {
-        // Session may have been lost during Stripe redirect — show login with success message
-        setIsLogin(true);
+        return;
+      }
+      // For login flow — go to portal (they already have an account)
+      if (isLogin) {
+        navigate('/portal');
       }
     }
-  }, [searchParams, user]);
+  }, [user, authLoading, navigate, isLogin]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,7 +73,7 @@ const Auth = () => {
         toast({ title: t('auth.welcome'), description: t('auth.magiclink.verified.sub') });
         navigate('/portal');
       } else {
-        // Block auto-redirect during registration → Stripe flow
+        // Block auto-redirect during registration
         registering.current = true;
 
         // Step 1: Create account
@@ -106,7 +85,7 @@ const Auth = () => {
         });
         if (error) throw error;
 
-        // Step 2: Redirect to Stripe checkout
+        // Step 2: Redirect to Stripe checkout — payment is REQUIRED
         const tierObj = TIERS.find(ti => ti.id === selectedTier)!;
         const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-checkout', {
           body: {
@@ -115,19 +94,23 @@ const Auth = () => {
             tier: tierObj.key,
             userId: signUpData.user?.id || '',
             successUrl: `${window.location.origin}/auth?payment=success`,
-            cancelUrl: `${window.location.origin}/auth`,
+            cancelUrl: `${window.location.origin}/auth?payment=canceled`,
           },
         });
 
         if (checkoutError || !checkoutData?.url) {
-          // Stripe checkout unavailable — send student to portal directly
+          // Stripe not available — sign out and show error
           registering.current = false;
-          toast({ title: t('auth.account.created'), description: t('auth.payment.success.sub') });
-          navigate('/portal');
+          await supabase.auth.signOut();
+          toast({
+            title: t('auth.error'),
+            description: 'Payment system is temporarily unavailable. Please try again later.',
+            variant: 'destructive',
+          });
           return;
         }
 
-        // Redirect to Stripe checkout
+        // Redirect to Stripe — student MUST pay to access portal
         window.location.href = checkoutData.url;
       }
     } catch (error: any) {
@@ -137,6 +120,20 @@ const Auth = () => {
       setLoading(false);
     }
   };
+
+  // Handle Stripe cancel/decline — student comes back without paying
+  useEffect(() => {
+    if (searchParams.get('payment') === 'canceled') {
+      toast({
+        title: t('auth.payment.declined'),
+        description: t('auth.payment.declined.sub'),
+        variant: 'destructive',
+      });
+      // Sign out so they can't access portal without paying
+      supabase.auth.signOut();
+      setIsLogin(false); // Show register form so they can try again
+    }
+  }, [searchParams]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
@@ -235,7 +232,6 @@ const Auth = () => {
                                 {t('pricing.popular')}
                               </span>
                             )}
-                            {/* Header */}
                             <div className="flex items-center gap-2 mb-2">
                               <Icon className="w-5 h-5" style={{ color: tier.color }} />
                               <div>
@@ -245,11 +241,9 @@ const Auth = () => {
                                 <p className="text-xs font-bold text-foreground">{t(`pricing.${tier.key}.name`)}</p>
                               </div>
                             </div>
-                            {/* Price */}
                             <p className="text-2xl font-bold mb-3" style={{ color: isSelected ? '#fff' : 'rgba(255,255,255,0.6)' }}>
                               ${tier.price}<span className="text-[10px] font-normal text-muted-foreground">/{t('pricing.month')}</span>
                             </p>
-                            {/* Features */}
                             <div className="space-y-1.5">
                               {features.map((f, i) => (
                                 <div key={i} className="flex items-start gap-1.5">
@@ -264,7 +258,6 @@ const Auth = () => {
                                 </div>
                               ))}
                             </div>
-                            {/* Selected indicator */}
                             {isSelected && (
                               <div className="mt-3 flex items-center justify-center gap-1">
                                 <CheckCircle className="w-3.5 h-3.5" style={{ color: tier.color }} />

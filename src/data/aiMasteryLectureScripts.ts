@@ -462,7 +462,7 @@ Your exercise: gather data from your most recent sprint using the four data cate
 
 Let me start with Notion AI because if you use Notion for project management, this integration is transformative. Notion AI is not a separate tool -- it is built directly into your workspace. You access it by pressing the space bar on an empty line or by highlighting text and using the AI menu.
 
-Here are the five Notion AI capabilities that matter most for PMs and Scrum Masters.
+Here are the five Notion AI capabilities that matter most for PMs.
 
 First, document generation from prompts. You can generate entire documents from a brief description. Create a new page, type a prompt like "Create a sprint retrospective template with sections for: sprint metrics summary, what went well, what to improve, action items with owners and deadlines, and a trend analysis comparing to the last three sprints." Notion AI generates a fully formatted page with headers, tables, and content blocks. It takes about ten seconds for what would normally be a twenty-minute template creation task.
 
@@ -482,7 +482,7 @@ Here is why Gamma matters for PMs. Every sprint review, every stakeholder presen
 
 Here is how I use Gamma in my workflow. For sprint reviews, I take the AI-generated demo script from Lesson 3.3 and paste it into Gamma with the prompt: "Create a sprint review presentation with these sections. Use a professional, modern design. Include placeholder spaces for screenshots and demo videos." Gamma generates a complete slide deck in about thirty seconds. I add the actual screenshots, make minor text tweaks, and I am done. What used to be a two-hour task is now fifteen minutes.
 
-For quarterly business reviews, Gamma shines even brighter. Paste in your quarterly data and objectives, and Gamma creates a presentation with data visualization suggestions, executive-friendly layouts, and consistent branding. The design quality is superior to what most PMs produce manually because Gamma applies professional design principles automatically.
+For quarterly business reviews, Gamma shines even brighter. Paste in your quarterly data and objectives, and Gamma creates a presentation with data visualization suggestions, executive-friendly layouts, and consistent branding. Gamma applies professional design principles automatically, producing superior results.
 
 The workflow I recommend: generate content with ChatGPT or Claude, structure it in Notion for working documentation, and present it with Gamma for stakeholder-facing materials. These three tools cover every PM communication need.
 
