@@ -263,32 +263,57 @@ const StudentPortal = () => {
     );
   }
 
-  const reminders = [
-    {
-      id: 1,
-      title: t('portal.reminder.assignment.title'),
-      message: t('portal.reminder.assignment.msg'),
-      actionLabel: t('portal.reminder.assignment.btn'),
-      action: () => navigate('/courses'),
-      type: 'assignment',
-    },
-    {
-      id: 2,
-      title: t('portal.reminder.payment.title'),
-      message: t('portal.reminder.payment.msg'),
-      actionLabel: t('portal.reminder.payment.btn'),
-      action: () => navigate('/dashboard'),
-      type: 'payment',
-    },
-    {
-      id: 3,
+  // Dynamic reminders based on student data
+  const reminders = (() => {
+    const items: { id: number; title: string; message: string; actionLabel: string; action: () => void; type: string }[] = [];
+    let nextId = 1;
+
+    // 1. Pending assignment — if student has courses but no quiz completion in last 24h
+    const lastQuizDate = courseProgresses.length > 0 && streak === 0 ? true :
+      courseProgresses.some(cp => cp.completed > 0 && cp.pct < 100);
+    if (lastQuizDate && courseProgresses.length > 0) {
+      const nextCourse = courseProgresses.find(cp => cp.pct < 100 && cp.pct > 0);
+      if (nextCourse) {
+        items.push({
+          id: nextId++,
+          title: t('portal.reminder.assignment.title'),
+          message: t('portal.reminder.assignment.msg'),
+          actionLabel: t('portal.reminder.assignment.btn'),
+          action: () => nextCourse.nextChapterId
+            ? navigate(`/course/${nextCourse.courseId}/chapter/${nextCourse.nextChapterId}`)
+            : navigate('/courses'),
+          type: 'assignment',
+        });
+      }
+    }
+
+    // 2. Start a new course — if any course is at 0%
+    const unstartedCourse = courseProgresses.find(cp => cp.pct === 0);
+    if (unstartedCourse) {
+      items.push({
+        id: nextId++,
+        title: t('portal.course.start') + ': ' + unstartedCourse.title,
+        message: t('portal.reminder.assignment.msg'),
+        actionLabel: t('portal.course.start'),
+        action: () => unstartedCourse.nextChapterId
+          ? navigate(`/course/${unstartedCourse.courseId}/chapter/${unstartedCourse.nextChapterId}`)
+          : navigate('/courses'),
+        type: 'assignment',
+      });
+    }
+
+    // 3. Community — always encourage participation
+    items.push({
+      id: nextId++,
       title: t('portal.reminder.community.title'),
       message: t('portal.reminder.community.msg'),
       actionLabel: t('portal.reminder.community.btn'),
       action: () => navigate('/community'),
       type: 'community',
-    },
-  ];
+    });
+
+    return items;
+  })();
 
   const stats = [
     { icon: TrendingUp, label: t('portal.stat.progress'), value: `${overallProgress}%`, color: 'text-primary', onClick: () => setProgressModalOpen(true) },
