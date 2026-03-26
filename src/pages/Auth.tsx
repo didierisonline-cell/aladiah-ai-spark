@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,9 +8,39 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { GraduationCap, Mail, Lock, User, Linkedin, Phone, ShieldCheck } from 'lucide-react';
+import { GraduationCap, Mail, Lock, User, Linkedin, Phone, ShieldCheck, Shield, Zap, Crown, CheckCircle } from 'lucide-react';
 import Header from '@/components/Header';
 import { useLanguage } from '@/contexts/LanguageContext';
+
+const TIERS = [
+  {
+    id: 'foundation',
+    key: 't1',
+    price: 99,
+    priceId: import.meta.env.VITE_STRIPE_PRICE_FOUNDATION || 'price_1TEFgA0CtfIq2xPfWJdun1vH',
+    icon: Shield,
+    color: '#3b82f6',
+    popular: false,
+  },
+  {
+    id: 'accelerator',
+    key: 't2',
+    price: 299,
+    priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TEFgm0CtfIq2xPfkuYGY5sI',
+    icon: Zap,
+    color: '#f59e0b',
+    popular: true,
+  },
+  {
+    id: 'elite',
+    key: 't3',
+    price: 499,
+    priceId: import.meta.env.VITE_STRIPE_PRICE_ELITE || 'price_1TEFhA0CtfIq2xPfZOXBhYlN',
+    icon: Crown,
+    color: '#10b981',
+    popular: false,
+  },
+];
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -19,18 +49,29 @@ const Auth = () => {
   const [fullName, setFullName] = useState('');
   const [linkedIn, setLinkedIn] = useState('');
   const [phone, setPhone] = useState('');
+  const [selectedTier, setSelectedTier] = useState('accelerator');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { t } = useLanguage();
   const { user, loading: authLoading } = useAuth();
 
-  // If already authenticated, go straight to portal
+  // If already authenticated, go to portal
   useEffect(() => {
     if (!authLoading && user) {
       navigate('/portal');
     }
   }, [user, authLoading, navigate]);
+
+  // Handle return from Stripe payment
+  useEffect(() => {
+    if (searchParams.get('payment') === 'success') {
+      toast({ title: t('auth.payment.success'), description: t('auth.payment.success.sub') });
+      // If already logged in, go to portal
+      if (user) navigate('/portal');
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,15 +83,35 @@ const Auth = () => {
         toast({ title: t('auth.welcome'), description: t('auth.magiclink.verified.sub') });
         navigate('/portal');
       } else {
-        const { error } = await supabase.auth.signUp({
+        // Step 1: Create account
+        const { data: signUpData, error } = await supabase.auth.signUp({
           email, password,
           options: {
-            data: { full_name: fullName, linkedin_url: linkedIn, phone_number: phone },
+            data: { full_name: fullName, linkedin_url: linkedIn, phone_number: phone, tier: selectedTier },
           },
         });
         if (error) throw error;
-        toast({ title: t('auth.account.created'), description: t('auth.account.created.sub') });
-        setIsLogin(true);
+
+        // Step 2: Redirect to Stripe checkout
+        const tier = TIERS.find(t => t.id === selectedTier)!;
+        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-checkout', {
+          body: {
+            priceId: tier.priceId,
+            email,
+            successUrl: `${window.location.origin}/auth?payment=success`,
+            cancelUrl: `${window.location.origin}/auth`,
+          },
+        });
+
+        if (checkoutError || !checkoutData?.url) {
+          // If checkout fails, still create the account — they can pay later
+          toast({ title: t('auth.account.created'), description: t('auth.account.created.sub') });
+          setIsLogin(true);
+          return;
+        }
+
+        // Redirect to Stripe
+        window.location.href = checkoutData.url;
       }
     } catch (error: any) {
       toast({ title: t('auth.error'), description: error.message, variant: 'destructive' });
@@ -62,8 +123,9 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
       <Header />
-      <div className="flex items-center justify-center p-4 pt-28">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full max-w-md">
+      <div className="flex items-center justify-center p-4 pt-28 pb-12">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+          className={`w-full ${isLogin ? 'max-w-md' : 'max-w-2xl'}`}>
           <Card className="shadow-large border-primary/10">
             <CardHeader className="text-center">
               <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
@@ -80,12 +142,22 @@ const Auth = () => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 {!isLogin && (
                   <>
-                    <div className="space-y-2">
-                      <Label htmlFor="fullName">{t('auth.fullname')}</Label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                        <Input id="fullName" type="text" placeholder={t('auth.fullname.placeholder')} value={fullName}
-                          onChange={(e) => setFullName(e.target.value)} required className="pl-9" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <Label htmlFor="fullName">{t('auth.fullname')}</Label>
+                        <div className="relative">
+                          <User className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                          <Input id="fullName" type="text" placeholder={t('auth.fullname.placeholder')} value={fullName}
+                            onChange={(e) => setFullName(e.target.value)} required className="pl-9" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="phone">{t('auth.phone')} <span className="text-muted-foreground text-xs">({t('auth.optional')})</span></Label>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                          <Input id="phone" type="tel" placeholder="+1 (555) 000-0000"
+                            value={phone} onChange={(e) => setPhone(e.target.value)} className="pl-9" />
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -96,32 +168,67 @@ const Auth = () => {
                           value={linkedIn} onChange={(e) => setLinkedIn(e.target.value)} className="pl-9" />
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">{t('auth.phone')} <span className="text-muted-foreground text-xs">({t('auth.optional')})</span></Label>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                        <Input id="phone" type="tel" placeholder="+1 (555) 000-0000"
-                          value={phone} onChange={(e) => setPhone(e.target.value)} className="pl-9" />
-                      </div>
-                    </div>
                   </>
                 )}
-                <div className="space-y-2">
-                  <Label htmlFor="email">{t('auth.email')}</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                    <Input id="email" type="email" placeholder="you@example.com" value={email}
-                      onChange={(e) => setEmail(e.target.value)} required className="pl-9" />
+                <div className={!isLogin ? 'grid grid-cols-1 sm:grid-cols-2 gap-3' : 'space-y-4'}>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">{t('auth.email')}</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                      <Input id="email" type="email" placeholder="you@example.com" value={email}
+                        onChange={(e) => setEmail(e.target.value)} required className="pl-9" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">{t('auth.password')}</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                      <Input id="password" type="password" placeholder="********" value={password}
+                        onChange={(e) => setPassword(e.target.value)} required minLength={6} className="pl-9" />
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">{t('auth.password')}</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                    <Input id="password" type="password" placeholder="********" value={password}
-                      onChange={(e) => setPassword(e.target.value)} required minLength={6} className="pl-9" />
+
+                {/* Tier selector — only on register */}
+                {!isLogin && (
+                  <div className="space-y-3">
+                    <Label className="text-sm font-semibold">{t('auth.choose.plan')}</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {TIERS.map(tier => {
+                        const Icon = tier.icon;
+                        const isSelected = selectedTier === tier.id;
+                        return (
+                          <button
+                            key={tier.id}
+                            type="button"
+                            onClick={() => setSelectedTier(tier.id)}
+                            className="relative rounded-xl p-3 text-center transition-all"
+                            style={{
+                              background: isSelected ? `${tier.color}15` : 'rgba(255,255,255,0.03)',
+                              border: `2px solid ${isSelected ? tier.color : 'rgba(255,255,255,0.08)'}`,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {tier.popular && (
+                              <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ background: tier.color, color: '#000' }}>
+                                {t('pricing.popular')}
+                              </span>
+                            )}
+                            <Icon className="w-5 h-5 mx-auto mb-1" style={{ color: tier.color }} />
+                            <p className="text-xs font-bold" style={{ color: isSelected ? tier.color : 'rgba(255,255,255,0.7)' }}>
+                              {t(`pricing.${tier.key}.name`)}
+                            </p>
+                            <p className="text-lg font-bold mt-1" style={{ color: isSelected ? '#fff' : 'rgba(255,255,255,0.5)' }}>
+                              ${tier.price}<span className="text-[10px] font-normal text-muted-foreground">/{t('pricing.month')}</span>
+                            </p>
+                            {isSelected && <CheckCircle className="w-4 h-4 mx-auto mt-1" style={{ color: tier.color }} />}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
+                )}
+
                 {isLogin && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: 'rgba(59,130,246,0.08)', borderRadius: '10px', border: '1px solid rgba(59,130,246,0.2)' }}>
                     <ShieldCheck className="w-4 h-4 text-primary flex-shrink-0" />
@@ -131,8 +238,13 @@ const Auth = () => {
                   </div>
                 )}
                 <Button type="submit" className="w-full" variant="coral" disabled={loading}>
-                  {loading ? t('auth.loading') : isLogin ? t('auth.signin.btn') : t('auth.register.btn')}
+                  {loading ? t('auth.loading') : isLogin ? t('auth.signin.btn') : t('auth.register.pay.btn')}
                 </Button>
+                {!isLogin && (
+                  <p className="text-[11px] text-center text-muted-foreground">
+                    {t('auth.stripe.secure')}
+                  </p>
+                )}
               </form>
               <div className="mt-6 text-center">
                 <button type="button" onClick={() => setIsLogin(!isLogin)}
