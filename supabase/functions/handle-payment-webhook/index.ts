@@ -73,6 +73,23 @@ serve(async (req) => {
 
         if (subError) console.error("Subscription upsert error:", subError);
         else console.log(`Subscription created: user=${resolvedUserId}, tier=${tier}`);
+
+        // Send welcome email
+        try {
+          const user = (await supabase.auth.admin.getUserById(resolvedUserId)).data?.user;
+          const fullName = user?.user_metadata?.full_name || "Student";
+          await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-welcome-email`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+            },
+            body: JSON.stringify({ email, fullName, tier }),
+          });
+          console.log(`Welcome email sent to ${email}`);
+        } catch (emailErr) {
+          console.error("Welcome email failed:", emailErr);
+        }
       }
     }
 
@@ -108,6 +125,46 @@ serve(async (req) => {
           .update({ status: "past_due", updated_at: new Date().toISOString() })
           .eq("stripe_customer_id", customerId);
         console.log(`Payment failed for customer ${customerId}`);
+      }
+    }
+
+    // Handle upcoming invoice — send payment reminder
+    if (event.type === "invoice.upcoming") {
+      const invoice = event.data.object as Stripe.Invoice;
+      const customerId = invoice.customer as string;
+
+      if (customerId) {
+        const { data: sub } = await supabase
+          .from("subscriptions")
+          .select("user_id, tier")
+          .eq("stripe_customer_id", customerId)
+          .maybeSingle();
+
+        if (sub) {
+          const { data: userData } = await supabase.auth.admin.getUserById(sub.user_id);
+          const email = userData?.user?.email;
+          if (email) {
+            try {
+              await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-payment-reminder`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+                },
+                body: JSON.stringify({
+                  email,
+                  tier: sub.tier,
+                  nextPaymentDate: invoice.next_payment_attempt
+                    ? new Date((invoice.next_payment_attempt as number) * 1000).toISOString()
+                    : null,
+                }),
+              });
+              console.log(`Payment reminder sent to ${email}`);
+            } catch (e) {
+              console.error("Payment reminder failed:", e);
+            }
+          }
+        }
       }
     }
 
