@@ -21,6 +21,8 @@ const TIERS = [
     icon: Shield,
     color: '#3b82f6',
     popular: false,
+    featureCount: 7,
+    missingCount: 3,
   },
   {
     id: 'accelerator',
@@ -30,6 +32,8 @@ const TIERS = [
     icon: Zap,
     color: '#f59e0b',
     popular: true,
+    featureCount: 8,
+    missingCount: 1,
   },
   {
     id: 'elite',
@@ -39,6 +43,8 @@ const TIERS = [
     icon: Crown,
     color: '#10b981',
     popular: false,
+    featureCount: 9,
+    missingCount: 0,
   },
 ];
 
@@ -195,35 +201,66 @@ const Auth = () => {
                 {!isLogin && (
                   <div className="space-y-3">
                     <Label className="text-sm font-semibold">{t('auth.choose.plan')}</Label>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       {TIERS.map(tier => {
                         const Icon = tier.icon;
                         const isSelected = selectedTier === tier.id;
+                        const features = Array.from({ length: tier.featureCount }, (_, i) => t(`pricing.${tier.key}.f${i + 1}`));
+                        const missing = Array.from({ length: tier.missingCount }, (_, i) => t(`pricing.${tier.key}.m${i + 1}`));
                         return (
                           <button
                             key={tier.id}
                             type="button"
                             onClick={() => setSelectedTier(tier.id)}
-                            className="relative rounded-xl p-3 text-center transition-all"
+                            className="relative rounded-xl p-4 text-left transition-all"
                             style={{
-                              background: isSelected ? `${tier.color}15` : 'rgba(255,255,255,0.03)',
+                              background: isSelected ? `${tier.color}10` : 'rgba(255,255,255,0.02)',
                               border: `2px solid ${isSelected ? tier.color : 'rgba(255,255,255,0.08)'}`,
                               cursor: 'pointer',
+                              boxShadow: isSelected ? `0 0 20px ${tier.color}20` : 'none',
                             }}
                           >
                             {tier.popular && (
-                              <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ background: tier.color, color: '#000' }}>
+                              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[9px] font-bold px-3 py-0.5 rounded-full whitespace-nowrap" style={{ background: tier.color, color: '#000' }}>
                                 {t('pricing.popular')}
                               </span>
                             )}
-                            <Icon className="w-5 h-5 mx-auto mb-1" style={{ color: tier.color }} />
-                            <p className="text-xs font-bold" style={{ color: isSelected ? tier.color : 'rgba(255,255,255,0.7)' }}>
-                              {t(`pricing.${tier.key}.name`)}
-                            </p>
-                            <p className="text-lg font-bold mt-1" style={{ color: isSelected ? '#fff' : 'rgba(255,255,255,0.5)' }}>
+                            {/* Header */}
+                            <div className="flex items-center gap-2 mb-2">
+                              <Icon className="w-5 h-5" style={{ color: tier.color }} />
+                              <div>
+                                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: tier.color }}>
+                                  {t(`pricing.${tier.key}.tier`)}
+                                </p>
+                                <p className="text-xs font-bold text-foreground">{t(`pricing.${tier.key}.name`)}</p>
+                              </div>
+                            </div>
+                            {/* Price */}
+                            <p className="text-2xl font-bold mb-3" style={{ color: isSelected ? '#fff' : 'rgba(255,255,255,0.6)' }}>
                               ${tier.price}<span className="text-[10px] font-normal text-muted-foreground">/{t('pricing.month')}</span>
                             </p>
-                            {isSelected && <CheckCircle className="w-4 h-4 mx-auto mt-1" style={{ color: tier.color }} />}
+                            {/* Features */}
+                            <div className="space-y-1.5">
+                              {features.map((f, i) => (
+                                <div key={i} className="flex items-start gap-1.5">
+                                  <CheckCircle className="w-3 h-3 mt-0.5 shrink-0" style={{ color: tier.color }} />
+                                  <span className="text-[11px] leading-tight" style={{ color: 'rgba(255,255,255,0.7)' }}>{f}</span>
+                                </div>
+                              ))}
+                              {missing.map((f, i) => (
+                                <div key={`m${i}`} className="flex items-start gap-1.5">
+                                  <div className="w-3 h-[1px] mt-2 shrink-0" style={{ background: 'rgba(255,255,255,0.15)' }} />
+                                  <span className="text-[11px] leading-tight line-through" style={{ color: 'rgba(255,255,255,0.25)' }}>{f}</span>
+                                </div>
+                              ))}
+                            </div>
+                            {/* Selected indicator */}
+                            {isSelected && (
+                              <div className="mt-3 flex items-center justify-center gap-1">
+                                <CheckCircle className="w-3.5 h-3.5" style={{ color: tier.color }} />
+                                <span className="text-[10px] font-bold" style={{ color: tier.color }}>Selected</span>
+                              </div>
+                            )}
                           </button>
                         );
                       })}
