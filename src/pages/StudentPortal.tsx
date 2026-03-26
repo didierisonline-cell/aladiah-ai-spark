@@ -516,6 +516,9 @@ const StudentPortal = () => {
                 </Button>
               </a>
             </div>
+            <p className="text-[10px] text-muted-foreground mt-1">
+              Scrum Guide &copy; Scrum.org &amp; ScrumAlliance. SAFe &copy; Scaled Agile, Inc. Used for educational reference.
+            </p>
           </div>
         </motion.div>
 

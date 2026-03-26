@@ -75,7 +75,8 @@ const LiveClassroom = ({
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [classEnded, setClassEnded] = useState(false);
-  const [lastCaption, setLastCaption] = useState('');
+  const [captions, setCaptions] = useState<string[]>([]);
+  const [showCC, setShowCC] = useState(true);
   const sessionStartTime = useRef<number | null>(null);
   const { toast } = useToast();
   const professorName = PROFESSOR_NAMES[agentKey] || "Professor Didier";
@@ -87,8 +88,7 @@ const LiveClassroom = ({
     },
     onMessage: (props: any) => {
       if (props.source === 'ai' && props.message) {
-        setLastCaption(props.message);
-        setTimeout(() => setLastCaption(''), 10000);
+        setCaptions(prev => [...prev.slice(-4), props.message]);
       }
     },
     onDisconnect: () => {
@@ -117,10 +117,31 @@ const LiveClassroom = ({
         English: "en", Spanish: "es", French: "fr",
         German: "de", Chinese: "zh", Arabic: "ar", Japanese: "ja"
       };
+      const lessonPrompt = `You are Professor Didier, an expert Scrum Master and Project Management instructor at Aladiah Academy. You are teaching a live class.
+
+LESSON: ${title}
+CHAPTER: ${chapterTitle}
+COURSE: ${courseTitle}
+DESCRIPTION: ${description}
+
+INSTRUCTIONS:
+1. Start by greeting the student warmly and introducing today's topic: "${title}"
+2. Focus ONLY on the content described above — do not go off topic
+3. Teach the material clearly, using examples and real-world scenarios
+4. If the student asks about something unrelated, politely redirect: "Great question! Let's cover that after we finish today's lesson on ${title}."
+5. Speak in ${selectedLanguage}. If the student switches languages, follow their lead.
+6. Keep explanations concise and engaging — this is a live interactive class, not a lecture
+7. After covering the key points, ask the student questions to check understanding
+8. Encourage the student to take the quiz after class`;
+
       await conversation.startSession({
         agentId: "agent_2001kmf3cdyaem4t7fej8z81jp1b",
         overrides: {
-          agent: { language: langMap[selectedLanguage] || "en" }
+          agent: {
+            language: langMap[selectedLanguage] || "en",
+            prompt: { prompt: lessonPrompt },
+            firstMessage: `Hello! Welcome to today's class on "${title}". I'm Professor Didier, and I'll be guiding you through this lesson. Let's get started!`,
+          }
         }
       });
     } catch (error: any) {
@@ -132,7 +153,7 @@ const LiveClassroom = ({
     } finally {
       setIsConnecting(false);
     }
-  }, [conversation, toast]);
+  }, [conversation, toast, title, chapterTitle, courseTitle, description, selectedLanguage]);
 
   const endClass = useCallback(async () => {
     await conversation.endSession();
@@ -154,14 +175,18 @@ const LiveClassroom = ({
       await conversation.startSession({
         agentId: "agent_2001kmf3cdyaem4t7fej8z81jp1b",
         overrides: {
-          agent: { language: langMap[selectedLanguage] || "en" }
+          agent: {
+            language: langMap[selectedLanguage] || "en",
+            prompt: { prompt: `You are Professor Didier continuing a live class on "${title}" (${chapterTitle}, ${courseTitle}). ${description}. Resume teaching from where you left off. Speak in ${selectedLanguage}.` },
+            firstMessage: `Welcome back! Let's continue our lesson on "${title}".`,
+          }
         }
       });
       setSessionStarted(true);
     } catch (e) {
       console.error(e);
     }
-  }, [conversation]);
+  }, [conversation, title, chapterTitle, courseTitle, description, selectedLanguage]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4">
@@ -209,10 +234,30 @@ const LiveClassroom = ({
             )}
 
             {/* Subtitle / CC board */}
-            <div className="w-full bg-black/60 backdrop-blur-sm rounded-xl px-4 py-2 min-h-12 flex items-center justify-center border border-white/10">
-              <p className="text-white text-sm text-center leading-relaxed">
-                {isActive && lastCaption ? lastCaption : (description || title || 'Ready to start your live class')}
-              </p>
+            <div className="w-full relative">
+              {isActive && (
+                <button
+                  onClick={() => setShowCC(!showCC)}
+                  className="absolute -top-6 right-0 text-[10px] font-bold px-2 py-0.5 rounded bg-white/10 text-white/50 hover:text-white/80 transition-colors z-10"
+                >
+                  CC {showCC ? 'ON' : 'OFF'}
+                </button>
+              )}
+              <div className="w-full bg-black/60 backdrop-blur-sm rounded-xl px-4 py-2 min-h-12 border border-white/10" style={{ maxHeight: '120px', overflowY: 'auto' }}>
+                {isActive && showCC && captions.length > 0 ? (
+                  <div className="space-y-1">
+                    {captions.map((cap, i) => (
+                      <p key={i} className="text-sm text-center leading-relaxed" style={{ color: i === captions.length - 1 ? '#fff' : 'rgba(255,255,255,0.4)' }}>
+                        {cap}
+                      </p>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-white text-sm text-center leading-relaxed">
+                    {description || title || 'Ready to start your live class'}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>
