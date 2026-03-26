@@ -144,7 +144,7 @@ const Pricing = () => {
                   onClick={() => handleSelect(plan)}
                   disabled={!!loading}
                   style={{
-                    width: "100%", padding: "14px", borderRadius: "12px", border: "none",
+                    width: "100%", padding: "14px", borderRadius: "12px",
                     cursor: loading ? "wait" : "pointer", fontWeight: 700, fontSize: "15px",
                     background: plan.popular ? "#f59e0b" : `${plan.color}22`,
                     color: plan.popular ? "#000" : plan.color,
