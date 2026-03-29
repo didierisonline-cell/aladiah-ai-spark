@@ -58,12 +58,12 @@ const StudentPortal = () => {
   const navigate = useNavigate();
   const [subStatus, setSubStatus] = useState<'loading'|'active'|'none'>('active'); // TEMP: bypass payment gate
 
-  // Auth guard — redirect to /auth if not logged in
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/auth');
-    }
-  }, [user, authLoading, navigate]);
+  // Auth guard — TEMPORARILY DISABLED for demo
+  // useEffect(() => {
+  //   if (!authLoading && !user) {
+  //     navigate('/auth');
+  //   }
+  // }, [user, authLoading, navigate]);
 
   useEffect(() => {
     if (!user) return;
