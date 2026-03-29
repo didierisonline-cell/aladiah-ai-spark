@@ -56,6 +56,7 @@ const StudentPortal = () => {
   const { tier, tierName, hasFeature } = useSubscription();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [subStatus, setSubStatus] = useState<'loading'|'active'|'none'>('active'); // TEMP: bypass payment gate
 
   // Auth guard — redirect to /auth if not logged in
   useEffect(() => {
