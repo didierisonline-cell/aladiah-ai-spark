@@ -95,7 +95,7 @@ const LiveClassroom = ({
       const duration = sessionStartTime.current ? Date.now() - sessionStartTime.current : 0;
       console.log("Disconnected. Duration:", duration, "sessionStarted:", sessionStarted);
       setSessionStarted(false);
-      if (duration > 30000) {
+      if (duration > 5000) {
         setShowQuizCTA(true);
         onComplete();
       }
