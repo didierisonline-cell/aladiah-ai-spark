@@ -93,9 +93,11 @@ const LiveClassroom = ({
     },
     onDisconnect: () => {
       const duration = sessionStartTime.current ? Date.now() - sessionStartTime.current : 0;
-      console.log("Disconnected. Duration:", duration, "sessionStarted:", sessionStarted);
+      console.log("ElevenLabs disconnected. Duration ms:", duration);
+      sessionStartTime.current = null;
       setSessionStarted(false);
-      if (duration > 5000) {
+      // Only show quiz CTA if class actually ran for more than 20 seconds
+      if (duration > 20000) {
         setShowQuizCTA(true);
         onComplete();
       }
