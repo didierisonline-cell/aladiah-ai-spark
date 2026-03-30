@@ -145,10 +145,13 @@ INSTRUCTIONS:
         }
       });
     } catch (error: any) {
-      if (error.name === "NotAllowedError") {
-        toast({ title: "Microphone required", description: "Please allow microphone access.", variant: "destructive" });
+      console.error("startClass error:", error.name, error.message);
+      if (error.name === "NotAllowedError" || error.name === "PermissionDeniedError") {
+        toast({ title: "🎤 Microphone required", description: "Please allow microphone access in your browser and try again.", variant: "destructive" });
+      } else if (error.name === "NotFoundError") {
+        toast({ title: "No microphone found", description: "Please connect a microphone and try again.", variant: "destructive" });
       } else {
-        toast({ title: "Failed to connect", description: error.message, variant: "destructive" });
+        toast({ title: "Connection failed", description: error.message || "Unknown error. Check console.", variant: "destructive" });
       }
     } finally {
       setIsConnecting(false);
