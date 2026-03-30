@@ -31,8 +31,8 @@ const queryClient = new QueryClient();
 
 const RouterAwareFloat = () => {
   const { pathname } = useLocation();
-  const isPortal = pathname.startsWith("/portal") || pathname.startsWith("/course") || pathname.startsWith("/dashboard");
-  return <ProfDidierFloat mode={isPortal ? "professor" : "enrollment"} />;
+  const isPortal = pathname.startsWith("/portal") || pathname.startsWith("/course") || pathname.startsWith("/chapter") || pathname.startsWith("/dashboard");
+  return isPortal ? null : <ProfDidierFloat mode="enrollment" />;
 };
 
 const AppContent = () => {
