@@ -119,6 +119,22 @@ const LiveClassroom = ({
   const startClass = useCallback(async () => {
     setIsConnecting(true);
     try {
+      // Verify mic works before connecting to ElevenLabs
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Keep the stream alive — pass it to the SDK so there's no second getUserMedia call
+      } catch (micError: any) {
+        if (micError.name === "NotAllowedError" || micError.name === "PermissionDeniedError") {
+          toast({ title: "🎤 Microphone required", description: "Please allow microphone access in your browser settings and try again.", variant: "destructive" });
+        } else if (micError.name === "NotFoundError" || micError.name === "NotReadableError") {
+          toast({ title: "No working microphone", description: "Please connect a microphone or check your audio settings.", variant: "destructive" });
+        } else {
+          toast({ title: "Microphone error", description: micError.message, variant: "destructive" });
+        }
+        return;
+      }
+
       const langMap: Record<string, string> = {
         English: "en", Spanish: "es", French: "fr",
         German: "de", Chinese: "zh", Arabic: "ar", Japanese: "ja"
@@ -143,11 +159,30 @@ INSTRUCTIONS:
       const agentId = ELEVENLABS_AGENT_ID;
       console.log("[LiveClass] Starting session with agentId:", agentId, "language:", langMap[selectedLanguage] || "en");
       if (!agentId) {
+        stream.getTracks().forEach(t => t.stop());
         throw new Error("VITE_ELEVENLABS_AGENT_ID is not set in .env");
       }
 
-      await conversation.startSession({
-        agentId,
+      // Get a signed token from our backend to avoid domain restrictions
+      let conversationToken: string | null = null;
+      try {
+        const tokenRes = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-conversation-token`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            },
+          }
+        );
+        const tokenData = await tokenRes.json();
+        if (tokenData.token) conversationToken = tokenData.token;
+      } catch (e) {
+        console.warn("[LiveClass] Could not get signed token, falling back to agentId:", e);
+      }
+
+      const sessionOpts: any = {
         overrides: {
           agent: {
             language: langMap[selectedLanguage] || "en",
@@ -155,18 +190,23 @@ INSTRUCTIONS:
             firstMessage: `Hello! Welcome to today's class on "${title}". I'm Professor Didier, and I'll be guiding you through this lesson. Let's get started!`,
           }
         }
-      });
+      };
+
+      // Use signed token if available (bypasses domain restrictions), otherwise fall back to agentId
+      if (conversationToken) {
+        sessionOpts.conversationToken = conversationToken;
+      } else {
+        sessionOpts.agentId = agentId;
+      }
+
+      await conversation.startSession(sessionOpts);
+      // Stop our mic stream — the SDK has its own now
+      stream.getTracks().forEach(t => t.stop());
       console.log("[LiveClass] startSession resolved successfully");
     } catch (error: any) {
       setSessionStarted(false);
       console.error("[LiveClass] startClass FULL error:", error);
-      if (error.name === "NotAllowedError" || error.name === "PermissionDeniedError") {
-        toast({ title: "🎤 Microphone required", description: "Please allow microphone access in your browser and try again.", variant: "destructive" });
-      } else if (error.name === "NotFoundError") {
-        toast({ title: "No microphone found", description: "Please connect a microphone and try again.", variant: "destructive" });
-      } else {
-        toast({ title: "Connection failed", description: String(error.message || error), variant: "destructive" });
-      }
+      toast({ title: "Connection failed", description: String(error.message || error), variant: "destructive" });
     } finally {
       setIsConnecting(false);
     }
