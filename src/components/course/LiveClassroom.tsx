@@ -7,6 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
+const ELEVENLABS_AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string;
+
 interface Props {
   videoId: string;
   title: string;
@@ -83,7 +85,9 @@ const LiveClassroom = ({
 
   const conversation = useConversation({
     onConnect: () => {
+      console.log("[LiveClass] onConnect fired");
       sessionStartTime.current = Date.now();
+      setSessionStarted(true);
       toast({ title: "🎙️ Live Class Started!", description: `${professorName} is ready for you.` });
     },
     onMessage: (props: any) => {
@@ -91,20 +95,22 @@ const LiveClassroom = ({
         setCaptions(prev => [...prev.slice(-4), props.message]);
       }
     },
-    onDisconnect: () => {
+    onDisconnect: (details: any) => {
       const duration = sessionStartTime.current ? Date.now() - sessionStartTime.current : 0;
-      console.log("ElevenLabs disconnected. Duration ms:", duration);
+      console.log("[LiveClass] onDisconnect fired. Duration ms:", duration, "Details:", details);
       sessionStartTime.current = null;
       setSessionStarted(false);
-      // Only show quiz CTA if class actually ran for more than 20 seconds
       if (duration > 20000) {
         setShowQuizCTA(true);
         onComplete();
       }
     },
-    onError: (error) => {
-      console.error("Voice error:", error);
+    onError: (error: any) => {
+      console.error("[LiveClass] onError:", error);
       toast({ title: "Connection error", description: "Could not connect. Please try again.", variant: "destructive" });
+    },
+    onStatusChange: ({ status }: { status: string }) => {
+      console.log("[LiveClass] status changed:", status);
     },
   });
 
@@ -113,10 +119,6 @@ const LiveClassroom = ({
   const startClass = useCallback(async () => {
     setIsConnecting(true);
     try {
-      await navigator.mediaDevices.getUserMedia({
-        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
-      });
-      setSessionStarted(true);
       const langMap: Record<string, string> = {
         English: "en", Spanish: "es", French: "fr",
         German: "de", Chinese: "zh", Arabic: "ar", Japanese: "ja"
@@ -138,8 +140,14 @@ INSTRUCTIONS:
 7. After covering the key points, ask the student questions to check understanding
 8. Encourage the student to take the quiz after class`;
 
+      const agentId = ELEVENLABS_AGENT_ID;
+      console.log("[LiveClass] Starting session with agentId:", agentId, "language:", langMap[selectedLanguage] || "en");
+      if (!agentId) {
+        throw new Error("VITE_ELEVENLABS_AGENT_ID is not set in .env");
+      }
+
       await conversation.startSession({
-        agentId: "agent_8801kkd1edrbet2rhmnsjynyk80q",
+        agentId,
         overrides: {
           agent: {
             language: langMap[selectedLanguage] || "en",
@@ -148,14 +156,16 @@ INSTRUCTIONS:
           }
         }
       });
+      console.log("[LiveClass] startSession resolved successfully");
     } catch (error: any) {
-      console.error("startClass error:", error.name, error.message);
+      setSessionStarted(false);
+      console.error("[LiveClass] startClass FULL error:", error);
       if (error.name === "NotAllowedError" || error.name === "PermissionDeniedError") {
         toast({ title: "🎤 Microphone required", description: "Please allow microphone access in your browser and try again.", variant: "destructive" });
       } else if (error.name === "NotFoundError") {
         toast({ title: "No microphone found", description: "Please connect a microphone and try again.", variant: "destructive" });
       } else {
-        toast({ title: "Connection failed", description: error.message || "Unknown error. Check console.", variant: "destructive" });
+        toast({ title: "Connection failed", description: String(error.message || error), variant: "destructive" });
       }
     } finally {
       setIsConnecting(false);
@@ -182,7 +192,7 @@ INSTRUCTIONS:
         German: "de", Chinese: "zh", Arabic: "ar", Japanese: "ja"
       };
       await conversation.startSession({
-        agentId: "agent_8801kkd1edrbet2rhmnsjynyk80q",
+        agentId: ELEVENLABS_AGENT_ID,
         overrides: {
           agent: {
             language: langMap[selectedLanguage] || "en",

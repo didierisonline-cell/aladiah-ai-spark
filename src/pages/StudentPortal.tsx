@@ -65,25 +65,25 @@ const StudentPortal = () => {
   //   }
   // }, [user, authLoading, navigate]);
 
-  useEffect(() => {
-    if (!user) return;
-    const checkSub = async () => {
-      const { data } = await supabase
-        .from('subscriptions')
-        .select('status')
-        .eq('user_id', user.id)
-        .single();
-      setSubStatus(data?.status === 'active' ? 'active' : 'none');
-    };
-    // Check URL for fresh payment success
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('payment') === 'success') {
-      setSubStatus('active');
-      window.history.replaceState({}, '', '/portal');
-    } else {
-      checkSub();
-    }
-  }, [user]);
+  // TEMP: subscription check disabled — portal open for demo
+  // useEffect(() => {
+  //   if (!user) return;
+  //   const checkSub = async () => {
+  //     const { data } = await supabase
+  //       .from('subscriptions')
+  //       .select('status')
+  //       .eq('user_id', user.id)
+  //       .single();
+  //     setSubStatus(data?.status === 'active' ? 'active' : 'none');
+  //   };
+  //   const params = new URLSearchParams(window.location.search);
+  //   if (params.get('payment') === 'success') {
+  //     setSubStatus('active');
+  //     window.history.replaceState({}, '', '/portal');
+  //   } else {
+  //     checkSub();
+  //   }
+  // }, [user]);
 
   const { progress: overallProgress } = useProgress(user?.id);
   const { profile: learningProfile, recordQuestion, getDueReviews } = useLearningProfile(user?.id);
