@@ -139,7 +139,7 @@ INSTRUCTIONS:
 8. Encourage the student to take the quiz after class`;
 
       await conversation.startSession({
-        agentId: "agent_2001kmf3cdyaem4t7fej8z81jp1b",
+        agentId: "agent_8801kkd1edrbet2rhmnsjynyk80q",
         overrides: {
           agent: {
             language: langMap[selectedLanguage] || "en",
@@ -169,6 +169,8 @@ INSTRUCTIONS:
   const pauseClass = useCallback(async () => {
     await conversation.endSession();
     setIsPaused(true);
+    setSessionStarted(false);
+    setCaptions([]);
   }, [conversation]);
 
   const resumeClass = useCallback(async () => {
@@ -180,7 +182,7 @@ INSTRUCTIONS:
         German: "de", Chinese: "zh", Arabic: "ar", Japanese: "ja"
       };
       await conversation.startSession({
-        agentId: "agent_2001kmf3cdyaem4t7fej8z81jp1b",
+        agentId: "agent_8801kkd1edrbet2rhmnsjynyk80q",
         overrides: {
           agent: {
             language: langMap[selectedLanguage] || "en",
