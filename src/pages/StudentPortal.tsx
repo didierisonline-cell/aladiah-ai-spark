@@ -313,7 +313,7 @@ const StudentPortal = () => {
       title: 'Manage Your Subscription',
       message: 'View your plan, update billing, or cancel anytime through your secure account portal.',
       actionLabel: 'Manage Account',
-      action: () => window.open('https://billing.stripe.com/p/login/test_00000000', '_blank'),
+      action: () => window.open('YOUR_REAL_STRIPE_PORTAL_URL', '_blank'),
       type: 'payment',
     });
 
