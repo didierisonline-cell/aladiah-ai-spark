@@ -217,7 +217,6 @@ function AuthNavButton({ navigate }: { navigate: (path: string) => void }) {
     }
     return (
       <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className="hidden sm:flex items-center gap-2">
-        <Button variant="hero" size="sm" onClick={() => navigate('/portal')}>{t('nav.portal')}</Button>
         <button
           onClick={handleLogout}
           style={{
@@ -236,20 +235,8 @@ function AuthNavButton({ navigate }: { navigate: (path: string) => void }) {
   }
 
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.4 }} className="hidden sm:flex items-center gap-2">
-      <button
-        onClick={handleLogout}
-        style={{
-          padding: '8px 12px', borderRadius: '10px', fontSize: '12px', fontWeight: 600,
-          background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)',
-          border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer',
-          transition: 'all 0.2s ease',
-        }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = '#fff'; }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; }}
-      >
-        {t('nav.logout')}
-      </button>
+    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.4 }} className="hidden sm:block">
+      <Button variant="hero" size="sm" onClick={() => navigate('/auth')}>{t('nav.getbusy')}</Button>
     </motion.div>
   );
 }
