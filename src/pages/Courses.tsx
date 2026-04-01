@@ -414,12 +414,13 @@ const Courses = () => {
             <img src={aladiahLogo} alt="Aladiah Academy" className="h-28 w-auto object-contain mix-blend-multiply" />
           </Link>
           <div className="flex items-center gap-3">
-            <Link to="/community"><Button variant="ghost" size="sm">{t.community}</Button></Link>
-            <Link to="/feedback"><Button variant="ghost" size="sm">{t.feedback}</Button></Link>
-            <span className="text-sm text-muted-foreground">{user?.email}</span>
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" />
-              {t.logout}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/portal')}
+              className="flex items-center gap-2 font-semibold text-[#1a3a5c] hover:text-[#1a3a5c] hover:bg-slate-100"
+            >
+              ← Back to Portal
             </Button>
           </div>
         </div>

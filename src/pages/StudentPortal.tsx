@@ -442,9 +442,7 @@ const StudentPortal = () => {
                <h1 className="text-2xl md:text-3xl font-display font-bold">
   {t('portal.title').replace('{name}', firstName)}
 </h1>
-                <p className={PAGE_SUBTITLE_CLASS}>
-                  {t('portal.guided_by').replace('{lang}', language)}
-                </p>
+
                 {/* LinkedIn Badge */}
                 <div style={{display:'flex',alignItems:'center',gap:'8px',marginTop:'6px'}}>
                   {linkedInUrl ? (

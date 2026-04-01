@@ -198,7 +198,23 @@ function AuthNavButton({ navigate }: { navigate: (path: string) => void }) {
     navigate('/');
   };
 
+  const isCourseRoute = typeof window !== 'undefined' && (window.location.pathname.startsWith('/courses') || window.location.pathname.startsWith('/chapter'));
+
   if (user) {
+    if (isCourseRoute) {
+      return (
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className="hidden sm:flex items-center gap-2">
+          <Button
+            variant="hero"
+            size="sm"
+            onClick={() => navigate('/portal')}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            ← Back to Portal
+          </Button>
+        </motion.div>
+      );
+    }
     return (
       <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className="hidden sm:flex items-center gap-2">
         <Button variant="hero" size="sm" onClick={() => navigate('/portal')}>{t('nav.portal')}</Button>
