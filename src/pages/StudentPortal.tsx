@@ -536,7 +536,7 @@ const StudentPortal = () => {
               >
                 <Button variant="outline" className="gap-2">
                   <FileText className="w-4 h-4" />
-                  <span className="hidden sm:inline">PMBOK® Guide</span>
+                  <span className="hidden sm:inline">PMBOK&reg; Guide</span>
                   <ExternalLink className="w-3 h-3" />
                 </Button>
               </a>
