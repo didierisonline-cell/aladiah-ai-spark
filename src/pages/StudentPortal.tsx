@@ -307,7 +307,17 @@ const StudentPortal = () => {
       });
     }
 
-    // 3. Community — always encourage participation
+    // 3. Manage subscription — always visible
+    items.push({
+      id: nextId++,
+      title: 'Manage Your Subscription',
+      message: 'View your plan, update billing, or cancel anytime through your secure account portal.',
+      actionLabel: 'Manage Account',
+      action: () => window.open('https://billing.stripe.com/p/login/test_00000000', '_blank'),
+      type: 'payment',
+    });
+
+    // 4. Community — always encourage participation
     items.push({
       id: nextId++,
       title: t('portal.reminder.community.title'),
