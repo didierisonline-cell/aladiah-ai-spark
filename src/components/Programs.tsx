@@ -28,8 +28,8 @@ const Programs = () => {
       duration: 12,
       format: 'programs.online',
       color: 'secondary' as const,
-      featured: false,
-      isWaitlist: true,
+      featured: true,
+      hasCourse: true,
     },
     {
       icon: Brain,
