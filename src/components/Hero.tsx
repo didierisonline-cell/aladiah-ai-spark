@@ -109,6 +109,9 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.05 }}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-primary/30 bg-primary/5 backdrop-blur-sm hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 group"
+                href="https://aladiahmanagement.com"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <Building2 className="w-4 h-4 text-primary flex-shrink-0" />
                 <span className="text-sm font-semibold text-primary tracking-wide uppercase">Boutique IT Staffing & Consulting</span>
