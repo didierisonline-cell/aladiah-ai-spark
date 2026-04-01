@@ -616,8 +616,7 @@ serve(async (req) => {
           chapter_id: chapter.id,
           title: lesson.title,
           description: lesson.description,
-          order_index: lesson.order_index,
-          lesson_script: JSON.stringify({ mainPoints: lesson.mainPoints })
+          order_index: lesson.order_index
         }).select().single();
         if (vErr) throw vErr;
 
