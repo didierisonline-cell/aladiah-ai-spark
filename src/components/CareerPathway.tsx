@@ -110,7 +110,7 @@ const CareerPathway = () => {
                   variant={isEnrolled ? "secondary" : "coral"}
                   size="lg"
                   className={`group/btn ${isEnrolled ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  onClick={() => !isEnrolled && navigate('/enroll')}
+                  onClick={() => !isEnrolled && navigate('/auth')}
                   disabled={!!isEnrolled}
                 >
                   {isEnrolled ? (

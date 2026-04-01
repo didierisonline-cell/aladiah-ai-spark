@@ -129,7 +129,7 @@ const Programs = () => {
                     if (program.isWaitlist) {
                       setWaitlistOpen(true);
                     } else if (program.featured) {
-                      navigate('/enroll?course=scrum');
+                      navigate('/auth');
                     } else {
                       navigate('/auth');
                     }
