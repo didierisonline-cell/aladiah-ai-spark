@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -44,13 +45,14 @@ interface KnowledgeGraphProps {
 }
 
 const statusConfig = {
-  mastered: { color: 'bg-green-500', icon: <CheckCircle className="w-3 h-3" />, label: 'Mastered', badge: 'default' as const },
-  learning: { color: 'bg-blue-500', icon: <Sparkles className="w-3 h-3" />, label: 'Learning', badge: 'secondary' as const },
-  weak: { color: 'bg-orange-500', icon: <AlertTriangle className="w-3 h-3" />, label: 'Needs Work', badge: 'destructive' as const },
-  locked: { color: 'bg-muted-foreground/30', icon: <Lock className="w-3 h-3" />, label: 'Locked', badge: 'outline' as const },
+  mastered: { color: 'bg-green-500', icon: <CheckCircle className="w-3 h-3" />, label: 'kg.mastered', badge: 'default' as const },
+  learning: { color: 'bg-blue-500', icon: <Sparkles className="w-3 h-3" />, label: 'kg.learning', badge: 'secondary' as const },
+  weak: { color: 'bg-orange-500', icon: <AlertTriangle className="w-3 h-3" />, label: 'kg.needs_work', badge: 'destructive' as const },
+  locked: { color: 'bg-muted-foreground/30', icon: <Lock className="w-3 h-3" />, label: 'kg.locked', badge: 'outline' as const },
 };
 
 const KnowledgeGraph = ({ weakAreas = [], strongAreas = [], onTopicSelect }: KnowledgeGraphProps) => {
+  const { t } = useLanguage();
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
   const nodes = useMemo(() => {
@@ -77,7 +79,7 @@ const KnowledgeGraph = ({ weakAreas = [], strongAreas = [], onTopicSelect }: Kno
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
-          <Brain className="w-4 h-4 text-primary" /> Knowledge Graph
+          <Brain className="w-4 h-4 text-primary" /> {t('kg.title')}
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
@@ -85,7 +87,7 @@ const KnowledgeGraph = ({ weakAreas = [], strongAreas = [], onTopicSelect }: Kno
           {Object.entries(statusConfig).map(([key, cfg]) => (
             <div key={key} className="flex items-center gap-1 text-xs text-muted-foreground">
               <div className={`w-2 h-2 rounded-full ${cfg.color}`} />
-              {cfg.label}
+              {t(cfg.label)}
             </div>
           ))}
         </div>
@@ -94,7 +96,7 @@ const KnowledgeGraph = ({ weakAreas = [], strongAreas = [], onTopicSelect }: Kno
           <div className="space-y-3">
             {Object.entries(categories).map(([cat, catNodes]) => (
               <div key={cat}>
-                <p className="text-[11px] uppercase tracking-wider text-white font-bold mb-1.5">{cat}</p>
+                <p className="text-[11px] uppercase tracking-wider text-white font-bold mb-1.5">{t(`kg.cat.${cat.toLowerCase().replace(/ /g, '_')}`) || cat}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {catNodes.map(node => {
                     const cfg = statusConfig[node.status];
@@ -137,7 +139,7 @@ const KnowledgeGraph = ({ weakAreas = [], strongAreas = [], onTopicSelect }: Kno
                 <div className="flex items-center gap-2">
                   <h4 className="font-semibold text-sm text-foreground">{selected.label}</h4>
                   <Badge variant={statusConfig[selected.status].badge} className="text-[10px]">
-                    {statusConfig[selected.status].label}
+                    {t(statusConfig[selected.status].label)}
                   </Badge>
                 </div>
                 <button onClick={() => setSelectedNode(null)}>

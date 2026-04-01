@@ -310,9 +310,9 @@ const StudentPortal = () => {
     // 3. Manage subscription — always visible
     items.push({
       id: nextId++,
-      title: 'Manage Your Subscription',
-      message: 'View your plan, update billing, or cancel anytime through your secure account portal.',
-      actionLabel: 'Manage Account',
+      title: t('portal.subscription.title'),
+      message: t('portal.subscription.msg'),
+      actionLabel: t('portal.subscription.btn'),
       action: () => window.open('YOUR_REAL_STRIPE_PORTAL_URL', '_blank'),
       type: 'payment',
     });
