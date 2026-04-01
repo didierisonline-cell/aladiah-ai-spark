@@ -677,8 +677,6 @@ const StudentPortal = () => {
           <TabsContent value="assistant">
             <Card className="h-[600px] flex flex-col">
               <CardHeader className="pb-3 border-b">
-                <AgentSelector activeAgent={activeAgent as any} onSelect={(a) => { setActiveAgent(a); setSelectedProfessor(a); }} />
-
               </CardHeader>
 
               <ScrollArea className="flex-1 p-4">
