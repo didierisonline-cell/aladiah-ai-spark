@@ -528,6 +528,18 @@ const StudentPortal = () => {
                   <ExternalLink className="w-3 h-3" />
                 </Button>
               </a>
+
+              
+                href="https://www.pmi.org/pmbok-guide-standards/foundational/pmbok"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline" className="gap-2">
+                  <FileText className="w-4 h-4" />
+                  <span className="hidden sm:inline">PMBOK® Guide</span>
+                  <ExternalLink className="w-3 h-3" />
+                </Button>
+              </a>
             </div>
             <p className="text-[10px] text-muted-foreground mt-1">
               Scrum Guide &copy; Scrum.org &amp; ScrumAlliance. SAFe &copy; Scaled Agile, Inc. PMBOK&reg; &copy; PMI, Inc. Used for educational reference.
