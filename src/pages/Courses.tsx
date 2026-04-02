@@ -137,20 +137,6 @@ const Courses = () => {
       const aiCourseId = 'dddddddd-eeee-ffff-1111-222222222222';
       const pmCourseId = 'eeeeeeee-ffff-1111-2222-333333333333';
       if (!coursesData.some(c => c.id === aiCourseId)) {
-        try {
-          if (!coursesData.some(c => c.id === pmCourseId)) {
-            fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/seed-pm-professional-course`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' }
-            }).then(() => window.location.reload());
-          }
-          await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/seed-ai-pm-course`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-          });
-          loadData();
-          return;
-        } catch (e) { console.error('AI course seed failed:', e); }
       }
 
       setCourses(coursesData as Course[]);
