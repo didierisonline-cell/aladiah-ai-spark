@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Clock, Monitor, Users, Brain, Target, Zap, Rocket, Lock, CalendarDays, Network } from 'lucide-react';
+import { ArrowRight, Clock, Monitor, Users, Brain, Target, Zap, Rocket, Lock, CalendarDays, Network, Shield, Code2, BarChart3, Cloud, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
@@ -38,6 +38,56 @@ const Programs = () => {
       duration: 6,
       format: 'programs.online',
       color: 'accent' as const,
+      featured: false,
+      hasCourse: true,
+    },
+    {
+      icon: Shield,
+      titleKey: 'programs.cyber.title',
+      descKey: 'programs.cyber.desc',
+      duration: 10,
+      format: 'programs.online',
+      color: 'primary' as const,
+      featured: true,
+      hasCourse: true,
+    },
+    {
+      icon: Network,
+      titleKey: 'programs.architect.title',
+      descKey: 'programs.architect.desc',
+      duration: 12,
+      format: 'programs.online',
+      color: 'secondary' as const,
+      featured: true,
+      hasCourse: true,
+    },
+    {
+      icon: BarChart3,
+      titleKey: 'programs.data.title',
+      descKey: 'programs.data.desc',
+      duration: 8,
+      format: 'programs.online',
+      color: 'accent' as const,
+      featured: false,
+      hasCourse: true,
+    },
+    {
+      icon: Cloud,
+      titleKey: 'programs.devops.title',
+      descKey: 'programs.devops.desc',
+      duration: 10,
+      format: 'programs.online',
+      color: 'primary' as const,
+      featured: false,
+      hasCourse: true,
+    },
+    {
+      icon: Briefcase,
+      titleKey: 'programs.ba.title',
+      descKey: 'programs.ba.desc',
+      duration: 8,
+      format: 'programs.online',
+      color: 'secondary' as const,
       featured: false,
       hasCourse: true,
     },
