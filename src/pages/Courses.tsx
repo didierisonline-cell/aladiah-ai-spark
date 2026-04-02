@@ -345,7 +345,7 @@ const Courses = () => {
                           ? 'opacity-50 bg-muted/30' 
                           : 'hover:border-primary/50 hover:shadow-md cursor-pointer'
                       }`}
-                      onClick={() => !isLocked && (INTERACTIVE_SIMULATION_IDS.includes(course.id) ? navigate('/simulation') : navigate(`/course/${course.id}/chapter/${chapter.id}`))}
+                      onClick={() => !isLocked && (INTERACTIVE_SIMULATION_IDS.includes(course.id) ? navigate('/simulation') : (console.log('NAV DEBUG', course.id, chapter?.id), chapter?.id ? navigate(`/course/${course.id}/chapter/${chapter.id}`) : navigate('/courses')))}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">

@@ -1,467 +1,341 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { 
-  GraduationCap, ArrowLeft, Play, CheckCircle, Lock, 
-  ChevronRight, Trophy, AlertCircle
-} from 'lucide-react';
-import BackToPortal from '@/components/portal/BackToPortal';
-import Quiz from '@/components/course/Quiz';
-import InteractiveLessonEngine from '@/components/course/InteractiveLessonEngine';
-import VideoPlayer from '@/components/course/VideoPlayer';
-import { 
-  courseUITranslations, 
-  getTranslatedContent,
-  type SupportedLanguage 
-} from '@/utils/courseTranslations';
+import { useConversation } from '@elevenlabs/react';
+import { ArrowLeft, CheckCircle, Lock, Play, BookOpen, MessageCircle, Trophy } from 'lucide-react';
 
-interface Course {
-  id: string;
-  title: string;
-  translations: Record<string, { title?: string; description?: string }> | null;
+const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string;
+
+interface Course { id: string; title: string; translations: any; }
+interface Chapter { id: string; title: string; description: string; order_index: number; course_id: string; translations: any; }
+interface Video { id: string; title: string; description: string; chapter_id: string; order_index: number; video_url: string; translations: any; lesson_script: any; }
+interface Quiz { id: string; chapter_id: string; quiz_type: string; }
+
+function Bars({ active }: { active: boolean }) {
+  const h = [0.5, 0.9, 0.65, 1.1, 0.75, 1.0, 0.6];
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 2, height: 20 }}>
+      {h.map((v, i) => (
+        <div key={i} style={{
+          width: 3, borderRadius: 2,
+          background: 'rgba(96,165,250,0.9)',
+          height: active ? `${v * 17}px` : '3px',
+          transition: 'height 0.12s ease',
+          animation: active ? `pb 0.${5 + i}s ease-in-out infinite alternate` : 'none',
+          animationDelay: `${i * 0.06}s`
+        }} />
+      ))}
+      <style>{`@keyframes pb{from{transform:scaleY(.35)}to{transform:scaleY(1.15)}}`}</style>
+    </div>
+  );
 }
 
-interface Chapter {
-  id: string;
-  title: string;
-  description: string;
-  order_index: number;
-  course_id: string;
-  translations: Record<string, { title?: string; description?: string }> | null;
-}
-
-interface Video {
-  lesson_script?: string | null;
-  id: string;
-  title: string;
-  description: string;
-  chapter_id: string;
-  order_index: number;
-  video_url: string | null;
-  translations: Record<string, { title?: string; description?: string }> | null;
-}
-
-interface QuizData {
-  id: string;
-  video_id: string | null;
-  chapter_id: string;
-  quiz_type: string;
-  passing_score: number;
-}
-
-interface PassedQuiz {
-  quiz_id: string;
-}
-
-const SIMULATION_COURSE_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
-
-const ChapterView = () => {
-  const { courseId, chapterId } = useParams();
+export default function ChapterView() {
+  const { courseId, chapterId } = useParams<{ courseId: string; chapterId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { language } = useLanguage();
 
-  // Redirect simulation course chapters to the interactive simulation page
-  useEffect(() => {
-    if (courseId === SIMULATION_COURSE_ID) {
-      navigate('/simulation', { replace: true });
-    }
-  }, [courseId, navigate]);
-  
   const [course, setCourse] = useState<Course | null>(null);
   const [chapter, setChapter] = useState<Chapter | null>(null);
   const [videos, setVideos] = useState<Video[]>([]);
-  const [quizzes, setQuizzes] = useState<QuizData[]>([]);
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const [currentLesson, setCurrentLesson] = useState<Video | null>(null);
   const [passedQuizzes, setPassedQuizzes] = useState<string[]>([]);
-  const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
-  const [showQuiz, setShowQuiz] = useState(false);
-  const [currentQuiz, setCurrentQuiz] = useState<QuizData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showChapterQuiz, setShowChapterQuiz] = useState(false);
-  const [showEngine, setShowEngine] = useState(false);
 
-  // Get translations with fallback to English
-  const supportedLanguages: SupportedLanguage[] = ['en', 'es', 'zh', 'ar', 'fr', 'de', 'ja'];
-  const currentLang = supportedLanguages.includes(language as SupportedLanguage) 
-    ? (language as SupportedLanguage) 
-    : 'en';
-  const t = courseUITranslations[currentLang];
+  // Prof. Didier conversation state
+  const [convStatus, setConvStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [transcript, setTranscript] = useState<{ role: 'user' | 'agent'; message: string }[]>([]);
+  const [duration, setDuration] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const transcriptRef = useRef<HTMLDivElement>(null);
+  const isLive = convStatus === 'connected';
 
-  useEffect(() => {
-    loadChapterData();
-  }, [chapterId]);
+  const conversation = useConversation({
+    onConnect: () => {
+      setConvStatus('connected');
+      timerRef.current = setInterval(() => setDuration(d => d + 1), 1000);
+    },
+    onDisconnect: () => {
+      setConvStatus('idle');
+      if (timerRef.current) clearInterval(timerRef.current);
+    },
+    onMessage: ({ message, source }: { message: string; source: string }) => {
+      setTranscript(p => [...p, { role: source === 'ai' ? 'agent' : 'user', message }]);
+    },
+    onError: () => setConvStatus('error'),
+  });
 
-  const loadChapterData = async () => {
+  useEffect(() => { setIsSpeaking(conversation.isSpeaking); }, [conversation.isSpeaking]);
+  useEffect(() => { transcriptRef.current?.scrollTo({ top: 9999, behavior: 'smooth' }); }, [transcript]);
+  useEffect(() => () => { if (timerRef.current) clearInterval(timerRef.current); }, []);
+
+  const startSession = useCallback(async () => {
+    if (!currentLesson) return;
+    setConvStatus('connecting');
+    setTranscript([]);
+    setDuration(0);
     try {
-      // DEV MODE: skip auth check
-
-      // Load course with translations
-      const { data: courseData } = await supabase
-        .from('courses')
-        .select('id, title, translations')
-        .eq('id', courseId)
-        .single();
-      
-      setCourse(courseData as Course);
-
-      // Load chapter with translations
-      const { data: chapterData, error: chapterError } = await supabase
-        .from('chapters')
-        .select('id, title, description, order_index, course_id, translations')
-        .eq('id', chapterId)
-        .single();
-      
-      if (chapterError) throw chapterError;
-      setChapter(chapterData as Chapter);
-
-      // Load videos with translations
-      const { data: videosData } = await supabase
-        .from('videos')
-        .select('id, title, description, chapter_id, order_index, video_url, translations, lesson_script')
-        .eq('chapter_id', chapterId)
-        .order('order_index');
-      
-      setVideos((videosData || []) as Video[]);
-
-      // Load quizzes
-      const { data: quizzesData } = await supabase
-        .from('quizzes')
-        .select('*')
-        .eq('chapter_id', chapterId);
-      
-      setQuizzes(quizzesData || []);
-
-      // Load passed quizzes
-      const { data: progressData } = await supabase
-        .from('user_progress')
-        .select('quiz_id')
-        .not('quiz_id', 'is', null);
-      
-      setPassedQuizzes((progressData || []).map((p: PassedQuiz) => p.quiz_id));
-
-      // Set first accessible video
-      if (videosData && videosData.length > 0) {
-        setCurrentVideo(videosData[0] as Video);
-      }
-    } catch (error: any) {
-      toast({
-        title: t.errorLoading,
-        description: error.message,
-        variant: 'destructive',
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      const lessonPoints = currentLesson.lesson_script?.mainPoints || [];
+      const systemPrompt = `You are Prof. Didier, an expert Scrum Master and Project Management instructor at Aladiah Academy. 
+You are now teaching: "${currentLesson.title}" from the module "${chapter?.title}".
+Key points to cover: ${lessonPoints.slice(0, 5).join('; ')}.
+Teach using the Socratic method — ask questions, guide discovery. Speak in ${language === 'fr' ? 'French' : language === 'es' ? 'Spanish' : 'English'}. Be encouraging and professional.`;
+      await conversation.startSession({
+        agentId: AGENT_ID,
+        overrides: { agent: { prompt: { prompt: systemPrompt } } }
       });
+    } catch {
+      setConvStatus('error');
+    }
+  }, [conversation, currentLesson, chapter, language]);
+
+  const endSession = useCallback(async () => {
+    await conversation.endSession();
+    if (timerRef.current) clearInterval(timerRef.current);
+  }, [conversation]);
+
+  const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+
+  useEffect(() => { loadData(); }, [chapterId]);
+
+  const loadData = async () => {
+    if (!chapterId || !courseId) return;
+    setLoading(true);
+    try {
+      const [{ data: courseData }, { data: chapterData }, { data: videosData }, { data: quizzesData }, { data: progressData }] = await Promise.all([
+        supabase.from('courses').select('id, title, translations').eq('id', courseId).single(),
+        supabase.from('chapters').select('id, title, description, order_index, course_id, translations').eq('id', chapterId).single(),
+        supabase.from('videos').select('id, title, description, chapter_id, order_index, video_url, translations, lesson_script').eq('chapter_id', chapterId).order('order_index'),
+        supabase.from('quizzes').select('*').eq('chapter_id', chapterId),
+        supabase.from('user_progress').select('quiz_id').not('quiz_id', 'is', null),
+      ]);
+      setCourse(courseData);
+      setChapter(chapterData);
+      setVideos((videosData || []) as Video[]);
+      setQuizzes(quizzesData || []);
+      setPassedQuizzes((progressData || []).map((p: any) => p.quiz_id));
+      if (videosData && videosData.length > 0) setCurrentLesson(videosData[0] as Video);
+    } catch (e: any) {
+      toast({ title: 'Error loading lesson', description: e.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
   };
 
-  // Get translated content helpers
-  const getVideoContent = (video: Video) => {
-    return getTranslatedContent(
-      video.translations,
-      currentLang,
-      video.title,
-      video.description || ''
-    );
+  const getTitle = (item: any) => {
+    if (!item) return '';
+    const t = item.translations?.[language];
+    return t?.title || item.title || '';
   };
 
-  const getChapterContent = () => {
-    if (!chapter) return { title: '', description: '' };
-    return getTranslatedContent(
-      chapter.translations,
-      currentLang,
-      chapter.title,
-      chapter.description || ''
-    );
-  };
-
-  const getCourseContent = () => {
-    if (!course) return { title: '', description: '' };
-    return getTranslatedContent(
-      course.translations,
-      currentLang,
-      course.title,
-      ''
-    );
-  };
-
-  const isVideoAccessible = (_video: Video) => {
-    return true; // DEV MODE: all videos unlocked
-  };
-
-  const isVideoPassed = (video: Video) => {
-    const quiz = quizzes.find(q => q.video_id === video.id);
-    return quiz ? passedQuizzes.includes(quiz.id) : false;
-  };
-
-  const allMiniQuizzesPassed = () => {
-    const miniQuizzes = quizzes.filter(q => q.quiz_type === 'mini_video');
-    return miniQuizzes.every(q => passedQuizzes.includes(q.id));
-  };
-
-  const handleVideoComplete = () => {
-    if (!currentVideo) return;
-    
-    const quiz = quizzes.find(q => q.video_id === currentVideo.id);
-    if (quiz) {
-      setCurrentQuiz(quiz);
-      setShowQuiz(true);
-    } else {
-      // No quiz exists - show message to user
-      toast({
-        title: t.quizNotAvailable,
-        description: t.quizPreparing,
-        variant: 'default',
-      });
-    }
-  };
-
-  const handleQuizComplete = (passed: boolean) => {
-    if (passed && currentQuiz) {
-      setPassedQuizzes([...passedQuizzes, currentQuiz.id]);
-      
-      // Move to next video if available
-      const nextVideo = videos.find(v => v.order_index === (currentVideo?.order_index || 0) + 1);
-      if (nextVideo) {
-        setTimeout(() => {
-          setCurrentVideo(nextVideo);
-          setShowQuiz(false);
-          setCurrentQuiz(null);
-        }, 2000);
-      } else {
-        setShowQuiz(false);
-        setCurrentQuiz(null);
-      }
-    }
-  };
-
-  const handleChapterQuizComplete = (passed: boolean) => {
-    if (passed) {
-      toast({
-        title: t.chapterComplete,
-        description: t.congratsNextChapter,
-      });
-      setTimeout(() => navigate('/courses'), 2000);
-    }
-  };
-
-  const startChapterQuiz = () => {
-    const chapterQuiz = quizzes.find(q => q.quiz_type === 'chapter_end');
-    if (chapterQuiz) {
-      setCurrentQuiz(chapterQuiz);
-      setShowChapterQuiz(true);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <GraduationCap className="w-12 h-12 text-primary animate-pulse" />
-      </div>
-    );
-  }
-
-  if (showQuiz || showChapterQuiz) {
-    return (
-      <Quiz 
-        quizId={currentQuiz?.id || ''} 
-        quizType={showChapterQuiz ? 'chapter_end' : 'mini_video'}
-        onComplete={showChapterQuiz ? handleChapterQuizComplete : handleQuizComplete}
-        onBack={() => {
-          setShowQuiz(false);
-          setShowChapterQuiz(false);
-          setCurrentQuiz(null);
-        }}
-      />
-    );
-  }
-
-  const progress = videos.length > 0 
-    ? Math.round((videos.filter(v => isVideoPassed(v)).length / videos.length) * 100)
+  const progress = videos.length > 0
+    ? Math.round((passedQuizzes.filter(id => quizzes.some(q => q.id === id)).length / videos.length) * 100)
     : 0;
 
-  const chapterContent = getChapterContent();
-  const courseContent = getCourseContent();
+  const mainPoints: string[] = currentLesson?.lesson_script?.mainPoints || [];
 
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <BackToPortal />
-            <Link to="/courses" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-              <ArrowLeft className="w-4 h-4" />
-              {t.backToCourses}
-            </Link>
-          </div>
-          <div className="flex items-center gap-2">
-            <GraduationCap className="w-6 h-6 text-primary" />
-            <span className="font-display font-bold">Aladiah Academy</span>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Video Player Area */}
-          <div className="lg:col-span-2">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              {currentVideo ? (
-                <VideoPlayer
-                  videoId={currentVideo.id}
-                  title={getVideoContent(currentVideo).title}
-                  description={getVideoContent(currentVideo).description}
-                  orderIndex={currentVideo.order_index}
-                  onComplete={handleVideoComplete}
-                  isCompleted={isVideoPassed(currentVideo)}
-                  courseTitle={courseContent.title}
-                  chapterTitle={chapterContent.title}
-                  mainPoints={(() => { try { const ls = currentVideo.lesson_script ? JSON.parse(currentVideo.lesson_script) : null; return ls?.mainPoints || []; } catch { return []; } })()}
-                />
-              ) : (
-                <Card className="overflow-hidden">
-                  <div className="aspect-video bg-muted flex items-center justify-center">
-                    <p className="text-muted-foreground">{t.selectVideo}</p>
-                  </div>
-                </Card>
-              )}
-
-              {/* Interactive Lesson Engine Toggle */}
-              <div className="mt-4">
-                <button
-                  onClick={() => setShowEngine(v => !v)}
-                  className="w-full flex items-center justify-between px-5 py-3 rounded-xl font-semibold text-sm text-white transition-all"
-                  style={{ background: showEngine ? 'linear-gradient(135deg,#1e3a8a,#2563eb)' : 'rgba(30,58,138,0.15)', border: '1px solid rgba(59,130,246,0.3)' }}
-                >
-                  <div className="flex items-center gap-2">
-                    <span style={{ fontSize: 16 }}>🎓</span>
-                    <span>{showEngine ? 'Hide' : 'Start'} Interactive Lesson with Professor Didier</span>
-                  </div>
-                  <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 18 }}>{showEngine ? '▲' : '▼'}</span>
-                </button>
-
-                {showEngine && (
-                  <div className="mt-2 rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(59,130,246,0.2)', minHeight: 600 }}>
-                    <InteractiveLessonEngine
-                      courseTitle={courseContent.title}
-                      moduleTitle={chapterContent.title}
-                      lessonTitle={getVideoContent(currentVideo || videos[0]).title}
-                      lessonIndex={currentVideo ? currentVideo.order_index - 1 : 0}
-                      totalLessons={videos.length}
-                      onComplete={(score) => {
-                        if (score && score >= 70) {
-                          handleVideoComplete();
-                        }
-                      }}
-                      onBack={() => setShowEngine(false)}
-                      onGoHome={() => window.location.href = '/portal'}
-                      onNextLesson={() => {
-                        const next = videos.find(v => v.order_index === (currentVideo?.order_index || 0) + 1);
-                        if (next) { setCurrentVideo(next); setShowEngine(false); setTimeout(() => setShowEngine(true), 100); }
-                        else setShowEngine(false);
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Sidebar - Video List */}
-          <div className="lg:col-span-1">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">{chapterContent.title}</CardTitle>
-                <div className="flex items-center gap-2 mt-2">
-                  <Progress value={progress} className="h-2 flex-1" />
-                  <span className="text-sm text-muted-foreground">{progress}%</span>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {videos.map((video) => {
-                  const accessible = isVideoAccessible(video);
-                  const passed = isVideoPassed(video);
-                  const isCurrent = currentVideo?.id === video.id;
-                  const videoContent = getVideoContent(video);
-
-                  return (
-                    <div
-                      key={video.id}
-                      onClick={() => accessible && setCurrentVideo(video)}
-                      className={`p-3 rounded-lg border transition-all cursor-pointer ${
-                        isCurrent 
-                          ? 'border-primary bg-primary/5' 
-                          : accessible 
-                            ? 'hover:border-primary/50' 
-                            : 'opacity-50 cursor-not-allowed'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        {passed ? (
-                          <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                        ) : accessible ? (
-                          <Play className="w-5 h-5 text-primary flex-shrink-0" />
-                        ) : (
-                          <Lock className="w-5 h-5 text-muted-foreground flex-shrink-0" />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm truncate">{videoContent.title}</p>
-                          <p className="text-xs text-muted-foreground">5 {t.questions}</p>
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {/* Chapter End Quiz */}
-                <div className="pt-4 border-t mt-4">
-                  <div
-                    onClick={() => allMiniQuizzesPassed() && startChapterQuiz()}
-                    className={`p-4 rounded-lg border-2 transition-all ${
-                      allMiniQuizzesPassed()
-                        ? 'border-secondary bg-secondary/10 cursor-pointer hover:bg-secondary/20'
-                        : 'border-dashed opacity-50 cursor-not-allowed'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      {passedQuizzes.includes(quizzes.find(q => q.quiz_type === 'chapter_end')?.id || '') ? (
-                        <Trophy className="w-6 h-6 text-yellow-500" />
-                      ) : allMiniQuizzesPassed() ? (
-                        <Trophy className="w-6 h-6 text-secondary" />
-                      ) : (
-                        <Lock className="w-6 h-6 text-muted-foreground" />
-                      )}
-                      <div>
-                        <p className="font-semibold">{t.chapterFinalQuiz}</p>
-                        <p className="text-xs text-muted-foreground">
-                          40 {t.questions} • 100% {t.required}
-                        </p>
-                      </div>
-                    </div>
-                    {!allMiniQuizzesPassed() && (
-                      <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                        <AlertCircle className="w-4 h-4" />
-                        {t.completeAllVideos}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </main>
+  if (loading) return (
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg,#0a0f1e,#0d1b3e)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ textAlign: 'center', color: '#60a5fa' }}>
+        <div style={{ width: 40, height: 40, border: '3px solid #1e40af', borderTop: '3px solid #60a5fa', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
+        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+        <p style={{ fontSize: 14, color: '#475569' }}>Loading lesson...</p>
+      </div>
     </div>
   );
-};
 
-export default ChapterView;
+  return (
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg,#0a0f1e 0%,#0d1b3e 50%,#0a0f1e 100%)', fontFamily: 'system-ui,-apple-system,sans-serif' }}>
+
+      {/* Top Nav */}
+      <div style={{ borderBottom: '1px solid rgba(96,165,250,0.12)', background: 'rgba(10,15,30,0.8)', backdropFilter: 'blur(12px)', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56, position: 'sticky', top: 0, zIndex: 50 }}>
+        <button onClick={() => navigate('/courses')} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: 14, fontWeight: 500 }}>
+          <ArrowLeft size={16} /> Back to Courses
+        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: progress === 100 ? '#22c55e' : '#3b82f6' }} />
+          <span style={{ fontSize: 12, color: '#64748b' }}>{progress}% complete</span>
+        </div>
+      </div>
+
+      {/* Main Layout */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 0, height: 'calc(100vh - 56px)' }}>
+
+        {/* LEFT — Lesson Content + Prof. Didier */}
+        <div style={{ overflowY: 'auto', padding: '32px 40px' }}>
+
+          {/* Breadcrumb */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+            <span style={{ fontSize: 12, color: '#475569' }}>{getTitle(course)}</span>
+            <span style={{ fontSize: 12, color: '#334155' }}>›</span>
+            <span style={{ fontSize: 12, color: '#60a5fa' }}>{getTitle(chapter)}</span>
+          </div>
+
+          {/* Lesson Title */}
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} key={currentLesson?.id}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+              <BookOpen size={18} color="#3b82f6" />
+              <span style={{ fontSize: 12, color: '#3b82f6', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Lesson {(currentLesson?.order_index ?? 0) + 1}</span>
+            </div>
+            <h1 style={{ fontSize: 28, fontWeight: 700, color: '#f1f5f9', margin: '0 0 24px', lineHeight: 1.3 }}>
+              {getTitle(currentLesson)}
+            </h1>
+
+            {/* Key Points */}
+            {mainPoints.length > 0 && (
+              <div style={{ background: 'rgba(30,64,175,0.08)', border: '1px solid rgba(96,165,250,0.15)', borderRadius: 16, padding: '24px 28px', marginBottom: 32 }}>
+                <h3 style={{ fontSize: 13, fontWeight: 700, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <BookOpen size={14} /> Key Learning Points
+                </h3>
+                <ol style={{ margin: 0, padding: '0 0 0 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {mainPoints.map((pt: string, i: number) => (
+                    <li key={i} style={{ fontSize: 15, color: '#cbd5e1', lineHeight: 1.6 }}>{pt}</li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
+            {/* Description */}
+            {currentLesson?.description && (
+              <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.7, marginBottom: 32 }}>{currentLesson.description}</p>
+            )}
+          </motion.div>
+
+          {/* ── Prof. Didier Embedded Panel ── */}
+          <div style={{ background: 'linear-gradient(160deg,#0f172a,#0d1b3e)', border: '1px solid rgba(96,165,250,0.2)', borderRadius: 20, overflow: 'hidden', marginBottom: 32 }}>
+
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '18px 24px', borderBottom: '1px solid rgba(96,165,250,0.1)' }}>
+              <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg,#1e40af,#3b82f6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, fontWeight: 700, color: '#fff', flexShrink: 0, position: 'relative' }}>
+                D
+                {isLive && <span style={{ position: 'absolute', bottom: 1, right: 1, width: 10, height: 10, borderRadius: '50%', background: '#22c55e', border: '2px solid #0f172a' }} />}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9' }}>Prof. Didier</div>
+                <div style={{ fontSize: 12, color: '#475569' }}>Your AI Instructor — Aladiah Academy</div>
+              </div>
+              {isLive && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Bars active={isSpeaking} />
+                  <span style={{ fontSize: 13, color: '#60a5fa', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>{fmt(duration)}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Status Bar */}
+            <div style={{ padding: '12px 24px', background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(96,165,250,0.07)', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: isLive ? '#22c55e' : convStatus === 'connecting' ? '#f59e0b' : '#334155', flexShrink: 0 }} />
+              <span style={{ fontSize: 12, color: '#64748b' }}>
+                {isLive ? (isSpeaking ? '🎙 Prof. Didier is speaking...' : '👂 Listening to you...') :
+                  convStatus === 'connecting' ? 'Connecting to Prof. Didier...' :
+                  convStatus === 'error' ? 'Connection failed — try again' :
+                  `Ready to teach: ${getTitle(currentLesson)}`}
+              </span>
+            </div>
+
+            {/* Transcript */}
+            {transcript.length > 0 && (
+              <div ref={transcriptRef} style={{ maxHeight: 280, overflowY: 'auto', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {transcript.map((e, i) => (
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: e.role === 'agent' ? 'flex-start' : 'flex-end' }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: e.role === 'agent' ? '#60a5fa' : '#64748b', marginBottom: 4 }}>
+                      {e.role === 'agent' ? 'Prof. Didier' : 'You'}
+                    </span>
+                    <div style={{ background: e.role === 'agent' ? 'rgba(30,64,175,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${e.role === 'agent' ? 'rgba(96,165,250,0.2)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 12, padding: '10px 14px', maxWidth: '85%' }}>
+                      <span style={{ fontSize: 13, color: '#cbd5e1', lineHeight: 1.55 }}>{e.message}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Start/End Button */}
+            <div style={{ padding: '16px 24px' }}>
+              {!isLive && convStatus !== 'connecting' ? (
+                <button onClick={startSession} style={{ width: '100%', padding: '14px 0', borderRadius: 12, border: 'none', background: 'linear-gradient(135deg,#1d4ed8,#3b82f6)', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  <MessageCircle size={16} /> Start Lesson with Prof. Didier
+                </button>
+              ) : convStatus === 'connecting' ? (
+                <button disabled style={{ width: '100%', padding: '14px 0', borderRadius: 12, border: 'none', background: 'rgba(96,165,250,0.1)', color: '#60a5fa', fontSize: 15, fontWeight: 600, cursor: 'not-allowed' }}>
+                  Connecting...
+                </button>
+              ) : (
+                <button onClick={endSession} style={{ width: '100%', padding: '14px 0', borderRadius: 12, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.08)', color: '#f87171', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
+                  End Session
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT — Lesson List Sidebar */}
+        <div style={{ borderLeft: '1px solid rgba(96,165,250,0.1)', background: 'rgba(10,15,30,0.6)', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+
+          {/* Module Header */}
+          <div style={{ padding: '24px 20px 16px', borderBottom: '1px solid rgba(96,165,250,0.08)' }}>
+            <h2 style={{ fontSize: 14, fontWeight: 700, color: '#94a3b8', margin: '0 0 12px', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{getTitle(chapter)}</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ flex: 1, height: 4, background: 'rgba(96,165,250,0.1)', borderRadius: 4, overflow: 'hidden' }}>
+                <div style={{ height: '100%', background: 'linear-gradient(90deg,#1d4ed8,#3b82f6)', width: `${progress}%`, transition: 'width 0.4s ease', borderRadius: 4 }} />
+              </div>
+              <span style={{ fontSize: 11, color: '#475569', whiteSpace: 'nowrap' }}>{progress}%</span>
+            </div>
+          </div>
+
+          {/* Lesson List */}
+          <div style={{ padding: '12px 12px', display: 'flex', flexDirection: 'column', gap: 4, flex: 1 }}>
+            {videos.length === 0 ? (
+              <div style={{ padding: '32px 16px', textAlign: 'center', color: '#334155' }}>
+                <BookOpen size={24} style={{ margin: '0 auto 8px', opacity: 0.4 }} />
+                <p style={{ fontSize: 13, margin: 0 }}>No lessons yet</p>
+              </div>
+            ) : videos.map((video, idx) => {
+              const isCurrent = currentLesson?.id === video.id;
+              const isPassed = passedQuizzes.some(id => quizzes.find(q => q.id === id && q.chapter_id === chapterId));
+              return (
+                <button
+                  key={video.id}
+                  onClick={() => setCurrentLesson(video)}
+                  style={{ width: '100%', textAlign: 'left', background: isCurrent ? 'rgba(30,64,175,0.2)' : 'transparent', border: `1px solid ${isCurrent ? 'rgba(96,165,250,0.3)' : 'transparent'}`, borderRadius: 10, padding: '12px 14px', cursor: 'pointer', transition: 'all 0.15s ease', display: 'flex', alignItems: 'center', gap: 10 }}
+                  onMouseEnter={e => { if (!isCurrent) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.04)'; }}
+                  onMouseLeave={e => { if (!isCurrent) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                >
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: isCurrent ? 'linear-gradient(135deg,#1d4ed8,#3b82f6)' : 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    {isPassed ? <CheckCircle size={13} color="#22c55e" /> : isCurrent ? <Play size={12} color="#fff" fill="#fff" /> : <span style={{ fontSize: 11, color: '#475569', fontWeight: 600 }}>{idx + 1}</span>}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ margin: 0, fontSize: 13, fontWeight: isCurrent ? 600 : 400, color: isCurrent ? '#f1f5f9' : '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {getTitle(video)}
+                    </p>
+                    <p style={{ margin: '2px 0 0', fontSize: 11, color: '#334155' }}>Lesson {idx + 1}</p>
+                  </div>
+                  {isCurrent && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#3b82f6', flexShrink: 0 }} />}
+                </button>
+              );
+            })}
+
+            {/* Final Quiz Entry */}
+            {quizzes.length > 0 && (
+              <div style={{ marginTop: 8, padding: '12px 14px', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.15)', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(245,158,11,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Trophy size={13} color="#f59e0b" />
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#f59e0b' }}>Chapter Quiz</p>
+                  <p style={{ margin: '2px 0 0', fontSize: 11, color: '#78350f' }}>Complete all lessons first</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
