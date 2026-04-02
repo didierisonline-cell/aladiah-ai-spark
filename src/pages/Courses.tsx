@@ -70,6 +70,7 @@ const AFTER_SIMULATION_IDS = [
   'eeeeeeee-ffff-1111-2222-333333333333', // Project Management Professional Certification
   'ffffffff-1111-2222-3333-444444444444', // Cybersecurity Professional Certification
   '11111111-2222-3333-4444-555555555555', // Solution Architect Professional
+  '22222222-3333-4444-5555-666666666666', // Data Analytics Professional
 ];
 
 // Courses to hide entirely
