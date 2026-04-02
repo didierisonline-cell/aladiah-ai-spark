@@ -143,15 +143,11 @@ const Programs = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               className={`group relative bg-card rounded-2xl p-8 shadow-soft hover:shadow-large transition-all duration-500 border border-border/50 overflow-hidden ${
-                program.featured ? 'lg:scale-105 ring-2 ring-secondary/30' : 'hover:border-primary/20'
+                'hover:border-primary/20'
               }`}
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/3 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-primary/5 transition-colors duration-500" />
-              {program.featured && (
-                <div className="px-4 py-1.5 bg-secondary text-secondary-foreground text-xs font-bold rounded-full shadow-glow tracking-wide uppercase w-fit mx-auto mb-4">
-                  Most Popular
-                </div>
-              )}
+              
               <div className="relative z-10">
                 <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110 ${
                   program.color === 'primary' ? 'bg-primary/10 text-primary' :
@@ -173,7 +169,7 @@ const Programs = () => {
                   </div>
                 </div>
                 <Button 
-                  variant={(program.featured || program.hasCourse) ? 'coral' : 'outline'} 
+                  variant='coral' 
                   className="w-full group/btn"
                   onClick={() => {
                     if (program.isWaitlist) {
@@ -185,7 +181,7 @@ const Programs = () => {
                     }
                   }}
                 >
-                  {program.isWaitlist ? t('programs.comingSoon') || 'Join Waitlist' : program.featured ? t('nav.enroll') || 'Enroll Now' : (program.hasCourse ? t('programs.startCourse') : t('programs.learnMore'))}
+                  {program.isWaitlist ? t('programs.comingSoon') || 'Coming Soon' : t('programs.startCourse') || 'Start Course'}
                   <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                 </Button>
               </div>
