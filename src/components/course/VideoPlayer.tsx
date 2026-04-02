@@ -204,13 +204,6 @@ const VideoPlayer = ({
   const generateAndSpeak = async () => {
     setIsLoading(true);
     try {
-      // Audio disabled - using HeyGen live avatar instead
-      setScript(description);
-      setHasStarted(true);
-      setIsPlaying(true);
-      setIsLoading(false);
-      startProgressTracking();
-      return;
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-lesson-audio`,
         {
