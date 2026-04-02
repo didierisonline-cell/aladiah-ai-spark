@@ -36,6 +36,7 @@ interface Chapter {
 }
 
 interface Video {
+  lesson_script?: string | null;
   id: string;
   title: string;
   description: string;
@@ -121,7 +122,7 @@ const ChapterView = () => {
       // Load videos with translations
       const { data: videosData } = await supabase
         .from('videos')
-        .select('id, title, description, chapter_id, order_index, video_url, translations')
+        .select('id, title, description, chapter_id, order_index, video_url, translations, lesson_script')
         .eq('chapter_id', chapterId)
         .order('order_index');
       
@@ -323,6 +324,7 @@ const ChapterView = () => {
                   isCompleted={isVideoPassed(currentVideo)}
                   courseTitle={courseContent.title}
                   chapterTitle={chapterContent.title}
+                  mainPoints={(() => { try { const ls = currentVideo.lesson_script ? JSON.parse(currentVideo.lesson_script) : null; return ls?.mainPoints || []; } catch { return []; } })()}
                 />
               ) : (
                 <Card className="overflow-hidden">

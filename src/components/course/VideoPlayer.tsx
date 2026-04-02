@@ -860,6 +860,25 @@ const VideoPlayer = ({
           onNavigateToLab={() => window.open('/portal?tab=labs', '_blank')}
         />
       )}
+      {/* Class Notes / Lesson Script */}
+      {mainPoints && mainPoints.length > 0 && (
+        <div className="mt-6 rounded-2xl border border-primary/20 bg-card overflow-hidden">
+          <div className="flex items-center gap-2 px-5 py-3 border-b border-primary/10 bg-primary/5">
+            <span className="text-base">📖</span>
+            <span className="font-semibold text-sm">Lesson Script — Read Along</span>
+            <span className="ml-auto text-xs text-muted-foreground">Scroll to read the full class</span>
+          </div>
+          <div className="max-h-64 overflow-y-auto px-5 py-4 space-y-3">
+            {mainPoints.map((point, i) => (
+              <div key={i} className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold mt-0.5">{i + 1}</span>
+                <p className="text-sm leading-relaxed text-muted-foreground">{point}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {showLiveClass && (
         <LiveClassroom
           videoId={videoId}
