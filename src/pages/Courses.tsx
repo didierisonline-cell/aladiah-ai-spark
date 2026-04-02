@@ -71,7 +71,9 @@ const AFTER_SIMULATION_IDS = [
   'ffffffff-1111-2222-3333-444444444444', // Cybersecurity Professional Certification
   '11111111-2222-3333-4444-555555555555', // Solution Architect Professional
   '22222222-3333-4444-5555-666666666666', // Data Analytics Professional
+  '33333333-4444-5555-6666-777777777777', // DevOps & Cloud Engineering
   '22222222-3333-4444-5555-666666666666', // Data Analytics Professional
+  '33333333-4444-5555-6666-777777777777', // DevOps & Cloud Engineering
 ];
 
 // Courses to hide entirely
