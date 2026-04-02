@@ -69,6 +69,7 @@ const AFTER_SIMULATION_IDS = [
   'dddddddd-eeee-ffff-1111-222222222222', // AI Mastery for Scrum Masters & Project Managers
   'eeeeeeee-ffff-1111-2222-333333333333', // Project Management Professional Certification
   'ffffffff-1111-2222-3333-444444444444', // Cybersecurity Professional Certification
+  '11111111-2222-3333-4444-555555555555', // Solution Architect Professional
 ];
 
 // Courses to hide entirely
