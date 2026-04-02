@@ -11,7 +11,7 @@ const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string;
 
 interface Course { id: string; title: string; translations: any; }
 interface Chapter { id: string; title: string; description: string; order_index: number; course_id: string; translations: any; }
-interface Video { id: string; title: string; description: string; chapter_id: string; order_index: number; video_url: string; translations: any; lesson_script: any; }
+interface Video { id: string; title: string; description: string; chapter_id: string; order_index: number; video_url: string; translations: any; }
 interface Quiz { id: string; chapter_id: string; quiz_type: string; }
 
 function Bars({ active }: { active: boolean }) {
@@ -104,7 +104,7 @@ export default function ChapterView() {
       const [{ data: courseData }, { data: chapterData }, { data: videosData }, { data: quizzesData }, { data: progressData }] = await Promise.all([
         supabase.from('courses').select('id, title, translations').eq('id', courseId).single(),
         supabase.from('chapters').select('id, title, description, order_index, course_id, translations').eq('id', chapterId).single(),
-        supabase.from('videos').select('id, title, description, chapter_id, order_index, video_url, translations, lesson_script').eq('chapter_id', chapterId).order('order_index'),
+        supabase.from('videos').select('id, title, description, chapter_id, order_index, video_url, translations').eq('chapter_id', chapterId).order('order_index'),
         supabase.from('quizzes').select('*').eq('chapter_id', chapterId),
         supabase.from('user_progress').select('quiz_id').not('quiz_id', 'is', null),
       ]);
@@ -131,7 +131,7 @@ export default function ChapterView() {
     ? Math.round((passedQuizzes.filter(id => quizzes.some(q => q.id === id)).length / videos.length) * 100)
     : 0;
 
-  const mainPoints: string[] = currentLesson?.lesson_script?.mainPoints || [];
+  const mainPoints: string[] = [];
 
   if (loading) return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg,#0a0f1e,#0d1b3e)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
