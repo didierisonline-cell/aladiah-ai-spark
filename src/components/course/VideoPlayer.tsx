@@ -231,21 +231,29 @@ const VideoPlayer = ({
       setHasStarted(true);
 
       if (data.mode === 'audio' && data.audioBase64) {
-        // Play real ElevenLabs audio
-        const audioUrl = `data:audio/mpeg;base64,${data.audioBase64}`;
-        const audio = new Audio(audioUrl);
+        // Convert base64 to blob URL — more reliable than data: URLs for large audio
+        const byteChars = atob(data.audioBase64);
+        const byteArray = new Uint8Array(byteChars.length);
+        for (let i = 0; i < byteChars.length; i++) {
+          byteArray[i] = byteChars.charCodeAt(i);
+        }
+        const blob = new Blob([byteArray], { type: 'audio/mpeg' });
+        const blobUrl = URL.createObjectURL(blob);
+
+        const audio = new Audio(blobUrl);
         audio.volume = isMuted ? 0 : 1;
-        audio.preload = 'auto';
         audioRef.current = audio;
 
         audio.onended = () => {
           setIsPlaying(false);
           setProgress(100);
           stopProgressTracking();
+          URL.revokeObjectURL(blobUrl);
         };
 
-        audio.onerror = () => {
-          console.warn('Audio playback error, falling back to TTS');
+        audio.onerror = (e) => {
+          console.warn('Audio playback error, falling back to TTS:', e);
+          URL.revokeObjectURL(blobUrl);
           fallbackToTTS(lessonScript);
         };
 
@@ -255,10 +263,11 @@ const VideoPlayer = ({
           startProgressTracking();
         } catch (playError) {
           console.warn('Autoplay blocked, falling back to TTS:', playError);
+          URL.revokeObjectURL(blobUrl);
           fallbackToTTS(lessonScript);
         }
       } else {
-        // Text-only fallback — use browser TTS
+        // Text-only or no audio — use browser TTS
         fallbackToTTS(lessonScript);
       }
     } catch (error: any) {
