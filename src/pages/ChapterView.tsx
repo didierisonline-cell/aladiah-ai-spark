@@ -82,15 +82,7 @@ export default function ChapterView() {
     setDuration(0);
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
-      const lessonPoints = currentLesson.lesson_script?.mainPoints || [];
-      const systemPrompt = `You are Prof. Didier, an expert Scrum Master and Project Management instructor at Aladiah Academy. 
-You are now teaching: "${currentLesson.title}" from the module "${chapter?.title}".
-Key points to cover: ${lessonPoints.slice(0, 5).join('; ')}.
-Teach using the Socratic method — ask questions, guide discovery. Speak in ${language === 'fr' ? 'French' : language === 'es' ? 'Spanish' : 'English'}. Be encouraging and professional.`;
-      await conversation.startSession({
-        agentId: AGENT_ID,
-        overrides: { agent: { prompt: { prompt: systemPrompt } } }
-      });
+      await conversation.startSession({ agentId: AGENT_ID });
     } catch {
       setConvStatus('error');
     }
