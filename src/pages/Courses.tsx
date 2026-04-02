@@ -65,7 +65,7 @@ const INTERACTIVE_SIMULATION_IDS = [
 
 // Courses that should appear after simulations (in this order)
 const AFTER_SIMULATION_IDS = [
-  'cccccccc-dddd-eeee-ffff-111111111111', // Agile, Scrum & SAFe 6.0 Mastery
+  'fd26e0dd-3e07-4595-99f4-f304026dcd27', // Agile, Scrum & SAFe 6.0 Mastery
   'dddddddd-eeee-ffff-1111-222222222222', // AI Mastery for Scrum Masters & Project Managers
   'eeeeeeee-ffff-1111-2222-333333333333', // Project Management Professional Certification
   'ffffffff-1111-2222-3333-444444444444', // Cybersecurity Professional Certification
@@ -85,9 +85,7 @@ const HIDDEN_IDS = [
 
 // Explicit ordering for certification courses
 const CERTIFICATION_ORDER = [
-  '00f26156-db7e-446e-b6b5-28e9e1150309', // Professional Scrum Master Certification
-  'bbbbbbbb-cccc-dddd-eeee-ffffffffffff', // Agile Development and Scrum
-  'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', // Jira SCRUM Project
+  'fd26e0dd-3e07-4595-99f4-f304026dcd27', // Scrum Master Profession
 ];
 
 const Courses = () => {
