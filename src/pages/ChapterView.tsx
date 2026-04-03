@@ -316,7 +316,7 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
                 {isLive ? (isSpeaking ? '🎙 Prof. Didier is speaking...' : '👂 Listening to you...') :
                   convStatus === 'connecting' ? t('chapter.connecting') :
                   convStatus === 'error' ? 'Connection failed — try again' :
-                  `{t('chapter.ready')}  ${getTitle(currentLesson)}`}
+                  t('chapter.ready') + ' ' + getTitle(currentLesson)}
               </span>
             </div>
 
