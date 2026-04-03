@@ -7,12 +7,26 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Language-specific voice IDs for Prof Didier
+// LaSean Pickens (clone) for English/Spanish, native speakers for other languages
+const DIDIER_VOICE_BY_LANG: Record<string, string> = {
+  en: "bQxW1c7YCr6VQgQhw8KX", // LaSean Pickens clone (English & Spanish)
+  es: "bQxW1c7YCr6VQgQhw8KX", // LaSean Pickens clone (English & Spanish)
+  fr: "IBGoh6rlxdauchOCULhL", // Bellami - Deep & Resonant (native French)
+  de: "WPbK7Qv9rbyhvUDiwJ0A", // Hans - Deep & Dominant (native German)
+  zh: "pU9NaAwkoR3v0Mrg3uKz", // Haoran - Deep, Calm & Steady (native Mandarin)
+  ar: "Ojb0nFbyzZn95u0i5a5p", // Marco Nady - Confident, Calm & Deep (native Arabic)
+  ja: "Mv8AjrYZCBkdsmDHNwcB", // Ishibashi - Deep & Strong (native Japanese)
+  ko: "ibCGc01503OQd2R6i1n1", // Marcus - Baritone Stoic (native Korean)
+  it: "F9w7aaEjfT09qV89OdY8", // Adam - Deep, Determined & Encouraging (native Italian)
+};
+
 // 4 professors with distinct personalities
 const professors = [
   {
     id: "professor_didier",
     name: "Professor Didier",
-    voiceId: "iP95p4xoKVk53GoZ742B", // Chris - Black American male voice, warm and confident
+    voiceId: "bQxW1c7YCr6VQgQhw8KX", // LaSean Pickens - clone (default English)
     personality: "Warm and encouraging, speaks with confidence and passion",
     style: "Speaks with passion about Scrum, loves sports analogies especially baseball and basketball"
   },
@@ -390,7 +404,7 @@ serve(async (req) => {
   }
 
   try {
-    const { videoId, lessonTitle, lessonContent, professorIndex, courseTitle, chapterTitle } = await req.json();
+    const { videoId, lessonTitle, lessonContent, professorIndex, courseTitle, chapterTitle, languageCode } = await req.json();
     
     const professor = professors[professorIndex % professors.length];
     
@@ -402,8 +416,13 @@ serve(async (req) => {
     // Try to generate audio with ElevenLabs
     if (ELEVENLABS_API_KEY) {
       try {
+        // Use language-specific voice for Prof Didier, default voice for others
+        const effectiveVoiceId = professor.id === "professor_didier" && languageCode
+          ? (DIDIER_VOICE_BY_LANG[languageCode] || professor.voiceId)
+          : professor.voiceId;
+
         const response = await fetch(
-          `https://api.elevenlabs.io/v1/text-to-speech/${professor.voiceId}?output_format=mp3_44100_128`,
+          `https://api.elevenlabs.io/v1/text-to-speech/${effectiveVoiceId}?output_format=mp3_44100_128`,
           {
             method: "POST",
             headers: {
@@ -413,10 +432,12 @@ serve(async (req) => {
             body: JSON.stringify({
               text: script,
               model_id: "eleven_multilingual_v2",
+              // Pass language_code so the multilingual model uses native pronunciation
+              ...(languageCode && languageCode !== "en" ? { language_code: languageCode } : {}),
               voice_settings: {
-                stability: 0.5,
-                similarity_boost: 0.75,
-                style: 0.3,
+                stability: 0.71,           // higher = more consistent volume & tone
+                similarity_boost: 0.55,    // lower = more freedom for native accent adaptation
+                style: 0.0,               // zero = no American speech mannerisms bleeding through
                 use_speaker_boost: true,
               },
             }),

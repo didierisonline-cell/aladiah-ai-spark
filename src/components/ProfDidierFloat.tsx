@@ -45,7 +45,37 @@ export default function ProfDidierFloat({ lessonTitle="Aladiah Academy", lessonT
     setStatus("connecting"); setTranscript([]); setDuration(0);
     try {
       await navigator.mediaDevices.getUserMedia({audio:true});
-      await conversation.startSession({agentId:AGENT_ID});
+      // Language-native first messages for authentic accent from the start
+      const firstMessages: Record<string, string> = {
+        en: "Hello! I'm Professor Didier. How can I help you today?",
+        es: "¡Hola! Soy el Profesor Didier. ¿En qué puedo ayudarte hoy?",
+        fr: "Bonjour ! Je suis le Professeur Didier. Comment puis-je vous aider aujourd'hui ?",
+        de: "Hallo! Ich bin Professor Didier. Wie kann ich Ihnen heute helfen?",
+        zh: "你好！我是迪迪埃教授。今天有什么可以帮助你的吗？",
+        ar: "مرحباً! أنا البروفيسور ديدييه. كيف يمكنني مساعدتك اليوم؟",
+        ja: "こんにちは！ディディエ教授です。今日はどのようにお手伝いしましょうか？",
+      };
+      // LaSean Pickens for EN/ES, deep native voices for other languages
+      const DIDIER_VOICES: Record<string, string> = {
+        en: "bQxW1c7YCr6VQgQhw8KX", es: "bQxW1c7YCr6VQgQhw8KX",
+        fr: "IBGoh6rlxdauchOCULhL", de: "WPbK7Qv9rbyhvUDiwJ0A",
+        zh: "pU9NaAwkoR3v0Mrg3uKz", ar: "Ojb0nFbyzZn95u0i5a5p",
+        ja: "Mv8AjrYZCBkdsmDHNwcB",
+      };
+      await conversation.startSession({
+        agentId: AGENT_ID,
+        overrides: {
+          agent: {
+            language,
+            firstMessage: firstMessages[language] || firstMessages.en,
+          },
+          tts: {
+            voiceId: DIDIER_VOICES[language] || DIDIER_VOICES.en,
+            stability: 0.71,
+            similarityBoost: 0.55,
+          },
+        }
+      });
     } catch { setStatus("error"); }
   },[conversation]);
   const endSession = useCallback(async()=>{ await conversation.endSession(); if(timerRef.current)clearInterval(timerRef.current); },[conversation]);

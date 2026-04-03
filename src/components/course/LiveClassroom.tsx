@@ -182,13 +182,40 @@ INSTRUCTIONS:
         console.warn("[LiveClass] Could not get signed token, falling back to agentId:", e);
       }
 
+      // Language-native first messages so the voice accent kicks in from the first word
+      const firstMessages: Record<string, string> = {
+        English: `Hello! Welcome to today's class on "${title}". I'm Professor Didier, and I'll be guiding you through this lesson. Let's get started!`,
+        Spanish: `¡Hola! Bienvenidos a la clase de hoy sobre "${title}". Soy el Profesor Didier, y los guiaré en esta lección. ¡Empecemos!`,
+        French: `Bonjour ! Bienvenue au cours d'aujourd'hui sur « ${title} ». Je suis le Professeur Didier, et je vais vous accompagner tout au long de cette leçon. Allons-y !`,
+        German: `Hallo! Willkommen zur heutigen Unterrichtsstunde über „${title}". Ich bin Professor Didier und werde Sie durch diese Lektion führen. Legen wir los!`,
+        Chinese: `你好！欢迎来到今天关于"${title}"的课程。我是迪迪埃教授，将带领大家学习这节课。我们开始吧！`,
+        Arabic: `مرحباً! أهلاً بكم في درس اليوم حول "${title}". أنا البروفيسور ديدييه، وسأرشدكم خلال هذا الدرس. هيا نبدأ!`,
+        Japanese: `こんにちは！今日の「${title}」の授業へようこそ。ディディエ教授です。このレッスンを一緒に進めていきましょう。さあ、始めましょう！`,
+      };
+
+      // LaSean Pickens for EN/ES, deep native voices for other languages
+      const DIDIER_VOICES: Record<string, string> = {
+        English: "bQxW1c7YCr6VQgQhw8KX",  // LaSean Pickens clone
+        Spanish: "bQxW1c7YCr6VQgQhw8KX",  // LaSean Pickens clone
+        French:  "IBGoh6rlxdauchOCULhL",  // Bellami - Deep & Resonant
+        German:  "WPbK7Qv9rbyhvUDiwJ0A",  // Hans - Deep & Dominant
+        Chinese: "pU9NaAwkoR3v0Mrg3uKz",  // Haoran - Deep, Calm & Steady
+        Arabic:  "Ojb0nFbyzZn95u0i5a5p",  // Marco Nady - Confident & Deep
+        Japanese:"Mv8AjrYZCBkdsmDHNwcB",  // Ishibashi - Deep & Strong
+      };
+
       const sessionOpts: any = {
         overrides: {
           agent: {
             language: langMap[selectedLanguage] || "en",
             prompt: { prompt: lessonPrompt },
-            firstMessage: `Hello! Welcome to today's class on "${title}". I'm Professor Didier, and I'll be guiding you through this lesson. Let's get started!`,
-          }
+            firstMessage: firstMessages[selectedLanguage] || firstMessages.English,
+          },
+          tts: {
+            voiceId: DIDIER_VOICES[selectedLanguage] || DIDIER_VOICES.English,
+            stability: 0.71,
+            similarityBoost: 0.55,
+          },
         }
       };
 
@@ -231,14 +258,33 @@ INSTRUCTIONS:
         English: "en", Spanish: "es", French: "fr",
         German: "de", Chinese: "zh", Arabic: "ar", Japanese: "ja"
       };
+      const DIDIER_VOICES_RESUME: Record<string, string> = {
+        English: "bQxW1c7YCr6VQgQhw8KX", Spanish: "bQxW1c7YCr6VQgQhw8KX",
+        French: "IBGoh6rlxdauchOCULhL", German: "WPbK7Qv9rbyhvUDiwJ0A",
+        Chinese: "pU9NaAwkoR3v0Mrg3uKz", Arabic: "Ojb0nFbyzZn95u0i5a5p",
+        Japanese: "Mv8AjrYZCBkdsmDHNwcB",
+      };
       await conversation.startSession({
         agentId: ELEVENLABS_AGENT_ID,
         overrides: {
           agent: {
             language: langMap[selectedLanguage] || "en",
             prompt: { prompt: `You are Professor Didier continuing a live class on "${title}" (${chapterTitle}, ${courseTitle}). ${description}. Resume teaching from where you left off. Speak in ${selectedLanguage}.` },
-            firstMessage: `Welcome back! Let's continue our lesson on "${title}".`,
-          }
+            firstMessage: {
+              English: `Welcome back! Let's continue our lesson on "${title}".`,
+              Spanish: `¡Bienvenidos de nuevo! Continuemos con nuestra lección sobre "${title}".`,
+              French: `Bon retour ! Continuons notre leçon sur « ${title} ».`,
+              German: `Willkommen zurück! Fahren wir mit unserer Lektion über „${title}" fort.`,
+              Chinese: `欢迎回来！让我们继续关于"${title}"的课程。`,
+              Arabic: `مرحباً بعودتكم! لنكمل درسنا حول "${title}".`,
+              Japanese: `おかえりなさい！「${title}」の授業を続けましょう。`,
+            }[selectedLanguage] || `Welcome back! Let's continue our lesson on "${title}".`,
+          },
+          tts: {
+            voiceId: DIDIER_VOICES_RESUME[selectedLanguage] || "bQxW1c7YCr6VQgQhw8KX",
+            stability: 0.71,
+            similarityBoost: 0.55,
+          },
         }
       });
       setSessionStarted(true);
