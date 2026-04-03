@@ -38,7 +38,7 @@ export default function ChapterView() {
   const { courseId, chapterId } = useParams<{ courseId: string; chapterId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
   const [course, setCourse] = useState<Course | null>(null);
   const [chapter, setChapter] = useState<Chapter | null>(null);
@@ -172,8 +172,8 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
 
   const getTitle = (item: any) => {
     if (!item) return '';
-    const t = item.translations?.[language];
-    return t?.title || item.title || '';
+    const tFunc = item.translations?.[language];
+    return tFunc?.title || item.title || '';
   };
 
   const progress = videos.length > 0
@@ -198,7 +198,7 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
       {/* Top Nav */}
       <div style={{ borderBottom: '1px solid rgba(96,165,250,0.12)', background: 'rgba(10,15,30,0.8)', backdropFilter: 'blur(12px)', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56, position: 'sticky', top: 0, zIndex: 50 }}>
         <button onClick={() => navigate('/courses')} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: 14, fontWeight: 500 }}>
-          <ArrowLeft size={16} /> Back to Courses
+          <ArrowLeft size={16} />{t('chapter.back')}
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <PortalLangWidget />
@@ -314,9 +314,9 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: isLive ? '#22c55e' : convStatus === 'connecting' ? '#f59e0b' : '#334155', flexShrink: 0 }} />
               <span style={{ fontSize: 12, color: '#64748b' }}>
                 {isLive ? (isSpeaking ? '🎙 Prof. Didier is speaking...' : '👂 Listening to you...') :
-                  convStatus === 'connecting' ? 'Connecting to Prof. Didier...' :
+                  convStatus === 'connecting' ? t('chapter.connecting') :
                   convStatus === 'error' ? 'Connection failed — try again' :
-                  `Ready to teach: ${getTitle(currentLesson)}`}
+                  `{t('chapter.ready')}  ${getTitle(currentLesson)}`}
               </span>
             </div>
 
@@ -340,7 +340,7 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
             <div style={{ padding: '16px 24px' }}>
               {!isLive && convStatus !== 'connecting' ? (
                 <button onClick={startSession} style={{ width: '100%', padding: '14px 0', borderRadius: 12, border: 'none', background: 'linear-gradient(135deg,#1d4ed8,#3b82f6)', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                  <MessageCircle size={16} /> Start Lesson with Prof. Didier
+                  <MessageCircle size={16} /> {t('chapter.start')}
                 </button>
               ) : convStatus === 'connecting' ? (
                 <button disabled style={{ width: '100%', padding: '14px 0', borderRadius: 12, border: 'none', background: 'rgba(96,165,250,0.1)', color: '#60a5fa', fontSize: 15, fontWeight: 600, cursor: 'not-allowed' }}>
@@ -408,8 +408,8 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
                   <Trophy size={13} color="#f59e0b" />
                 </div>
                 <div>
-                  <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#f59e0b' }}>Chapter Quiz</p>
-                  <p style={{ margin: '2px 0 0', fontSize: 11, color: '#78350f' }}>Complete all lessons first</p>
+                  <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#f59e0b' }}>{t('chapter.quiz.title')}</p>
+                  <p style={{ margin: '2px 0 0', fontSize: 11, color: '#78350f' }}>{t('chapter.quiz.locked')}</p>
                 </div>
               </div>
             )}
