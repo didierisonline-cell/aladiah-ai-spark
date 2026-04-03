@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GraduationCap, BookOpen, ChevronRight, LogOut, Play, CheckCircle, Lock, ShieldCheck, FlaskConical } from 'lucide-react';
 import BackToPortal from '@/components/portal/BackToPortal';
+import PortalLangWidget from '@/components/portal/PortalLangWidget';
 import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
 import { 
   courseUITranslations, 
@@ -414,6 +415,7 @@ const Courses = () => {
             <img src={aladiahLogo} alt="Aladiah Academy" className="h-28 w-auto object-contain mix-blend-multiply" />
           </Link>
           <div className="flex items-center gap-3">
+            <PortalLangWidget />
             <Button
               variant="ghost"
               size="sm"
