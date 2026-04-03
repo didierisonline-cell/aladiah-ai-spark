@@ -82,7 +82,39 @@ export default function ChapterView() {
     setDuration(0);
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
-      await conversation.startSession({ agentId: AGENT_ID });
+      const lessonTranscript = getTranscript(currentLesson);
+      const lessonTitle = getTitle(currentLesson);
+      const chapterTitle = chapter?.title || '';
+      const langLabel: Record<string, string> = {
+        en: 'English', fr: 'French', es: 'Spanish', de: 'German',
+        zh: 'Mandarin Chinese', ar: 'Arabic', ja: 'Japanese'
+      };
+      const lang = langLabel[language] || 'English';
+      const systemPrompt = `You are Prof. Didier, the AI instructor at Aladiah Academy — a world-class school for Scrum Masters and Project Managers. Your standard is: Solo Excelencia.
+
+You are now teaching this specific lesson:
+LESSON: "${lessonTitle}"
+MODULE: "${chapterTitle}"
+
+FULL LESSON TRANSCRIPT TO TEACH FROM:
+---
+${lessonTranscript || 'Use your expertise to teach this lesson thoroughly.'}
+---
+
+TEACHING INSTRUCTIONS:
+1. Follow the transcript above as your lesson plan — teach it section by section using the Socratic method
+2. Ask questions to guide students to discover answers themselves — do not just lecture
+3. After covering each major section, pause and ask a comprehension question
+4. If the student asks a question or wants clarification, STOP the lesson flow and answer it fully, then return to where you left off
+5. If the student says "continue", "next", "go on" — proceed to the next section
+6. When you have covered the entire transcript, congratulate the student and ask if they want to review any section or are ready for the quiz
+7. Always respond in ${lang}. If the student switches language, match them immediately
+8. Never go off-topic — stay strictly on this lesson's content
+9. Start now by greeting the student warmly and asking what they already know about "${lessonTitle}" before diving in`;
+      await conversation.startSession({
+        agentId: AGENT_ID,
+        overrides: { agent: { prompt: { prompt: systemPrompt } } }
+      });
     } catch {
       setConvStatus('error');
     }
@@ -119,6 +151,15 @@ export default function ChapterView() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getTranscript = (v: Video | null): string => {
+    if (!v) return '';
+    const trans = v.translations as any;
+    if (!trans) return '';
+    const langMap: Record<string, string> = { en: 'en', fr: 'fr', es: 'es', de: 'de', zh: 'zh', ar: 'ar', ja: 'ja' };
+    const key = langMap[language] || 'en';
+    return trans[key]?.transcript || trans['en']?.transcript || '';
   };
 
   const getTitle = (item: any) => {
@@ -196,7 +237,43 @@ export default function ChapterView() {
 
             {/* Description */}
             {currentLesson?.description && (
-              <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.7, marginBottom: 32 }}>{currentLesson.description}</p>
+              <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.7, marginBottom: 24 }}>{currentLesson.description}</p>
+            )}
+
+            {/* ── LESSON TRANSCRIPT ── */}
+            {getTranscript(currentLesson) && (
+              <div style={{ marginBottom: 32 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                  <div style={{ width: 3, height: 18, borderRadius: 2, background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)' }} />
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    Lesson Transcript
+                  </span>
+                </div>
+                <div style={{
+                  background: 'rgba(15,23,42,0.6)',
+                  border: '1px solid rgba(59,130,246,0.15)',
+                  borderRadius: 14,
+                  padding: '20px 22px',
+                  maxHeight: 320,
+                  overflowY: 'auto',
+                  position: 'relative'
+                }}>
+                  <pre style={{
+                    margin: 0,
+                    fontSize: 13,
+                    lineHeight: 1.8,
+                    color: '#cbd5e1',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    fontFamily: 'inherit'
+                  }}>
+                    {getTranscript(currentLesson)}
+                  </pre>
+                </div>
+                <p style={{ margin: '8px 0 0', fontSize: 11, color: '#475569', textAlign: 'right' }}>
+                  Prof. Didier will teach this content — you can also read along
+                </p>
+              </div>
             )}
           </motion.div>
 
