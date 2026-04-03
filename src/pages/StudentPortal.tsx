@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
+import PortalLangWidget from '@/components/portal/PortalLangWidget';
 import { useProgress } from '@/hooks/useProgress';
 import { useLearningProfile } from '@/hooks/useLearningProfile';
 import { useSubscription } from '@/hooks/useSubscription';

@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useConversation } from '@elevenlabs/react';
 import { ArrowLeft, CheckCircle, Lock, Play, BookOpen, MessageCircle, Trophy } from 'lucide-react';
+import PortalLangWidget from '@/components/portal/PortalLangWidget';
 
 const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string;
 
@@ -199,9 +200,12 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
         <button onClick={() => navigate('/courses')} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: 14, fontWeight: 500 }}>
           <ArrowLeft size={16} /> Back to Courses
         </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 8, height: 8, borderRadius: '50%', background: progress === 100 ? '#22c55e' : '#3b82f6' }} />
-          <span style={{ fontSize: 12, color: '#64748b' }}>{progress}% complete</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <PortalLangWidget />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: progress === 100 ? '#22c55e' : '#3b82f6' }} />
+            <span style={{ fontSize: 12, color: '#64748b' }}>{progress}% complete</span>
+          </div>
         </div>
       </div>
 
