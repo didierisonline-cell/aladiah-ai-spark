@@ -24,7 +24,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
-import ProfDidierFloat from "@/components/ProfDidierFloat";
+import HomepageBot from "@/components/HomepageBot";
 import { useLocation } from "react-router-dom";
 
 const queryClient = new QueryClient();
@@ -32,7 +32,7 @@ const queryClient = new QueryClient();
 const RouterAwareFloat = () => {
   const { pathname } = useLocation();
   const isPortal = pathname.startsWith("/portal") || pathname.startsWith("/course") || pathname.startsWith("/chapter") || pathname.startsWith("/dashboard");
-  return isPortal ? null : <ProfDidierFloat mode="enrollment" />;
+  return isPortal ? null : <HomepageBot />;
 };
 
 const AppContent = () => {
