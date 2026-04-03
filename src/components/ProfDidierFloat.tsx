@@ -55,7 +55,7 @@ export default function ProfDidierFloat({ lessonTitle="Aladiah Academy", lessonT
         ar: "مرحباً! أنا البروفيسور ديدييه. كيف يمكنني مساعدتك اليوم؟",
         ja: "こんにちは！ディディエ教授です。今日はどのようにお手伝いしましょうか？",
       };
-      // Get signed URL with the correct voice baked in for this language
+      // Get signed URL from backend
       let signedUrl: string | null = null;
       try {
         const tokenRes = await fetch(
@@ -66,7 +66,6 @@ export default function ProfDidierFloat({ lessonTitle="Aladiah Academy", lessonT
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
             },
-            body: JSON.stringify({ language }),
           }
         );
         const tokenData = await tokenRes.json();
@@ -75,11 +74,24 @@ export default function ProfDidierFloat({ lessonTitle="Aladiah Academy", lessonT
         console.warn("[ProfDidier] Could not get signed URL:", e);
       }
 
+      // Voice override per language (whitelisted via supported_voices on agent)
+      const DIDIER_VOICES: Record<string, string> = {
+        en: "bQxW1c7YCr6VQgQhw8KX", es: "bQxW1c7YCr6VQgQhw8KX",
+        fr: "IBGoh6rlxdauchOCULhL", de: "WPbK7Qv9rbyhvUDiwJ0A",
+        zh: "pU9NaAwkoR3v0Mrg3uKz", ar: "Ojb0nFbyzZn95u0i5a5p",
+        ja: "Mv8AjrYZCBkdsmDHNwcB",
+      };
+
       const sessionOpts: any = {
         overrides: {
           agent: {
             language,
             firstMessage: firstMessages[language] || firstMessages.en,
+          },
+          tts: {
+            voiceId: DIDIER_VOICES[language] || DIDIER_VOICES.en,
+            stability: 0.71,
+            similarityBoost: 0.55,
           },
         },
       };
