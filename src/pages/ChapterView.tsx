@@ -117,6 +117,18 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
 
   useEffect(() => { loadData(); }, [chapterId]);
 
+  // When lesson changes while Prof. Didier is active — end session so student restarts fresh
+  const prevLessonRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!currentLesson) return;
+    const lessonId = (currentLesson as any).id;
+    if (prevLessonRef.current && prevLessonRef.current !== lessonId && isLive) {
+      conversation.endSession();
+      if (timerRef.current) clearInterval(timerRef.current);
+    }
+    prevLessonRef.current = lessonId;
+  }, [currentLesson]);
+
   const loadData = async () => {
     if (!chapterId || !courseId) return;
     setLoading(true);
