@@ -55,27 +55,42 @@ export default function ProfDidierFloat({ lessonTitle="Aladiah Academy", lessonT
         ar: "مرحباً! أنا البروفيسور ديدييه. كيف يمكنني مساعدتك اليوم؟",
         ja: "こんにちは！ディディエ教授です。今日はどのようにお手伝いしましょうか？",
       };
-      // LaSean Pickens for EN/ES, deep native voices for other languages
-      const DIDIER_VOICES: Record<string, string> = {
-        en: "bQxW1c7YCr6VQgQhw8KX", es: "bQxW1c7YCr6VQgQhw8KX",
-        fr: "IBGoh6rlxdauchOCULhL", de: "WPbK7Qv9rbyhvUDiwJ0A",
-        zh: "pU9NaAwkoR3v0Mrg3uKz", ar: "Ojb0nFbyzZn95u0i5a5p",
-        ja: "Mv8AjrYZCBkdsmDHNwcB",
-      };
-      await conversation.startSession({
-        agentId: AGENT_ID,
+      // Get signed URL with the correct voice baked in for this language
+      let signedUrl: string | null = null;
+      try {
+        const tokenRes = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-conversation-token`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            },
+            body: JSON.stringify({ language }),
+          }
+        );
+        const tokenData = await tokenRes.json();
+        if (tokenData.signed_url) signedUrl = tokenData.signed_url;
+      } catch (e) {
+        console.warn("[ProfDidier] Could not get signed URL:", e);
+      }
+
+      const sessionOpts: any = {
         overrides: {
           agent: {
             language,
             firstMessage: firstMessages[language] || firstMessages.en,
           },
-          tts: {
-            voiceId: DIDIER_VOICES[language] || DIDIER_VOICES.en,
-            stability: 0.71,
-            similarityBoost: 0.55,
-          },
-        }
-      });
+        },
+      };
+
+      if (signedUrl) {
+        sessionOpts.signedUrl = signedUrl;
+      } else {
+        sessionOpts.agentId = AGENT_ID;
+      }
+
+      await conversation.startSession(sessionOpts);
     } catch { setStatus("error"); }
   },[conversation]);
   const endSession = useCallback(async()=>{ await conversation.endSession(); if(timerRef.current)clearInterval(timerRef.current); },[conversation]);

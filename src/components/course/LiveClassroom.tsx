@@ -163,7 +163,8 @@ INSTRUCTIONS:
         throw new Error("VITE_ELEVENLABS_AGENT_ID is not set in .env");
       }
 
-      // Get a signed token from our backend to avoid domain restrictions
+      // Get a signed URL from our backend with the correct voice baked in
+      let signedUrl: string | null = null;
       let conversationToken: string | null = null;
       try {
         const tokenRes = await fetch(
@@ -174,12 +175,15 @@ INSTRUCTIONS:
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
             },
+            body: JSON.stringify({ language: langMap[selectedLanguage] || "en" }),
           }
         );
         const tokenData = await tokenRes.json();
-        if (tokenData.token) conversationToken = tokenData.token;
+        if (tokenData.signed_url) signedUrl = tokenData.signed_url;
+        else if (tokenData.token) conversationToken = tokenData.token;
+        console.log("[LiveClass] Got signed URL/token for language:", langMap[selectedLanguage], "voice:", tokenData.voice_id);
       } catch (e) {
-        console.warn("[LiveClass] Could not get signed token, falling back to agentId:", e);
+        console.warn("[LiveClass] Could not get signed URL, falling back to agentId:", e);
       }
 
       // Language-native first messages so the voice accent kicks in from the first word
@@ -219,8 +223,10 @@ INSTRUCTIONS:
         }
       };
 
-      // Use signed token if available (bypasses domain restrictions), otherwise fall back to agentId
-      if (conversationToken) {
+      // Use signed URL (has voice override baked in), fall back to token, then agentId
+      if (signedUrl) {
+        sessionOpts.signedUrl = signedUrl;
+      } else if (conversationToken) {
         sessionOpts.conversationToken = conversationToken;
       } else {
         sessionOpts.agentId = agentId;
@@ -258,14 +264,28 @@ INSTRUCTIONS:
         English: "en", Spanish: "es", French: "fr",
         German: "de", Chinese: "zh", Arabic: "ar", Japanese: "ja"
       };
-      const DIDIER_VOICES_RESUME: Record<string, string> = {
-        English: "bQxW1c7YCr6VQgQhw8KX", Spanish: "bQxW1c7YCr6VQgQhw8KX",
-        French: "IBGoh6rlxdauchOCULhL", German: "WPbK7Qv9rbyhvUDiwJ0A",
-        Chinese: "pU9NaAwkoR3v0Mrg3uKz", Arabic: "Ojb0nFbyzZn95u0i5a5p",
-        Japanese: "Mv8AjrYZCBkdsmDHNwcB",
-      };
-      await conversation.startSession({
-        agentId: ELEVENLABS_AGENT_ID,
+
+      // Get signed URL with correct voice for this language
+      let resumeSignedUrl: string | null = null;
+      try {
+        const tokenRes = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-conversation-token`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            },
+            body: JSON.stringify({ language: langMap[selectedLanguage] || "en" }),
+          }
+        );
+        const tokenData = await tokenRes.json();
+        if (tokenData.signed_url) resumeSignedUrl = tokenData.signed_url;
+      } catch (e) {
+        console.warn("[LiveClass] Resume: could not get signed URL:", e);
+      }
+
+      const resumeOpts: any = {
         overrides: {
           agent: {
             language: langMap[selectedLanguage] || "en",
@@ -280,13 +300,16 @@ INSTRUCTIONS:
               Japanese: `おかえりなさい！「${title}」の授業を続けましょう。`,
             }[selectedLanguage] || `Welcome back! Let's continue our lesson on "${title}".`,
           },
-          tts: {
-            voiceId: DIDIER_VOICES_RESUME[selectedLanguage] || "bQxW1c7YCr6VQgQhw8KX",
-            stability: 0.71,
-            similarityBoost: 0.55,
-          },
         }
-      });
+      };
+
+      if (resumeSignedUrl) {
+        resumeOpts.signedUrl = resumeSignedUrl;
+      } else {
+        resumeOpts.agentId = ELEVENLABS_AGENT_ID;
+      }
+
+      await conversation.startSession(resumeOpts);
       setSessionStarted(true);
     } catch (e) {
       console.error(e);
