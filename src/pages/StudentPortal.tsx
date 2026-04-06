@@ -198,21 +198,22 @@ const StudentPortal = () => {
     const progresses = filteredCourses.map(course => {
       const courseChapters = (chaptersRes.data || []).filter(ch => ch.course_id === course.id);
       const courseVideos = (videosRes.data || []).filter(v => courseChapters.some(ch => ch.id === v.chapter_id));
-      const miniQuizzes = (quizzesRes.data || []).filter(
-        q => courseVideos.some(v => v.id === q.video_id) && q.quiz_type === 'mini_video'
+      const chapterQuizzes = (quizzesRes.data || []).filter(
+        q => courseChapters.some(ch => ch.id === q.chapter_id) && q.quiz_type === 'chapter_end'
       );
-      const completed = miniQuizzes.filter(q => passedQuizIds.includes(q.id)).length;
+      const completedQuizzes = chapterQuizzes.filter(q => passedQuizIds.includes(q.id)).length;
+      const totalItems = courseChapters.length;
+      const completedItems = completedQuizzes;
 
       return {
         courseId: course.id,
         title: course.title,
-        total: courseVideos.length,
-        completed,
-        pct: courseVideos.length > 0 ? Math.round((completed / courseVideos.length) * 100) : 0,
+        total: totalItems,
+        completed: completedItems,
+        pct: totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0,
         nextChapterId: courseChapters.find(ch => {
-          const chVids = courseVideos.filter(v => v.chapter_id === ch.id);
-          const chQuizzes = miniQuizzes.filter(q => chVids.some(v => v.id === q.video_id));
-          return !chQuizzes.every(q => passedQuizIds.includes(q.id));
+          const chQuiz = chapterQuizzes.find(q => q.chapter_id === ch.id);
+          return !chQuiz || !passedQuizIds.includes(chQuiz.id);
         })?.id || courseChapters[0]?.id,
         chapters: courseChapters,
       };

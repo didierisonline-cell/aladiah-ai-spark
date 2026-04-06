@@ -24,10 +24,11 @@ export const ProgressDetailModal = ({ open, onOpenChange, userId, courseProgress
   useEffect(() => {
     if (open && userId) {
       supabase
-        .from('quiz_attempts')
-        .select('id, quiz_id, score, passed, created_at')
+        .from('user_progress')
+        .select('id, quiz_id, score, passed, completed_at')
         .eq('user_id', userId)
-        .order('created_at', { ascending: false })
+        .not('quiz_id', 'is', null)
+        .order('completed_at', { ascending: false })
         .limit(20)
         .then(({ data }) => setQuizHistory(data || []));
     }
@@ -72,7 +73,7 @@ export const ProgressDetailModal = ({ open, onOpenChange, userId, courseProgress
                   </div>
                   <div className="flex items-center gap-3">
                     <Badge variant={q.passed ? 'default' : 'outline'}>{q.score}%</Badge>
-                    <span className="text-xs text-muted-foreground">{new Date(q.created_at).toLocaleDateString()}</span>
+                    <span className="text-xs text-muted-foreground">{new Date(q.completed_at).toLocaleDateString()}</span>
                   </div>
                 </div>
               ))

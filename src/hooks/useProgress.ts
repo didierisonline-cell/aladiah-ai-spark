@@ -13,10 +13,11 @@ export const useProgress = (userId: string | undefined) => {
 
     const calculate = async () => {
       try {
-        // Get all quizzes across all published courses
+        // Get all chapter_end quizzes (one per chapter = lesson completion)
         const { data: quizzes } = await supabase
           .from('quizzes')
-          .select('id, chapter_id, quiz_type');
+          .select('id, chapter_id, quiz_type')
+          .eq('quiz_type', 'chapter_end');
 
         if (!quizzes || quizzes.length === 0) {
           setProgress(0);
@@ -24,18 +25,31 @@ export const useProgress = (userId: string | undefined) => {
           return;
         }
 
-        // Get user's passed quizzes
+        // Get user's passed quizzes with scores
         const { data: progressData } = await supabase
           .from('user_progress')
-          .select('quiz_id')
+          .select('quiz_id, score')
           .eq('user_id', userId)
           .not('quiz_id', 'is', null);
 
         const passedIds = (progressData || []).map(p => p.quiz_id);
+        const passedQuizzes = quizzes.filter(q => passedIds.includes(q.id));
         const totalQuizzes = quizzes.length;
-        const passedCount = quizzes.filter(q => passedIds.includes(q.id)).length;
+        const passedCount = passedQuizzes.length;
 
-        setProgress(totalQuizzes > 0 ? Math.round((passedCount / totalQuizzes) * 100) : 0);
+        // Average score of passed quizzes (lesson quality)
+        const scores = (progressData || [])
+          .filter(p => passedIds.includes(p.quiz_id) && p.score != null)
+          .map(p => p.score as number);
+        const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+
+        // Overall = 50% completion weight + 50% score weight
+        const completionPct = totalQuizzes > 0 ? Math.round((passedCount / totalQuizzes) * 100) : 0;
+        const overall = scores.length > 0
+          ? Math.round((completionPct + avgScore) / 2)
+          : completionPct;
+
+        setProgress(overall);
       } catch {
         setProgress(0);
       } finally {
