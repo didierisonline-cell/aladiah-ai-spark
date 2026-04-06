@@ -942,7 +942,9 @@ export type Database = {
           completed_at: string
           course_id: string
           id: string
+          passed: boolean | null
           quiz_id: string | null
+          score: number | null
           user_id: string
           video_id: string | null
         }
@@ -951,7 +953,9 @@ export type Database = {
           completed_at?: string
           course_id: string
           id?: string
+          passed?: boolean | null
           quiz_id?: string | null
+          score?: number | null
           user_id: string
           video_id?: string | null
         }
@@ -960,7 +964,9 @@ export type Database = {
           completed_at?: string
           course_id?: string
           id?: string
+          passed?: boolean | null
           quiz_id?: string | null
+          score?: number | null
           user_id?: string
           video_id?: string | null
         }

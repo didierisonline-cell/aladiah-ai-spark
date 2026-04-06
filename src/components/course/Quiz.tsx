@@ -133,13 +133,27 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
 
       // Save progress if logged in
       if (session) {
-        await supabase.from('user_progress').upsert({
-          user_id: session.user.id,
-          quiz_id: quizId,
-          score,
-          passed,
-          completed_at: new Date().toISOString(),
-        });
+        // Get quiz details to find chapter_id and course_id
+        const { data: quizData } = await supabase
+          .from('quizzes')
+          .select('chapter_id, chapters(course_id)')
+          .eq('id', quizId)
+          .single();
+        
+        const chapter_id = quizData?.chapter_id || null;
+        const course_id = (quizData?.chapters as any)?.course_id || null;
+
+        if (course_id) {
+          await supabase.from('user_progress').upsert({
+            user_id: session.user.id,
+            quiz_id: quizId,
+            chapter_id,
+            course_id,
+            score,
+            passed,
+            completed_at: new Date().toISOString(),
+          }, { onConflict: 'user_id,quiz_id' });
+        }
       }
 
       setResults(results);
