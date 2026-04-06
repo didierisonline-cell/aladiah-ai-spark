@@ -30,6 +30,18 @@ function Bars({ active }: { active: boolean }) {
         }} />
       ))}
       <style>{`@keyframes pb{from{transform:scaleY(.35)}to{transform:scaleY(1.15)}}`}</style>
+      {/* Quiz Modal */}
+      {activeQuizId && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, width: '100%', maxWidth: 600, maxHeight: '85vh', overflowY: 'auto', padding: 32 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+              <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#f59e0b' }}>{t('chapter.quiz.title')}</h2>
+              <button onClick={() => setActiveQuizId(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 24, lineHeight: 1 }}>×</button>
+            </div>
+            <Quiz quizId={activeQuizId} quizType="mini_video" onComplete={() => setActiveQuizId(null)} onBack={() => setActiveQuizId(null)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -44,6 +56,7 @@ export default function ChapterView() {
   const [chapter, setChapter] = useState<Chapter | null>(null);
   const [videos, setVideos] = useState<Video[]>([]);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const [activeQuizId, setActiveQuizId] = useState<string | null>(null);
   const [currentLesson, setCurrentLesson] = useState<Video | null>(null);
   const [passedQuizzes, setPassedQuizzes] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -403,19 +416,34 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
 
             {/* Final Quiz Entry */}
             {quizzes.length > 0 && (
-              <div style={{ marginTop: 8, padding: '12px 14px', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.15)', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(245,158,11,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <button
+                onClick={() => setActiveQuizId(quizzes[0].id)}
+                style={{ marginTop: 8, padding: '12px 14px', background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.35)', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 10, width: '100%', cursor: 'pointer', textAlign: 'left' }}
+              >
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(245,158,11,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Trophy size={13} color="#f59e0b" />
                 </div>
                 <div>
                   <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#f59e0b' }}>{t('chapter.quiz.title')}</p>
-                  <p style={{ margin: '2px 0 0', fontSize: 11, color: '#78350f' }}>{t('chapter.quiz.locked')}</p>
+                  <p style={{ margin: '2px 0 0', fontSize: 11, color: '#92400e' }}>{t('chapter.quiz.ready')}</p>
                 </div>
-              </div>
+              </button>
             )}
           </div>
         </div>
       </div>
+      {/* Quiz Modal */}
+      {activeQuizId && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, width: '100%', maxWidth: 600, maxHeight: '85vh', overflowY: 'auto', padding: 32 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+              <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#f59e0b' }}>{t('chapter.quiz.title')}</h2>
+              <button onClick={() => setActiveQuizId(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 24, lineHeight: 1 }}>×</button>
+            </div>
+            <Quiz quizId={activeQuizId} quizType="mini_video" onComplete={() => setActiveQuizId(null)} onBack={() => setActiveQuizId(null)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
