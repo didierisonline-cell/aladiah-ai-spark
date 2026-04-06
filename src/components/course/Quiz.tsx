@@ -17,6 +17,8 @@ interface Question {
   question_text: string;
   scenario_context: string | null;
   options: string[];
+  correct_answer_index: number;
+  explanation: string | null;
   order_index: number;
 }
 
@@ -54,23 +56,16 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
 
   const loadQuestions = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-quiz-questions`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({ quizId }),
-        }
-      );
+      const { data, error } = await supabase
+        .from('quiz_questions')
+        .select('*')
+        .eq('quiz_id', quizId)
+        .order('order_index');
 
-      const data = await response.json();
-      if (data.error) throw new Error(data.error);
+      if (error) throw error;
 
       // Parse options if they're stored as JSON strings
-      const parsedQuestions = (data.questions || []).map((q: any) => ({
+      const parsedQuestions = (data || []).map((q: any) => ({
         ...q,
         options: typeof q.options === 'string' ? JSON.parse(q.options) : (Array.isArray(q.options) ? q.options : [])
       }));
@@ -120,42 +115,49 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('Not authenticated');
 
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-quiz`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({ 
-            quizId, 
-            answers: answers 
-          }),
-        }
-      );
+      // Score locally against correct_answer_index
+      const results = questions.map((q, idx) => ({
+        questionId: q.id,
+        question_text: q.question_text,
+        selectedAnswer: answers[idx],
+        correctAnswer: q.correct_answer_index,
+        isCorrect: answers[idx] === q.correct_answer_index,
+        explanation: q.explanation || '',
+        options: q.options,
+      }));
 
-      const data = await response.json();
-      if (data.error) throw new Error(data.error);
+      const correctCount = results.filter(r => r.isCorrect).length;
+      const score = Math.round((correctCount / questions.length) * 100);
+      const passed = score >= 70;
 
-      setResults(data.results);
-      setScore(data.score);
-      setPassed(data.passed);
+      // Save progress if logged in
+      if (session) {
+        await supabase.from('user_progress').upsert({
+          user_id: session.user.id,
+          quiz_id: quizId,
+          score,
+          passed,
+          completed_at: new Date().toISOString(),
+        });
+      }
+
+      setResults(results);
+      setScore(score);
+      setPassed(passed);
       setSubmitted(true);
       setShowingResults(true);
       setCurrentIndex(0);
 
-      if (data.passed) {
+      if (passed) {
         toast({
           title: '🎉 Congratulations!',
-          description: `You scored ${data.score}%! You passed the quiz.`,
+          description: `You scored ${score}%! You passed the quiz.`,
         });
       } else {
         toast({
           title: 'Not quite there yet',
-          description: `You scored ${data.score}%. You need 100% to pass. Try again!`,
+          description: `You scored ${score}%. You need 70% to pass. Try again!`,
           variant: 'destructive',
         });
       }
