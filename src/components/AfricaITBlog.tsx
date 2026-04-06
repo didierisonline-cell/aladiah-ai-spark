@@ -43,7 +43,7 @@ const content: Record<Lang, Content> = {
     s3Title: "Aladiah Academy's Mission in Africa",
     s3Content: "Aladiah Academy is committed to being the premier Agile training platform for African professionals. Our AI-powered courses are designed to be accessible, multilingual, and deeply practical — giving African Scrum Masters the tools to compete for remote U.S. roles paying $100K+ while also driving transformation in their home markets.",
     conclusion: "The future of global Agile talent is African. Aladiah Academy is here to make sure that future is trained, certified, and ready to lead.",
-    cta: "Start Your Journey",
+    cta: t('cta.start_journey'),
   },
   es: {
     badge: "Tecnología en África",
@@ -168,6 +168,7 @@ const content: Record<Lang, Content> = {
 };
 
 const AfricaITBlog = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { language } = useLanguage();
   const c = content[language as Lang] || content.en;
