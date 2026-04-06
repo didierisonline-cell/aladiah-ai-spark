@@ -240,6 +240,8 @@ const translations: Record<Language, Record<string, string>> = {
     'chapter.connecting': 'Connecting to Prof. Didier...',
     'chapter.error': 'Connection failed — check mic & try again',
     'chapter.lesson': 'Lesson',
+    'chapter.loading': 'Loading lesson...',
+    'chapter.no_lessons': 'No lessons yet',
     'nav.change_professor': 'Change Professor',
 
     // Hero
@@ -656,6 +658,8 @@ const translations: Record<Language, Record<string, string>> = {
     'chapter.connecting': 'Conectando con Prof. Didier...',
     'chapter.error': 'Conexión fallida — revisa el micrófono',
     'chapter.lesson': 'Lección',
+    'chapter.loading': 'Cargando lección...',
+    'chapter.no_lessons': 'Aún no hay lecciones',
     'nav.change_professor': 'Cambiar Profesor',
 
     // Hero
@@ -1073,6 +1077,8 @@ const translations: Record<Language, Record<string, string>> = {
     'chapter.connecting': '正在连接Didier教授...',
     'chapter.error': '连接失败 — 请检查麦克风',
     'chapter.lesson': '课程',
+    'chapter.loading': '加载课程中...',
+    'chapter.no_lessons': '暂无课程',
     'nav.change_professor': '更换教授',
 
     // Hero
@@ -1490,6 +1496,8 @@ const translations: Record<Language, Record<string, string>> = {
     'chapter.connecting': 'جارٍ الاتصال بالأستاذ ديديه...',
     'chapter.error': 'فشل الاتصال — تحقق من الميكروفون',
     'chapter.lesson': 'الدرس',
+    'chapter.loading': 'جارٍ تحميل الدرس...',
+    'chapter.no_lessons': 'لا توجد دروس بعد',
     'nav.change_professor': 'تغيير الأستاذ',
 
     // Hero
@@ -1907,6 +1915,8 @@ const translations: Record<Language, Record<string, string>> = {
     'chapter.connecting': 'Connexion au Prof. Didier...',
     'chapter.error': 'Connexion échouée — vérifiez le micro',
     'chapter.lesson': 'Leçon',
+    'chapter.loading': 'Chargement de la leçon...',
+    'chapter.no_lessons': 'Aucune leçon pour l\'instant',
     'nav.change_professor': 'Changer de Professeur',
 
     // Hero
@@ -2324,6 +2334,8 @@ const translations: Record<Language, Record<string, string>> = {
     'chapter.connecting': 'Verbindung zu Prof. Didier...',
     'chapter.error': 'Verbindung fehlgeschlagen — Mikrofon prüfen',
     'chapter.lesson': 'Lektion',
+    'chapter.loading': 'Lektion wird geladen...',
+    'chapter.no_lessons': 'Noch keine Lektionen',
     'nav.change_professor': 'Professor Wechseln',
 
     // Hero
@@ -2741,6 +2753,8 @@ const translations: Record<Language, Record<string, string>> = {
     'chapter.connecting': 'Didier教授に接続中...',
     'chapter.error': '接続失敗 — マイクを確認してください',
     'chapter.lesson': 'レッスン',
+    'chapter.loading': 'レッスンを読み込み中...',
+    'chapter.no_lessons': 'レッスンはまだありません',
     'nav.change_professor': '教授を変更',
 
     // Hero

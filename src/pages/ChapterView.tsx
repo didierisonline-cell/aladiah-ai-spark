@@ -204,7 +204,7 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
       <div style={{ textAlign: 'center', color: '#60a5fa' }}>
         <div style={{ width: 40, height: 40, border: '3px solid #1e40af', borderTop: '3px solid #60a5fa', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-        <p style={{ fontSize: 14, color: '#475569' }}>Loading lesson...</p>
+        <p style={{ fontSize: 14, color: '#475569' }}>{t('chapter.loading')}</p>
       </div>
     </div>
   );
@@ -266,7 +266,7 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} key={currentLesson?.id}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
               <BookOpen size={18} color="#3b82f6" />
-              <span style={{ fontSize: 12, color: '#3b82f6', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Lesson {(currentLesson?.order_index ?? 0) + 1}</span>
+              <span style={{ fontSize: 12, color: '#3b82f6', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('chapter.lesson')} {(currentLesson?.order_index ?? 0) + 1}</span>
             </div>
             <h1 style={{ fontSize: 28, fontWeight: 700, color: '#f1f5f9', margin: '0 0 24px', lineHeight: 1.3 }}>
               {getTitle(currentLesson)}
@@ -414,7 +414,7 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
             {videos.length === 0 ? (
               <div style={{ padding: '32px 16px', textAlign: 'center', color: '#334155' }}>
                 <BookOpen size={24} style={{ margin: '0 auto 8px', opacity: 0.4 }} />
-                <p style={{ fontSize: 13, margin: 0 }}>No lessons yet</p>
+                <p style={{ fontSize: 13, margin: 0 }}>{t('chapter.no_lessons')}</p>
               </div>
             ) : videos.map((video, idx) => {
               const isCurrent = currentLesson?.id === video.id;
@@ -434,7 +434,7 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
                     <p style={{ margin: 0, fontSize: 13, fontWeight: isCurrent ? 600 : 400, color: isCurrent ? '#f1f5f9' : '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {getTitle(video)}
                     </p>
-                    <p style={{ margin: '2px 0 0', fontSize: 11, color: '#334155' }}>Lesson {idx + 1}</p>
+                    <p style={{ margin: '2px 0 0', fontSize: 11, color: '#334155' }}>{t('chapter.lesson')} {idx + 1}</p>
                   </div>
                   {isCurrent && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#3b82f6', flexShrink: 0 }} />}
                 </button>
