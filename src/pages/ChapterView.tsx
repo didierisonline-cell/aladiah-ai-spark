@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useConversation } from '@elevenlabs/react';
-import { ArrowLeft, CheckCircle, Lock, Play, BookOpen, MessageCircle, Trophy } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle, Lock, Play, BookOpen, MessageCircle, Trophy } from 'lucide-react';
 import PortalLangWidget from '@/components/portal/PortalLangWidget';
 import Quiz from '@/components/course/Quiz';
 
@@ -61,6 +61,7 @@ export default function ChapterView() {
   const [currentLesson, setCurrentLesson] = useState<Video | null>(null);
   const [passedQuizzes, setPassedQuizzes] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [allChapters, setAllChapters] = useState<Chapter[]>([]);
 
   // Prof. Didier conversation state
   const [convStatus, setConvStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
@@ -155,15 +156,17 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
     if (!chapterId || !courseId) return;
     setLoading(true);
     try {
-      const [{ data: courseData }, { data: chapterData }, { data: videosData }, { data: quizzesData }, { data: progressData }] = await Promise.all([
+      const [{ data: courseData }, { data: chapterData }, { data: allChaptersData }, { data: videosData }, { data: quizzesData }, { data: progressData }] = await Promise.all([
         supabase.from('courses').select('id, title, translations').eq('id', courseId).single(),
         supabase.from('chapters').select('id, title, description, order_index, course_id, translations').eq('id', chapterId).single(),
+        supabase.from('chapters').select('id, title, order_index, translations').eq('course_id', courseId).order('order_index'),
         supabase.from('videos').select('id, title, description, chapter_id, order_index, video_url, translations').eq('chapter_id', chapterId).order('order_index'),
         supabase.from('quizzes').select('*').eq('chapter_id', chapterId),
         supabase.from('user_progress').select('quiz_id').not('quiz_id', 'is', null),
       ]);
       setCourse(courseData);
       setChapter(chapterData);
+      setAllChapters((allChaptersData || []) as Chapter[]);
       setVideos((videosData || []) as Video[]);
       setQuizzes(quizzesData || []);
       setPassedQuizzes((progressData || []).map((p: any) => p.quiz_id));
@@ -214,6 +217,29 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
         <button onClick={() => navigate('/courses')} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: 14, fontWeight: 500 }}>
           <ArrowLeft size={16} />{t('chapter.back')}
         </button>
+
+        {allChapters.length > 1 && (() => {
+          const idx = allChapters.findIndex(c => c.id === chapter?.id);
+          const prev = idx > 0 ? allChapters[idx - 1] : null;
+          const next = idx < allChapters.length - 1 ? allChapters[idx + 1] : null;
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
+              <button onClick={() => prev && navigate(`/course/${courseId}/chapter/${prev.id}`)} disabled={!prev} title={prev ? getTitle(prev) : ''}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 8, border: '1px solid rgba(96,165,250,0.2)', background: prev ? 'rgba(30,64,175,0.15)' : 'rgba(15,23,42,0.3)', cursor: prev ? 'pointer' : 'not-allowed', color: prev ? '#60a5fa' : '#334155' }}>
+                <ChevronLeft size={18} />
+              </button>
+              <div style={{ textAlign: 'center', minWidth: 140, maxWidth: 240 }}>
+                <div style={{ fontSize: 10, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>{idx + 1} / {allChapters.length}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getTitle(chapter)}</div>
+              </div>
+              <button onClick={() => next && navigate(`/course/${courseId}/chapter/${next.id}`)} disabled={!next} title={next ? getTitle(next) : ''}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 8, border: '1px solid rgba(96,165,250,0.2)', background: next ? 'rgba(30,64,175,0.15)' : 'rgba(15,23,42,0.3)', cursor: next ? 'pointer' : 'not-allowed', color: next ? '#60a5fa' : '#334155' }}>
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          );
+        })()}
+
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <PortalLangWidget />
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
