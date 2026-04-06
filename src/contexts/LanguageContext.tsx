@@ -424,6 +424,9 @@ const translations: Record<Language, Record<string, string>> = {
     'kit.talking.subtitle': 'Use these in conversations, DMs, or video calls.',
     'kit.copy': 'Copy',
     'kit.copied': 'Copied!',
+    'staff.title': 'Meet the Academic Staff',
+    'staff.subtitle': 'Real professionals. Real experience. Here to support your learning journey.',
+    'cta.start_journey': 'Start Your Journey',
     'kit.backToReferral': 'Back to Referral Program',
   },
   es: {
@@ -831,6 +834,9 @@ const translations: Record<Language, Record<string, string>> = {
     'kit.talking.subtitle': 'Úsalos en conversaciones, mensajes o videollamadas.',
     'kit.copy': 'Copiar',
     'kit.copied': '¡Copiado!',
+    'staff.title': 'Conoce al Equipo Académico',
+    'staff.subtitle': 'Profesionales reales. Experiencia real. Aquí para apoyar tu aprendizaje.',
+    'cta.start_journey': 'Comienza Tu Camino',
     'kit.backToReferral': 'Volver al Programa de Referidos',
   },
   zh: {
@@ -1238,6 +1244,9 @@ const translations: Record<Language, Record<string, string>> = {
     'kit.talking.subtitle': '在对话、私信或视频通话中使用。',
     'kit.copy': '复制',
     'kit.copied': '已复制！',
+    'staff.title': '认识学术团队',
+    'staff.subtitle': '真正的专业人士。真正的经验。在这里支持您的学习旅程。',
+    'cta.start_journey': '开始您的旅程',
     'kit.backToReferral': '返回推荐计划',
   },
   ar: {
@@ -1645,6 +1654,9 @@ const translations: Record<Language, Record<string, string>> = {
     'kit.talking.subtitle': 'استخدمها في المحادثات أو الرسائل أو مكالمات الفيديو.',
     'kit.copy': 'نسخ',
     'kit.copied': 'تم النسخ!',
+    'staff.title': 'تعرف على هيئة التدريس',
+    'staff.subtitle': 'محترفون حقيقيون. خبرة حقيقية. هنا لدعم رحلة تعلمك.',
+    'cta.start_journey': 'ابدأ رحلتك',
     'kit.backToReferral': 'العودة لبرنامج الإحالة',
   },
   fr: {
@@ -2052,6 +2064,9 @@ const translations: Record<Language, Record<string, string>> = {
     'kit.talking.subtitle': 'Utilisez-les dans vos conversations, messages ou appels vidéo.',
     'kit.copy': 'Copier',
     'kit.copied': 'Copié !',
+    'staff.title': 'Rencontrez le Corps Professoral',
+    'staff.subtitle': 'De vrais professionnels. Une vraie expérience. Ici pour soutenir votre parcours.',
+    'cta.start_journey': 'Commencez Votre Parcours',
     'kit.backToReferral': 'Retour au Programme de Parrainage',
   },
   de: {
@@ -2459,6 +2474,9 @@ const translations: Record<Language, Record<string, string>> = {
     'kit.talking.subtitle': 'Verwenden Sie diese in Gesprächen, Nachrichten oder Videoanrufen.',
     'kit.copy': 'Kopieren',
     'kit.copied': 'Kopiert!',
+    'staff.title': 'Lernen Sie das Lehrpersonal kennen',
+    'staff.subtitle': 'Echte Profis. Echte Erfahrung. Hier um Ihre Lernreise zu unterstützen.',
+    'cta.start_journey': 'Starten Sie Ihre Reise',
     'kit.backToReferral': 'Zurück zum Empfehlungsprogramm',
   },
   ja: {
@@ -2866,6 +2884,9 @@ const translations: Record<Language, Record<string, string>> = {
     'kit.talking.subtitle': '会話、DM、ビデオ通話で使用してください。',
     'kit.copy': 'コピー',
     'kit.copied': 'コピー済み！',
+    'staff.title': 'アカデミックスタッフを紹介',
+    'staff.subtitle': 'リアルなプロフェッショナル。リアルな経験。あなたの学習旅路をサポートします。',
+    'cta.start_journey': '旅を始めましょう',
     'kit.backToReferral': '紹介プログラムに戻る',
   },
 };

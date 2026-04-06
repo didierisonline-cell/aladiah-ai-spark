@@ -34,7 +34,7 @@ const CTA = () => {
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm mb-8"
           >
             <Sparkles className="w-4 h-4 text-white" />
-            <span className="text-sm font-semibold text-white/90 tracking-wide">Start Your Journey</span>
+            <span className="text-sm font-semibold text-white/90 tracking-wide">{t('cta.start_journey')}</span>
           </motion.div>
 
           <motion.h2
