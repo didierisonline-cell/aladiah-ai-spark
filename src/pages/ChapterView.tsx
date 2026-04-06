@@ -7,6 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useConversation } from '@elevenlabs/react';
 import { ArrowLeft, CheckCircle, Lock, Play, BookOpen, MessageCircle, Trophy } from 'lucide-react';
 import PortalLangWidget from '@/components/portal/PortalLangWidget';
+import Quiz from '@/components/course/Quiz';
 
 const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string;
 
