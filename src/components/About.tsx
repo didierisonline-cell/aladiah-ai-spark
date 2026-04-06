@@ -185,8 +185,8 @@ const About = () => {
   
       <div className="container mx-auto px-4 mt-20 pb-16">
         <div className="text-center mb-12">
-          <h3 className="text-2xl sm:text-3xl font-display font-bold text-foreground mb-3">Meet the Academic Staff</h3>
-          <p className="text-muted-foreground max-w-xl mx-auto">Real professionals. Real experience. Here to support your learning journey.</p>
+          <h3 className="text-2xl sm:text-3xl font-display font-bold text-foreground mb-3">{t('staff.title')}</h3>
+          <p className="text-muted-foreground max-w-xl mx-auto">{t('staff.subtitle')}</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {professors.map((prof, index) => (
