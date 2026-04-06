@@ -297,9 +297,15 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                   <div style={{ width: 3, height: 18, borderRadius: 2, background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)' }} />
                   <span style={{ fontSize: 12, fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    Lesson Transcript
+                    {t('chapter.transcript')}
                   </span>
                 </div>
+                {language !== 'en' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, padding: '8px 14px', background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 8 }}>
+                    <span style={{ fontSize: 18 }}>🌐</span>
+                    <span style={{ fontSize: 12, color: '#60a5fa' }}>{t('chapter.transcript_notice')}</span>
+                  </div>
+                )}
                 <div style={{
                   background: 'rgba(15,23,42,0.6)',
                   border: '1px solid rgba(59,130,246,0.15)',
