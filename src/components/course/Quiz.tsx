@@ -144,15 +144,31 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
         const course_id = (quizData?.chapters as any)?.course_id || null;
 
         if (course_id) {
-          await supabase.from('user_progress').upsert({
-            user_id: session.user.id,
-            quiz_id: quizId,
-            chapter_id,
-            course_id,
-            score,
-            passed,
-            completed_at: new Date().toISOString(),
-          }, { onConflict: 'user_id,quiz_id' });
+          // Check if already saved to avoid duplicates
+          const { data: existing } = await supabase
+            .from('user_progress')
+            .select('id')
+            .eq('user_id', session.user.id)
+            .eq('quiz_id', quizId)
+            .maybeSingle();
+
+          if (existing) {
+            // Update existing record
+            await supabase.from('user_progress')
+              .update({ score, passed, completed_at: new Date().toISOString() })
+              .eq('id', existing.id);
+          } else {
+            // Insert new record
+            await supabase.from('user_progress').insert({
+              user_id: session.user.id,
+              quiz_id: quizId,
+              chapter_id,
+              course_id,
+              score,
+              passed,
+              completed_at: new Date().toISOString(),
+            });
+          }
         }
       }
 

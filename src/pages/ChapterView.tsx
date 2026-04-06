@@ -39,7 +39,7 @@ function Bars({ active }: { active: boolean }) {
               <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#f59e0b' }}>{t('chapter.quiz.title')}</h2>
               <button onClick={() => setActiveQuizId(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 24, lineHeight: 1 }}>×</button>
             </div>
-            <Quiz quizId={activeQuizId} quizType="mini_video" onComplete={() => setActiveQuizId(null)} onBack={() => setActiveQuizId(null)} />
+            <Quiz quizId={activeQuizId} quizType="chapter_end" onComplete={() => setActiveQuizId(null)} onBack={() => setActiveQuizId(null)} />
           </div>
         </div>
       )}
@@ -441,7 +441,7 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
               <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#f59e0b' }}>{t('chapter.quiz.title')}</h2>
               <button onClick={() => setActiveQuizId(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 24, lineHeight: 1 }}>×</button>
             </div>
-            <Quiz quizId={activeQuizId} quizType="mini_video" onComplete={() => setActiveQuizId(null)} onBack={() => setActiveQuizId(null)} />
+            <Quiz quizId={activeQuizId} quizType="chapter_end" onComplete={() => setActiveQuizId(null)} onBack={() => setActiveQuizId(null)} />
           </div>
         </div>
       )}
