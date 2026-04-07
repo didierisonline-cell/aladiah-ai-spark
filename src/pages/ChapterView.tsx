@@ -71,6 +71,7 @@ export default function ChapterView() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
   const isLive = convStatus === 'connected';
+  const isStartingRef = useRef(false);
 
   const conversation = useConversation({
     onConnect: () => {
@@ -79,6 +80,7 @@ export default function ChapterView() {
     },
     onDisconnect: () => {
       setConvStatus('idle');
+      isStartingRef.current = false;
       if (timerRef.current) clearInterval(timerRef.current);
     },
     onMessage: ({ message, source }: { message: string; source: string }) => {
@@ -93,6 +95,8 @@ export default function ChapterView() {
 
   const startSession = useCallback(async () => {
     if (!currentLesson) return;
+    if (isStartingRef.current || convStatus !== 'idle') return;
+    isStartingRef.current = true;
     setTranscript([]);
     setDuration(0);
     try {
@@ -122,6 +126,7 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
       });
     } catch {
       setConvStatus('error');
+      isStartingRef.current = false;
     }
   }, [conversation, currentLesson, chapter, language]);
 
