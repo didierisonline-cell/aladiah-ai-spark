@@ -315,17 +315,27 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
                   overflowY: 'auto',
                   position: 'relative'
                 }}>
-                  <pre style={{
-                    margin: 0,
-                    fontSize: 13,
-                    lineHeight: 1.8,
-                    color: '#cbd5e1',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word',
-                    fontFamily: 'inherit'
-                  }}>
-                    {getTranscript(currentLesson)}
-                  </pre>
+                  {getTranscript(currentLesson)
+                    .split(/\n+/)
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0)
+                    .map((para, i) => (
+                      <p key={i} style={{
+                        margin: '0 0 14px',
+                        fontSize: 13,
+                        lineHeight: 1.8,
+                        color: para.match(/^[A-Z][A-Z\s&:0-9]{3,}:?$/) || para.match(/^\d+:\d+/) || para.match(/^[A-Z]{2,}/)
+                          ? '#93c5fd'
+                          : '#cbd5e1',
+                        fontWeight: para.match(/^[A-Z][A-Z\s&:0-9]{3,}:?$/) ? 600 : 400,
+                        letterSpacing: para.match(/^[A-Z][A-Z\s&:0-9]{3,}:?$/) ? '0.04em' : 'normal',
+                        borderLeft: para.match(/^\d+:\d+/) ? '2px solid rgba(96,165,250,0.3)' : 'none',
+                        paddingLeft: para.match(/^\d+:\d+/) ? 10 : 0,
+                      }}>
+                        {para}
+                      </p>
+                    ))
+                  }
                 </div>
                 <p style={{ margin: '8px 0 0', fontSize: 11, color: '#475569', textAlign: 'right' }}>
                   Prof. Didier will teach this content — you can also read along
