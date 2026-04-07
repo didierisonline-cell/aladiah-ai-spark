@@ -344,8 +344,6 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
                   })()
                     .map(line => line.trim())
                     .filter(line => line.length > 0)
-                    .map(line => line.trim())
-                    .filter(line => line.length > 0)
                     .map((para, i) => (
                       <p key={i} style={{
                         margin: '0 0 14px',
