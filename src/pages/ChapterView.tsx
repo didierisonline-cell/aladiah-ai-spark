@@ -323,7 +323,7 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
                     lines.forEach(line => {
                       // Further split long lines on sentence boundaries
                       if (line.length > 300) {
-                        const sentences = line.split(/(?<=\.) (?=[A-Z])/);
+                        const sentences = line.replace(/\.\s+(?=[A-Z])/g, '.\n').split('\n');
                         // Group sentences into ~150 char chunks
                         let chunk = '';
                         sentences.forEach(s => {
