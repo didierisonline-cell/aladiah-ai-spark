@@ -315,8 +315,34 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
                   overflowY: 'auto',
                   position: 'relative'
                 }}>
-                  {getTranscript(currentLesson)
-                    .split(/\n+/)
+                  {(() => {
+                    const raw = getTranscript(currentLesson);
+                    // Split on real newlines first, then on ". " followed by capital to break dense paragraphs
+                    const lines = raw.split(/\n+/);
+                    const paras: string[] = [];
+                    lines.forEach(line => {
+                      // Further split long lines on sentence boundaries
+                      if (line.length > 300) {
+                        const sentences = line.split(/(?<=\.) (?=[A-Z])/);
+                        // Group sentences into ~150 char chunks
+                        let chunk = '';
+                        sentences.forEach(s => {
+                          if ((chunk + s).length > 250 && chunk) {
+                            paras.push(chunk.trim());
+                            chunk = s + ' ';
+                          } else {
+                            chunk += s + ' ';
+                          }
+                        });
+                        if (chunk.trim()) paras.push(chunk.trim());
+                      } else {
+                        paras.push(line);
+                      }
+                    });
+                    return paras;
+                  })()
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0)
                     .map(line => line.trim())
                     .filter(line => line.length > 0)
                     .map((para, i) => (
