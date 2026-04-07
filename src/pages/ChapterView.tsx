@@ -93,11 +93,12 @@ export default function ChapterView() {
 
   const startSession = useCallback(async () => {
     if (!currentLesson) return;
-    setConvStatus('connecting');
     setTranscript([]);
     setDuration(0);
     try {
+      // Request mic BEFORE setting connecting state to avoid Safari blank screen
       await navigator.mediaDevices.getUserMedia({ audio: true });
+      setConvStatus('connecting');
       const lessonTranscript = getTranscript(currentLesson);
       const lessonTitle = getTitle(currentLesson);
       const chapterTitle = chapter?.title || '';
