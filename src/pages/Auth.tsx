@@ -196,20 +196,20 @@ const Auth = () => {
                     <Label className="text-sm font-semibold">{t('auth.choose.plan')}</Label>
                     <div style={{ background: 'rgba(245,158,11,0.08)', border: '2px solid rgba(245,158,11,0.5)', borderRadius: '14px', padding: '20px', position: 'relative' }}>
                       <span style={{ position: 'absolute', top: '-11px', left: '50%', transform: 'translateX(-50%)', background: '#f59e0b', color: '#000', fontSize: '9px', fontWeight: 800, padding: '3px 14px', borderRadius: '100px', whiteSpace: 'nowrap', letterSpacing: '0.1em' }}>
-                        FULL ACCESS — EVERYTHING INCLUDED
+                        {t('auth.plan.badge')}
                       </span>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                         <div>
                           <p style={{ color: '#f59e0b', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>ALADIAH ACADEMY</p>
-                          <p style={{ fontSize: '16px', fontWeight: 800, color: '#fff', margin: 0 }}>All-Access Pass</p>
+                          <p style={{ fontSize: '16px', fontWeight: 800, color: '#fff', margin: 0 }}>{t('auth.plan.name')}</p>
                         </div>
                         <div style={{ textAlign: 'right' }}>
                           <p style={{ fontSize: '28px', fontWeight: 800, color: '#fff', margin: 0, lineHeight: 1 }}>$99.99</p>
-                          <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>/month</p>
+                          <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>/{t('pricing.month')}</p>
                         </div>
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
-                        {['Full Scrum Master curriculum', 'Full PM curriculum', 'Prof. Didier AI voice lessons', 'AI Interview Coach', 'AI Resume Builder', 'Career Advisor (AI-guided)', 'Progress tracker + homework', 'Available in 7 languages'].map(f => (
+                        {[t('auth.plan.f1'), t('auth.plan.f2'), t('auth.plan.f3'), t('auth.plan.f4'), t('auth.plan.f5'), t('auth.plan.f6'), t('auth.plan.f7'), t('auth.plan.f8')].map(f => (
                           <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
                             <CheckCircle style={{ width: '11px', height: '11px', color: '#f59e0b', flexShrink: 0, marginTop: '2px' }} />
                             <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.4 }}>{f}</span>
