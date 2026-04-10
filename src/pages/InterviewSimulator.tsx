@@ -157,7 +157,7 @@ const InterviewSimulator = () => {
         {!hasFeature('interview_coach') ? (
           <div className="text-center py-20">
             <Lock className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-            <h2 className="text-2xl font-bold mb-2">Interview Coach — Accelerator Plan</h2>
+            <h2 className="text-2xl font-bold mb-2">AI Interview Coach</h2>
             <p className="text-muted-foreground mb-6">Access your AI Interview Simulator below.</p>
             <Button variant="coral" onClick={() => window.location.href = '/pricing'}>View Plans</Button>
           </div>

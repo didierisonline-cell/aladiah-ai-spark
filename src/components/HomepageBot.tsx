@@ -4,7 +4,7 @@ import { X, Send, Loader2 } from 'lucide-react';
 interface Message { role: 'user' | 'assistant'; content: string; }
 
 const FALLBACKS: Record<string, string> = {
-  price: 'We have 3 plans: Foundation Builder ($49/mo, 1 course), Career Accelerator ($99/mo, all 8 courses), and Elite Mentorship ($199/mo, all courses + live coaching). All include Prof. Didier AI instructor in 7 languages! Click Get Busy above to start. 🚀',
+  price: 'We have one simple plan: $99.99/month — full access to all 8 courses, Prof. Didier AI voice instructor, AI Interview Coach, Resume Builder, and everything in 7 languages. Click Get Busy above to start! 🚀',
   course: 'We offer 8 world-class programs: Scrum Master, PMP, AI for Project Managers, Data Analytics, Cybersecurity, DevOps, Solution Architect, and Business Analysis. Each includes AI instruction, quizzes, and certification prep. Which interests you?',
   enroll: 'Getting started is easy — click Get Busy at the top! You can start and upgrade anytime. Prof. Didier will personally guide your first lesson. 🎓',
   certif: 'Our courses prep you for PSM I/II/III, PMP, PMI-ACP, CSM, and more. Enroll now and get certified faster!',
@@ -63,7 +63,7 @@ export default function HomepageBot() {
         body: JSON.stringify({
           model: 'claude-haiku-4-5-20251001',
           max_tokens: 250,
-          system: 'You are Aladiah, the admissions assistant for Aladiah Academy. Only answer questions about programs, pricing, and enrollment. Never teach course content — direct content questions to Prof. Didier inside the course portal. Programs: Scrum Master, PMP, AI for PMs, Data Analytics, Cybersecurity, DevOps, Solution Architect, Business Analysis. Plans: Foundation $49/mo, Career Accelerator $99/mo, Elite $199/mo. Always end with a gentle call to action. Keep responses under 3 sentences.',
+          system: 'You are Aladiah, the admissions assistant for Aladiah Academy. Only answer questions about programs, pricing, and enrollment. Never teach course content — direct content questions to Prof. Didier inside the course portal. Programs: Scrum Master, PMP, AI for PMs, Data Analytics, Cybersecurity, DevOps, Solution Architect, Business Analysis. Plan: All-Access Pass $99.99/mo — everything included. Always end with a gentle call to action. Keep responses under 3 sentences.',
           messages: messages.concat({ role: 'user', content: userMsg }).map(m => ({ role: m.role, content: m.content }))
         })
       });
