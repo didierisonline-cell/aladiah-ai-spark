@@ -31,18 +31,6 @@ function Bars({ active }: { active: boolean }) {
         }} />
       ))}
       <style>{`@keyframes pb{from{transform:scaleY(.35)}to{transform:scaleY(1.15)}}`}</style>
-      {/* Quiz Modal */}
-      {activeQuizId && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div style={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, width: '100%', maxWidth: 600, maxHeight: '85vh', overflowY: 'auto', padding: 32 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-              <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#f59e0b' }}>{t('chapter.quiz.title')}</h2>
-              <button onClick={() => setActiveQuizId(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 24, lineHeight: 1 }}>×</button>
-            </div>
-            <Quiz quizId={activeQuizId} quizType="chapter_end" onComplete={() => setActiveQuizId(null)} onBack={() => setActiveQuizId(null)} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
