@@ -102,6 +102,14 @@ export default function ChapterView() {
     try {
       // Request mic BEFORE setting connecting state to avoid Safari blank screen
       await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Unlock Safari WebAudio context BEFORE connecting ElevenLabs
+      try {
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContext) {
+          const ctx = new AudioContext();
+          await ctx.resume();
+        }
+      } catch {}
       setConvStatus('connecting');
       const lessonTranscript = getTranscript(currentLesson);
       const lessonTitle = getTitle(currentLesson);
