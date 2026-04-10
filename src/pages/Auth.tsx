@@ -190,69 +190,32 @@ const Auth = () => {
                   </div>
                 </div>
 
-                {/* Tier selector — only on register */}
+                {/* Single plan — only on register */}
                 {!isLogin && (
                   <div className="space-y-3">
                     <Label className="text-sm font-semibold">{t('auth.choose.plan')}</Label>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      {TIERS.map(tier => {
-                        const Icon = tier.icon;
-                        const isSelected = selectedTier === tier.id;
-                        const features = Array.from({ length: tier.featureCount }, (_, i) => t(`pricing.${tier.key}.f${i + 1}`));
-                        const missing = Array.from({ length: tier.missingCount }, (_, i) => t(`pricing.${tier.key}.m${i + 1}`));
-                        return (
-                          <button
-                            key={tier.id}
-                            type="button"
-                            onClick={() => setSelectedTier(tier.id)}
-                            className="relative rounded-xl p-4 text-left transition-all"
-                            style={{
-                              background: isSelected ? `${tier.color}10` : 'rgba(255,255,255,0.02)',
-                              border: `2px solid ${isSelected ? tier.color : 'rgba(255,255,255,0.08)'}`,
-                              cursor: 'pointer',
-                              boxShadow: isSelected ? `0 0 20px ${tier.color}20` : 'none',
-                            }}
-                          >
-                            {tier.popular && (
-                              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[9px] font-bold px-3 py-0.5 rounded-full whitespace-nowrap" style={{ background: tier.color, color: '#000' }}>
-                                {t('pricing.popular')}
-                              </span>
-                            )}
-                            <div className="flex items-center gap-2 mb-2">
-                              <Icon className="w-5 h-5" style={{ color: tier.color }} />
-                              <div>
-                                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: tier.color }}>
-                                  {t(`pricing.${tier.key}.tier`)}
-                                </p>
-                                <p className="text-xs font-bold text-foreground">{t(`pricing.${tier.key}.name`)}</p>
-                              </div>
-                            </div>
-                            <p className="text-2xl font-bold mb-3" style={{ color: isSelected ? '#fff' : 'rgba(255,255,255,0.6)' }}>
-                              ${tier.price}<span className="text-[10px] font-normal text-muted-foreground">/{t('pricing.month')}</span>
-                            </p>
-                            <div className="space-y-1.5">
-                              {features.map((f, i) => (
-                                <div key={i} className="flex items-start gap-1.5">
-                                  <CheckCircle className="w-3 h-3 mt-0.5 shrink-0" style={{ color: tier.color }} />
-                                  <span className="text-[11px] leading-tight" style={{ color: 'rgba(255,255,255,0.7)' }}>{f}</span>
-                                </div>
-                              ))}
-                              {missing.map((f, i) => (
-                                <div key={`m${i}`} className="flex items-start gap-1.5">
-                                  <div className="w-3 h-[1px] mt-2 shrink-0" style={{ background: 'rgba(255,255,255,0.15)' }} />
-                                  <span className="text-[11px] leading-tight line-through" style={{ color: 'rgba(255,255,255,0.25)' }}>{f}</span>
-                                </div>
-                              ))}
-                            </div>
-                            {isSelected && (
-                              <div className="mt-3 flex items-center justify-center gap-1">
-                                <CheckCircle className="w-3.5 h-3.5" style={{ color: tier.color }} />
-                                <span className="text-[10px] font-bold" style={{ color: tier.color }}>Selected</span>
-                              </div>
-                            )}
-                          </button>
-                        );
-                      })}
+                    <div style={{ background: 'rgba(245,158,11,0.08)', border: '2px solid rgba(245,158,11,0.5)', borderRadius: '14px', padding: '20px', position: 'relative' }}>
+                      <span style={{ position: 'absolute', top: '-11px', left: '50%', transform: 'translateX(-50%)', background: '#f59e0b', color: '#000', fontSize: '9px', fontWeight: 800, padding: '3px 14px', borderRadius: '100px', whiteSpace: 'nowrap', letterSpacing: '0.1em' }}>
+                        FULL ACCESS — EVERYTHING INCLUDED
+                      </span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <div>
+                          <p style={{ color: '#f59e0b', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>ALADIAH ACADEMY</p>
+                          <p style={{ fontSize: '16px', fontWeight: 800, color: '#fff', margin: 0 }}>All-Access Pass</p>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <p style={{ fontSize: '28px', fontWeight: 800, color: '#fff', margin: 0, lineHeight: 1 }}>$99.99</p>
+                          <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>/month</p>
+                        </div>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                        {['Full Scrum Master curriculum', 'Full PM curriculum', 'Prof. Didier AI voice lessons', 'AI Interview Coach', 'AI Resume Builder', 'Career Advisor (AI-guided)', 'Progress tracker + homework', 'Available in 7 languages'].map(f => (
+                          <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+                            <CheckCircle style={{ width: '11px', height: '11px', color: '#f59e0b', flexShrink: 0, marginTop: '2px' }} />
+                            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.4 }}>{f}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
