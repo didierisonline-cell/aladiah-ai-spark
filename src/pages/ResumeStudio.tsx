@@ -214,7 +214,7 @@ ${resume.projects}
           <div className="text-center py-20">
             <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
             <h2 className="text-2xl font-bold mb-2">Resume Builder — Accelerator Plan</h2>
-            <p className="text-muted-foreground mb-6">Upgrade to Accelerator or Elite to access the AI Resume Builder.</p>
+            <p className="text-muted-foreground mb-6">Access your AI Resume Builder below.</p>
             <Button variant="coral" onClick={() => navigate('/pricing')}>View Plans</Button>
           </div>
         ) : (

@@ -13,21 +13,7 @@ import Header from '@/components/Header';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const TIERS = [
-  {
-    id: 'foundation', key: 't1', price: 99,
-    priceId: import.meta.env.VITE_STRIPE_PRICE_FOUNDATION || 'price_1TEFgA0CtfIq2xPfWJdun1vH',
-    icon: Shield, color: '#3b82f6', popular: false, featureCount: 7, missingCount: 3,
-  },
-  {
-    id: 'accelerator', key: 't2', price: 299,
-    priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TEFgm0CtfIq2xPfkuYGY5sI',
-    icon: Zap, color: '#f59e0b', popular: true, featureCount: 8, missingCount: 1,
-  },
-  {
-    id: 'elite', key: 't3', price: 499,
-    priceId: import.meta.env.VITE_STRIPE_PRICE_ELITE || 'price_1TEFhA0CtfIq2xPfZOXBhYlN',
-    icon: Crown, color: '#10b981', popular: false, featureCount: 9, missingCount: 0,
-  },
+  { id: 'accelerator', key: 't2', price: 99.99, priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || "price_1TEFgm0CtfIq2xPfkuYGY5sI", name: 'All-Access Pass' },
 ];
 
 const Auth = () => {
