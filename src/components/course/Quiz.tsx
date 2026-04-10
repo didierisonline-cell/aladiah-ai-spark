@@ -129,7 +129,7 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
 
       const correctCount = results.filter(r => r.isCorrect).length;
       const score = Math.round((correctCount / questions.length) * 100);
-      const passed = score >= 70;
+      const passed = score >= 100;
 
       // Save progress if logged in
       if (session) {
@@ -188,7 +188,7 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
       } else {
         toast({
           title: 'Not quite there yet',
-          description: `You scored ${score}%. You need 70% to pass. Try again!`,
+          description: `You scored ${score}%. You need 100% to pass. Try again!`,
           variant: 'destructive',
         });
       }
