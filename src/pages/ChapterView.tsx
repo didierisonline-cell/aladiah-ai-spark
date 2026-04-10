@@ -72,7 +72,9 @@ export default function ChapterView() {
       if (timerRef.current) clearInterval(timerRef.current);
     },
     onMessage: ({ message, source }: { message: string; source: string }) => {
-      setTranscript(p => [...p, { role: source === 'ai' ? 'agent' : 'user', message }]);
+      // Strip ElevenLabs persona XML tags e.g. <LaSean Pickens (EN/ES)>...</LaSean Pickens (EN/ES)>
+      const cleaned = message.replace(/<[^>]+>/g, '').trim();
+      if (cleaned) setTranscript(p => [...p, { role: source === 'ai' ? 'agent' : 'user', message: cleaned }]);
     },
     onError: () => setConvStatus('error'),
   });
