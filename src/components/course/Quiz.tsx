@@ -133,17 +133,17 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
 
       // Save progress if logged in
       if (session) {
-        // Get quiz details to find chapter_id and course_id
-        const { data: quizData } = await supabase
-          .from('quizzes')
-          .select('chapter_id, chapters(course_id)')
-          .eq('id', quizId)
-          .single();
-        
-        const chapter_id = quizData?.chapter_id || null;
-        const course_id = (quizData?.chapters as any)?.course_id || null;
+        try {
+          // Get quiz details to find chapter_id and course_id
+          const { data: quizData } = await supabase
+            .from('quizzes')
+            .select('chapter_id, chapters(course_id)')
+            .eq('id', quizId)
+            .single();
 
-        if (course_id) {
+          const chapter_id = quizData?.chapter_id || null;
+          const course_id = (quizData?.chapters as any)?.course_id || null;
+
           // Check if already saved to avoid duplicates
           const { data: existing } = await supabase
             .from('user_progress')
@@ -153,13 +153,11 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
             .maybeSingle();
 
           if (existing) {
-            // Update existing record
             await supabase.from('user_progress')
               .update({ score, passed, completed_at: new Date().toISOString() })
               .eq('id', existing.id);
           } else {
-            // Insert new record
-            await supabase.from('user_progress').insert({
+            const { error: insertError } = await supabase.from('user_progress').insert({
               user_id: session.user.id,
               quiz_id: quizId,
               chapter_id,
@@ -168,7 +166,10 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
               passed,
               completed_at: new Date().toISOString(),
             });
+            if (insertError) console.error('Progress save error:', insertError);
           }
+        } catch (e) {
+          console.error('Progress save exception:', e);
         }
       }
 
