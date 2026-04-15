@@ -146,9 +146,6 @@ const Hero = () => {
                 {t('hero.cta.primary')}
                 <ArrowRight className="w-5 h-5" />
               </Button>
-              <Button variant="heroOutline" size="xl">
-                {t('hero.cta.secondary')}
-              </Button>
             </motion.div>
 
             <motion.div
