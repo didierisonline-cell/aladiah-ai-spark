@@ -69,7 +69,8 @@ const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps)
   // Career roadmap milestones with dynamic progress
   const roadmapSteps = [
     { label: 'Complete Coursework', threshold: 100, pct: Math.min(100, overallProgress) },
-    { label: 'Project Simulation', threshold: 0, pct: 0 }, // would need sim data
+    { label: 'Project Simulation', threshold: 0, pct: 0 },
+    { label: 'Certifications', threshold: 0, pct: 0 },
     { label: 'Resume & LinkedIn Optimization', threshold: 0, pct: 0 },
     { label: 'Job Placement Readiness', threshold: 0, pct: 0 },
   ];
