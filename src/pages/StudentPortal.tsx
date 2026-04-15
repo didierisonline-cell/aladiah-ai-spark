@@ -315,7 +315,7 @@ const StudentPortal = () => {
       title: t('portal.subscription.title'),
       message: t('portal.subscription.msg'),
       actionLabel: t('portal.subscription.btn'),
-      action: () => window.open('YOUR_REAL_STRIPE_PORTAL_URL', '_blank'),
+      action: () => window.open('https://billing.stripe.com/p/login/test_eVq9AL0OuaMWazPgo41VK00', '_blank'),
       type: 'payment',
     });
 
