@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +27,8 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const registering = useRef(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as any)?.from || '/portal';
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -39,12 +41,12 @@ const Auth = () => {
       const isPaymentReturn = searchParams.get('payment') === 'success';
       if (isPaymentReturn) {
         toast({ title: t('auth.payment.success'), description: t('auth.payment.success.sub') });
-        navigate('/portal');
+        navigate(from);
         return;
       }
       // For login flow — go to portal (they already have an account)
       if (isLogin) {
-        navigate('/portal');
+        navigate(from);
       }
     }
   }, [user, authLoading, navigate, isLogin]);
@@ -57,7 +59,7 @@ const Auth = () => {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast({ title: t('auth.welcome'), description: t('auth.magiclink.verified.sub') });
-        navigate('/portal');
+        navigate(from);
       } else {
         // Block auto-redirect during registration
         registering.current = true;

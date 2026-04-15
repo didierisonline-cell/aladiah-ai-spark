@@ -175,9 +175,9 @@ const Programs = () => {
                     if (program.isWaitlist) {
                       setWaitlistOpen(true);
                     } else if (program.featured) {
-                      navigate('/auth');
+                      navigate('/auth', { state: { from: '/' } });
                     } else {
-                      navigate('/auth');
+                      navigate('/auth', { state: { from: '/' } });
                     }
                   }}
                 >
