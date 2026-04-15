@@ -300,46 +300,79 @@ const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps)
         </Card>
       </div>
 
-      {/* Certification Links */}
-      <Card className="p-6 space-y-4">
-        <div className="flex items-center gap-3">
+      {/* Certification Hub */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 pb-1">
           <div className="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center">
             <Award className="w-5 h-5 text-yellow-500" />
           </div>
           <div>
-            <h3 className="font-semibold">Official Certification Exams</h3>
-            <p className="text-xs text-muted-foreground">Register for your certification — links to official exam bodies</p>
+            <h3 className="font-semibold text-base">Certification Roadmap</h3>
+            <p className="text-xs text-muted-foreground">Official exam links by career track — click any cert to register</p>
           </div>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {[
-            { label: 'PSM I', body: 'Scrum.org', desc: 'Professional Scrum Master I', color: 'bg-blue-500/10 border-blue-500/20 hover:border-blue-500/50', icon: '🏅', url: 'https://www.scrum.org/assessments/professional-scrum-master-i-certification' },
-            { label: 'PSM II', body: 'Scrum.org', desc: 'Professional Scrum Master II', color: 'bg-indigo-500/10 border-indigo-500/20 hover:border-indigo-500/50', icon: '🥈', url: 'https://www.scrum.org/assessments/professional-scrum-master-ii-assessment' },
-            { label: 'SAFe SM', body: 'Scaled Agile', desc: 'SAFe Scrum Master', color: 'bg-purple-500/10 border-purple-500/20 hover:border-purple-500/50', icon: '⚡', url: 'https://scaledagile.com/training/safe-scrum-master/' },
-            { label: 'PMP', body: 'PMI', desc: 'Project Management Professional', color: 'bg-orange-500/10 border-orange-500/20 hover:border-orange-500/50', icon: '🎯', url: 'https://www.pmi.org/certifications/project-management-pmp' },
-            { label: 'CAPM', body: 'PMI', desc: 'Certified Associate in PM', color: 'bg-green-500/10 border-green-500/20 hover:border-green-500/50', icon: '📋', url: 'https://www.pmi.org/certifications/certified-associate-capm' },
-            { label: 'CSM', body: 'Scrum Alliance', desc: 'Certified ScrumMaster', color: 'bg-teal-500/10 border-teal-500/20 hover:border-teal-500/50', icon: '✅', url: 'https://www.scrumalliance.org/get-certified/scrum-master-track/certified-scrummaster' },
-          ].map((cert) => (
-            <a
-              key={cert.label}
-              href={cert.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`flex flex-col gap-1.5 p-3.5 rounded-xl border transition-all duration-200 cursor-pointer group ${cert.color}`}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-lg">{cert.icon}</span>
-                <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
+        {[
+          { track: '🏅 Scrum Master / Agile', color: 'border-blue-500/30 bg-blue-500/5', headerColor: 'text-blue-400', money: 'PSM II + SAFe = enterprise money ($150K+)', groups: [
+            { name: 'Scrum Alliance', certs: [{ label: 'CSM', desc: 'Certified ScrumMaster', url: 'https://www.scrumalliance.org/get-certified/scrum-master-track/certified-scrummaster' }, { label: 'A-CSM', desc: 'Advanced Certified ScrumMaster', url: 'https://www.scrumalliance.org/get-certified/scrum-master-track/advanced-certified-scrummaster' }, { label: 'CSP-SM', desc: 'Certified Scrum Professional', url: 'https://www.scrumalliance.org/get-certified/scrum-master-track/certified-scrum-professional-scrummaster' }] },
+            { name: 'Scrum.org', certs: [{ label: 'PSM I', desc: 'Professional Scrum Master I', url: 'https://www.scrum.org/assessments/professional-scrum-master-i-certification' }, { label: 'PSM II', desc: 'Professional Scrum Master II', url: 'https://www.scrum.org/assessments/professional-scrum-master-ii-assessment' }, { label: 'PSM III', desc: 'Professional Scrum Master III', url: 'https://www.scrum.org/assessments/professional-scrum-master-iii-assessment' }] },
+            { name: 'Scaled Agile', certs: [{ label: 'SSM', desc: 'SAFe Scrum Master', url: 'https://scaledagile.com/training/safe-scrum-master/' }, { label: 'SASM', desc: 'SAFe Advanced Scrum Master', url: 'https://scaledagile.com/training/safe-advanced-scrum-master/' }, { label: 'SA', desc: 'SAFe Agilist', url: 'https://scaledagile.com/training/leading-safe/' }] },
+            { name: 'AI-Enhanced Agile', certs: [{ label: 'ICAgile', desc: 'Agile + AI Mindset', url: 'https://www.icagile.com/certification' }, { label: 'Gen AI Agile', desc: 'Generative AI for Agile Leaders', url: 'https://www.coursera.org/search?query=agile+AI' }] },
+          ]},
+          { track: '💼 Project Manager', color: 'border-orange-500/30 bg-orange-500/5', headerColor: 'text-orange-400', money: 'PMP + AI = Executive-level PM ($160K–$200K)', groups: [
+            { name: 'PMI', certs: [{ label: 'PMP 🔥', desc: 'Project Management Professional', url: 'https://www.pmi.org/certifications/project-management-pmp' }, { label: 'CAPM', desc: 'Certified Associate in PM', url: 'https://www.pmi.org/certifications/certified-associate-capm' }, { label: 'PMI-ACP', desc: 'Agile Certified Practitioner', url: 'https://www.pmi.org/certifications/agile-acp' }] },
+            { name: 'PRINCE2', certs: [{ label: 'PRINCE2 Foundation', desc: 'UK/Europe standard', url: 'https://www.axelos.com/certifications/prince2-certifications' }, { label: 'PRINCE2 Practitioner', desc: 'Advanced PRINCE2', url: 'https://www.axelos.com/certifications/prince2-certifications/prince2-practitioner' }] },
+            { name: 'AI-Integrated PM', certs: [{ label: 'PMI AI in PM', desc: 'AI in Project Management', url: 'https://www.pmi.org/learning/training-development/ai-pm' }, { label: 'Google PM + AI', desc: 'Google Project Management + AI', url: 'https://grow.google/certificates/project-management/' }] },
+          ]},
+          { track: '🧠 Solution Architect', color: 'border-purple-500/30 bg-purple-500/5', headerColor: 'text-purple-400', money: 'AWS Architect + AI Specialty = $180K–$250K', groups: [
+            { name: 'Amazon Web Services', certs: [{ label: 'AWS SAA', desc: 'Solutions Architect Associate', url: 'https://aws.amazon.com/certification/certified-solutions-architect-associate/' }, { label: 'AWS SAP', desc: 'Solutions Architect Professional', url: 'https://aws.amazon.com/certification/certified-solutions-architect-professional/' }, { label: 'AWS ML', desc: 'Machine Learning Specialty', url: 'https://aws.amazon.com/certification/certified-machine-learning-specialty/' }] },
+            { name: 'Microsoft Azure', certs: [{ label: 'AZ-305', desc: 'Azure Solutions Architect Expert', url: 'https://learn.microsoft.com/en-us/certifications/azure-solutions-architect/' }, { label: 'AI-102', desc: 'Azure AI Engineer Associate', url: 'https://learn.microsoft.com/en-us/certifications/azure-ai-engineer/' }] },
+            { name: 'Google Cloud', certs: [{ label: 'GCP Architect', desc: 'Professional Cloud Architect', url: 'https://cloud.google.com/learn/certification/cloud-architect' }, { label: 'GCP ML', desc: 'Professional ML Engineer', url: 'https://cloud.google.com/learn/certification/machine-learning-engineer' }] },
+          ]},
+          { track: '📊 Data Analyst', color: 'border-green-500/30 bg-green-500/5', headerColor: 'text-green-400', money: 'Data + AI (Python + ML) = Data Scientist level', groups: [
+            { name: 'Core Analytics', certs: [{ label: 'Google DA', desc: 'Google Data Analytics Certificate', url: 'https://grow.google/certificates/data-analytics/' }, { label: 'PL-300', desc: 'Microsoft Data Analyst (Power BI)', url: 'https://learn.microsoft.com/en-us/certifications/data-analyst-associate/' }, { label: 'SAS DA', desc: 'SAS Certified Data Analyst', url: 'https://www.sas.com/en_us/certification.html' }] },
+            { name: 'AI + Data', certs: [{ label: 'IBM DS', desc: 'IBM Data Science Professional', url: 'https://www.coursera.org/professional-certificates/ibm-data-science' }, { label: 'Stanford ML', desc: 'Machine Learning by Stanford', url: 'https://www.coursera.org/specializations/machine-learning-introduction' }, { label: 'Deep Learning', desc: 'Deep Learning Specialization', url: 'https://www.coursera.org/specializations/deep-learning' }] },
+          ]},
+          { track: '📈 Business Analyst', color: 'border-teal-500/30 bg-teal-500/5', headerColor: 'text-teal-400', money: 'CBAP + Data + AI = Strategy roles ($140K+)', groups: [
+            { name: 'IIBA', certs: [{ label: 'ECBA', desc: 'Entry Certificate in BA', url: 'https://www.iiba.org/certification/ecba/' }, { label: 'CCBA', desc: 'Certification of Competency in BA', url: 'https://www.iiba.org/certification/ccba/' }, { label: 'CBAP 🔥', desc: 'Certified Business Analysis Professional', url: 'https://www.iiba.org/certification/cbap/' }] },
+            { name: 'AI for BA', certs: [{ label: 'AI for Leaders', desc: 'AI for Business Leaders', url: 'https://www.coursera.org/search?query=AI+business+leaders' }, { label: 'Data-Driven BA', desc: 'Data-driven Decision Making + AI', url: 'https://www.coursera.org/search?query=data+driven+business+analysis' }] },
+          ]},
+          { track: '🔐 Cybersecurity', color: 'border-red-500/30 bg-red-500/5', headerColor: 'text-red-400', money: 'CISSP + AI Security = $180K+', groups: [
+            { name: 'ISC2', certs: [{ label: 'CISSP 🔥', desc: 'Certified Info Systems Security Pro', url: 'https://www.isc2.org/Certifications/CISSP' }, { label: 'SSCP', desc: 'Systems Security Certified Practitioner', url: 'https://www.isc2.org/Certifications/SSCP' }] },
+            { name: 'CompTIA', certs: [{ label: 'Security+', desc: 'CompTIA Security+', url: 'https://www.comptia.org/certifications/security' }, { label: 'CySA+', desc: 'Cybersecurity Analyst', url: 'https://www.comptia.org/certifications/cybersecurity-analyst' }, { label: 'CASP+', desc: 'Advanced Security Practitioner', url: 'https://www.comptia.org/certifications/casp' }] },
+            { name: 'AI + Security', certs: [{ label: 'IBM AI Sec', desc: 'AI for Cybersecurity', url: 'https://www.coursera.org/professional-certificates/ibm-cybersecurity-analyst' }, { label: 'Ethical Hacking AI', desc: 'Ethical Hacking with AI', url: 'https://www.coursera.org/search?query=ethical+hacking+AI' }] },
+          ]},
+          { track: '☁️ DevOps & Cloud Engineering', color: 'border-cyan-500/30 bg-cyan-500/5', headerColor: 'text-cyan-400', money: 'DevOps + AI pipelines = HIGHEST DEMAND RIGHT NOW', groups: [
+            { name: 'Linux Foundation', certs: [{ label: 'CKA', desc: 'Certified Kubernetes Administrator', url: 'https://training.linuxfoundation.org/certification/certified-kubernetes-administrator-cka/' }, { label: 'CKAD', desc: 'Certified Kubernetes App Developer', url: 'https://training.linuxfoundation.org/certification/certified-kubernetes-application-developer-ckad/' }] },
+            { name: 'AWS / Azure DevOps', certs: [{ label: 'AWS DevOps', desc: 'AWS DevOps Engineer Professional', url: 'https://aws.amazon.com/certification/certified-devops-engineer-professional/' }, { label: 'AZ-400', desc: 'Azure DevOps Engineer Expert', url: 'https://learn.microsoft.com/en-us/certifications/devops-engineer/' }] },
+            { name: 'AI + DevOps', certs: [{ label: 'MLOps', desc: 'Machine Learning Operations', url: 'https://www.coursera.org/specializations/machine-learning-engineering-for-production-mlops' }, { label: 'Kubeflow', desc: 'ML Pipelines & AI Infrastructure', url: 'https://www.coursera.org/search?query=kubeflow+MLOps' }] },
+          ]},
+        ].map((track) => (
+          <Card key={track.track} className={`p-5 border ${track.color}`}>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <h4 className={`font-bold text-sm ${track.headerColor}`}>{track.track}</h4>
+                <span className="text-[10px] bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-2 py-0.5 rounded-full">🔥 {track.money}</span>
               </div>
-              <div>
-                <div className="font-semibold text-sm">{cert.label}</div>
-                <div className="text-[10px] text-muted-foreground">{cert.body}</div>
-                <div className="text-xs text-muted-foreground mt-0.5">{cert.desc}</div>
+              <div className="space-y-3">
+                {track.groups.map((group) => (
+                  <div key={group.name}>
+                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{group.name}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {group.certs.map((cert) => (
+                        <a key={cert.label} href={cert.url} target="_blank" rel="noopener noreferrer" title={cert.desc}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-background/60 border border-border hover:border-primary/40 hover:bg-primary/5 transition-all duration-200 group text-xs font-medium">
+                          {cert.label}
+                          <ArrowRight className="w-3 h-3 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
-            </a>
-          ))}
-        </div>
-      </Card>
+            </div>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 };
