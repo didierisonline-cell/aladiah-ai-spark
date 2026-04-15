@@ -183,15 +183,22 @@ const Header = ({ onProfileClick }: HeaderProps) => {
 
 function AuthNavButton({ navigate }: { navigate: (path: string) => void }) {
   const [user, setUser] = useStateAuth<any>(null);
+  const [authReady, setAuthReady] = useStateAuth<boolean>(false);
   const { t } = useLanguage();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
+      setAuthReady(true);
+    });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setUser(session?.user ?? null);
+      setAuthReady(true);
     });
     return () => subscription.unsubscribe();
   }, []);
+
+  if (!authReady) return null;
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
