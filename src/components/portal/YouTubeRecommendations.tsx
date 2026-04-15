@@ -131,8 +131,19 @@ const YouTubeRecommendations = ({
             </a>
           ))
         ) : (
-          // Fallback static suggestions
-          ['Scrum in 10 Minutes', 'Sprint Planning Best Practices', 'Daily Standup Anti-Patterns', 'Product Backlog Refinement Tips', 'Agile Retrospective Techniques'].map((v, i) => (
+          // Fallback static suggestions — all 7 tracks
+          [
+            'Scrum Master PSM I exam preparation 2024',
+            'SAFe Agile certification guide',
+            'PMP exam tips project management professional',
+            'AWS Solutions Architect associate tutorial',
+            'Python for data analysts beginners',
+            'CISSP cybersecurity certification study guide',
+            'Kubernetes for beginners CKA exam',
+            'Business analyst CBAP certification',
+            'AI tools for project managers 2024',
+            'DevOps CI/CD pipeline tutorial',
+          ].map((v, i) => (
             <a key={i} href={`https://www.youtube.com/results?search_query=${encodeURIComponent(v)}`} target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 p-2 rounded bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
               <Youtube className="w-4 h-4 text-red-500 shrink-0" />

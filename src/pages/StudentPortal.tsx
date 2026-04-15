@@ -900,7 +900,7 @@ const StudentPortal = () => {
             <YouTubeRecommendations
               weakAreas={(learningProfile?.weakAreas || []).map((w: any) => typeof w === 'string' ? w : w.topic || String(w))}
               recentQuestions={chatMessages.filter(m => m.role === 'user').map(m => m.content).slice(-5)}
-              currentTopic="Scrum Master"
+              currentTopic={courseProgresses.length > 0 ? courseProgresses.sort((a,b) => b.pct - a.pct)[0]?.title || "Scrum Master" : "Scrum Master"}
               onSwitchToAssistant={(prompt) => { setActiveTab('assistant'); setChatInput(prompt); }}
             />
           </TabsContent>
