@@ -320,7 +320,7 @@ const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps)
             { label: 'CAPM', body: 'PMI', desc: 'Certified Associate in PM', color: 'bg-green-500/10 border-green-500/20 hover:border-green-500/50', icon: '📋', url: 'https://www.pmi.org/certifications/certified-associate-capm' },
             { label: 'CSM', body: 'Scrum Alliance', desc: 'Certified ScrumMaster', color: 'bg-teal-500/10 border-teal-500/20 hover:border-teal-500/50', icon: '✅', url: 'https://www.scrumalliance.org/get-certified/scrum-master-track/certified-scrummaster' },
           ].map((cert) => (
-            
+            <a
               key={cert.label}
               href={cert.url}
               target="_blank"
