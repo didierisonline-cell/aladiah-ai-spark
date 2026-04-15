@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
   Briefcase, FileText, Linkedin, Sparkles, Loader2,
-  CheckCircle, Clock, Users, MessageCircle, ArrowRight, History
+  CheckCircle, Clock, Users, MessageCircle, ArrowRight, History, Award
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -299,6 +299,47 @@ const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps)
           </div>
         </Card>
       </div>
+
+      {/* Certification Links */}
+      <Card className="p-6 space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center">
+            <Award className="w-5 h-5 text-yellow-500" />
+          </div>
+          <div>
+            <h3 className="font-semibold">Official Certification Exams</h3>
+            <p className="text-xs text-muted-foreground">Register for your certification — links to official exam bodies</p>
+          </div>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {[
+            { label: 'PSM I', body: 'Scrum.org', desc: 'Professional Scrum Master I', color: 'bg-blue-500/10 border-blue-500/20 hover:border-blue-500/50', icon: '🏅', url: 'https://www.scrum.org/assessments/professional-scrum-master-i-certification' },
+            { label: 'PSM II', body: 'Scrum.org', desc: 'Professional Scrum Master II', color: 'bg-indigo-500/10 border-indigo-500/20 hover:border-indigo-500/50', icon: '🥈', url: 'https://www.scrum.org/assessments/professional-scrum-master-ii-assessment' },
+            { label: 'SAFe SM', body: 'Scaled Agile', desc: 'SAFe Scrum Master', color: 'bg-purple-500/10 border-purple-500/20 hover:border-purple-500/50', icon: '⚡', url: 'https://scaledagile.com/training/safe-scrum-master/' },
+            { label: 'PMP', body: 'PMI', desc: 'Project Management Professional', color: 'bg-orange-500/10 border-orange-500/20 hover:border-orange-500/50', icon: '🎯', url: 'https://www.pmi.org/certifications/project-management-pmp' },
+            { label: 'CAPM', body: 'PMI', desc: 'Certified Associate in PM', color: 'bg-green-500/10 border-green-500/20 hover:border-green-500/50', icon: '📋', url: 'https://www.pmi.org/certifications/certified-associate-capm' },
+            { label: 'CSM', body: 'Scrum Alliance', desc: 'Certified ScrumMaster', color: 'bg-teal-500/10 border-teal-500/20 hover:border-teal-500/50', icon: '✅', url: 'https://www.scrumalliance.org/get-certified/scrum-master-track/certified-scrummaster' },
+          ].map((cert) => (
+            
+              key={cert.label}
+              href={cert.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`flex flex-col gap-1.5 p-3.5 rounded-xl border transition-all duration-200 cursor-pointer group ${cert.color}`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-lg">{cert.icon}</span>
+                <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
+              </div>
+              <div>
+                <div className="font-semibold text-sm">{cert.label}</div>
+                <div className="text-[10px] text-muted-foreground">{cert.body}</div>
+                <div className="text-xs text-muted-foreground mt-0.5">{cert.desc}</div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 };
