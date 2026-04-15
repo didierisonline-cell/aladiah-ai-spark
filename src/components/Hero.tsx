@@ -142,7 +142,7 @@ const Hero = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-4"
             >
-              <Button variant="hero" size="xl" className="shadow-large" onClick={() => navigate('/auth')}>
+              <Button variant="hero" size="xl" className="shadow-large" onClick={() => { const el = document.getElementById('programs'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }}>
                 {t('hero.cta.primary')}
                 <ArrowRight className="w-5 h-5" />
               </Button>
