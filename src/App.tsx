@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { useCartSync } from "@/hooks/useCartSync";
 import Index from "./pages/Index";
@@ -44,7 +45,7 @@ const AppContent = () => {
         <Route path="/auth" element={<Auth />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/courses" element={<Courses />} />
-        <Route path="/course/:courseId/chapter/:chapterId" element={<ChapterView />} />
+        <Route path="/course/:courseId/chapter/:chapterId" element={<ProtectedRoute><ChapterView /></ProtectedRoute>} />
         <Route path="/enroll" element={<Enroll />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/community" element={<Community />} />
@@ -54,10 +55,10 @@ const AppContent = () => {
         <Route path="/referral" element={<Referral />} />
         <Route path="/referral/kit" element={<MarketingKit />} />
         <Route path="/refer/:code" element={<ReferralProfile />} />
-        <Route path="/portal" element={<StudentPortal />} />
-        <Route path="/resume-studio" element={<ResumeStudio />} />
-        <Route path="/interview" element={<InterviewSimulator />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/portal" element={<ProtectedRoute><StudentPortal /></ProtectedRoute>} />
+        <Route path="/resume-studio" element={<ProtectedRoute><ResumeStudio /></ProtectedRoute>} />
+        <Route path="/interview" element={<ProtectedRoute><InterviewSimulator /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute requireSubscription={false}><AdminDashboard /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <RouterAwareFloat />
