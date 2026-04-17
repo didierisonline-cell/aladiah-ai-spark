@@ -75,16 +75,26 @@ const Auth = () => {
 
         // Step 2: Redirect to Stripe checkout — payment is REQUIRED
         const tierObj = TIERS.find(ti => ti.id === selectedTier)!;
-        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-checkout', {
-          body: {
-            priceId: tierObj.priceId,
-            email,
-            tier: tierObj.key,
-            userId: signUpData.user?.id || '',
-            successUrl: `${window.location.origin}/auth?payment=success`,
-            cancelUrl: `${window.location.origin}/auth?payment=canceled`,
-          },
-        });
+        let checkoutData: { url?: string } | null = null;
+        let checkoutError: Error | null = null;
+        try {
+          const proxyRes = await fetch('/api/create-checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              priceId: tierObj.priceId,
+              email,
+              tier: tierObj.key,
+              userId: signUpData.user?.id || '',
+              successUrl: `${window.location.origin}/auth?payment=success`,
+              cancelUrl: `${window.location.origin}/auth?payment=canceled`,
+            }),
+          });
+          checkoutData = await proxyRes.json();
+          if (!proxyRes.ok) checkoutError = new Error((checkoutData as any)?.error || 'Checkout failed');
+        } catch (e) {
+          checkoutError = e as Error;
+        }
 
         if (checkoutError || !checkoutData?.url) {
           // Stripe not available — sign out and show error
