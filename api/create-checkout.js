@@ -11,7 +11,7 @@ export default async function handler(req, res) {
 
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     return res.status(500).json({
-      error: 'Missing env vars',
+      error: 'Missing env vars on Vercel',
       hasUrl: !!SUPABASE_URL,
       hasKey: !!SUPABASE_ANON_KEY,
     });
