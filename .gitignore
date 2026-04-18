@@ -4,3 +4,10 @@ dist/
 *.backup
 ._*
 seed_*.cjs
+
+# Supabase local state
+supabase/.temp/
+
+# One-off SQL scripts
+*.sql
+!supabase/migrations/*.sql
