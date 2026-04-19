@@ -1,52 +1,8 @@
-project_id = "fsurybytsinbvdgphnwv"
-
-[functions.get-quiz-questions]
-verify_jwt = false
-
-[functions.submit-quiz]
-verify_jwt = false
-
-[functions.generate-lesson-audio]
+[functions.send-welcome-email]
 verify_jwt = false
 
 [functions.create-checkout]
 verify_jwt = false
 
 [functions.handle-payment-webhook]
-verify_jwt = false
-
-[functions.lesson-qa]
-verify_jwt = false
-
-[functions.seed-ai-pm-course]
-verify_jwt = false
-
-[functions.seed-all-quizzes]
-verify_jwt = false
-
-[functions.seed-scrum-course]
-verify_jwt = false
-
-[functions.scrum-simulation]
-verify_jwt = false
-
-[functions.student-assistant]
-verify_jwt = false
-
-[functions.admin-analytics]
-verify_jwt = false
-
-[functions.enrollment-chat]
-verify_jwt = false
-
-[functions.interview-simulator]
-verify_jwt = false
-
-[functions.elevenlabs-conversation-token]
-verify_jwt = false
-
-[functions.ai-grading]
-verify_jwt = false
-
-[functions.send-study-reminders]
 verify_jwt = false

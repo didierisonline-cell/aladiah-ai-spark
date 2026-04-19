@@ -23,27 +23,32 @@ serve(async (req) => {
     const tierName = TIER_NAMES[tier] || "Foundation Builder";
 
     const content = `
-      <p style="color:rgba(255,255,255,0.8);font-size:15px;line-height:1.7;margin:0 0 16px;">
+      <p style="color:rgba(255,255,255,0.85);font-size:16px;line-height:1.7;margin:0 0 16px;">
         Welcome, <strong style="color:#fff;">${firstName}</strong>! 🎉
       </p>
-      <p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.7;margin:0 0 16px;">
+      <p style="color:rgba(255,255,255,0.65);font-size:14px;line-height:1.7;margin:0 0 20px;">
         You're now enrolled in the <strong style="color:#f59e0b;">${tierName}</strong> plan at Aladiah Academy.
         Your portal is ready — courses, AI professors, and career tools are waiting for you.
       </p>
-      <div style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);border-radius:12px;padding:16px;margin:16px 0;">
-        <p style="color:#fff;font-size:14px;font-weight:600;margin:0 0 8px;">🚀 Quick Start:</p>
-        <ol style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.8;margin:0;padding-left:20px;">
-          <li>Log in to your portal</li>
-          <li>Choose your language</li>
-          <li>Start your first lesson with Professor Didier</li>
-          <li>Complete the quiz to track your progress</li>
+
+      <div style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.25);border-radius:12px;padding:20px;margin:20px 0;">
+        <p style="color:#fff;font-size:15px;font-weight:700;margin:0 0 12px;">🚀 Your First 6 Steps:</p>
+        <ol style="color:rgba(255,255,255,0.8);font-size:14px;line-height:1.8;margin:0;padding-left:20px;">
+          <li><strong style="color:#fff;">Log in to your portal</strong> — welcome home</li>
+          <li><strong style="color:#fff;">Choose your language</strong> — learn in any of 7 languages</li>
+          <li><strong style="color:#fff;">Introduce yourself in the Community</strong> — earn <span style="color:#f59e0b;">500 points</span> redeemable in the Academy Shop</li>
+          <li><strong style="color:#fff;">Read the Scrum Guide or PMBOK</strong> — foundation material for a strong start</li>
+          <li><strong style="color:#fff;">Start your first course</strong> — meet Professor Didier and dive in</li>
+          <li><strong style="color:#fff;">Complete courses and track your progress</strong> — earn certificates as you go</li>
         </ol>
       </div>
-      <div style="text-align:center;margin:24px 0;">
-        ${btnHtml("Enter My Portal →", `${SITE_URL}/auth`, "#f59e0b")}
+
+      <div style="text-align:center;margin:28px 0;">
+        ${btnHtml("Enter My Portal →", `${SITE_URL}/portal`, "#f59e0b")}
       </div>
-      <p style="color:rgba(255,255,255,0.4);font-size:12px;line-height:1.6;margin:16px 0 0;">
-        Need help? Reply to this email or visit the Community section in your portal.
+
+      <p style="color:rgba(255,255,255,0.5);font-size:13px;line-height:1.6;margin:20px 0 0;text-align:center;">
+        Need help? Reply to this email or visit the Community section in your portal.<br>
         We're here for you every step of the way.
       </p>
     `;
