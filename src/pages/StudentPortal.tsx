@@ -25,6 +25,7 @@ import YouTubeRecommendations from '@/components/portal/YouTubeRecommendations';
 import CareerTools from '@/components/portal/CareerTools';
 import LabMode from '@/components/portal/LabMode';
 import KnowledgeGraph from '@/components/portal/KnowledgeGraph';
+import { CreedAcknowledgmentGate } from '@/components/CreedAcknowledgmentGate';
 import {
   ProgressDetailModal, StreakDetailModal, PointsDetailModal, LabsDetailModal
 } from '@/components/portal/StatDetailModals';
@@ -106,6 +107,7 @@ const StudentPortal = () => {
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [streakModalOpen, setStreakModalOpen] = useState(false);
   const [showFounderWelcome, setShowFounderWelcome] = useState(false);
+  const [creedGateOpen, setCreedGateOpen] = useState(true);
   const [activeAgent, setActiveAgent] = useState('professor');
   const [pointsModalOpen, setPointsModalOpen] = useState(false);
   const [labsModalOpen, setLabsModalOpen] = useState(false);
@@ -397,6 +399,16 @@ const StudentPortal = () => {
           <p className="text-white/30 text-xs">🔒 Secure payment via Stripe · Cancel anytime · 7-day money back guarantee</p>
         </div>
       </div>
+    );
+  }
+
+  // Creed acknowledgment gate — fires before portal access
+  if (creedGateOpen) {
+    return (
+      <CreedAcknowledgmentGate
+        studentName={firstName}
+        onAcknowledge={() => setCreedGateOpen(false)}
+      />
     );
   }
 

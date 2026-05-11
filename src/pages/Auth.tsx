@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { GraduationCap, Mail, Lock, User, Linkedin, Phone, ShieldCheck, Shield, Zap, Crown, CheckCircle } from 'lucide-react';
+import { GraduationCap, Mail, Lock, User, Linkedin, Phone, ShieldCheck, CheckCircle, Zap, Crown, MailCheck } from 'lucide-react';
 import Header from '@/components/Header';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -23,8 +23,10 @@ const Auth = () => {
   const [fullName, setFullName] = useState('');
   const [linkedIn, setLinkedIn] = useState('');
   const [phone, setPhone] = useState('');
-  const [selectedTier, setSelectedTier] = useState('accelerator');
+  const [selectedTier, setSelectedTier] = useState<'free' | 'paid'>('free');
   const [loading, setLoading] = useState(false);
+  const [showEmailConfirm, setShowEmailConfirm] = useState(false);
+  const [confirmedEmail, setConfirmedEmail] = useState('');
   const registering = useRef(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,17 +36,14 @@ const Auth = () => {
   const { t } = useLanguage();
   const { user, loading: authLoading } = useAuth();
 
-  // If already authenticated AND has paid (or returning from payment), go to portal
   useEffect(() => {
     if (!authLoading && user && !registering.current) {
-      // Check if returning from Stripe or already a subscriber
       const isPaymentReturn = searchParams.get('payment') === 'success';
       if (isPaymentReturn) {
         toast({ title: t('auth.payment.success'), description: t('auth.payment.success.sub') });
         navigate(from);
         return;
       }
-      // For login flow — go to portal (they already have an account)
       if (isLogin) {
         navigate(from);
       }
@@ -61,20 +60,32 @@ const Auth = () => {
         toast({ title: t('auth.welcome'), description: t('auth.magiclink.verified.sub') });
         navigate(from);
       } else {
-        // Block auto-redirect during registration
         registering.current = true;
 
-        // Step 1: Create account
         const { data: signUpData, error } = await supabase.auth.signUp({
           email, password,
           options: {
-            data: { full_name: fullName, linkedin_url: linkedIn, phone_number: phone, tier: selectedTier },
+            emailRedirectTo: `${window.location.origin}/portal`,
+            data: {
+              full_name: fullName,
+              linkedin_url: linkedIn,
+              phone_number: phone,
+              tier: selectedTier === 'free' ? 'starter' : 'accelerator',
+            },
           },
         });
         if (error) throw error;
 
-        // Step 2: Redirect to Stripe checkout — payment is REQUIRED
-        const tierObj = TIERS.find(ti => ti.id === selectedTier)!;
+        if (selectedTier === 'free') {
+          // Show email confirmation screen
+          registering.current = false;
+          setConfirmedEmail(email);
+          setShowEmailConfirm(true);
+          return;
+        }
+
+        // PAID — redirect to Stripe
+        const tierObj = TIERS.find(ti => ti.id === 'accelerator')!;
         let checkoutData: { url?: string } | null = null;
         let checkoutError: Error | null = null;
         try {
@@ -97,18 +108,12 @@ const Auth = () => {
         }
 
         if (checkoutError || !checkoutData?.url) {
-          // Stripe not available — sign out and show error
           registering.current = false;
           await supabase.auth.signOut();
-          toast({
-            title: t('auth.error'),
-            description: 'Payment system is temporarily unavailable. Please try again later.',
-            variant: 'destructive',
-          });
+          toast({ title: t('auth.error'), description: 'Payment system unavailable. Try again later.', variant: 'destructive' });
           return;
         }
 
-        // Redirect to Stripe — student MUST pay to access portal
         window.location.href = checkoutData.url;
       }
     } catch (error: any) {
@@ -119,20 +124,75 @@ const Auth = () => {
     }
   };
 
-  // Handle Stripe cancel/decline — student comes back without paying
   useEffect(() => {
     if (searchParams.get('payment') === 'canceled') {
-      toast({
-        title: t('auth.payment.declined'),
-        description: t('auth.payment.declined.sub'),
-        variant: 'destructive',
-      });
-      // Sign out so they can't access portal without paying
+      toast({ title: t('auth.payment.declined'), description: t('auth.payment.declined.sub'), variant: 'destructive' });
       supabase.auth.signOut();
-      setIsLogin(false); // Show register form so they can try again
+      setIsLogin(false);
     }
   }, [searchParams]);
 
+  // ── EMAIL CONFIRMATION SCREEN ──────────────────────────────
+  if (showEmailConfirm) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
+        <Header />
+        <div className="flex items-center justify-center p-4 pt-28 pb-12">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+            className="w-full max-w-md">
+            <Card className="shadow-large border-primary/10">
+              <CardHeader className="text-center">
+                <div className="mx-auto w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4">
+                  <MailCheck className="w-8 h-8 text-green-400" />
+                </div>
+                <CardTitle className="text-2xl font-display">Check Your Email</CardTitle>
+                <CardDescription>One more step to activate your free account</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-5 text-center">
+                <div style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '12px', padding: '16px' }}>
+                  <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', margin: 0 }}>
+                    We sent a confirmation link to:
+                  </p>
+                  <p style={{ fontSize: '15px', fontWeight: 700, color: '#fff', margin: '6px 0 0 0' }}>
+                    {confirmedEmail}
+                  </p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'left' }}>
+                  {[
+                    'Open your email inbox',
+                    'Click the confirmation link from Aladiah Academy',
+                    'You\'ll be taken directly to the student portal',
+                    'Choose your free course and start learning',
+                  ].map((step, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                      <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>
+                        <span style={{ fontSize: '10px', fontWeight: 700, color: '#818cf8' }}>{i + 1}</span>
+                      </div>
+                      <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>{step}</span>
+                    </div>
+                  ))}
+                </div>
+                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '8px' }}>
+                  Didn't receive it? Check your spam folder or{' '}
+                  <button
+                    onClick={async () => {
+                      await supabase.auth.resend({ type: 'signup', email: confirmedEmail });
+                      toast({ title: 'Email resent!', description: 'Check your inbox again.' });
+                    }}
+                    style={{ color: '#818cf8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontSize: '11px' }}
+                  >
+                    resend the email
+                  </button>
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── MAIN AUTH FORM ─────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
       <Header />
@@ -181,8 +241,59 @@ const Auth = () => {
                           value={linkedIn} onChange={(e) => setLinkedIn(e.target.value)} className="pl-9" />
                       </div>
                     </div>
+
+                    {/* TIER SELECTION */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-semibold">Choose Your Plan</Label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {/* FREE */}
+                        <div onClick={() => setSelectedTier('free')} style={{ border: selectedTier === 'free' ? '2px solid rgba(99,102,241,0.8)' : '2px solid rgba(255,255,255,0.1)', borderRadius: '14px', padding: '16px', cursor: 'pointer', background: selectedTier === 'free' ? 'rgba(99,102,241,0.1)' : 'rgba(255,255,255,0.03)', transition: 'all 0.2s', position: 'relative' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                            <Zap style={{ width: '16px', height: '16px', color: '#6366f1' }} />
+                            <span style={{ fontWeight: 700, fontSize: '14px', color: '#fff' }}>Starter</span>
+                          </div>
+                          <p style={{ fontSize: '22px', fontWeight: 800, color: '#fff', margin: '0 0 8px 0' }}>Free</p>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            {['1 course of your choice', 'Module 1 access only', 'Prof. Didier AI voice', 'Module quiz included'].map(f => (
+                              <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '5px' }}>
+                                <CheckCircle style={{ width: '10px', height: '10px', color: '#6366f1', flexShrink: 0, marginTop: '2px' }} />
+                                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>{f}</span>
+                              </div>
+                            ))}
+                          </div>
+                          {selectedTier === 'free' && (
+                            <div style={{ position: 'absolute', top: '10px', right: '10px', background: '#6366f1', borderRadius: '100px', width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <CheckCircle style={{ width: '10px', height: '10px', color: '#fff' }} />
+                            </div>
+                          )}
+                        </div>
+                        {/* PAID */}
+                        <div onClick={() => setSelectedTier('paid')} style={{ border: selectedTier === 'paid' ? '2px solid rgba(245,158,11,0.8)' : '2px solid rgba(255,255,255,0.1)', borderRadius: '14px', padding: '16px', cursor: 'pointer', background: selectedTier === 'paid' ? 'rgba(245,158,11,0.1)' : 'rgba(255,255,255,0.03)', transition: 'all 0.2s', position: 'relative' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                            <Crown style={{ width: '16px', height: '16px', color: '#f59e0b' }} />
+                            <span style={{ fontWeight: 700, fontSize: '14px', color: '#fff' }}>All-Access Pass</span>
+                          </div>
+                          <p style={{ fontSize: '22px', fontWeight: 800, color: '#fff', margin: '0 0 2px 0' }}>$99.99</p>
+                          <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: '0 0 8px 0' }}>/month</p>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            {['All 8 courses', 'All modules unlocked', 'Prof. Didier AI voice', 'Tools & resources', 'Certificates', 'Priority support'].map(f => (
+                              <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '5px' }}>
+                                <CheckCircle style={{ width: '10px', height: '10px', color: '#f59e0b', flexShrink: 0, marginTop: '2px' }} />
+                                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>{f}</span>
+                              </div>
+                            ))}
+                          </div>
+                          {selectedTier === 'paid' && (
+                            <div style={{ position: 'absolute', top: '10px', right: '10px', background: '#f59e0b', borderRadius: '100px', width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <CheckCircle style={{ width: '10px', height: '10px', color: '#000' }} />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </>
                 )}
+
                 <div className={!isLogin ? 'grid grid-cols-1 sm:grid-cols-2 gap-3' : 'space-y-4'}>
                   <div className="space-y-2">
                     <Label htmlFor="email">{t('auth.email')}</Label>
@@ -202,51 +313,22 @@ const Auth = () => {
                   </div>
                 </div>
 
-                {/* Single plan — only on register */}
-                {!isLogin && (
-                  <div className="space-y-3">
-                    <Label className="text-sm font-semibold">{t('auth.choose.plan')}</Label>
-                    <div style={{ background: 'rgba(245,158,11,0.08)', border: '2px solid rgba(245,158,11,0.5)', borderRadius: '14px', padding: '20px', position: 'relative' }}>
-                      <span style={{ position: 'absolute', top: '-11px', left: '50%', transform: 'translateX(-50%)', background: '#f59e0b', color: '#000', fontSize: '9px', fontWeight: 800, padding: '3px 14px', borderRadius: '100px', whiteSpace: 'nowrap', letterSpacing: '0.1em' }}>
-                        {t('auth.plan.badge')}
-                      </span>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                        <div>
-                          <p style={{ color: '#f59e0b', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>ALADIAH ACADEMY</p>
-                          <p style={{ fontSize: '16px', fontWeight: 800, color: '#fff', margin: 0 }}>{t('auth.plan.name')}</p>
-                        </div>
-                        <div style={{ textAlign: 'right' }}>
-                          <p style={{ fontSize: '28px', fontWeight: 800, color: '#fff', margin: 0, lineHeight: 1 }}>$99.99</p>
-                          <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>/{t('pricing.month')}</p>
-                        </div>
-                      </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
-                        {[t('auth.plan.f1'), t('auth.plan.f2'), t('auth.plan.f3'), t('auth.plan.f4'), t('auth.plan.f5'), t('auth.plan.f6'), t('auth.plan.f7'), t('auth.plan.f8')].map(f => (
-                          <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
-                            <CheckCircle style={{ width: '11px', height: '11px', color: '#f59e0b', flexShrink: 0, marginTop: '2px' }} />
-                            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.4 }}>{f}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 {isLogin && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: 'rgba(59,130,246,0.08)', borderRadius: '10px', border: '1px solid rgba(59,130,246,0.2)' }}>
                     <ShieldCheck className="w-4 h-4 text-primary flex-shrink-0" />
-                    <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: 0 }}>
-                      {t('auth.secure.info')}
-                    </p>
+                    <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: 0 }}>{t('auth.secure.info')}</p>
                   </div>
                 )}
+
                 <Button type="submit" className="w-full" variant="coral" disabled={loading}>
-                  {loading ? t('auth.loading') : isLogin ? t('auth.signin.btn') : t('auth.register.pay.btn')}
+                  {loading ? t('auth.loading') : isLogin ? t('auth.signin.btn') : selectedTier === 'free' ? 'Create Free Account' : 'Continue to Payment →'}
                 </Button>
-                {!isLogin && (
-                  <p className="text-[11px] text-center text-muted-foreground">
-                    {t('auth.stripe.secure')}
-                  </p>
+
+                {!isLogin && selectedTier === 'paid' && (
+                  <p className="text-[11px] text-center text-muted-foreground">{t('auth.stripe.secure')}</p>
+                )}
+                {!isLogin && selectedTier === 'free' && (
+                  <p className="text-[11px] text-center text-muted-foreground">No credit card required · Email verification required</p>
                 )}
               </form>
               <div className="mt-6 text-center">
