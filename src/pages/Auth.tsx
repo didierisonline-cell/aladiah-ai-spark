@@ -65,7 +65,7 @@ const Auth = () => {
         const { data: signUpData, error } = await supabase.auth.signUp({
           email, password,
           options: {
-            emailRedirectTo: `${window.location.origin}/portal`,
+            emailRedirectTo: `https://aladiahacademy.com/portal`,
             data: {
               full_name: fullName,
               linkedin_url: linkedIn,

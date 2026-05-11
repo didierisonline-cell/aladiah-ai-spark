@@ -15,14 +15,25 @@ export default function ProtectedRoute({ children, requireSubscription = true }:
   useEffect(() => {
     let cancelled = false;
 
-    const checkSubscription = async (userId: string) => {
-      const { data } = await supabase
+    const checkAccess = async (userId: string) => {
+      // Check active subscription
+      const { data: sub } = await supabase
         .from("subscriptions")
         .select("status")
         .eq("user_id", userId)
         .eq("status", "active")
         .maybeSingle();
-      return !!data;
+      if (sub) return true;
+
+      // Allow free tier (starter) users
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("tier")
+        .eq("user_id", userId)
+        .maybeSingle();
+      if (profile?.tier === "starter") return true;
+
+      return false;
     };
 
     const run = async () => {
@@ -32,7 +43,7 @@ export default function ProtectedRoute({ children, requireSubscription = true }:
       if (!user) return setStatus("no-auth");
       if (!requireSubscription) return setStatus("authed");
 
-      if (await checkSubscription(user.id)) {
+      if (await checkAccess(user.id)) {
         if (!cancelled) setStatus("authed");
         return;
       }
@@ -45,7 +56,7 @@ export default function ProtectedRoute({ children, requireSubscription = true }:
           if (cancelled) return;
           setMessage(`Activating your subscription... (${attempt}s)`);
           await new Promise(r => setTimeout(r, 1000));
-          if (await checkSubscription(user.id)) {
+          if (await checkAccess(user.id)) {
             if (!cancelled) setStatus("authed");
             return;
           }
