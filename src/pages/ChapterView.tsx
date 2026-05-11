@@ -8,6 +8,7 @@ import { useConversation } from '@elevenlabs/react';
 import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle, Lock, Play, BookOpen, MessageCircle, Trophy } from 'lucide-react';
 import PortalLangWidget from '@/components/portal/PortalLangWidget';
 import Quiz from '@/components/course/Quiz';
+import StarterPaywall from '@/components/StarterPaywall';
 
 const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string;
 
@@ -48,6 +49,8 @@ export default function ChapterView() {
   const [activeQuizId, setActiveQuizId] = useState<string | null>(null);
   const [currentLesson, setCurrentLesson] = useState<Video | null>(null);
   const [passedQuizzes, setPassedQuizzes] = useState<string[]>([]);
+  const [paywallReason, setPaywallReason] = useState<'wrong_course' | 'module_locked' | null>(null);
+  const [freeCourseName, setFreeCourseName] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [allChapters, setAllChapters] = useState<Chapter[]>([]);
 
@@ -168,6 +171,26 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
         supabase.from('quizzes').select('*').eq('chapter_id', chapterId),
         supabase.from('user_progress').select('quiz_id').not('quiz_id', 'is', null),
       ]);
+      // Check free tier access
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase.from('profiles').select('tier, free_course_id').eq('user_id', user.id).single();
+        if (profile?.tier === 'starter') {
+          const freeCourseId = profile.free_course_id;
+          if (freeCourseId && courseId !== freeCourseId) {
+            const { data: fc } = await supabase.from('courses').select('title').eq('id', freeCourseId).single();
+            setFreeCourseName(fc?.title || '');
+            setPaywallReason('wrong_course');
+            setLoading(false);
+            return;
+          }
+          if (chapterData && chapterData.order_index > 0) {
+            setPaywallReason('module_locked');
+            setLoading(false);
+            return;
+          }
+        }
+      }
       setCourse(courseData);
       setChapter(chapterData);
       setAllChapters((allChaptersData || []) as Chapter[]);
