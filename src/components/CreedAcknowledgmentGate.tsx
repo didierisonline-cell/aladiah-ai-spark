@@ -204,7 +204,7 @@ export const CreedAcknowledgmentGate = ({
                 className="text-sm sm:text-base text-[#1a2a4a] italic mb-2"
                 style={{ fontFamily: 'Georgia, serif' }}
               >
-                Welcome back, {studentName}.
+                Welcome back, {studentName ? studentName.charAt(0).toUpperCase() + studentName.slice(1) : ''}.
               </p>
             )}
             <p

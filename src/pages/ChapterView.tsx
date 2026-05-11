@@ -78,6 +78,10 @@ export default function ChapterView() {
       // Strip ElevenLabs persona XML tags e.g. <LaSean Pickens (EN/ES)>...</LaSean Pickens (EN/ES)>
       const cleaned = message.replace(/<[^>]+>/g, '').trim();
       if (cleaned) setTranscript(p => [...p, { role: source === 'ai' ? 'agent' : 'user', message: cleaned }]);
+      // Auto-end session when Prof. Didier says goodbye
+      if (source === 'ai' && cleaned.toLowerCase().includes('goodbye')) {
+        setTimeout(() => conversation.endSession().catch(() => {}), 1500);
+      }
     },
     onError: () => setConvStatus('error'),
   });
@@ -534,7 +538,28 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
               <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#f59e0b' }}>{t('chapter.quiz.title')}</h2>
               <button onClick={() => setActiveQuizId(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 24, lineHeight: 1 }}>×</button>
             </div>
-            <Quiz quizId={activeQuizId} quizType="chapter_end" onComplete={() => setActiveQuizId(null)} onBack={() => setActiveQuizId(null)} />
+            <Quiz quizId={activeQuizId} quizType="chapter_end" onComplete={async (passed) => {
+              setActiveQuizId(null);
+              if (!passed) return;
+              // Check tier and decide what happens after passing
+              const { data: { user: u } } = await supabase.auth.getUser();
+              if (!u) return;
+              const { data: profile } = await supabase.from('profiles').select('tier').eq('user_id', u.id).maybeSingle();
+              const isStarter = profile?.tier === 'starter';
+              if (isStarter) {
+                // Free tier — hit the paywall
+                setPaywallReason('module_locked');
+              } else {
+                // Paid tier — advance to next module
+                const currentIdx = allChapters.findIndex(c => c.id === chapterId);
+                const nextChapter = allChapters[currentIdx + 1];
+                if (nextChapter) {
+                  navigate(`/course/${courseId}/chapter/${nextChapter.id}`);
+                } else {
+                  navigate(`/portal`);
+                }
+              }
+            }} onBack={() => setActiveQuizId(null)} />
           </div>
         </div>
       )}
