@@ -26,6 +26,7 @@ import CareerTools from '@/components/portal/CareerTools';
 import LabMode from '@/components/portal/LabMode';
 import KnowledgeGraph from '@/components/portal/KnowledgeGraph';
 import { CreedAcknowledgmentGate } from '@/components/CreedAcknowledgmentGate';
+import CourseSelectionGate from '@/components/CourseSelectionGate';
 import {
   ProgressDetailModal, StreakDetailModal, PointsDetailModal, LabsDetailModal
 } from '@/components/portal/StatDetailModals';
@@ -108,12 +109,27 @@ const StudentPortal = () => {
   const [streakModalOpen, setStreakModalOpen] = useState(false);
   const [showFounderWelcome, setShowFounderWelcome] = useState(false);
   const [creedGateOpen, setCreedGateOpen] = useState(true);
+  const [needsCourseSelection, setNeedsCourseSelection] = useState(false);
+  const [courseSelectionChecked, setCourseSelectionChecked] = useState(false);
   const [activeAgent, setActiveAgent] = useState('professor');
   const [pointsModalOpen, setPointsModalOpen] = useState(false);
   const [labsModalOpen, setLabsModalOpen] = useState(false);
   const [linkedInUrl, setLinkedInUrl] = useState('');
   const [showLinkedInInput, setShowLinkedInInput] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+
+  // Check if free user needs course selection
+  useEffect(() => {
+    if (!user || creedGateOpen || courseSelectionChecked) return;
+    const checkCourseSelection = async () => {
+      const { data } = await supabase.from('profiles').select('tier, free_course_id').eq('user_id', user.id).single();
+      if (data?.tier === 'starter' && !data?.free_course_id) {
+        setNeedsCourseSelection(true);
+      }
+      setCourseSelectionChecked(true);
+    };
+    checkCourseSelection();
+  }, [user, creedGateOpen, courseSelectionChecked]);
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] || 'Student';
   
@@ -399,6 +415,16 @@ const StudentPortal = () => {
           <p className="text-white/30 text-xs">🔒 Secure payment via Stripe · Cancel anytime · 7-day money back guarantee</p>
         </div>
       </div>
+    );
+  }
+
+  // Course selection gate — fires for new free users after creed
+  if (!creedGateOpen && needsCourseSelection && user) {
+    return (
+      <CourseSelectionGate
+        userId={user.id}
+        onCourseSelected={() => setNeedsCourseSelection(false)}
+      />
     );
   }
 
