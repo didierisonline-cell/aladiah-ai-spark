@@ -110,6 +110,8 @@ const StudentPortal = () => {
   const [showFounderWelcome, setShowFounderWelcome] = useState(false);
   const [creedGateOpen, setCreedGateOpen] = useState(true);
   const [needsCourseSelection, setNeedsCourseSelection] = useState(false);
+  const [starterCourseDone, setStarterCourseDone] = useState(false);
+  const [starterFreeCourseId, setStarterFreeCourseId] = useState<string | null>(null);
   const [courseSelectionChecked, setCourseSelectionChecked] = useState(false);
   const [activeAgent, setActiveAgent] = useState('professor');
   const [pointsModalOpen, setPointsModalOpen] = useState(false);
@@ -125,6 +127,11 @@ const StudentPortal = () => {
       const { data } = await supabase.from('profiles').select('tier, free_course_id').eq('user_id', user.id).single();
       if (data?.tier === 'starter' && !data?.free_course_id) {
         setNeedsCourseSelection(true);
+      }
+      if (data?.tier === 'starter' && data?.free_course_id) {
+        setStarterFreeCourseId(data.free_course_id);
+        const done = localStorage.getItem(`starter-course-done-${user.id}`);
+        if (done === 'true') setStarterCourseDone(true);
       }
       setCourseSelectionChecked(true);
     };
@@ -156,7 +163,10 @@ const StudentPortal = () => {
   useEffect(() => {
   if (user) {
     loadPortalData();
-
+    const creedKey = `creed-seen-date-${user.id}`;
+    const lastSeen = localStorage.getItem(creedKey);
+    const today = new Date().toDateString();
+    if (lastSeen === today) setCreedGateOpen(false);
   }
 }, [user, authLoading]);
 
@@ -333,7 +343,16 @@ const StudentPortal = () => {
       title: t('portal.subscription.title'),
       message: t('portal.subscription.msg'),
       actionLabel: t('portal.subscription.btn'),
-      action: () => window.open('https://billing.stripe.com/p/login/test_eVq9AL0OuaMWazPgo41VK00', '_blank'),
+      action: async () => {
+        if (!user) return;
+        const { data: prof } = await supabase.from('profiles').select('tier').eq('user_id', user.id).maybeSingle();
+        if (prof?.tier === 'starter') {
+          const res = await fetch('/api/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMsDL0Ctflq2xPfzJsrXzy1', email: user.email, tier: 't2', userId: user.id,
+              successUrl: `${window.location.origin}/portal?payment=success`, cancelUrl: `${window.location.origin}/portal` }) });
+          const d = await res.json(); if (d.url) window.location.href = d.url;
+        } else { window.open('https://billing.stripe.com/p/login/test_eVq9AL0OuaMWazPgo41VK00', '_blank'); }
+      },
       type: 'payment',
     });
 
@@ -433,8 +452,42 @@ const StudentPortal = () => {
     return (
       <CreedAcknowledgmentGate
         studentName={firstName}
-        onAcknowledge={() => setCreedGateOpen(false)}
+        onAcknowledge={() => {
+          if (user) localStorage.setItem(`creed-seen-date-${user.id}`, new Date().toDateString());
+          setCreedGateOpen(false);
+        }}
       />
+    );
+  }
+
+  // Starter paywall — blocks everything once free course is done
+  if (starterCourseDone && user) {
+    const handleUpgrade = async () => {
+      const res = await fetch('/api/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMsDL0Ctflq2xPfzJsrXzy1',
+          email: user.email, tier: 't2', userId: user.id,
+          successUrl: `${window.location.origin}/portal?payment=success`, cancelUrl: `${window.location.origin}/portal` }) });
+      const d = await res.json(); if (d.url) window.location.href = d.url;
+    };
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #0a0f1e 0%, #0d1b3e 50%, #0a0f1e 100%)' }}>
+        <div style={{ width: '100%', maxWidth: '500px', textAlign: 'center' }}>
+          <div style={{ fontSize: '60px', marginBottom: '16px' }}>🎓</div>
+          <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#fff', marginBottom: '12px' }}>You Completed Module 1!</h1>
+          <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.6)', marginBottom: '32px', lineHeight: 1.7 }}>
+            Solo Excelencia. You proved you belong here.<br/>Unlock all 8 courses and continue your certification journey.
+          </p>
+          <div style={{ background: 'rgba(245,158,11,0.08)', border: '2px solid rgba(245,158,11,0.4)', borderRadius: '20px', padding: '28px', marginBottom: '20px' }}>
+            <p style={{ color: '#f59e0b', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 8px 0' }}>All-Access Pass</p>
+            <p style={{ fontSize: '36px', fontWeight: 800, color: '#fff', margin: '0 0 4px 0' }}>$99.99<span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>/month</span></p>
+            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '0 0 20px 0' }}>Cancel anytime · All 8 courses · Certificates</p>
+            <button onClick={handleUpgrade} style={{ width: '100%', padding: '16px', borderRadius: '12px', background: 'linear-gradient(135deg, #f59e0b, #d97706)', border: 'none', color: '#000', fontSize: '16px', fontWeight: 800, cursor: 'pointer' }}>
+              Unlock Full Access — $99.99/month →
+            </button>
+          </div>
+          <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)' }}>🔒 Secure payment via Stripe · Cancel anytime</p>
+        </div>
+      </div>
     );
   }
 

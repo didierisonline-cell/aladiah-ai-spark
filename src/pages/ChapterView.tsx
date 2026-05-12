@@ -102,6 +102,7 @@ export default function ChapterView() {
           const { data: profile } = await supabase.from('profiles').select('tier').eq('user_id', u.id).maybeSingle();
           const isStarter = profile?.tier === 'starter';
           if (isStarter) {
+            localStorage.setItem(`starter-course-done-${u.id}`, 'true');
             setPaywallReason('module_locked');
           } else {
             const currentIdx = allChapters.findIndex(c => c.id === chapterId);
