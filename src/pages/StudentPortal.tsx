@@ -27,6 +27,7 @@ import LabMode from '@/components/portal/LabMode';
 import KnowledgeGraph from '@/components/portal/KnowledgeGraph';
 import { CreedAcknowledgmentGate } from '@/components/CreedAcknowledgmentGate';
 import CourseSelectionGate from '@/components/CourseSelectionGate';
+import LanguageSelectionGate from '@/components/LanguageSelectionGate';
 import {
   ProgressDetailModal, StreakDetailModal, PointsDetailModal, LabsDetailModal
 } from '@/components/portal/StatDetailModals';
@@ -110,6 +111,8 @@ const StudentPortal = () => {
   const [showFounderWelcome, setShowFounderWelcome] = useState(false);
   const [creedGateOpen, setCreedGateOpen] = useState(true);
   const [needsCourseSelection, setNeedsCourseSelection] = useState(false);
+  const [needsLanguageSelection, setNeedsLanguageSelection] = useState(false);
+  const [languageChecked, setLanguageChecked] = useState(false);
   const [starterCourseDone, setStarterCourseDone] = useState(false);
   const [starterFreeCourseId, setStarterFreeCourseId] = useState<string | null>(null);
   const [courseSelectionChecked, setCourseSelectionChecked] = useState(false);
@@ -125,6 +128,14 @@ const StudentPortal = () => {
     if (!user || creedGateOpen || courseSelectionChecked) return;
     const checkCourseSelection = async () => {
       const { data } = await supabase.from('profiles').select('tier, free_course_id').eq('user_id', user.id).single();
+      // Check if language has been set
+      const langData = await supabase.from('profiles').select('preferred_language').eq('user_id', user.id).single();
+      if (!langData.data?.preferred_language || langData.data.preferred_language === 'en') {
+        // Only show if never explicitly set (we check a flag)
+        const langSet = localStorage.getItem(`lang-set-${user.id}`);
+        if (!langSet) setNeedsLanguageSelection(true);
+      }
+      setLanguageChecked(true);
       if (data?.tier === 'starter' && !data?.free_course_id) {
         setNeedsCourseSelection(true);
       }
@@ -435,6 +446,19 @@ const StudentPortal = () => {
           <p className="text-white/30 text-xs">🔒 Secure payment via Stripe · Cancel anytime · 7-day money back guarantee</p>
         </div>
       </div>
+    );
+  }
+
+  // Language selection gate — fires first on very first login
+  if (needsLanguageSelection && user && !creedGateOpen) {
+    return (
+      <LanguageSelectionGate
+        userId={user.id}
+        onSelected={(lang) => {
+          localStorage.setItem(`lang-set-${user.id}`, 'true');
+          setNeedsLanguageSelection(false);
+        }}
+      />
     );
   }
 
