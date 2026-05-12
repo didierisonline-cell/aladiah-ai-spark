@@ -130,8 +130,9 @@ const StudentPortal = () => {
       }
       if (data?.tier === 'starter' && data?.free_course_id) {
         setStarterFreeCourseId(data.free_course_id);
-        const done = localStorage.getItem(`starter-course-done-${user.id}`);
-        if (done === 'true') setStarterCourseDone(true);
+        // Check localStorage first (instant), Supabase as source of truth
+        const localDone = localStorage.getItem(`starter-course-done-${user.id}`);
+        if (localDone === 'true' || data?.free_course_completed) setStarterCourseDone(true);
       }
       setCourseSelectionChecked(true);
     };

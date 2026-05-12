@@ -103,6 +103,7 @@ export default function ChapterView() {
           const isStarter = profile?.tier === 'starter';
           if (isStarter) {
             localStorage.setItem(`starter-course-done-${u.id}`, 'true');
+            supabase.from('profiles').update({ free_course_completed: true }).eq('user_id', u.id).then(() => {});
             setPaywallReason('module_locked');
           } else {
             const currentIdx = allChapters.findIndex(c => c.id === chapterId);
