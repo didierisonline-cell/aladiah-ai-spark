@@ -496,39 +496,42 @@ const StudentPortal = () => {
     );
   }
 
-  // Starter paywall — blocks everything once free course is done
-  if (starterCourseDone && user) {
-    const handleUpgrade = async () => {
-      const res = await fetch('/api/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMsDL0Ctflq2xPfzJsrXzy1',
-          email: user.email, tier: 't2', userId: user.id,
-          successUrl: `${window.location.origin}/portal?payment=success`, cancelUrl: `${window.location.origin}/portal` }) });
-      const d = await res.json(); if (d.url) window.location.href = d.url;
-    };
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #0a0f1e 0%, #0d1b3e 50%, #0a0f1e 100%)' }}>
-        <div style={{ width: '100%', maxWidth: '500px', textAlign: 'center' }}>
-          <div style={{ fontSize: '60px', marginBottom: '16px' }}>🎓</div>
-          <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#fff', marginBottom: '12px' }}>You Completed Module 1!</h1>
-          <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.6)', marginBottom: '32px', lineHeight: 1.7 }}>
-            Solo Excelencia. You proved you belong here.<br/>Unlock all 8 courses and continue your certification journey.
-          </p>
-          <div style={{ background: 'rgba(245,158,11,0.08)', border: '2px solid rgba(245,158,11,0.4)', borderRadius: '20px', padding: '28px', marginBottom: '20px' }}>
-            <p style={{ color: '#f59e0b', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 8px 0' }}>All-Access Pass</p>
-            <p style={{ fontSize: '36px', fontWeight: 800, color: '#fff', margin: '0 0 4px 0' }}>$99.99<span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>/month</span></p>
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '0 0 20px 0' }}>Cancel anytime · All 8 courses · Certificates</p>
-            <button onClick={handleUpgrade} style={{ width: '100%', padding: '16px', borderRadius: '12px', background: 'linear-gradient(135deg, #f59e0b, #d97706)', border: 'none', color: '#000', fontSize: '16px', fontWeight: 800, cursor: 'pointer' }}>
-              Unlock Full Access — $99.99/month →
-            </button>
-          </div>
-          <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)' }}>🔒 Secure payment via Stripe · Cancel anytime</p>
-        </div>
-      </div>
-    );
-  }
+  // Starter paywall upgrade handler
+  const handleStarterUpgrade = async () => {
+    if (!user) return;
+    const res = await fetch('/api/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMsDL0Ctflq2xPfzJsrXzy1',
+        email: user.email, tier: 't2', userId: user.id,
+        successUrl: `${window.location.origin}/portal?payment=success`, cancelUrl: `${window.location.origin}/portal` }) });
+    const d = await res.json(); if (d.url) window.location.href = d.url;
+  };
 
   return (
-    <div className="portal-root min-h-screen">
+    <div className="portal-root min-h-screen" style={{ position: 'relative' }}>
+      {/* Starter Paywall Blur Overlay */}
+      {starterCourseDone && (
+        <div
+          onClick={handleStarterUpgrade}
+          style={{ position: 'fixed', inset: 0, zIndex: 9999, cursor: 'pointer', backdropFilter: 'blur(6px)', background: 'rgba(10,15,30,0.7)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
+        >
+          <div style={{ background: 'linear-gradient(135deg, #0d1b3e, #0a0f1e)', border: '2px solid rgba(245,158,11,0.5)', borderRadius: '24px', padding: '36px', maxWidth: '480px', width: '100%', textAlign: 'center', boxShadow: '0 25px 80px rgba(0,0,0,0.6)' }}>
+            <div style={{ fontSize: '48px', marginBottom: '12px' }}>🎓</div>
+            <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>You Completed Module 1!</h2>
+            <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '24px', lineHeight: 1.6 }}>
+              Solo Excelencia. You proved you belong here.<br/>
+              Unlock all 8 courses and continue your journey.
+            </p>
+            <div style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '14px', padding: '20px', marginBottom: '20px' }}>
+              <p style={{ fontSize: '32px', fontWeight: 800, color: '#fff', margin: '0 0 4px 0' }}>$99.99<span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>/month</span></p>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>All 8 courses · Cancel anytime · Certificates</p>
+            </div>
+            <button style={{ width: '100%', padding: '16px', borderRadius: '12px', background: 'linear-gradient(135deg, #f59e0b, #d97706)', border: 'none', color: '#000', fontSize: '16px', fontWeight: 800, cursor: 'pointer' }}>
+              Unlock Full Access — $99.99/month →
+            </button>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', marginTop: '12px' }}>🔒 Secure payment via Stripe</p>
+          </div>
+        </div>
+      )}
       <Header onProfileClick={() => setShowProfile(true)} />
 
       {showFounderWelcome && (
