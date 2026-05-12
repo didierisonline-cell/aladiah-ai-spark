@@ -78,8 +78,44 @@ export default function ChapterView() {
       // Strip ElevenLabs persona XML tags e.g. <LaSean Pickens (EN/ES)>...</LaSean Pickens (EN/ES)>
       const cleaned = message.replace(/<[^>]+>/g, '').trim();
       if (cleaned) setTranscript(p => [...p, { role: source === 'ai' ? 'agent' : 'user', message: cleaned }]);
-      // Auto-end session when Prof. Didier says goodbye
-      if (source === 'ai' && cleaned.toLowerCase().includes('goodbye')) {
+      // Detect oral assessment completion — trigger paywall or advance
+      const completionPhrases = [
+        'solo excelencia — module complete',
+        'module complete. you are ready',
+        'you are ready for the next level',
+        'congratulations, you have completed',
+        'congratulations, you have completed',
+        'well done, you have passed',
+        'well done, you have passed',
+        'excellent work, module complete',
+        'you have successfully completed this module',
+        'you have successfully completed this module',
+      ];
+      const isComplete = completionPhrases.some(phrase => cleaned.toLowerCase().includes(phrase));
+      if (source === 'ai' && isComplete) {
+        setTimeout(async () => {
+          conversation.endSession().catch(() => {});
+          if (timerRef.current) clearInterval(timerRef.current);
+          // Check tier
+          const { data: { user: u } } = await supabase.auth.getUser();
+          if (!u) return;
+          const { data: profile } = await supabase.from('profiles').select('tier').eq('user_id', u.id).maybeSingle();
+          const isStarter = profile?.tier === 'starter';
+          if (isStarter) {
+            setPaywallReason('module_locked');
+          } else {
+            const currentIdx = allChapters.findIndex(c => c.id === chapterId);
+            const nextChapter = allChapters[currentIdx + 1];
+            if (nextChapter) {
+              navigate(`/course/${courseId}/chapter/${nextChapter.id}`);
+            } else {
+              navigate('/portal');
+            }
+          }
+        }, 2000);
+      }
+      // Also auto-end on goodbye without triggering paywall
+      if (source === 'ai' && cleaned.toLowerCase().includes('goodbye') && !isComplete) {
         setTimeout(() => conversation.endSession().catch(() => {}), 1500);
       }
     },
@@ -123,7 +159,9 @@ Lesson: "${lessonTitle}" | Module: "${chapterTitle}" | Language: ${lang}.
 Lesson outline: ${transcriptSnippet}
 Teach using Socratic method: ask questions, guide discovery, section by section.
 If student asks questions, answer fully then resume. Say "continue" to proceed.
-When done, ask if ready for quiz. Stay on this lesson only. Respond in ${lang}.
+After teaching all sections, conduct an ORAL RECAP ASSESSMENT: ask exactly 5 recap questions one by one, wait for each answer, give brief feedback.
+After the 5th question is answered and you have given final feedback, you MUST say exactly: "Solo Excelencia — module complete. You are ready for the next level."
+This exact phrase signals the end of the session. Do not say it before all 5 questions are done.
 Start: greet warmly, ask what student knows about "${lessonTitle}".`;
       await conversation.startSession({
         agentId: AGENT_ID,
