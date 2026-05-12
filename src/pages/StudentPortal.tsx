@@ -730,7 +730,7 @@ const StudentPortal = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid grid-cols-5 w-full">
+          <TabsList className="flex w-full overflow-x-auto scrollbar-hide">
             <TabsTrigger value="overview" className="text-xs"><BookOpen className="w-3 h-3 mr-1" />{t('portal.tab.overview')}</TabsTrigger>
             <TabsTrigger value="assistant" className="text-xs"><Bot className="w-3 h-3 mr-1" />{t('portal.tab.assistant')}</TabsTrigger>
             <TabsTrigger value="labs" className="text-xs"><FlaskConical className="w-3 h-3 mr-1" />{t('portal.tab.labs')}</TabsTrigger>

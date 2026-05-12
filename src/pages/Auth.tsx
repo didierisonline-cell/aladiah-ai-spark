@@ -207,7 +207,7 @@ const Auth = () => {
       <Header />
       <div className="flex items-center justify-center p-4 pt-28 pb-12">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-          className={`w-full ${isLogin ? 'max-w-md' : 'max-w-2xl'}`}>
+          className={`w-full ${isLogin ? 'max-w-md' : 'max-w-lg'}`}>
           <Card className="shadow-large border-primary/10">
             <CardHeader className="text-center">
               <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">

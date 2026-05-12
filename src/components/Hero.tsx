@@ -90,7 +90,7 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Content */}
           <div className="space-y-8">
-            <div className="flex flex-row items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -111,7 +111,7 @@ const Hero = () => {
                 rel="noopener noreferrer"
               >
                 <Building2 className="w-4 h-4 text-primary flex-shrink-0" />
-                <span className="text-sm font-semibold text-primary tracking-wide uppercase">Boutique IT Staffing & Consulting</span>
+                <span className="text-xs sm:text-sm font-semibold text-primary tracking-wide uppercase hidden sm:inline">Boutique IT & Consulting</span>
                 <ArrowRight className="w-3.5 h-3.5 text-primary opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
               </motion.a>
             </div>
@@ -152,7 +152,7 @@ const Hero = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="grid grid-cols-3 gap-8 pt-10 border-t border-border/50"
+              className="grid grid-cols-3 gap-3 sm:gap-8 pt-6 sm:pt-10 border-t border-border/50"
             >
               {stats.map((stat, index) => (
                 <div key={index} className="text-center sm:text-left">
