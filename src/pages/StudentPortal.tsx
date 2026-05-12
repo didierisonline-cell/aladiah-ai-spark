@@ -454,8 +454,22 @@ const StudentPortal = () => {
     return (
       <LanguageSelectionGate
         userId={user.id}
-        onSelected={(lang) => {
+        onSelected={async (lang) => {
           localStorage.setItem(`lang-set-${user.id}`, 'true');
+          // Send Day 1 email
+          const { data: { user: u } } = await supabase.auth.getUser();
+          if (u) {
+            const { data: prof } = await supabase.from('profiles').select('preferred_language, full_name').eq('user_id', u.id).maybeSingle();
+            fetch('https://vgujnkxylipfwmkpwzvb.supabase.co/functions/v1/send-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                type: 'day1',
+                student: { name: prof?.full_name || 'Student', email: u.email },
+                lang: prof?.preferred_language || 'en',
+              }),
+            }).catch(() => {});
+          }
           setNeedsLanguageSelection(false);
         }}
       />

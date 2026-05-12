@@ -77,8 +77,17 @@ const Auth = () => {
         if (error) throw error;
 
         if (selectedTier === 'free') {
-          // Show email confirmation screen
+          // Send welcome email
           registering.current = false;
+          fetch('https://vgujnkxylipfwmkpwzvb.supabase.co/functions/v1/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'welcome',
+              student: { name: fullName, email, tier: 'starter', language: 'en' },
+              lang: 'en',
+            }),
+          }).catch(() => {});
           setConfirmedEmail(email);
           setShowEmailConfirm(true);
           return;

@@ -104,6 +104,16 @@ export default function ChapterView() {
           if (isStarter) {
             localStorage.setItem(`starter-course-done-${u.id}`, 'true');
             supabase.from('profiles').update({ free_course_completed: true }).eq('user_id', u.id).then(() => {});
+            supabase.from('profiles').select('preferred_language, full_name').eq('user_id', u.id).maybeSingle().then(({ data: prof }) => {
+              fetch('https://vgujnkxylipfwmkpwzvb.supabase.co/functions/v1/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: 'free_course_completed',
+                  student: { name: prof?.full_name || 'Student', email: u.email, course: course?.title, language: prof?.preferred_language || 'en' },
+                }),
+              }).catch(() => {});
+            });
             setPaywallReason('module_locked');
           } else {
             const currentIdx = allChapters.findIndex(c => c.id === chapterId);
