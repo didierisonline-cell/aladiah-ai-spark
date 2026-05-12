@@ -53,7 +53,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
               }
             }}
           >
-            <img src={aladiahLogo} alt="Aladiah Academy" className="h-20 lg:h-24 w-auto object-contain" />
+            <img src={aladiahLogo} alt="Aladiah Academy" className="h-14 sm:h-20 lg:h-24 w-auto object-contain" />
           </motion.a>
 
           {/* Desktop Navigation */}

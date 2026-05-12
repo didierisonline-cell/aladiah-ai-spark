@@ -49,7 +49,7 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="py-16 lg:py-20">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
+          <div className="grid md:grid-cols-2 lg:grid-cols-2 md:grid-cols-4 gap-12">
             {/* Brand */}
             <div className="lg:col-span-2">
               <div className="mb-6">
