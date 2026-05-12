@@ -60,34 +60,31 @@ const StudentPortal = () => {
   const { tier, tierName, hasFeature } = useSubscription();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [subStatus, setSubStatus] = useState<'loading'|'active'|'none'>('active'); // TEMP: bypass payment gate
+  const [subStatus, setSubStatus] = useState<'loading'|'active'|'none'>('loading');
 
-  // Auth guard — TEMPORARILY DISABLED for demo
-  // useEffect(() => {
-  //   if (!authLoading && !user) {
-  //     navigate('/auth');
-  //   }
-  // }, [user, authLoading, navigate]);
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth');
+    }
+  }, [user, authLoading, navigate]);
 
-  // TEMP: subscription check disabled — portal open for demo
-  // useEffect(() => {
-  //   if (!user) return;
-  //   const checkSub = async () => {
-  //     const { data } = await supabase
-  //       .from('subscriptions')
-  //       .select('status')
-  //       .eq('user_id', user.id)
-  //       .single();
-  //     setSubStatus(data?.status === 'active' ? 'active' : 'none');
-  //   };
-  //   const params = new URLSearchParams(window.location.search);
-  //   if (params.get('payment') === 'success') {
-  //     setSubStatus('active');
-  //     window.history.replaceState({}, '', '/portal');
-  //   } else {
-  //     checkSub();
-  //   }
-  // }, [user]);
+  useEffect(() => {
+    if (!user) return;
+    const checkSub = async () => {
+      // Allow starter tier through without subscription
+      const { data: profile } = await supabase.from('profiles').select('tier').eq('user_id', user.id).maybeSingle();
+      if (profile?.tier === 'starter') { setSubStatus('active'); return; }
+      const { data } = await supabase.from('subscriptions').select('status').eq('user_id', user.id).single();
+      setSubStatus(data?.status === 'active' ? 'active' : 'none');
+    };
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'success') {
+      setSubStatus('active');
+      window.history.replaceState({}, '', '/portal');
+    } else {
+      checkSub();
+    }
+  }, [user]);
 
   const { progress: overallProgress } = useProgress(user?.id);
   const { profile: learningProfile, recordQuestion, getDueReviews } = useLearningProfile(user?.id);
