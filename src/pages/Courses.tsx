@@ -99,6 +99,8 @@ const Courses = () => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [seeding, setSeeding] = useState(false);
+  const [isStarter, setIsStarter] = useState(false);
+  const [starterFreeCourseId, setStarterFreeCourseId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { language } = useLanguage();
@@ -115,8 +117,15 @@ const Courses = () => {
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    // DEV MODE: bypass auth, allow anonymous access
-    setUser(session?.user ?? { email: 'dev@preview.local' });
+    const u = session?.user ?? { email: 'dev@preview.local', id: null };
+    setUser(u);
+    if (u?.id) {
+      const { data: profile } = await supabase.from('profiles').select('tier, free_course_id').eq('user_id', u.id).maybeSingle();
+      if (profile?.tier === 'starter') {
+        setIsStarter(true);
+        setStarterFreeCourseId(profile?.free_course_id || null);
+      }
+    }
     loadData();
   };
 
@@ -247,8 +256,10 @@ const Courses = () => {
     return chapterEndQuizzes.every(q => passedQuizzes.includes(q.id));
   };
 
-  const isCourseUnlocked = (_courseId: string) => {
-    return true; // DEV MODE: all courses unlocked
+  const isCourseUnlocked = (courseId: string) => {
+    if (!isStarter) return true; // paid users: all unlocked
+    // starter users: only their chosen free course is unlocked
+    return courseId === starterFreeCourseId;
   };
 
   const getPrerequisiteNames = (courseId: string) => {
@@ -291,8 +302,33 @@ const Courses = () => {
     const prereqGroups = getPrerequisiteNames(course.id);
     const IconComponent = icon === 'flask' ? FlaskConical : BookOpen;
 
+    const starterLocked = isStarter && locked;
+
     return (
-      <Card className={`mb-6 overflow-hidden ${locked ? 'opacity-70' : ''}`}>
+      <div className="relative mb-6">
+      {starterLocked && (
+        <div
+          onClick={async () => {
+            if (!user?.id) return;
+            const res = await fetch('/api/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMsDL0Ctflq2xPfzJsrXzy1',
+                email: user.email, tier: 't2', userId: user.id,
+                successUrl: `${window.location.origin}/portal?payment=success`, cancelUrl: `${window.location.origin}/courses` }) });
+            const d = await res.json(); if (d.url) window.location.href = d.url;
+          }}
+          style={{ position: 'absolute', inset: 0, zIndex: 10, cursor: 'pointer', backdropFilter: 'blur(4px)', background: 'rgba(10,15,30,0.55)', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+        >
+          <div style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.4)', borderRadius: '12px', padding: '16px 24px', textAlign: 'center' }}>
+            <div style={{ fontSize: '24px', marginBottom: '4px' }}>🔒</div>
+            <p style={{ color: '#fff', fontWeight: 700, fontSize: '14px', margin: '0 0 4px 0' }}>Unlock Full Access</p>
+            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', margin: '0 0 10px 0' }}>$99.99/month — All 8 courses</p>
+            <div style={{ background: 'linear-gradient(135deg,#f59e0b,#d97706)', color: '#000', borderRadius: '8px', padding: '8px 20px', fontSize: '13px', fontWeight: 700 }}>
+              Upgrade Now →
+            </div>
+          </div>
+        </div>
+      )}
+      <Card className={`overflow-hidden ${locked ? 'opacity-70' : ''}`}>
         <CardHeader className={`bg-gradient-to-r ${locked ? 'from-muted/50 to-muted/30' : icon === 'flask' ? 'from-accent/20 to-primary/10' : 'from-primary/10 to-secondary/10'}`}>
           <div className="flex items-start justify-between">
             <div>
@@ -376,6 +412,7 @@ const Courses = () => {
           </CardContent>
         )}
       </Card>
+      </div>
     );
   };
 
