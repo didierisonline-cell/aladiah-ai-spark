@@ -258,8 +258,8 @@ const Courses = () => {
 
   const isCourseUnlocked = (courseId: string) => {
     if (!isStarter) return true; // paid users: all unlocked
-    // starter users: only their chosen free course is unlocked
-    return courseId === starterFreeCourseId;
+    if (!starterFreeCourseId) return false; // starter with no course selected: all locked
+    return courseId === starterFreeCourseId; // only free course unlocked
   };
 
   const getPrerequisiteNames = (courseId: string) => {
@@ -328,7 +328,7 @@ const Courses = () => {
           </div>
         </div>
       )}
-      <Card className={`overflow-hidden ${locked ? 'opacity-60' : ''}`}>
+      <Card className={`overflow-hidden ${locked ? 'opacity-60' : ''}`} style={starterLocked ? {minHeight: '80px', maxHeight: '120px'} : {}}>
         <CardHeader className={`bg-gradient-to-r ${locked ? 'from-muted/50 to-muted/30' : icon === 'flask' ? 'from-accent/20 to-primary/10' : 'from-primary/10 to-secondary/10'}`}>
           <div className="flex items-start justify-between">
             <div>
