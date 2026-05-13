@@ -293,6 +293,46 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg,#0a0f1e 0%,#0d1b3e 50%,#0a0f1e 100%)', fontFamily: 'system-ui,-apple-system,sans-serif' }}>
 
+      {/* Starter Paywall Overlay */}
+      {paywallReason && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, backdropFilter: 'blur(8px)', background: 'rgba(10,15,30,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div style={{ background: 'linear-gradient(135deg,#0d1b3e,#0a0f1e)', border: '2px solid rgba(245,158,11,0.5)', borderRadius: '24px', padding: '40px', maxWidth: '480px', width: '100%', textAlign: 'center', boxShadow: '0 25px 80px rgba(0,0,0,0.6)' }}>
+            <div style={{ fontSize: '52px', marginBottom: '12px' }}>🎓</div>
+            <h2 style={{ fontSize: '26px', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>You Completed Module 1!</h2>
+            <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '24px', lineHeight: 1.6 }}>
+              Solo Excelencia. You proved you belong here.<br/>Unlock all courses and continue your journey.
+            </p>
+            <div style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '14px', padding: '20px', marginBottom: '20px' }}>
+              <p style={{ fontSize: '34px', fontWeight: 800, color: '#fff', margin: '0 0 4px 0' }}>$99.99<span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>/month</span></p>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>All courses · Cancel anytime · Certificates</p>
+            </div>
+            <button
+              onClick={async () => {
+                const { data: { user: u } } = await supabase.auth.getUser();
+                if (!u) return;
+                localStorage.setItem(`starter-course-done-${u.id}`, 'true');
+                await supabase.from('profiles').update({ free_course_completed: true }).eq('user_id', u.id);
+                const res = await fetch('/api/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMsDL0Ctflq2xPfzJsrXzy1',
+                    email: u.email, tier: 't2', userId: u.id,
+                    successUrl: `${window.location.origin}/portal?payment=success`,
+                    cancelUrl: `${window.location.origin}/portal` }) });
+                const d = await res.json();
+                if (d.url) window.location.href = d.url;
+                else navigate('/portal');
+              }}
+              style={{ width: '100%', padding: '16px', borderRadius: '12px', background: 'linear-gradient(135deg,#f59e0b,#d97706)', border: 'none', color: '#000', fontSize: '16px', fontWeight: 800, cursor: 'pointer', marginBottom: '12px' }}
+            >
+              Unlock Full Access — $99.99/month →
+            </button>
+            <button onClick={() => navigate('/portal')} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: '12px', cursor: 'pointer' }}>
+              Go back to portal
+            </button>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '12px' }}>🔒 Secure payment via Stripe</p>
+          </div>
+        </div>
+      )}
+
       {/* Top Nav */}
       <div style={{ borderBottom: '1px solid rgba(96,165,250,0.12)', background: 'rgba(10,15,30,0.8)', backdropFilter: 'blur(12px)', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56, position: 'sticky', top: 0, zIndex: 50 }}>
         <button onClick={() => navigate('/courses')} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: 14, fontWeight: 500 }}>
