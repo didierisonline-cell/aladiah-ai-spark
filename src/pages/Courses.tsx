@@ -304,10 +304,13 @@ const Courses = () => {
 
     const starterLocked = isStarter && locked;
 
-    return (
-      <div className="relative mb-6">
-      {starterLocked && (
+    // Starter locked: show compact locked card only
+    if (starterLocked) {
+      return (
         <div
+          key={course.id}
+          className="mb-3 rounded-xl border border-white/10 overflow-hidden cursor-pointer hover:border-amber-500/40 transition-all"
+          style={{ background: 'rgba(10,15,30,0.6)', backdropFilter: 'blur(4px)' }}
           onClick={async () => {
             if (!user?.id) return;
             const res = await fetch('/api/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -316,19 +319,23 @@ const Courses = () => {
                 successUrl: `${window.location.origin}/portal?payment=success`, cancelUrl: `${window.location.origin}/courses` }) });
             const d = await res.json(); if (d.url) window.location.href = d.url;
           }}
-          style={{ position: 'absolute', inset: 0, zIndex: 10, cursor: 'pointer', backdropFilter: 'blur(5px)', background: 'rgba(10,15,30,0.65)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          <div style={{ background: 'linear-gradient(135deg,#0d1b3e,#0a0f1e)', border: '2px solid rgba(245,158,11,0.5)', borderRadius: '16px', padding: '28px 36px', textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
-            <div style={{ fontSize: '36px', marginBottom: '8px' }}>🔒</div>
-            <p style={{ color: '#fff', fontWeight: 800, fontSize: '18px', margin: '0 0 6px 0' }}>Unlock Full Access</p>
-            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '13px', margin: '0 0 16px 0' }}>$99.99/month — All 8 courses · Cancel anytime</p>
-            <div style={{ background: 'linear-gradient(135deg,#f59e0b,#d97706)', color: '#000', borderRadius: '10px', padding: '12px 28px', fontSize: '14px', fontWeight: 800 }}>
-              Upgrade Now →
+          <div className="flex items-center justify-between px-5 py-4">
+            <div className="flex items-center gap-3">
+              <span style={{ fontSize: '18px' }}>🔒</span>
+              <span className="font-semibold text-white/50 text-sm">{courseContent.title}</span>
+            </div>
+            <div style={{ background: 'linear-gradient(135deg,#f59e0b,#d97706)', color: '#000', borderRadius: '8px', padding: '6px 16px', fontSize: '12px', fontWeight: 700, whiteSpace: 'nowrap' }}>
+              Upgrade $99.99/mo →
             </div>
           </div>
         </div>
-      )}
-      <Card className={`overflow-hidden ${locked ? 'opacity-60' : ''}`} style={starterLocked ? {minHeight: '80px', maxHeight: '120px'} : {}}>
+      );
+    }
+
+    return (
+      <div className="relative mb-6">
+      <Card className={`overflow-hidden ${locked ? 'opacity-60' : ''}`}>
         <CardHeader className={`bg-gradient-to-r ${locked ? 'from-muted/50 to-muted/30' : icon === 'flask' ? 'from-accent/20 to-primary/10' : 'from-primary/10 to-secondary/10'}`}>
           <div className="flex items-start justify-between">
             <div>
@@ -412,7 +419,7 @@ const Courses = () => {
           </CardContent>
         )}
       </Card>
-      </div>
+    </div>
     );
   };
 
