@@ -316,19 +316,19 @@ const Courses = () => {
                 successUrl: `${window.location.origin}/portal?payment=success`, cancelUrl: `${window.location.origin}/courses` }) });
             const d = await res.json(); if (d.url) window.location.href = d.url;
           }}
-          style={{ position: 'absolute', inset: 0, zIndex: 10, cursor: 'pointer', backdropFilter: 'blur(4px)', background: 'rgba(10,15,30,0.55)', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+          style={{ position: 'absolute', inset: 0, zIndex: 10, cursor: 'pointer', backdropFilter: 'blur(5px)', background: 'rgba(10,15,30,0.65)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          <div style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.4)', borderRadius: '12px', padding: '16px 24px', textAlign: 'center' }}>
-            <div style={{ fontSize: '24px', marginBottom: '4px' }}>🔒</div>
-            <p style={{ color: '#fff', fontWeight: 700, fontSize: '14px', margin: '0 0 4px 0' }}>Unlock Full Access</p>
-            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', margin: '0 0 10px 0' }}>$99.99/month — All 8 courses</p>
-            <div style={{ background: 'linear-gradient(135deg,#f59e0b,#d97706)', color: '#000', borderRadius: '8px', padding: '8px 20px', fontSize: '13px', fontWeight: 700 }}>
+          <div style={{ background: 'linear-gradient(135deg,#0d1b3e,#0a0f1e)', border: '2px solid rgba(245,158,11,0.5)', borderRadius: '16px', padding: '28px 36px', textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
+            <div style={{ fontSize: '36px', marginBottom: '8px' }}>🔒</div>
+            <p style={{ color: '#fff', fontWeight: 800, fontSize: '18px', margin: '0 0 6px 0' }}>Unlock Full Access</p>
+            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '13px', margin: '0 0 16px 0' }}>$99.99/month — All 8 courses · Cancel anytime</p>
+            <div style={{ background: 'linear-gradient(135deg,#f59e0b,#d97706)', color: '#000', borderRadius: '10px', padding: '12px 28px', fontSize: '14px', fontWeight: 800 }}>
               Upgrade Now →
             </div>
           </div>
         </div>
       )}
-      <Card className={`overflow-hidden ${locked ? 'opacity-70' : ''}`}>
+      <Card className={`overflow-hidden ${locked ? 'opacity-60' : ''}`}>
         <CardHeader className={`bg-gradient-to-r ${locked ? 'from-muted/50 to-muted/30' : icon === 'flask' ? 'from-accent/20 to-primary/10' : 'from-primary/10 to-secondary/10'}`}>
           <div className="flex items-start justify-between">
             <div>
