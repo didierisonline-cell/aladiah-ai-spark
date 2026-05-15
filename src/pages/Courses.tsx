@@ -280,7 +280,7 @@ const Courses = () => {
   const isChapterAccessible = (chapter: Chapter, _courseChapters: Chapter[]) => {
     if (!isStarter) return true;
     if (chapter.course_id !== starterFreeCourseId) return false;
-    return chapter.order_index <= 1;
+    return chapter.order_index === 0;
   };
 
   const isCourseCompleted = (courseId: string) => {
@@ -540,17 +540,7 @@ const Courses = () => {
           </p>
         </motion.div>
 
-        {!loading && certificationCourses.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground mb-4">Courses are taking a moment to load.</p>
-            <button
-              onClick={() => { setLoading(true); loadData(); }}
-              className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors"
-            >
-              Try Again
-            </button>
-          </div>
-        ) : (
+        {!loading && certificationCourses.length === 0 ? null : (
           certificationCourses.map((course, i) => (
             <motion.div key={course.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
               {renderCourseCard(course, 'book')}
