@@ -425,7 +425,22 @@ const Courses = () => {
                           ? 'opacity-50 bg-muted/30' 
                           : 'hover:border-primary/50 hover:shadow-md cursor-pointer'
                       }`}
-                      onClick={() => !isLocked && (INTERACTIVE_SIMULATION_IDS.includes(course.id) ? navigate('/simulation') : (console.log('NAV DEBUG', course.id, chapter?.id), chapter?.id ? navigate(`/course/${course.id}/chapter/${chapter.id}`) : navigate('/courses')))}
+                      onClick={async () => {
+                        if (isLocked) {
+                          if (isStarter) {
+                            const { data: { user: u } } = await (await import('@/integrations/supabase/client')).supabase.auth.getUser();
+                            if (!u) return;
+                            const res = await fetch('/api/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMsDL0Ctflq2xPfzJsrXzy1',
+                                email: u.email, tier: 't2', userId: u.id,
+                                successUrl: `${window.location.origin}/portal?payment=success`,
+                                cancelUrl: `${window.location.origin}/courses` }) });
+                            const d = await res.json(); if (d.url) window.location.href = d.url;
+                          }
+                          return;
+                        }
+                        INTERACTIVE_SIMULATION_IDS.includes(course.id) ? navigate('/simulation') : (chapter?.id ? navigate(`/course/${course.id}/chapter/${chapter.id}`) : navigate('/courses'));
+                      }}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">
