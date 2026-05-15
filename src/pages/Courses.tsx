@@ -101,6 +101,7 @@ const Courses = () => {
   const [seeding, setSeeding] = useState(false);
   const [isStarter, setIsStarter] = useState(false);
   const [starterFreeCourseId, setStarterFreeCourseId] = useState<string | null>(null);
+  const [starterCourseDone, setStarterCourseDone] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { language } = useLanguage();
@@ -154,6 +155,8 @@ const Courses = () => {
         if (profile?.tier === 'starter') {
           setIsStarter(true);
           setStarterFreeCourseId(profile?.free_course_id || null);
+          const localDone = localStorage.getItem(`starter-course-done-${u.id}`);
+          if (localDone === 'true' || profile?.free_course_completed) setStarterCourseDone(true);
         }
       }
     } catch {}
@@ -279,6 +282,7 @@ const Courses = () => {
 
   const isChapterAccessible = (chapter: Chapter, _courseChapters: Chapter[]) => {
     if (!isStarter) return true;
+    if (starterCourseDone) return false; // all locked after completion
     if (chapter.course_id !== starterFreeCourseId) return false;
     return chapter.order_index === 0;
   };
@@ -294,8 +298,9 @@ const Courses = () => {
 
   const isCourseUnlocked = (courseId: string) => {
     if (!isStarter) return true; // paid users: all unlocked
-    if (!starterFreeCourseId) return false; // starter with no course selected: all locked
-    return courseId === starterFreeCourseId; // only free course unlocked
+    if (starterCourseDone) return false; // course done: everything locked
+    if (!starterFreeCourseId) return false;
+    return courseId === starterFreeCourseId;
   };
 
   const getPrerequisiteNames = (courseId: string) => {
