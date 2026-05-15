@@ -144,14 +144,13 @@ const Courses = () => {
 
   const checkAuth = async () => {
     try {
-      const key = Object.keys(localStorage).find(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
-      const stored = key ? JSON.parse(localStorage.getItem(key) || '') : null;
-      const u = stored?.user ?? null;
-      const jwt = stored?.access_token ?? null;
+      const { data: { user: u } } = await supabase.auth.getUser();
       setUser(u);
       if (u?.id) {
-        const profileData = await restFetch(`/profiles?user_id=eq.${u.id}&select=tier,free_course_id&limit=1`, jwt);
-        const profile = profileData?.[0];
+        const { data: profile } = await supabase.from('profiles')
+          .select('tier, free_course_id, free_course_completed')
+          .eq('user_id', u.id)
+          .maybeSingle();
         if (profile?.tier === 'starter') {
           setIsStarter(true);
           setStarterFreeCourseId(profile?.free_course_id || null);
