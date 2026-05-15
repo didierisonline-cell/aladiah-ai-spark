@@ -277,8 +277,10 @@ const Courses = () => {
       : 0;
   };
 
-  const isChapterAccessible = (_chapter: Chapter, _courseChapters: Chapter[]) => {
-    return true; // DEV MODE: all chapters unlocked
+  const isChapterAccessible = (chapter: Chapter, _courseChapters: Chapter[]) => {
+    if (!isStarter) return true;
+    if (chapter.course_id !== starterFreeCourseId) return false;
+    return chapter.order_index <= 1;
   };
 
   const isCourseCompleted = (courseId: string) => {
