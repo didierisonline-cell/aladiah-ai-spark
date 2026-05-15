@@ -116,7 +116,7 @@ const Courses = () => {
   }, []);
 
   const SB_URL = 'https://vgujnkxylipfwmkpwzvb.supabase.co/rest/v1';
-  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZndWpua3h5bGlwZndta3B3enZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc2NjI0MDcsImV4cCI6MjA1MzIzODQwN30.yKNBBBjkMFPnKs6UD3wGJ5DBi3hnCPSVDMKRvYiTQaA';
+  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZndWpua3h5bGlwZndta3B3enZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMzYyMTUsImV4cCI6MjA4OTcxMjIxNX0.wpP8ZK0dtEegUu3r1f--sIkNHN1GnHTzvIstVAi1k20';
 
   // Direct REST fetch — bypasses SDK token-refresh hang, uses AbortController for real cancellation
   const restFetch = async (path: string, userJwt?: string, ms = 15000): Promise<any[] | null> => {
