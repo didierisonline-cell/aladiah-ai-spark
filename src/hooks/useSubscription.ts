@@ -40,24 +40,19 @@ export const useSubscription = () => {
     }
 
     const fetchSubscription = async () => {
-      const { data, error } = await supabase
-        .from('subscriptions')
-        .select('tier, status')
-        .eq('user_id', user.id)
-        .maybeSingle();
+      const timeout = new Promise<null>(res => setTimeout(() => res(null), 4000));
+      const query = supabase.from('subscriptions').select('tier, status').eq('user_id', user.id).maybeSingle()
+        .then(r => r.data);
+      const data = await Promise.race([query, timeout]);
 
-      if (error) {
-        console.error('Subscription fetch error:', error);
-        // Default to t1 if table doesn't exist yet or other error
-        setSubscription({ tier: 't1', status: 'active', isActive: true });
-      } else if (data) {
+      if (data) {
         setSubscription({
-          tier: data.tier as Tier,
-          status: data.status,
-          isActive: data.status === 'active' || data.status === 'trialing',
+          tier: (data as any).tier as Tier,
+          status: (data as any).status,
+          isActive: (data as any).status === 'active' || (data as any).status === 'trialing',
         });
       } else {
-        // No subscription found — check user metadata for tier (set during registration)
+        // Timed out or no subscription — check user metadata for tier
         const userTier = user.user_metadata?.tier;
         const tier = userTier === 'accelerator' ? 't2' : userTier === 'elite' ? 't3' : 't1';
         setSubscription({ tier: tier as Tier, status: 'active', isActive: true });

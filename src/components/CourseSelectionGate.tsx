@@ -46,43 +46,37 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
     checkCurrentSelection();
   }, []);
 
+  const sbFetch = <T,>(promise: Promise<{ data: T | null; error: any }>, fallback: T, ms = 5000): Promise<T> =>
+    Promise.race([
+      promise.then(r => r.data ?? fallback),
+      new Promise<T>(res => setTimeout(() => res(fallback), ms)),
+    ]);
+
   const loadCourses = async () => {
-    const { data } = await supabase
-      .from('courses')
-      .select('id, title, description')
-      .eq('is_published', true)
-      .order('title');
-    setCourses(data || []);
+    const data = await sbFetch(
+      supabase.from('courses').select('id, title, description').eq('is_published', true).order('title'),
+      []
+    );
+    setCourses(data);
   };
 
   const checkCurrentSelection = async () => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('free_course_id, free_switch_used')
-      .eq('user_id', userId)
-      .single();
+    const data = await sbFetch(
+      supabase.from('profiles').select('free_course_id, free_switch_used').eq('user_id', userId).maybeSingle(),
+      null
+    );
     if (data?.free_course_id) setCurrentSelection(data.free_course_id);
     if (data?.free_switch_used) setSwitchUsed(data.free_switch_used);
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (!selectedCourse) return;
     setLoading(true);
-    try {
-      const updateData: any = { free_course_id: selectedCourse };
-      if (currentSelection) updateData.free_switch_used = true;
-
-      await supabase
-        .from('profiles')
-        .update(updateData)
-        .eq('user_id', userId);
-
-      onCourseSelected();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    const updateData: any = { free_course_id: selectedCourse };
+    if (currentSelection) updateData.free_switch_used = true;
+    // Save in background — don't block the user
+    supabase.from('profiles').update(updateData).eq('user_id', userId).catch(console.error);
+    onCourseSelected();
   };
 
   const selectedCourseName = courses.find(c => c.id === selectedCourse)?.title;

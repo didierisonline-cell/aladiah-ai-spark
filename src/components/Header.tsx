@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Globe, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage, languageNames } from '@/contexts/LanguageContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +12,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
 import { supabase } from '@/integrations/supabase/client';
-import { useEffect, useState as useStateAuth } from 'react';
+
+function getStoredUser(): any | null {
+  try {
+    const key = Object.keys(localStorage).find(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+    if (!key) return null;
+    const stored = JSON.parse(localStorage.getItem(key) || '');
+    return stored?.user ?? null;
+  } catch {
+    return null;
+  }
+}
 
 type Language = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja';
 
@@ -35,7 +45,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white backdrop-blur-xl border-b border-border/30 overflow-hidden">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white backdrop-blur-xl border-b border-border/30">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20 lg:h-24">
           {/* Logo */}
@@ -182,61 +192,54 @@ const Header = ({ onProfileClick }: HeaderProps) => {
 };
 
 function AuthNavButton({ navigate }: { navigate: (path: string) => void }) {
-  const [user, setUser] = useStateAuth<any>(null);
-  const [authReady, setAuthReady] = useStateAuth<boolean>(false);
+  const [user, setUser] = useState<any>(getStoredUser());
   const { t } = useLanguage();
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null);
-      setAuthReady(true);
-    });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setUser(session?.user ?? null);
-      setAuthReady(true);
     });
+    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null)).catch(() => {});
     return () => subscription.unsubscribe();
   }, []);
 
-  if (!authReady) return null;
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
+    // Clear session from localStorage immediately so UI updates instantly
+    const key = Object.keys(localStorage).find(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+    if (key) localStorage.removeItem(key);
+    setUser(null);
     navigate('/');
+    // Sign out from Supabase in the background
+    supabase.auth.signOut().catch(() => {});
   };
 
-  const isCourseRoute = typeof window !== 'undefined' && (window.location.pathname.startsWith('/courses') || window.location.pathname.startsWith('/chapter'));
+  const isPortalRoute = pathname.startsWith('/portal') || pathname.startsWith('/resume-studio') || pathname.startsWith('/interview') || pathname.startsWith('/admin') || pathname.startsWith('/course') || pathname.startsWith('/chapter');
+  const isCourseRoute = pathname.startsWith('/course') || pathname.startsWith('/chapter');
 
   if (user) {
     if (isCourseRoute) {
       return (
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className="hidden sm:flex items-center gap-2">
-          <Button
-            variant="hero"
-            size="sm"
-            onClick={() => navigate('/portal')}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-          >
+          <Button variant="hero" size="sm" onClick={() => navigate('/portal')} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             ← Back to Portal
           </Button>
         </motion.div>
       );
     }
+    if (isPortalRoute) {
+      return (
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className="hidden sm:flex items-center gap-2">
+          <Button variant="hero" size="sm" onClick={handleLogout}>
+            {t('nav.donefortheday')}
+          </Button>
+        </motion.div>
+      );
+    }
+    // On public/marketing pages, logged-in users see "Get Busy" → takes them to their portal
     return (
-      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className="hidden sm:flex items-center gap-2">
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: '8px 12px', borderRadius: '10px', fontSize: '12px', fontWeight: 600,
-            background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)',
-            border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer',
-            transition: 'all 0.2s ease',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = '#fff'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; }}
-        >
-          {t('nav.logout')}
-        </button>
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.4 }} className="hidden sm:block">
+        <Button variant="hero" size="sm" onClick={() => navigate('/portal')}>{t('nav.getbusy')}</Button>
       </motion.div>
     );
   }
@@ -249,46 +252,47 @@ function AuthNavButton({ navigate }: { navigate: (path: string) => void }) {
 }
 
 function MobileAuthButton({ navigate, onClose }: { navigate: (path: string) => void; onClose: () => void }) {
-  const [user, setUser] = useStateAuth<any>(null);
+  const [user, setUser] = useState<any>(getStoredUser());
   const { t } = useLanguage();
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setUser(session?.user ?? null);
     });
+    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null)).catch(() => {});
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
+    const key = Object.keys(localStorage).find(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+    if (key) localStorage.removeItem(key);
+    setUser(null);
     onClose();
-    await supabase.auth.signOut();
     navigate('/');
+    supabase.auth.signOut().catch(() => {});
   };
+
+  const isPortalRoute = pathname.startsWith('/portal') || pathname.startsWith('/resume-studio') || pathname.startsWith('/interview') || pathname.startsWith('/admin') || pathname.startsWith('/course') || pathname.startsWith('/chapter');
 
   if (user) {
     return (
       <div className="mt-4 space-y-2">
-        <Button variant="hero" size="lg" className="w-full" onClick={() => { onClose(); navigate('/portal'); }}>
-          {t('nav.portal')}
-        </Button>
-        <button
-          onClick={handleLogout}
-          style={{
-            width: '100%', padding: '10px',
-            borderRadius: '10px', fontSize: '13px', fontWeight: 600,
-            background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)',
-            border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer',
-          }}
-        >
-          {t('nav.logout')}
-        </button>
+        {isPortalRoute ? (
+          <Button variant="hero" size="lg" className="w-full" onClick={handleLogout}>
+            {t('nav.donefortheday')}
+          </Button>
+        ) : (
+          <Button variant="hero" size="lg" className="w-full" onClick={() => { onClose(); navigate('/portal'); }}>
+            {t('nav.getbusy')}
+          </Button>
+        )}
       </div>
     );
   }
 
   return (
-    <Button variant="hero" size="lg" className="mt-4" onClick={() => { onClose(); navigate('/portal'); }}>
+    <Button variant="hero" size="lg" className="mt-4" onClick={() => { onClose(); navigate('/auth'); }}>
       {t('nav.getbusy')}
     </Button>
   );

@@ -11,3 +11,4 @@ supabase/.temp/
 # One-off SQL scripts
 *.sql
 !supabase/migrations/*.sql
+.vercel

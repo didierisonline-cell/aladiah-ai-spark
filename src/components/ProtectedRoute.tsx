@@ -7,79 +7,44 @@ type Props = {
   requireSubscription?: boolean;
 };
 
-export default function ProtectedRoute({ children, requireSubscription = true }: Props) {
-  const [status, setStatus] = useState<"loading" | "authed" | "no-auth" | "no-sub">("loading");
-  const [message, setMessage] = useState("Loading...");
+function getStoredSession(): boolean {
+  try {
+    const key = Object.keys(localStorage).find(
+      k => k.startsWith("sb-") && k.endsWith("-auth-token")
+    );
+    if (!key) return false;
+    const stored = JSON.parse(localStorage.getItem(key) || "");
+    return !!(stored?.user?.id || stored?.access_token);
+  } catch {
+    return false;
+  }
+}
+
+export default function ProtectedRoute({ children }: Props) {
+  const hasStored = getStoredSession();
+  // If localStorage says we're in → start authed immediately, no spinner ever
+  const [status, setStatus] = useState<"authed" | "no-auth">(
+    hasStored ? "authed" : "no-auth"
+  );
   const location = useLocation();
 
   useEffect(() => {
-    let cancelled = false;
+    // Listen for live auth events (sign-in / sign-out)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setStatus(session?.user ? "authed" : "no-auth");
+    });
 
-    const checkAccess = async (userId: string) => {
-      // Check active subscription
-      const { data: sub } = await supabase
-        .from("subscriptions")
-        .select("status")
-        .eq("user_id", userId)
-        .eq("status", "active")
-        .maybeSingle();
-      if (sub) return true;
+    // Background verify — update status when it resolves, but never block the UI
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setStatus(session?.user ? "authed" : "no-auth");
+    }).catch(() => {
+      // getSession() failed — keep whatever localStorage told us
+    });
 
-      // Allow free tier (starter) users
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("tier")
-        .eq("user_id", userId)
-        .maybeSingle();
-      if (profile?.tier === "starter") return true;
-
-      return false;
-    };
-
-    const run = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (cancelled) return;
-
-      if (!user) return setStatus("no-auth");
-      if (!requireSubscription) return setStatus("authed");
-
-      if (await checkAccess(user.id)) {
-        if (!cancelled) setStatus("authed");
-        return;
-      }
-
-      const justPaid = new URLSearchParams(location.search).get("payment") === "success"
-        || document.referrer.includes("checkout.stripe.com");
-
-      if (justPaid) {
-        for (let attempt = 1; attempt <= 15; attempt++) {
-          if (cancelled) return;
-          setMessage(`Activating your subscription... (${attempt}s)`);
-          await new Promise(r => setTimeout(r, 1000));
-          if (await checkAccess(user.id)) {
-            if (!cancelled) setStatus("authed");
-            return;
-          }
-        }
-      }
-
-      if (!cancelled) setStatus("no-sub");
-    };
-
-    run();
-    return () => { cancelled = true; };
-  }, [requireSubscription, location.search]);
-
-  if (status === "loading") return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#0a0f1a", flexDirection: "column", gap: "16px" }}>
-      <div style={{ width: "40px", height: "40px", border: "3px solid rgba(196,164,74,0.2)", borderTopColor: "#C4A44A", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-      <div style={{ color: "#C4A44A", fontSize: "16px" }}>{message}</div>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-    </div>
-  );
+    return () => subscription.unsubscribe();
+  }, []);
 
   if (status === "no-auth") return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
-  if (status === "no-sub") return <Navigate to="/pricing?reason=subscription-required" replace />;
 
   return <>{children}</>;
 }

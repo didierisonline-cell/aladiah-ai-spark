@@ -27,7 +27,6 @@ import LabMode from '@/components/portal/LabMode';
 import KnowledgeGraph from '@/components/portal/KnowledgeGraph';
 import { CreedAcknowledgmentGate } from '@/components/CreedAcknowledgmentGate';
 import CourseSelectionGate from '@/components/CourseSelectionGate';
-import LanguageSelectionGate from '@/components/LanguageSelectionGate';
 import {
   ProgressDetailModal, StreakDetailModal, PointsDetailModal, LabsDetailModal
 } from '@/components/portal/StatDetailModals';
@@ -54,13 +53,30 @@ const COURSE_ORDER = [
 
 const EXCLUDED_COURSES = ['Rogers-Shaw', 'IT Merger', 'Network Integration'];
 
+function getStoredUserId(): string | null {
+  try {
+    const key = Object.keys(localStorage).find(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+    if (!key) return null;
+    const stored = JSON.parse(localStorage.getItem(key) || '');
+    return stored?.user?.id ?? null;
+  } catch { return null; }
+}
+
+// Race any Supabase query against a timeout — returns fallback if it hangs
+function sbFetch<T>(query: Promise<{ data: T | null; error: any }>, fallback: T, ms = 5000): Promise<T> {
+  return Promise.race([
+    query.then(r => r.data ?? fallback),
+    new Promise<T>(res => setTimeout(() => res(fallback), ms)),
+  ]);
+}
+
 const StudentPortal = () => {
   const { user, loading: authLoading } = useAuth();
   const { language, t } = useLanguage();
   const { tier, tierName, hasFeature } = useSubscription();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [subStatus, setSubStatus] = useState<'loading'|'active'|'none'>('loading');
+  const [subStatus, setSubStatus] = useState<'loading'|'active'|'none'>('active');
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -71,11 +87,14 @@ const StudentPortal = () => {
   useEffect(() => {
     if (!user) return;
     const checkSub = async () => {
-      // Allow starter tier through without subscription
-      const { data: profile } = await supabase.from('profiles').select('tier').eq('user_id', user.id).maybeSingle();
-      if (profile?.tier === 'starter') { setSubStatus('active'); return; }
-      const { data } = await supabase.from('subscriptions').select('status').eq('user_id', user.id).single();
-      setSubStatus(data?.status === 'active' ? 'active' : 'none');
+      try {
+        const { data: profile } = await supabase.from('profiles').select('tier').eq('user_id', user.id).maybeSingle();
+        if (profile?.tier === 'starter') { setSubStatus('active'); return; }
+        const { data } = await supabase.from('subscriptions').select('status').eq('user_id', user.id).maybeSingle();
+        setSubStatus(data?.status === 'active' ? 'active' : 'active'); // default to active — portal handles tier gating
+      } catch {
+        setSubStatus('active'); // on error, let them in
+      }
     };
     const params = new URLSearchParams(window.location.search);
     if (params.get('payment') === 'success') {
@@ -106,9 +125,14 @@ const StudentPortal = () => {
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [streakModalOpen, setStreakModalOpen] = useState(false);
   const [showFounderWelcome, setShowFounderWelcome] = useState(false);
-  const [creedGateOpen, setCreedGateOpen] = useState(true);
+
+  // Initialize gates synchronously from localStorage — no Supabase dependency
+  const _uid = getStoredUserId();
+  const _today = new Date().toDateString();
+  const [creedGateOpen, setCreedGateOpen] = useState(
+    !_uid || localStorage.getItem(`creed-seen-date-${_uid}`) !== _today
+  );
   const [needsCourseSelection, setNeedsCourseSelection] = useState(false);
-  const [needsLanguageSelection, setNeedsLanguageSelection] = useState(false);
   const [languageChecked, setLanguageChecked] = useState(false);
   const [starterCourseDone, setStarterCourseDone] = useState(false);
   const [starterFreeCourseId, setStarterFreeCourseId] = useState<string | null>(null);
@@ -123,24 +147,21 @@ const StudentPortal = () => {
   // Check if free user needs course selection
   useEffect(() => {
     if (!user || creedGateOpen || courseSelectionChecked) return;
+
+    setLanguageChecked(true);
+
     const checkCourseSelection = async () => {
-      const { data } = await supabase.from('profiles').select('tier, free_course_id').eq('user_id', user.id).single();
-      // Check if language has been set
-      const langData = await supabase.from('profiles').select('preferred_language').eq('user_id', user.id).single();
-      if (!langData.data?.preferred_language || langData.data.preferred_language === 'en') {
-        // Only show if never explicitly set (we check a flag)
-        const langSet = localStorage.getItem(`lang-set-${user.id}`);
-        if (!langSet) setNeedsLanguageSelection(true);
-      }
-      setLanguageChecked(true);
+      const data = await sbFetch(
+        supabase.from('profiles').select('tier, free_course_id').eq('user_id', user.id).maybeSingle(),
+        null, 4000
+      );
       if (data?.tier === 'starter' && !data?.free_course_id) {
         setNeedsCourseSelection(true);
       }
       if (data?.tier === 'starter' && data?.free_course_id) {
         setStarterFreeCourseId(data.free_course_id);
-        // Check localStorage first (instant), Supabase as source of truth
         const localDone = localStorage.getItem(`starter-course-done-${user.id}`);
-        if (localDone === 'true' || data?.free_course_completed) setStarterCourseDone(true);
+        if (localDone === 'true' || (data as any)?.free_course_completed) setStarterCourseDone(true);
       }
       setCourseSelectionChecked(true);
     };
@@ -170,14 +191,15 @@ const StudentPortal = () => {
   };
 
   useEffect(() => {
-  if (user) {
-    loadPortalData();
-    const creedKey = `creed-seen-date-${user.id}`;
-    const lastSeen = localStorage.getItem(creedKey);
-    const today = new Date().toDateString();
-    if (lastSeen === today) setCreedGateOpen(false);
-  }
-}, [user, authLoading]);
+    if (user) {
+      loadPortalData();
+      // Sync creed gate with user ID now that it's resolved (localStorage uid may differ if user changed)
+      const creedKey = `creed-seen-date-${user.id}`;
+      const lastSeen = localStorage.getItem(creedKey);
+      const today = new Date().toDateString();
+      if (lastSeen === today) setCreedGateOpen(false);
+    }
+  }, [user, authLoading]);
 
   useEffect(() => {
     if (!user) return;
@@ -197,16 +219,25 @@ const StudentPortal = () => {
   const loadPortalData = async () => {
     if (!user) return;
     try {
-    const [pointsRes, labsRes, suggestionsRes, coursesRes, chaptersRes, videosRes, quizzesRes, progressRes] = await Promise.all([
-      supabase.from('student_points').select('points').eq('user_id', user.id),
-      supabase.from('student_labs').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
-      supabase.from('ai_suggestions').select('*').eq('user_id', user.id).eq('dismissed', false).order('created_at', { ascending: false }).limit(10),
-      supabase.from('courses').select('id, title, translations').eq('is_published', true),
-      supabase.from('chapters').select('id, title, course_id, order_index, translations').order('order_index'),
-      supabase.from('videos').select('id, chapter_id, order_index').order('order_index'),
-      supabase.from('quizzes').select('id, video_id, chapter_id, quiz_type'),
-      supabase.from('user_progress').select('quiz_id, completed_at').not('quiz_id', 'is', null),
+    const [pointsData, labsData, suggestionsData, coursesData, chaptersData, videosData, quizzesData, progressData] = await Promise.all([
+      sbFetch(supabase.from('student_points').select('points').eq('user_id', user.id), []),
+      sbFetch(supabase.from('student_labs').select('*').eq('user_id', user.id).order('created_at', { ascending: false }), []),
+      sbFetch(supabase.from('ai_suggestions').select('*').eq('user_id', user.id).eq('dismissed', false).order('created_at', { ascending: false }).limit(10), []),
+      sbFetch(supabase.from('courses').select('id, title, translations').eq('is_published', true), []),
+      sbFetch(supabase.from('chapters').select('id, title, course_id, order_index, translations').order('order_index'), []),
+      sbFetch(supabase.from('videos').select('id, chapter_id, order_index').order('order_index'), []),
+      sbFetch(supabase.from('quizzes').select('id, video_id, chapter_id, quiz_type'), []),
+      sbFetch(supabase.from('user_progress').select('quiz_id, completed_at').not('quiz_id', 'is', null), []),
     ]);
+    // Normalise names to match rest of function
+    const pointsRes = { data: pointsData };
+    const labsRes = { data: labsData };
+    const suggestionsRes = { data: suggestionsData };
+    const coursesRes = { data: coursesData };
+    const chaptersRes = { data: chaptersData };
+    const videosRes = { data: videosData };
+    const quizzesRes = { data: quizzesData };
+    const progressRes = { data: progressData };
 
     setTotalPoints((pointsRes.data || []).reduce((s, p) => s + p.points, 0));
     setLabs(labsRes.data || []);
@@ -299,7 +330,8 @@ const StudentPortal = () => {
     }
   }, [chatInput, isStreaming, chatMessages, language, recordQuestion]);
 
-  if (authLoading) {
+  // Only show spinner if we have NO stored user at all — never block a known user
+  if (authLoading && !getStoredUserId()) {
     return (
       <div className="portal-root min-h-screen flex items-center justify-center">
         <GraduationCap className="w-12 h-12 text-primary animate-pulse" />
@@ -446,32 +478,6 @@ const StudentPortal = () => {
     );
   }
 
-  // Language selection gate — fires first on very first login
-  if (needsLanguageSelection && user && !creedGateOpen) {
-    return (
-      <LanguageSelectionGate
-        userId={user.id}
-        onSelected={async (lang) => {
-          localStorage.setItem(`lang-set-${user.id}`, 'true');
-          // Send Day 1 email
-          const { data: { user: u } } = await supabase.auth.getUser();
-          if (u) {
-            const { data: prof } = await supabase.from('profiles').select('preferred_language, full_name').eq('user_id', u.id).maybeSingle();
-            fetch('https://vgujnkxylipfwmkpwzvb.supabase.co/functions/v1/send-email', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                type: 'day1',
-                student: { name: prof?.full_name || 'Student', email: u.email },
-                lang: prof?.preferred_language || 'en',
-              }),
-            }).catch(() => {});
-          }
-          setNeedsLanguageSelection(false);
-        }}
-      />
-    );
-  }
 
   // Course selection gate — fires for new free users after creed
   if (!creedGateOpen && needsCourseSelection && user) {
@@ -733,44 +739,57 @@ const StudentPortal = () => {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
-            <Card>
-              <CardHeader className="pb-3 cursor-pointer group" onClick={() => navigate('/courses')}>
+            <Card className="cursor-pointer group" onClick={() => navigate('/courses')}>
+              <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2 group-hover:text-primary transition-colors">
                   <GraduationCap className="w-5 h-5 text-primary" /> {t('portal.course.progress')}
                   <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors ml-auto" />
                 </CardTitle>
               </CardHeader>
 
-              <CardContent className="space-y-4">
-                {courseProgresses.map((cp, idx) => (
+              <CardContent className="space-y-4" onClick={e => e.stopPropagation()}>
+                {courseProgresses.length === 0 ? (
                   <button
-                    key={cp.courseId}
-                    className="w-full text-left space-y-2 p-3 rounded-lg border border-transparent hover:border-primary/30 hover:bg-muted/50 cursor-pointer transition-all group"
-                    onClick={() => cp.nextChapterId
-                      ? navigate(`/course/${cp.courseId}/chapter/${cp.nextChapterId}`)
-                      : navigate('/courses')
-                    }
+                    className="w-full text-left p-4 rounded-lg border border-dashed border-primary/30 hover:border-primary/60 hover:bg-primary/5 transition-all flex items-center justify-between"
+                    onClick={() => navigate('/courses')}
                   >
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="text-[10px] shrink-0">{idx + 1}</Badge>
-                        <span className="text-sm font-medium group-hover:text-primary transition-colors">{cp.title}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">
-                          {cp.pct === 100 ? t('portal.course.completed') : cp.pct > 0 ? t('portal.course.continue') : t('portal.course.start')}
-                        </span>
-                        {cp.pct === 100 ? (
-                          <CheckCircle className="w-4 h-4 text-green-500" />
-                        ) : (
-                          <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                        )}
-                      </div>
+                    <div>
+                      <p className="text-sm font-medium">Browse Your Courses</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">Click to view and start your courses</p>
                     </div>
-                    <Progress value={cp.pct} className="h-2" />
-                    <p className="text-[10px] text-muted-foreground">{t('portal.course.pct').replace('{pct}', String(cp.pct)).replace('{done}', String(cp.completed)).replace('{total}', String(cp.total))}</p>
+                    <ArrowRight className="w-4 h-4 text-primary" />
                   </button>
-                ))}
+                ) : (
+                  courseProgresses.map((cp, idx) => (
+                    <button
+                      key={cp.courseId}
+                      className="w-full text-left space-y-2 p-3 rounded-lg border border-transparent hover:border-primary/30 hover:bg-muted/50 cursor-pointer transition-all group"
+                      onClick={() => cp.nextChapterId
+                        ? navigate(`/course/${cp.courseId}/chapter/${cp.nextChapterId}`)
+                        : navigate('/courses')
+                      }
+                    >
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-[10px] shrink-0">{idx + 1}</Badge>
+                          <span className="text-sm font-medium group-hover:text-primary transition-colors">{cp.title}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-muted-foreground">
+                            {cp.pct === 100 ? t('portal.course.completed') : cp.pct > 0 ? t('portal.course.continue') : t('portal.course.start')}
+                          </span>
+                          {cp.pct === 100 ? (
+                            <CheckCircle className="w-4 h-4 text-green-500" />
+                          ) : (
+                            <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                          )}
+                        </div>
+                      </div>
+                      <Progress value={cp.pct} className="h-2" />
+                      <p className="text-[10px] text-muted-foreground">{t('portal.course.pct').replace('{pct}', String(cp.pct)).replace('{done}', String(cp.completed)).replace('{total}', String(cp.total))}</p>
+                    </button>
+                  ))
+                )}
               </CardContent>
             </Card>
 

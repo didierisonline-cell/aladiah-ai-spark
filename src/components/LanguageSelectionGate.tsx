@@ -20,15 +20,11 @@ const LANGUAGES = [
 
 export const LanguageSelectionGate = ({ userId, onSelected }: Props) => {
   const [selected, setSelected] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (!selected) return;
-    setLoading(true);
-    await supabase
-      .from('profiles')
-      .update({ preferred_language: selected })
-      .eq('user_id', userId);
+    // Save in background — never block or show loading state
+    supabase.from('profiles').update({ preferred_language: selected }).eq('user_id', userId).catch(() => {});
     onSelected(selected);
   };
 
@@ -80,11 +76,11 @@ export const LanguageSelectionGate = ({ userId, onSelected }: Props) => {
 
         <Button
           onClick={handleConfirm}
-          disabled={!selected || loading}
+          disabled={!selected}
           className="w-full"
           style={{ height: '48px', fontSize: '15px', fontWeight: 700 }}
         >
-          {loading ? 'Saving...' : 'Continue →'}
+          Continue →
         </Button>
 
         <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', textAlign: 'center', marginTop: '12px' }}>

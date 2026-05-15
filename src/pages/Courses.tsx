@@ -115,80 +115,114 @@ const Courses = () => {
     checkAuth();
   }, []);
 
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    const u = session?.user ?? { email: 'dev@preview.local', id: null };
-    setUser(u);
-    if (u?.id) {
-      const { data: profile } = await supabase.from('profiles').select('tier, free_course_id').eq('user_id', u.id).maybeSingle();
-      if (profile?.tier === 'starter') {
-        setIsStarter(true);
-        setStarterFreeCourseId(profile?.free_course_id || null);
-      }
+  const SB_URL = 'https://vgujnkxylipfwmkpwzvb.supabase.co/rest/v1';
+  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZndWpua3h5bGlwZndta3B3enZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc2NjI0MDcsImV4cCI6MjA1MzIzODQwN30.yKNBBBjkMFPnKs6UD3wGJ5DBi3hnCPSVDMKRvYiTQaA';
+
+  // Direct REST fetch — bypasses SDK token-refresh hang, uses AbortController for real cancellation
+  const restFetch = async (path: string, userJwt?: string, ms = 15000): Promise<any[] | null> => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ms);
+    try {
+      const res = await fetch(`${SB_URL}${path}`, {
+        headers: {
+          'apikey': SB_KEY,
+          'Authorization': `Bearer ${userJwt || SB_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        signal: controller.signal,
+      });
+      clearTimeout(timer);
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    } finally {
+      clearTimeout(timer);
     }
+  };
+
+  const checkAuth = async () => {
+    try {
+      const key = Object.keys(localStorage).find(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+      const stored = key ? JSON.parse(localStorage.getItem(key) || '') : null;
+      const u = stored?.user ?? null;
+      const jwt = stored?.access_token ?? null;
+      setUser(u);
+      if (u?.id) {
+        const profileData = await restFetch(`/profiles?user_id=eq.${u.id}&select=tier,free_course_id&limit=1`, jwt);
+        const profile = profileData?.[0];
+        if (profile?.tier === 'starter') {
+          setIsStarter(true);
+          setStarterFreeCourseId(profile?.free_course_id || null);
+        }
+      }
+    } catch {}
     loadData();
+  };
+
+  // Get a valid JWT — refresh if expired
+  const getValidJwt = async (): Promise<string> => {
+    try {
+      const key = Object.keys(localStorage).find(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+      const stored = key ? JSON.parse(localStorage.getItem(key) || '') : null;
+      if (!stored) return SB_KEY;
+
+      // Check if access token is still valid (JWT exp claim)
+      const [, payload] = (stored.access_token || '').split('.');
+      if (payload) {
+        const { exp } = JSON.parse(atob(payload));
+        if (exp * 1000 > Date.now() + 5000) return stored.access_token; // still valid
+      }
+
+      // Token expired — refresh using refresh_token
+      if (stored.refresh_token) {
+        const c = new AbortController();
+        setTimeout(() => c.abort(), 8000);
+        const res = await fetch(`https://vgujnkxylipfwmkpwzvb.supabase.co/auth/v1/token?grant_type=refresh_token`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': SB_KEY },
+          body: JSON.stringify({ refresh_token: stored.refresh_token }),
+          signal: c.signal,
+        });
+        if (res.ok) {
+          const session = await res.json();
+          if (key && session.access_token) {
+            localStorage.setItem(key, JSON.stringify({ ...stored, ...session }));
+          }
+          return session.access_token || SB_KEY;
+        }
+      }
+    } catch {}
+    return SB_KEY;
   };
 
   const loadData = async () => {
     try {
-      const { data: coursesData, error: coursesError } = await supabase
-        .from('courses')
-        .select('id, title, description, image_url, translations, is_published')
-        .eq('is_published', true);
-      
-      if (coursesError) throw coursesError;
+      const jwt = await getValidJwt();
 
-      if (!coursesData || coursesData.length === 0) {
+      const [coursesData, chaptersData, videosData, quizzesData, progressData, prereqData] = await Promise.all([
+        restFetch('/courses?is_published=eq.true&select=id,title,description,image_url,translations,is_published', jwt),
+        restFetch('/chapters?select=id,title,description,order_index,course_id,translations&order=order_index', jwt),
+        restFetch('/videos?order=order_index', jwt),
+        restFetch('/quizzes?select=id,video_id,chapter_id,quiz_type', jwt),
+        restFetch('/user_progress?quiz_id=not.is.null&select=quiz_id', jwt),
+        restFetch('/course_prerequisites?select=course_id,prerequisite_group,prerequisite_course_id', jwt),
+      ]);
+
+      // Only seed if courses returned an actual empty array (not null = error/timeout)
+      if (coursesData !== null && coursesData.length === 0) {
         await seedCourse();
         return;
       }
 
-      // Seed AI course if it's missing
-      const aiCourseId = 'dddddddd-eeee-ffff-1111-222222222222';
-      const pmCourseId = 'eeeeeeee-ffff-1111-2222-333333333333';
-      if (!coursesData.some(c => c.id === aiCourseId)) {
-      }
-
-      setCourses(coursesData as Course[]);
-
-      const { data: chaptersData } = await supabase
-        .from('chapters')
-        .select('id, title, description, order_index, course_id, translations')
-        .order('order_index');
-      
+      setCourses((coursesData || []) as Course[]);
       setChapters((chaptersData || []) as Chapter[]);
-
-      const { data: videosData } = await supabase
-        .from('videos')
-        .select('*')
-        .order('order_index');
-      
-      setVideos(videosData || []);
-
-      const { data: quizzesData } = await supabase
-        .from('quizzes')
-        .select('*');
-      
-      setQuizzes(quizzesData || []);
-
-      const { data: progressData } = await supabase
-        .from('user_progress')
-        .select('quiz_id')
-        .not('quiz_id', 'is', null);
-      
-      setPassedQuizzes((progressData || []).map(p => p.quiz_id as string));
-
-      const { data: prereqData } = await supabase
-        .from('course_prerequisites')
-        .select('course_id, prerequisite_group, prerequisite_course_id');
-      
+      setVideos((videosData || []) as any[]);
+      setQuizzes((quizzesData || []) as any[]);
+      setPassedQuizzes(((progressData || []) as any[]).map((p: any) => p.quiz_id as string));
       setPrerequisites((prereqData || []) as Prerequisite[]);
     } catch (error: any) {
-      toast({
-        title: t.errorLoading,
-        description: error.message,
-        variant: 'destructive',
-      });
+      toast({ title: t.errorLoading, description: error.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -504,11 +538,23 @@ const Courses = () => {
           </p>
         </motion.div>
 
-        {certificationCourses.map((course, i) => (
-          <motion.div key={course.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-            {renderCourseCard(course, 'book')}
-          </motion.div>
-        ))}
+        {!loading && certificationCourses.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground mb-4">Courses are taking a moment to load.</p>
+            <button
+              onClick={() => { setLoading(true); loadData(); }}
+              className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : (
+          certificationCourses.map((course, i) => (
+            <motion.div key={course.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
+              {renderCourseCard(course, 'book')}
+            </motion.div>
+          ))
+        )}
 
         {/* 2. Projects & Simulations */}
         {simulationCourses.length > 0 && (

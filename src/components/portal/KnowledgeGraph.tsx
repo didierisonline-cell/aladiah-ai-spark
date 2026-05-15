@@ -16,26 +16,26 @@ interface KnowledgeNode {
   status: 'mastered' | 'learning' | 'weak' | 'locked';
 }
 
-const KNOWLEDGE_TREE: KnowledgeNode[] = [
-  { id: 'agile', label: 'Agile Principles', category: 'Foundation', children: ['scrum', 'kanban', 'lean'], description: 'The Agile Manifesto, 12 principles, iterative development mindset.', status: 'mastered' },
-  { id: 'scrum', label: 'Scrum Framework', category: 'Core', children: ['sprint_planning', 'daily_standup', 'sprint_review', 'retro', 'backlog'], description: 'Empirical process control: transparency, inspection, adaptation.', status: 'mastered' },
-  { id: 'kanban', label: 'Kanban', category: 'Core', children: ['wip_limits', 'flow_metrics'], description: 'Visual workflow management, continuous delivery, pull-based system.', status: 'learning' },
-  { id: 'lean', label: 'Lean Thinking', category: 'Core', children: ['value_stream'], description: 'Eliminate waste, optimize value flow, continuous improvement.', status: 'learning' },
-  { id: 'sprint_planning', label: 'Sprint Planning', category: 'Ceremonies', children: [], description: 'Define Sprint Goal, select PBIs, create Sprint Backlog, capacity planning.', status: 'mastered' },
-  { id: 'daily_standup', label: 'Daily Scrum', category: 'Ceremonies', children: [], description: '15-min daily sync: progress, plans, impediments. Developer-owned.', status: 'mastered' },
-  { id: 'sprint_review', label: 'Sprint Review', category: 'Ceremonies', children: [], description: 'Inspect increment, adapt backlog, stakeholder feedback session.', status: 'learning' },
-  { id: 'retro', label: 'Retrospective', category: 'Ceremonies', children: ['retro_techniques'], description: 'Team improvement: Start/Stop/Continue, root cause analysis.', status: 'weak' },
-  { id: 'backlog', label: 'Product Backlog', category: 'Artifacts', children: ['user_stories', 'estimation'], description: 'Ordered list of work, PO-owned, emergent, refined continuously.', status: 'learning' },
-  { id: 'retro_techniques', label: 'Retro Techniques', category: 'Advanced', children: [], description: 'Sailboat, 4Ls, Starfish, Timeline retrospective formats.', status: 'locked' },
-  { id: 'user_stories', label: 'User Stories', category: 'Artifacts', children: [], description: 'As a [user], I want [goal], so that [benefit]. INVEST criteria.', status: 'mastered' },
-  { id: 'estimation', label: 'Estimation', category: 'Practices', children: [], description: 'Story points, Planning Poker, T-shirt sizing, relative estimation.', status: 'learning' },
-  { id: 'wip_limits', label: 'WIP Limits', category: 'Kanban', children: [], description: 'Constrain work-in-progress to improve flow and reduce context switching.', status: 'locked' },
-  { id: 'flow_metrics', label: 'Flow Metrics', category: 'Kanban', children: [], description: 'Lead time, cycle time, throughput, cumulative flow diagrams.', status: 'locked' },
-  { id: 'value_stream', label: 'Value Stream Mapping', category: 'Lean', children: [], description: 'Visualize end-to-end delivery process, identify waste and bottlenecks.', status: 'locked' },
-  { id: 'safe', label: 'SAFe 6.0', category: 'Scaling', children: ['art', 'pi_planning', 'rte_role'], description: 'Scaled Agile Framework for enterprise agility.', status: 'learning' },
-  { id: 'art', label: 'Agile Release Train', category: 'SAFe', children: [], description: 'Long-lived team of Agile teams, aligned to a common mission.', status: 'weak' },
-  { id: 'pi_planning', label: 'PI Planning', category: 'SAFe', children: [], description: 'Big room planning event, aligning teams for Program Increment.', status: 'locked' },
-  { id: 'rte_role', label: 'RTE Role', category: 'SAFe', children: [], description: 'Release Train Engineer: servant leader facilitating ART events.', status: 'locked' },
+const KNOWLEDGE_NODES = [
+  { id: 'agile',           labelKey: 'kg.node.agile',           category: 'Foundation', children: ['scrum', 'kanban', 'lean'],                                           description: 'The Agile Manifesto, 12 principles, iterative development mindset.',         status: 'mastered' as const },
+  { id: 'scrum',           labelKey: 'kg.node.scrum',           category: 'Core',       children: ['sprint_planning', 'daily_standup', 'sprint_review', 'retro', 'backlog'], description: 'Empirical process control: transparency, inspection, adaptation.',          status: 'mastered' as const },
+  { id: 'kanban',          labelKey: 'kg.node.kanban',          category: 'Core',       children: ['wip_limits', 'flow_metrics'],                                         description: 'Visual workflow management, continuous delivery, pull-based system.',       status: 'learning' as const },
+  { id: 'lean',            labelKey: 'kg.node.lean',            category: 'Core',       children: ['value_stream'],                                                       description: 'Eliminate waste, optimize value flow, continuous improvement.',             status: 'learning' as const },
+  { id: 'sprint_planning', labelKey: 'kg.node.sprint_planning', category: 'Ceremonies', children: [],                                                                     description: 'Define Sprint Goal, select PBIs, create Sprint Backlog, capacity planning.', status: 'mastered' as const },
+  { id: 'daily_standup',   labelKey: 'kg.node.daily_standup',   category: 'Ceremonies', children: [],                                                                     description: '15-min daily sync: progress, plans, impediments. Developer-owned.',       status: 'mastered' as const },
+  { id: 'sprint_review',   labelKey: 'kg.node.sprint_review',   category: 'Ceremonies', children: [],                                                                     description: 'Inspect increment, adapt backlog, stakeholder feedback session.',          status: 'learning' as const },
+  { id: 'retro',           labelKey: 'kg.node.retro',           category: 'Ceremonies', children: ['retro_techniques'],                                                   description: 'Team improvement: Start/Stop/Continue, root cause analysis.',             status: 'weak'    as const },
+  { id: 'backlog',         labelKey: 'kg.node.backlog',         category: 'Artifacts',  children: ['user_stories', 'estimation'],                                         description: 'Ordered list of work, PO-owned, emergent, refined continuously.',         status: 'learning' as const },
+  { id: 'retro_techniques',labelKey: 'kg.node.retro_techniques',category: 'Advanced',   children: [],                                                                     description: 'Sailboat, 4Ls, Starfish, Timeline retrospective formats.',                 status: 'locked'  as const },
+  { id: 'user_stories',    labelKey: 'kg.node.user_stories',    category: 'Artifacts',  children: [],                                                                     description: 'As a [user], I want [goal], so that [benefit]. INVEST criteria.',         status: 'mastered' as const },
+  { id: 'estimation',      labelKey: 'kg.node.estimation',      category: 'Practices',  children: [],                                                                     description: 'Story points, Planning Poker, T-shirt sizing, relative estimation.',      status: 'learning' as const },
+  { id: 'wip_limits',      labelKey: 'kg.node.wip_limits',      category: 'Kanban',     children: [],                                                                     description: 'Constrain work-in-progress to improve flow and reduce context switching.', status: 'locked'  as const },
+  { id: 'flow_metrics',    labelKey: 'kg.node.flow_metrics',    category: 'Kanban',     children: [],                                                                     description: 'Lead time, cycle time, throughput, cumulative flow diagrams.',             status: 'locked'  as const },
+  { id: 'value_stream',    labelKey: 'kg.node.value_stream',    category: 'Lean',       children: [],                                                                     description: 'Visualize end-to-end delivery process, identify waste and bottlenecks.',   status: 'locked'  as const },
+  { id: 'safe',            labelKey: 'kg.node.safe',            category: 'Scaling',    children: ['art', 'pi_planning', 'rte_role'],                                     description: 'Scaled Agile Framework for enterprise agility.',                           status: 'learning' as const },
+  { id: 'art',             labelKey: 'kg.node.art',             category: 'SAFe',       children: [],                                                                     description: 'Long-lived team of Agile teams, aligned to a common mission.',            status: 'weak'    as const },
+  { id: 'pi_planning',     labelKey: 'kg.node.pi_planning',     category: 'SAFe',       children: [],                                                                     description: 'Big room planning event, aligning teams for Program Increment.',           status: 'locked'  as const },
+  { id: 'rte_role',        labelKey: 'kg.node.rte_role',        category: 'SAFe',       children: [],                                                                     description: 'Release Train Engineer: servant leader facilitating ART events.',          status: 'locked'  as const },
 ];
 
 interface KnowledgeGraphProps {
@@ -56,13 +56,14 @@ const KnowledgeGraph = ({ weakAreas = [], strongAreas = [], onTopicSelect }: Kno
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
   const nodes = useMemo(() => {
-    return KNOWLEDGE_TREE.map(node => {
+    return KNOWLEDGE_NODES.map(node => {
+      const label = t(node.labelKey as any) || node.labelKey;
       let status = node.status;
-      if (weakAreas.some(w => node.label.toLowerCase().includes(w.toLowerCase()))) status = 'weak';
-      if (strongAreas.some(s => node.label.toLowerCase().includes(s.toLowerCase()))) status = 'mastered';
-      return { ...node, status };
+      if (weakAreas.some(w => label.toLowerCase().includes(w.toLowerCase()))) status = 'weak';
+      if (strongAreas.some(s => label.toLowerCase().includes(s.toLowerCase()))) status = 'mastered';
+      return { ...node, label, status };
     });
-  }, [weakAreas, strongAreas]);
+  }, [weakAreas, strongAreas, t]);
 
   const categories = useMemo(() => {
     const cats: Record<string, KnowledgeNode[]> = {};
