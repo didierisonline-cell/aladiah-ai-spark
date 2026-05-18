@@ -96,7 +96,7 @@ export const StarterPaywall = ({ reason, courseName }: Props) => {
               <span style={{ fontSize: '16px', fontWeight: 800, color: '#fff' }}>Aladiah Academy</span>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <p style={{ fontSize: '30px', fontWeight: 800, color: '#fff', margin: 0, lineHeight: 1 }}>$99.99</p>
+              <p style={{ fontSize: '30px', fontWeight: 800, color: '#fff', margin: 0, lineHeight: 1 }}>$59.99</p>
               <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>/month</p>
             </div>
           </div>
@@ -114,7 +114,7 @@ export const StarterPaywall = ({ reason, courseName }: Props) => {
             onClick={handleUpgrade}
             style={{ width: '100%', padding: '14px', borderRadius: '12px', background: 'linear-gradient(135deg, #f59e0b, #d97706)', border: 'none', color: '#000', fontSize: '15px', fontWeight: 800, cursor: 'pointer', letterSpacing: '0.02em' }}
           >
-            Unlock Full Access — $99.99/month →
+            Unlock Full Access — $59.99/month →
           </button>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textAlign: 'center', marginTop: '10px' }}>
             🔒 Secure payment via Stripe · Cancel anytime

@@ -368,7 +368,7 @@ const Courses = () => {
               <span className="font-semibold text-white/50 text-sm">{courseContent.title}</span>
             </div>
             <div style={{ background: 'linear-gradient(135deg,#f59e0b,#d97706)', color: '#000', borderRadius: '8px', padding: '6px 16px', fontSize: '12px', fontWeight: 700, whiteSpace: 'nowrap' }}>
-              Upgrade $99.99/mo →
+              Upgrade $59.99/mo →
             </div>
           </div>
         </div>

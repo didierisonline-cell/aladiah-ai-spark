@@ -528,11 +528,11 @@ const StudentPortal = () => {
               Unlock all 8 courses and continue your journey.
             </p>
             <div style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '14px', padding: '20px', marginBottom: '20px' }}>
-              <p style={{ fontSize: '32px', fontWeight: 800, color: '#fff', margin: '0 0 4px 0' }}>$99.99<span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>/month</span></p>
+              <p style={{ fontSize: '32px', fontWeight: 800, color: '#fff', margin: '0 0 4px 0' }}>$59.99<span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>/month</span></p>
               <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>All 8 courses · Cancel anytime · Certificates</p>
             </div>
             <button style={{ width: '100%', padding: '16px', borderRadius: '12px', background: 'linear-gradient(135deg, #f59e0b, #d97706)', border: 'none', color: '#000', fontSize: '16px', fontWeight: 800, cursor: 'pointer' }}>
-              Unlock Full Access — $99.99/month →
+              Unlock Full Access — $59.99/month →
             </button>
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', marginTop: '12px' }}>🔒 Secure payment via Stripe</p>
           </div>

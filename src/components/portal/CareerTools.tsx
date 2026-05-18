@@ -25,7 +25,7 @@ interface SavedResume {
   updatedAt: string;
 }
 
-// All features unlocked — single $99.99/month plan
+// All features unlocked — single $59.99/month plan
 const TierLock = ({ children }: { feature?: string; children: React.ReactNode; tierName?: string }) => {
   return <>{children}</>;
 };

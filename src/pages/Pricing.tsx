@@ -14,7 +14,7 @@ const Pricing = () => {
   const { t } = useLanguage();
   const { toast } = useToast();
 
-  const monthlyPrice = 99.99;
+  const monthlyPrice = 59.99;
   const annualPrice = Math.round(monthlyPrice * 12 * 0.8);
 
   const FEATURES = [
@@ -106,7 +106,7 @@ const Pricing = () => {
           <div style={{ display: "flex", alignItems: "flex-end", gap: "8px", marginBottom: annual ? "8px" : "32px" }}>
             <div>
               <span style={{ fontSize: "16px", color: "rgba(255,255,255,0.5)", verticalAlign: "top", marginTop: "8px", display: "inline-block" }}>$</span>
-              <span style={{ fontSize: "72px", fontWeight: 800, lineHeight: 1, color: "#fff" }}>{annual ? annualPrice : "99.99"}</span>
+              <span style={{ fontSize: "72px", fontWeight: 800, lineHeight: 1, color: "#fff" }}>{annual ? annualPrice : "59.99"}</span>
             </div>
             <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "16px", marginBottom: "12px" }}>/{annual ? t('pricing.year') : t('pricing.month')}</span>
           </div>
@@ -118,7 +118,7 @@ const Pricing = () => {
 
           <button onClick={handleSelect} disabled={loading}
             style={{ width: "100%", padding: "18px", borderRadius: "14px", cursor: loading ? "wait" : "pointer", fontWeight: 800, fontSize: "17px", background: "linear-gradient(135deg, #f59e0b, #d97706)", color: "#000", border: "none", marginBottom: "40px", opacity: loading ? 0.7 : 1, letterSpacing: "0.02em", boxShadow: "0 8px 32px rgba(245,158,11,0.3)" }}>
-            {loading ? t('pricing.redirecting') : `${t('auth.plan.name')} — $99.99/${t('pricing.month')}`}
+            {loading ? t('pricing.redirecting') : `${t('auth.plan.name')} — $59.99/${t('pricing.month')}`}
           </button>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "12px" }}>

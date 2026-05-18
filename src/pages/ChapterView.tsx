@@ -303,7 +303,7 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
               Solo Excelencia. You proved you belong here.<br/>Unlock all courses and continue your journey.
             </p>
             <div style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '14px', padding: '20px', marginBottom: '20px' }}>
-              <p style={{ fontSize: '34px', fontWeight: 800, color: '#fff', margin: '0 0 4px 0' }}>$99.99<span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>/month</span></p>
+              <p style={{ fontSize: '34px', fontWeight: 800, color: '#fff', margin: '0 0 4px 0' }}>$59.99<span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>/month</span></p>
               <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>All courses · Cancel anytime · Certificates</p>
             </div>
             <button
@@ -323,7 +323,7 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
               }}
               style={{ width: '100%', padding: '16px', borderRadius: '12px', background: 'linear-gradient(135deg,#f59e0b,#d97706)', border: 'none', color: '#000', fontSize: '16px', fontWeight: 800, cursor: 'pointer', marginBottom: '12px' }}
             >
-              Unlock Full Access — $99.99/month →
+              Unlock Full Access — $59.99/month →
             </button>
             <button onClick={() => navigate('/portal')} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: '12px', cursor: 'pointer' }}>
               Go back to portal
@@ -353,7 +353,7 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
                 <div style={{ fontSize: 10, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>{idx + 1} / {allChapters.length}</div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getTitle(chapter)}</div>
               </div>
-              <button onClick={() => next && navigate(`/course/${courseId}/chapter/${next.id}`)} disabled={!next} title={next ? getTitle(next) : ''}
+              <button onClick={() => { if (!next) return; if (isStarter) { setPaywallReason('module_locked'); return; } navigate(`/course/${courseId}/chapter/${next.id}`); }} disabled={!next} title={next ? getTitle(next) : ''}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 8, border: '1px solid rgba(96,165,250,0.2)', background: next ? 'rgba(30,64,175,0.15)' : 'rgba(15,23,42,0.3)', cursor: next ? 'pointer' : 'not-allowed', color: next ? '#60a5fa' : '#334155' }}>
                 <ChevronRight size={18} />
               </button>
@@ -583,7 +583,7 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
               return (
                 <button
                   key={video.id}
-                  onClick={() => setCurrentLesson(video)}
+                  onClick={() => { if (isStarter && video.order_index > 0) { setPaywallReason('module_locked'); return; } setCurrentLesson(video); }}
                   style={{ width: '100%', textAlign: 'left', background: isCurrent ? 'rgba(30,64,175,0.2)' : 'transparent', border: `1px solid ${isCurrent ? 'rgba(96,165,250,0.3)' : 'transparent'}`, borderRadius: 10, padding: '12px 14px', cursor: 'pointer', transition: 'all 0.15s ease', display: 'flex', alignItems: 'center', gap: 10 }}
                   onMouseEnter={e => { if (!isCurrent) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.04)'; }}
                   onMouseLeave={e => { if (!isCurrent) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
