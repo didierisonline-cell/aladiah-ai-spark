@@ -20,7 +20,7 @@ const PLANS = [
     name: 'Foundation Builder',
     price: 99,
     color: '#3b82f6',
-    features: ['Full Scrum Master curriculum', 'Full PM curriculum', 'AI-powered personalized lessons', 'Progress tracker + homework', 'Community access', 'Academy shop access', 'Available in 7 languages'],
+    features: ['8 certifications & growing', 'Full PM curriculum', 'AI-powered personalized lessons', 'Progress tracker + homework', 'Community access', 'Academy shop access', 'Available in 7 languages'],
   },
   {
     id: 'accelerator',
