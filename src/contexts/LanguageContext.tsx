@@ -24,7 +24,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.home': 'Home',
     'pricing.label': 'PRICING',
     'pricing.title': 'Invest in Your Future.',
-    'pricing.subtitle': 'Start at $99/month.',
+    'pricing.subtitle': 'All 8 Certifications. One Price. $59.99/month.',
     'pricing.desc': 'Project Managers earn $80K–$150K+ globally. Your monthly subscription is the highest ROI investment you will ever make. Period.',
     'pricing.monthly': 'Monthly',
     'pricing.annual': 'Annual — Save 20%',
