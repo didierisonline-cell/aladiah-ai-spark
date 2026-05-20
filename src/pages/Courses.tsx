@@ -352,14 +352,7 @@ const Courses = () => {
           className="mb-3 rounded-xl border border-white/10 overflow-hidden cursor-pointer hover:border-amber-500/40 transition-all"
           style={{ background: 'rgba(10,15,30,0.6)', backdropFilter: 'blur(4px)' }}
           onClick={async () => {
-            const { supabase: sb } = await import('@/integrations/supabase/client');
-            const { data: { user: u } } = await sb.auth.getUser();
-            if (!u) return;
-            const res = await fetch('/api/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TW7U21wgazWak4Atj7TbIB3',
-                email: u.email, tier: 't2', userId: u.id,
-                successUrl: `${window.location.origin}/portal?payment=success`, cancelUrl: `${window.location.origin}/courses` }) });
-            const d = await res.json(); if (d.url) window.location.href = d.url;
+            navigate('/pricing');
           }}
         >
           <div className="flex items-center justify-between px-5 py-4">
