@@ -174,10 +174,8 @@ const Programs = () => {
                   onClick={() => {
                     if (program.isWaitlist) {
                       setWaitlistOpen(true);
-                    } else if (program.featured) {
-                      navigate('/auth', { state: { from: '/' } });
                     } else {
-                      navigate('/auth', { state: { from: '/' } });
+                      navigate('/pricing');
                     }
                   }}
                 >
