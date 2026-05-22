@@ -61,6 +61,7 @@ export default function ChapterView() {
   const [transcript, setTranscript] = useState<{ role: 'user' | 'agent'; message: string }[]>([]);
   const [duration, setDuration] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const keepAliveRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
   const isLive = convStatus === 'connected';
   const isStartingRef = useRef(false);
@@ -69,11 +70,16 @@ export default function ChapterView() {
     onConnect: () => {
       setConvStatus('connected');
       timerRef.current = setInterval(() => setDuration(d => d + 1), 1000);
+      // Keep-alive: send silent ping every 8 seconds to prevent timeout
+      keepAliveRef.current = setInterval(() => {
+        try { conversation.sendUserAudio && conversation.sendUserAudio(new Float32Array(480)); } catch {}
+      }, 8000);
     },
     onDisconnect: () => {
       setConvStatus('idle');
       isStartingRef.current = false;
       if (timerRef.current) clearInterval(timerRef.current);
+      if (keepAliveRef.current) clearInterval(keepAliveRef.current);
     },
     onMessage: ({ message, source }: { message: string; source: string }) => {
       // Strip ElevenLabs persona XML tags e.g. <LaSean Pickens (EN/ES)>...</LaSean Pickens (EN/ES)>
