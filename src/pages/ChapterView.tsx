@@ -249,11 +249,11 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
           setIsStarter(false);
           // skip all tier checks
         } else {
-        const { data: profile } = await supabase.from('profiles').select('tier, free_course_id').eq('user_id', user.id).single();
+        const { data: profile } = await supabase.from('profiles').select('tier, free_course_id').eq('user_id', user.id).maybeSingle();
         if (profile?.tier === 'starter') { setIsStarter(true);
           const freeCourseId = profile.free_course_id;
           if (freeCourseId && courseId !== freeCourseId) {
-            const { data: fc } = await supabase.from('courses').select('title').eq('id', freeCourseId).single();
+            const { data: fc } = await supabase.from('courses').select('title').eq('id', freeCourseId).maybeSingle();
             setFreeCourseName(fc?.title || '');
             setPaywallReason('wrong_course');
             setLoading(false);
