@@ -50,6 +50,7 @@ export default function ChapterView() {
   const [currentLesson, setCurrentLesson] = useState<Video | null>(null);
   const [passedQuizzes, setPassedQuizzes] = useState<string[]>([]);
   const [paywallReason, setPaywallReason] = useState<'wrong_course' | 'module_locked' | null>(null);
+  const [isStarter, setIsStarter] = useState(false);
   const [freeCourseName, setFreeCourseName] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [allChapters, setAllChapters] = useState<Chapter[]>([]);
@@ -230,10 +231,11 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
       if (user) {
         // Admin bypass — full access regardless of tier
         if (user.email === 'didiermbok@yahoo.com') {
+          setIsStarter(false);
           // skip all tier checks
         } else {
         const { data: profile } = await supabase.from('profiles').select('tier, free_course_id').eq('user_id', user.id).single();
-        if (profile?.tier === 'starter') {
+        if (profile?.tier === 'starter') { setIsStarter(true);
           const freeCourseId = profile.free_course_id;
           if (freeCourseId && courseId !== freeCourseId) {
             const { data: fc } = await supabase.from('courses').select('title').eq('id', freeCourseId).single();
