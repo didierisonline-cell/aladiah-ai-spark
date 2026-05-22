@@ -218,13 +218,28 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
     if (!chapterId || !courseId) return;
     setLoading(true);
     try {
+      // Fetch each query individually with retry to avoid abort errors
+      const fetchWithRetry = async (fn: () => Promise<any>, retries = 3): Promise<any> => {
+        for (let i = 0; i < retries; i++) {
+          try {
+            const result = await fn();
+            if (!result.error) return result;
+            if (i < retries - 1) await new Promise(r => setTimeout(r, 500 * (i + 1)));
+          } catch (e) {
+            if (i < retries - 1) await new Promise(r => setTimeout(r, 500 * (i + 1)));
+            else throw e;
+          }
+        }
+        return { data: null, error: new Error('Max retries reached') };
+      };
+
       const [{ data: courseData }, { data: chapterData }, { data: allChaptersData }, { data: videosData }, { data: quizzesData }, { data: progressData }] = await Promise.all([
-        supabase.from('courses').select('id, title, translations').eq('id', courseId).single(),
-        supabase.from('chapters').select('id, title, description, order_index, course_id, translations').eq('id', chapterId).single(),
-        supabase.from('chapters').select('id, title, order_index, translations').eq('course_id', courseId).order('order_index'),
-        supabase.from('videos').select('id, title, description, chapter_id, order_index, video_url, translations').eq('chapter_id', chapterId).order('order_index'),
-        supabase.from('quizzes').select('*').eq('chapter_id', chapterId),
-        supabase.from('user_progress').select('quiz_id').not('quiz_id', 'is', null),
+        fetchWithRetry(() => supabase.from('courses').select('id, title, translations').eq('id', courseId).single()),
+        fetchWithRetry(() => supabase.from('chapters').select('id, title, description, order_index, course_id, translations').eq('id', chapterId).single()),
+        fetchWithRetry(() => supabase.from('chapters').select('id, title, order_index, translations').eq('course_id', courseId).order('order_index')),
+        fetchWithRetry(() => supabase.from('videos').select('id, title, description, chapter_id, order_index, video_url, translations').eq('chapter_id', chapterId).order('order_index')),
+        fetchWithRetry(() => supabase.from('quizzes').select('*').eq('chapter_id', chapterId)),
+        fetchWithRetry(() => supabase.from('user_progress').select('quiz_id').not('quiz_id', 'is', null)),
       ]);
       // Check free tier access
       const { data: { user } } = await supabase.auth.getUser();
