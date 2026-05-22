@@ -228,6 +228,10 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
       // Check free tier access
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        // Admin bypass — full access regardless of tier
+        if (user.email === 'didiermbok@yahoo.com') {
+          // skip all tier checks
+        } else {
         const { data: profile } = await supabase.from('profiles').select('tier, free_course_id').eq('user_id', user.id).single();
         if (profile?.tier === 'starter') {
           const freeCourseId = profile.free_course_id;
@@ -244,6 +248,7 @@ Start: greet warmly, ask what student knows about "${lessonTitle}".`;
             return;
           }
         }
+        } // end non-admin block
       }
       setCourse(courseData);
       setChapter(chapterData);
