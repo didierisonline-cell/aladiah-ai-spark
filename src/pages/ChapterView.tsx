@@ -184,9 +184,16 @@ After teaching all sections, conduct an ORAL RECAP ASSESSMENT: ask exactly 5 rec
 After the 5th question is answered and you have given final feedback, you MUST say exactly: "Solo Excelencia — module complete. You are ready for the next level."
 This exact phrase signals the end of the session. Do not say it before all 5 questions are done.
 Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
+      const langCodeMap: Record<string, string> = {
+        en: 'en', fr: 'fr', es: 'es', de: 'de',
+        zh: 'zh', ar: 'ar', ja: 'ja'
+      };
+      const langCode = langCodeMap[language] || 'en';
       await conversation.startSession({
         agentId: AGENT_ID,
-        overrides: { agent: { prompt: { prompt: systemPrompt } } }
+        overrides: {
+          agent: { prompt: { prompt: systemPrompt }, language: langCode },
+        }
       });
     } catch {
       setConvStatus('error');
