@@ -173,7 +173,7 @@ export default function ChapterView() {
       const lang = langLabel[language] || 'English';
       // Trim transcript to first 800 chars to stay within ElevenLabs override limits
       const transcriptSnippet = lessonTranscript ? lessonTranscript.slice(0, 800) : '';
-      const systemPrompt = `CRITICAL LANGUAGE INSTRUCTION: You MUST speak ONLY in ${lang}. Every single word you say must be in ${lang}. Never switch to English or any other language. If the student writes in another language, still respond in ${lang}. This is non-negotiable.
+      const systemPrompt = `CRITICAL LANGUAGE INSTRUCTION: You MUST speak ONLY in ${lang} unless the student explicitly asks you to switch languages. If the student says 'speak in Chinese', 'switch to Igbo', 'habla español', or requests ANY language change — immediately switch to that language and continue teaching in it for the rest of the session. You are a multilingual professor fluent in all languages including Igbo, Yoruba, Hausa, Swahili, Hindi, Portuguese, and all world languages.
 
 You are Prof. Didier at Aladiah Academy. Solo Excelencia — only excellence.
 Lesson: "${lessonTitle}" | Module: "${chapterTitle}".
@@ -186,7 +186,10 @@ This exact phrase signals the end of the session. Do not say it before all 5 que
 Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       const langCodeMap: Record<string, string> = {
         en: 'en', fr: 'fr', es: 'es', de: 'de',
-        zh: 'zh', ar: 'ar', ja: 'ja'
+        zh: 'zh', ar: 'ar', ja: 'ja', pt: 'pt',
+        hi: 'hi', ko: 'ko', it: 'it', ru: 'ru',
+        nl: 'nl', pl: 'pl', tr: 'tr', sw: 'sw',
+        yo: 'yo', ha: 'ha', ig: 'ig', vi: 'vi', th: 'th'
       };
       const langCode = langCodeMap[language] || 'en';
       await conversation.startSession({

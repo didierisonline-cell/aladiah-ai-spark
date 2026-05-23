@@ -2,13 +2,27 @@ import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const LANGS = [
-  { code: 'en', flag: '🇺🇸', label: 'English',  short: 'EN' },
-  { code: 'fr', flag: '🇫🇷', label: 'Français', short: 'FR' },
-  { code: 'es', flag: '🇪🇸', label: 'Español',  short: 'ES' },
-  { code: 'de', flag: '🇩🇪', label: 'Deutsch',  short: 'DE' },
-  { code: 'zh', flag: '🇨🇳', label: '中文',      short: 'ZH' },
-  { code: 'ar', flag: '🇸🇦', label: 'العربية',  short: 'AR' },
-  { code: 'ja', flag: '🇯🇵', label: '日本語',    short: 'JA' },
+  { code: 'en', flag: '🇺🇸', label: 'English',    short: 'EN' },
+  { code: 'fr', flag: '🇫🇷', label: 'Français',   short: 'FR' },
+  { code: 'es', flag: '🇪🇸', label: 'Español',    short: 'ES' },
+  { code: 'de', flag: '🇩🇪', label: 'Deutsch',    short: 'DE' },
+  { code: 'zh', flag: '🇨🇳', label: '中文',        short: 'ZH' },
+  { code: 'ar', flag: '🇸🇦', label: 'العربية',    short: 'AR' },
+  { code: 'ja', flag: '🇯🇵', label: '日本語',      short: 'JA' },
+  { code: 'pt', flag: '🇧🇷', label: 'Português',  short: 'PT' },
+  { code: 'hi', flag: '🇮🇳', label: 'हिन्दी',      short: 'HI' },
+  { code: 'ko', flag: '🇰🇷', label: '한국어',      short: 'KO' },
+  { code: 'it', flag: '🇮🇹', label: 'Italiano',   short: 'IT' },
+  { code: 'ru', flag: '🇷🇺', label: 'Русский',    short: 'RU' },
+  { code: 'nl', flag: '🇳🇱', label: 'Nederlands', short: 'NL' },
+  { code: 'pl', flag: '🇵🇱', label: 'Polski',     short: 'PL' },
+  { code: 'tr', flag: '🇹🇷', label: 'Türkçe',    short: 'TR' },
+  { code: 'sw', flag: '🇰🇪', label: 'Kiswahili',  short: 'SW' },
+  { code: 'yo', flag: '🇳🇬', label: 'Yorùbá',     short: 'YO' },
+  { code: 'ha', flag: '🇳🇬', label: 'Hausa',      short: 'HA' },
+  { code: 'ig', flag: '🇳🇬', label: 'Igbo',       short: 'IG' },
+  { code: 'vi', flag: '🇻🇳', label: 'Tiếng Việt', short: 'VI' },
+  { code: 'th', flag: '🇹🇭', label: 'ภาษาไทย',   short: 'TH' },
 ];
 
 export default function PortalLangWidget() {
