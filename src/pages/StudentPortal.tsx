@@ -389,7 +389,7 @@ const StudentPortal = () => {
         const { data: prof } = await supabase.from('profiles').select('tier').eq('user_id', user.id).maybeSingle();
         if (prof?.tier === 'starter') {
           const res = await fetch('/api/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMsDL0Ctflq2xPfzJsrXzy1', email: user.email, tier: 't2', userId: user.id,
+            body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TaEYg1wgazWak4AZXjnihAw', email: user.email, tier: 't2', userId: user.id,
               successUrl: `${window.location.origin}/portal?payment=success`, cancelUrl: `${window.location.origin}/portal` }) });
           const d = await res.json(); if (d.url) window.location.href = d.url;
         } else { window.open('https://billing.stripe.com/p/login/test_eVq9AL0OuaMWazPgo41VK00', '_blank'); }
@@ -506,7 +506,7 @@ const StudentPortal = () => {
   const handleStarterUpgrade = async () => {
     if (!user) return;
     const res = await fetch('/api/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMsDL0Ctflq2xPfzJsrXzy1',
+      body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TaEYg1wgazWak4AZXjnihAw',
         email: user.email, tier: 't2', userId: user.id,
         successUrl: `${window.location.origin}/portal?payment=success`, cancelUrl: `${window.location.origin}/portal` }) });
     const d = await res.json(); if (d.url) window.location.href = d.url;

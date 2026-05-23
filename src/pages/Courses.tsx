@@ -430,7 +430,7 @@ const Courses = () => {
                             const { data: { user: u } } = await (await import('@/integrations/supabase/client')).supabase.auth.getUser();
                             if (!u) return;
                             const res = await fetch('/api/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMsDL0Ctflq2xPfzJsrXzy1',
+                              body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TaEYg1wgazWak4AZXjnihAw',
                                 email: u.email, tier: 't2', userId: u.id,
                                 successUrl: `${window.location.origin}/portal?payment=success`,
                                 cancelUrl: `${window.location.origin}/courses` }) });
