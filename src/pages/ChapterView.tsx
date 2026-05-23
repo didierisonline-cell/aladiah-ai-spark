@@ -168,7 +168,11 @@ export default function ChapterView() {
       const chapterTitle = chapter?.title || '';
       const langLabel: Record<string, string> = {
         en: 'English', fr: 'French', es: 'Spanish', de: 'German',
-        zh: 'Mandarin Chinese', ar: 'Arabic', ja: 'Japanese'
+        zh: 'Mandarin Chinese', ar: 'Arabic', ja: 'Japanese',
+        pt: 'Portuguese', hi: 'Hindi', ko: 'Korean', it: 'Italian',
+        ru: 'Russian', nl: 'Dutch', pl: 'Polish', tr: 'Turkish',
+        sw: 'Swahili', yo: 'Yoruba', ha: 'Hausa', ig: 'Igbo',
+        vi: 'Vietnamese', th: 'Thai'
       };
       const lang = langLabel[language] || 'English';
       // Trim transcript to first 800 chars to stay within ElevenLabs override limits
