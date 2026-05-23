@@ -484,7 +484,7 @@ const StudentPortal = () => {
     return (
       <CourseSelectionGate
         userId={user.id}
-        onCourseSelected={() => setNeedsCourseSelection(false)}
+        onCourseSelected={() => { setNeedsCourseSelection(false); window.location.href = '/courses'; }}
       />
     );
   }
