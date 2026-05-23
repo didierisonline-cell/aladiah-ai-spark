@@ -69,13 +69,16 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
     if (data?.free_switch_used) setSwitchUsed(data.free_switch_used);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!selectedCourse) return;
     setLoading(true);
-    const updateData: any = { free_course_id: selectedCourse };
-    if (currentSelection) updateData.free_switch_used = true;
-    // Save in background — don't block the user
-    supabase.from('profiles').update(updateData).eq('user_id', userId).catch(console.error);
+    try {
+      const updateData: any = { user_id: userId, free_course_id: selectedCourse, tier: 'starter' };
+      if (currentSelection) updateData.free_switch_used = true;
+      await supabase.from('profiles').upsert(updateData, { onConflict: 'user_id' });
+    } catch (e) {
+      console.error(e);
+    }
     onCourseSelected();
   };
 
