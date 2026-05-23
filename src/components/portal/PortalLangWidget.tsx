@@ -19,7 +19,7 @@ const LANGS = [
   { code: 'tr', flag: '🇹🇷', label: 'Türkçe',    short: 'TR' },
   { code: 'sw', flag: '🇰🇪', label: 'Kiswahili',  short: 'SW' },
   { code: 'yo', flag: '🇳🇬', label: 'Yorùbá',     short: 'YO' },
-  { code: 'ha', flag: '🇳🇬', label: 'Hausa',      short: 'HA' },
+  { code: 'ha', flag: '🇳🇬🇨🇲', label: 'Hausa',      short: 'HA' },
   { code: 'ig', flag: '🇳🇬', label: 'Igbo',       short: 'IG' },
   { code: 'vi', flag: '🇻🇳', label: 'Tiếng Việt', short: 'VI' },
   { code: 'th', flag: '🇹🇭', label: 'ภาษาไทย',   short: 'TH' },
