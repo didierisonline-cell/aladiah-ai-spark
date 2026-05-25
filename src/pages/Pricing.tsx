@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import { CheckCircle, Zap } from "lucide-react";
 
-const PRICE_ID = import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || "price_1TaEYg1wgazWak4AZXjnihAw";
+const PRICE_ID = import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || "price_1TMWZP0Ctflq2xPfNXr5r24d";
 
 const Pricing = () => {
   const [annual, setAnnual] = useState(false);

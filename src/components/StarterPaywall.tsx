@@ -32,7 +32,7 @@ export const StarterPaywall = ({ reason, courseName }: Props) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TaEYg1wgazWak4AZXjnihAw',
+          priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMWZP0Ctflq2xPfNXr5r24d',
           email: user.email,
           tier: 't2',
           userId: user.id,

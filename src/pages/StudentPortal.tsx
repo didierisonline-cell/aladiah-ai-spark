@@ -389,7 +389,7 @@ const StudentPortal = () => {
         const { data: prof } = await supabase.from('profiles').select('tier').eq('user_id', user.id).maybeSingle();
         if (prof?.tier === 'starter') {
           const res = await fetch('/api/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TaEYg1wgazWak4AZXjnihAw', email: user.email, tier: 't2', userId: user.id,
+            body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMWZP0Ctflq2xPfNXr5r24d', email: user.email, tier: 't2', userId: user.id,
               successUrl: `${window.location.origin}/portal?payment=success`, cancelUrl: `${window.location.origin}/portal` }) });
           const d = await res.json(); if (d.url) window.location.href = d.url;
         } else { window.open('https://billing.stripe.com/p/login/test_eVq9AL0OuaMWazPgo41VK00', '_blank'); }
@@ -459,7 +459,7 @@ const StudentPortal = () => {
                     const res = await fetch('/api/create-checkout', {
                       method: 'POST',
                       headers: {'Content-Type':'application/json'},
-                      body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TaEYg1wgazWak4AZXjnihAw', userId: user.id, email: user.email, tier: 't2', successUrl: `${window.location.origin}/portal?payment=success`, cancelUrl: `${window.location.origin}/pricing` }),
+                      body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMWZP0Ctflq2xPfNXr5r24d', userId: user.id, email: user.email, tier: 't2', successUrl: `${window.location.origin}/portal?payment=success`, cancelUrl: `${window.location.origin}/pricing` }),
                     });
                     const data = await res.json();
                     if (data.url) window.location.href = data.url;
@@ -506,7 +506,7 @@ const StudentPortal = () => {
   const handleStarterUpgrade = async () => {
     if (!user) return;
     const res = await fetch('/api/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TaEYg1wgazWak4AZXjnihAw',
+      body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMWZP0Ctflq2xPfNXr5r24d',
         email: user.email, tier: 't2', userId: user.id,
         successUrl: `${window.location.origin}/portal?payment=success`, cancelUrl: `${window.location.origin}/portal` }) });
     const d = await res.json(); if (d.url) window.location.href = d.url;
