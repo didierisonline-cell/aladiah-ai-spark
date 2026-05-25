@@ -12,3 +12,4 @@ supabase/.temp/
 *.sql
 !supabase/migrations/*.sql
 .vercel
+translations_output.json
