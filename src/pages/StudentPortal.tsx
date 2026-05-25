@@ -456,10 +456,10 @@ const StudentPortal = () => {
                 <button
                   onClick={async () => {
                     if (!user) return;
-                    const res = await fetch(`${import.meta.env.VITE_API_URL}/create-checkout-session`, {
+                    const res = await fetch('/api/create-checkout', {
                       method: 'POST',
                       headers: {'Content-Type':'application/json'},
-                      body: JSON.stringify({ priceId: plan.priceId, userId: user.id, email: user.email }),
+                      body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TaEYg1wgazWak4AZXjnihAw', userId: user.id, email: user.email, tier: 't2', successUrl: `${window.location.origin}/portal?payment=success`, cancelUrl: `${window.location.origin}/pricing` }),
                     });
                     const data = await res.json();
                     if (data.url) window.location.href = data.url;
