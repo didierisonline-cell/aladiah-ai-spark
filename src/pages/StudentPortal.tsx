@@ -736,6 +736,7 @@ const StudentPortal = () => {
             <TabsTrigger value="labs" className="text-xs"><FlaskConical className="w-3 h-3 mr-1" />{t('portal.tab.labs')}</TabsTrigger>
             <TabsTrigger value="career" className="text-xs"><Briefcase className="w-3 h-3 mr-1" />{t('portal.tab.career')}</TabsTrigger>
             <TabsTrigger value="rewards" className="text-xs"><Gift className="w-3 h-3 mr-1" />{t('portal.tab.rewards')}</TabsTrigger>
+            <TabsTrigger value="resources" className="text-xs"><BookMarked className="w-3 h-3 mr-1" />Resources</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
@@ -1099,6 +1100,83 @@ const StudentPortal = () => {
               </div>
             </Card>
           </TabsContent>
+          <TabsContent value="resources" className="space-y-4">
+            <div style={{ position: 'relative' }}>
+              {isStarter && (
+                <div style={{ position: 'absolute', inset: 0, zIndex: 10, backdropFilter: 'blur(6px)', background: 'rgba(10,15,30,0.5)', borderRadius: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+                  <Lock className="w-8 h-8 text-primary" />
+                  <p style={{ color: '#fff', fontWeight: 700, fontSize: 16 }}>Unlock Full Access</p>
+                  <p style={{ color: '#94a3b8', fontSize: 13, textAlign: 'center', maxWidth: 280 }}>Upgrade to access all resources, guides and official documentation</p>
+                  <button onClick={handleStarterUpgrade} style={{ background: '#f59e0b', color: '#000', fontWeight: 800, padding: '10px 24px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 14 }}>Upgrade — $59.99/month</button>
+                </div>
+              )}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16, padding: 4 }}>
+                {[
+                  { track: '📘 Scrum Master', color: '#3b82f6', resources: [
+                    { label: 'Scrum Guide 2020', url: 'https://scrumguides.org/docs/scrumguide/v2020/2020-Scrum-Guide-US.pdf', type: 'PDF' },
+                    { label: 'CSM Exam Study Guide', url: 'https://www.scrumalliance.org/get-certified/scrum-master-track/certified-scrummaster', type: 'Guide' },
+                    { label: 'SAFe 6.0 Framework', url: 'https://scaledagile.com/what-is-safe/', type: 'Framework' },
+                  ]},
+                  { track: '📊 Project Management', color: '#8b5cf6', resources: [
+                    { label: 'PMBOK® Guide', url: 'https://www.pmi.org/pmbok-guide-standards/foundational/pmbok', type: 'Standard' },
+                    { label: 'PMP Exam Content Outline', url: 'https://www.pmi.org/certifications/project-management-pmp/earn-the-pmp/pmp-exam-preparation', type: 'Guide' },
+                    { label: 'Agile Practice Guide', url: 'https://www.pmi.org/pmbok-guide-standards/agile', type: 'Guide' },
+                  ]},
+                  { track: '🤖 AI Mastery', color: '#f59e0b', resources: [
+                    { label: 'Google AI Essentials', url: 'https://grow.google/certificates/ai-essentials/', type: 'Course' },
+                    { label: 'Microsoft AI Fundamentals', url: 'https://learn.microsoft.com/en-us/credentials/certifications/azure-ai-fundamentals/', type: 'Cert' },
+                    { label: 'Prompt Engineering Guide', url: 'https://www.promptingguide.ai/', type: 'Guide' },
+                  ]},
+                  { track: '🔐 Cybersecurity', color: '#ef4444', resources: [
+                    { label: 'CompTIA Security+ Guide', url: 'https://www.comptia.org/certifications/security', type: 'Cert' },
+                    { label: 'NIST Cybersecurity Framework', url: 'https://www.nist.gov/cyberframework', type: 'Framework' },
+                    { label: 'OWASP Top 10', url: 'https://owasp.org/www-project-top-ten/', type: 'Guide' },
+                  ]},
+                  { track: '📈 Data Analytics', color: '#10b981', resources: [
+                    { label: 'Google Data Analytics', url: 'https://grow.google/certificates/data-analytics/', type: 'Course' },
+                    { label: 'SQL Tutorial — W3Schools', url: 'https://www.w3schools.com/sql/', type: 'Tutorial' },
+                    { label: 'Tableau Public', url: 'https://public.tableau.com/app/discover', type: 'Tool' },
+                  ]},
+                  { track: '☁️ DevOps & Cloud', color: '#06b6d4', resources: [
+                    { label: 'AWS Cloud Practitioner', url: 'https://aws.amazon.com/certification/certified-cloud-practitioner/', type: 'Cert' },
+                    { label: 'Docker Documentation', url: 'https://docs.docker.com/get-started/', type: 'Docs' },
+                    { label: 'Kubernetes Basics', url: 'https://kubernetes.io/docs/tutorials/kubernetes-basics/', type: 'Tutorial' },
+                  ]},
+                  { track: '🏗️ Solution Architect', color: '#f97316', resources: [
+                    { label: 'AWS Solutions Architect', url: 'https://aws.amazon.com/certification/certified-solutions-architect-associate/', type: 'Cert' },
+                    { label: 'TOGAF Framework', url: 'https://www.opengroup.org/togaf', type: 'Framework' },
+                    { label: 'Azure Architecture Center', url: 'https://learn.microsoft.com/en-us/azure/architecture/', type: 'Guide' },
+                  ]},
+                  { track: '📋 Business Analysis', color: '#a855f7', resources: [
+                    { label: 'BABOK® Guide', url: 'https://www.iiba.org/career-resources/a-business-analysis-professionals-foundation-for-success/babok/', type: 'Standard' },
+                    { label: 'PMI-PBA Certification', url: 'https://www.pmi.org/certifications/business-analysis-pba', type: 'Cert' },
+                    { label: 'Requirements Engineering', url: 'https://www.iiba.org/professional-development/iiba-certifications/cbap/', type: 'Guide' },
+                  ]},
+                ].map((track) => (
+                  <div key={track.track} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 16 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                      <div style={{ width: 4, height: 20, background: track.color, borderRadius: 2 }} />
+                      <span style={{ fontWeight: 700, fontSize: 14, color: '#e2e8f0' }}>{track.track}</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {track.resources.map((res) => (
+                        <a key={res.label} href={res.url} target="_blank" rel="noopener noreferrer"
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(255,255,255,0.04)', borderRadius: 8, textDecoration: 'none', transition: 'background 0.2s' }}
+                          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+                        >
+                          <span style={{ fontSize: 13, color: '#cbd5e1' }}>{res.label}</span>
+                          <span style={{ fontSize: 10, color: track.color, fontWeight: 600, background: track.color + '20', padding: '2px 8px', borderRadius: 4 }}>{res.type}</span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p style={{ fontSize: 10, color: '#64748b', marginTop: 8, textAlign: 'center' }}>© Scrum.org, Scaled Agile, PMI, AWS, Google, Microsoft. Educational use only.</p>
+            </div>
+          </TabsContent>
+
         </Tabs>
 
         {/* Elite Mentorship — Weekly 1-on-1 Booking Calendar */}
