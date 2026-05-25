@@ -73,6 +73,22 @@ Deno.serve(async (req) => {
 
       console.log(`Subscription upserted, rows: ${JSON.stringify(upsertData)}`);
 
+      // Update profiles.tier so frontend unlocks immediately
+      await supabase.from("profiles").upsert({
+        user_id: resolvedUserId,
+        tier: tier,
+        free_course_completed: false,
+      }, { onConflict: "user_id" });
+      console.log(`Profile tier updated to ${tier}`);
+
+      // Also update profiles.tier so frontend unlocks immediately
+      await supabase.from('profiles').upsert({
+        user_id: resolvedUserId,
+        tier: tier,
+        free_course_completed: false,
+      }, { onConflict: 'user_id' });
+      console.log(`Profile tier updated to ${tier}`);
+
       try {
         const emailResp = await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-welcome-email`, {
           method: "POST",
