@@ -642,37 +642,7 @@ const StudentPortal = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              {[
-                { label: t('portal.scrum_guide'), url: 'https://scrumguides.org/docs/scrumguide/v2020/2020-Scrum-Guide-US.pdf' },
-                { label: t('portal.safe_guide'), url: 'https://davidfrico.com/safe-6.0-intro.pdf' },
-                { label: 'PMBOK® Guide', url: 'https://www.pmi.org/pmbok-guide-standards/foundational/pmbok' },
-              ].map((res) => (
-                tier === 'starter' ? (
-                  <Button
-                    key={res.label}
-                    variant="outline"
-                    className="gap-2 opacity-40 cursor-not-allowed"
-                    onClick={handleStarterUpgrade}
-                  >
-                    <FileText className="w-4 h-4" />
-                    <span className="hidden sm:inline">{res.label}</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </Button>
-                ) : (
-                  <a key={res.label} href={res.url} target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" className="gap-2">
-                      <FileText className="w-4 h-4" />
-                      <span className="hidden sm:inline">{res.label}</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </Button>
-                  </a>
-                )
-              ))}
-            </div>
-            <p className="text-[10px] text-muted-foreground mt-1">
-              &copy; Scrum.org, Scaled Agile, PMI. Educational use only.
-            </p>
+
           </div>
         </motion.div>
 
