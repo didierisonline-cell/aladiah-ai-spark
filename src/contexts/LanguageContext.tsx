@@ -16,6 +16,20 @@ export const languageNames: Record<Language, string> = {
   fr: 'Français',
   de: 'Deutsch',
   ja: '日本語',
+  pt: 'Português',
+  hi: 'हिन्दी',
+  ko: '한국어',
+  it: 'Italiano',
+  ru: 'Русский',
+  nl: 'Nederlands',
+  pl: 'Polski',
+  tr: 'Türkçe',
+  sw: 'Kiswahili',
+  yo: 'Yorùbá',
+  ha: 'Hausa',
+  ig: 'Igbo',
+  vi: 'Tiếng Việt',
+  th: 'ภาษาไทย',
 };
 
 const translations: Record<Language, Record<string, string>> = {
