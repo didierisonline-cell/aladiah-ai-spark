@@ -27,6 +27,15 @@ import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
 import HomepageBot from "@/components/HomepageBot";
 import { useLocation } from "react-router-dom";
+// New pages
+import Schools from "./pages/Schools";
+import Certifications from "./pages/Certifications";
+import TalentNetwork from "./pages/TalentNetwork";
+import Employers from "./pages/Employers";
+import PortalTalentScore from "./pages/PortalTalentScore";
+import PortalPortfolio from "./pages/PortalPortfolio";
+import PortalSettings from "./pages/PortalSettings";
+import PortalCourses from "./pages/PortalCourses";
 
 const queryClient = new QueryClient();
 
@@ -41,13 +50,18 @@ const AppContent = () => {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public */}
         <Route path="/" element={<Index />} />
         <Route path="/auth" element={<Auth />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/schools" element={<Schools />} />
+        <Route path="/certifications" element={<Certifications />} />
+        <Route path="/talent-network" element={<TalentNetwork />} />
+        <Route path="/employers" element={<Employers />} />
+        {/* Learning */}
         <Route path="/courses" element={<Courses />} />
         <Route path="/course/:courseId/chapter/:chapterId" element={<ProtectedRoute><ChapterView /></ProtectedRoute>} />
         <Route path="/enroll" element={<Enroll />} />
-        <Route path="/pricing" element={<Pricing />} />
         <Route path="/community" element={<Community />} />
         <Route path="/feedback" element={<Feedback />} />
         <Route path="/store" element={<Store />} />
@@ -55,7 +69,15 @@ const AppContent = () => {
         <Route path="/referral" element={<Referral />} />
         <Route path="/referral/kit" element={<MarketingKit />} />
         <Route path="/refer/:code" element={<ReferralProfile />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        {/* Portal */}
         <Route path="/portal" element={<ProtectedRoute><StudentPortal /></ProtectedRoute>} />
+        <Route path="/portal/courses" element={<ProtectedRoute><PortalCourses /></ProtectedRoute>} />
+        <Route path="/portal/talent-score" element={<ProtectedRoute><PortalTalentScore /></ProtectedRoute>} />
+        <Route path="/portal/portfolio" element={<ProtectedRoute><PortalPortfolio /></ProtectedRoute>} />
+        <Route path="/portal/settings" element={<ProtectedRoute><PortalSettings /></ProtectedRoute>} />
+        <Route path="/portal/career" element={<ProtectedRoute><ResumeStudio /></ProtectedRoute>} />
+        {/* Tools */}
         <Route path="/resume-studio" element={<ProtectedRoute><ResumeStudio /></ProtectedRoute>} />
         <Route path="/interview" element={<ProtectedRoute><InterviewSimulator /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute requireSubscription={false}><AdminDashboard /></ProtectedRoute>} />
