@@ -1072,7 +1072,7 @@ const StudentPortal = () => {
           </TabsContent>
           <TabsContent value="resources" className="space-y-4">
             <div style={{ position: 'relative' }}>
-              {tier === 'starter' {isStarter && ({isStarter && ( (
+              {tier === 'starter' && (
                 <div style={{ position: 'absolute', inset: 0, zIndex: 10, backdropFilter: 'blur(6px)', background: 'rgba(10,15,30,0.5)', borderRadius: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
                   <Lock className="w-8 h-8 text-primary" />
                   <p style={{ color: '#fff', fontWeight: 700, fontSize: 16 }}>Unlock Full Access</p>
