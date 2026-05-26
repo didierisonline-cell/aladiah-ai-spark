@@ -1201,7 +1201,7 @@ const StudentPortal = () => {
                     { term: "SOC", def: "Security Operations Center: a team monitoring and responding to security incidents." },
                     { term: "SIEM", def: "Security Information and Event Management: tools that aggregate and analyze security data." },
                     { term: "VPN", def: "Virtual Private Network: encrypts internet traffic and masks the user IP address." },
-                    { term: "IDS/IPS", def: "Intrusion Detection/Prevention System: monitors network traffic for suspicious activity." },
+                    { term: "IDS/IPS", def: "Intrusion Detection and Prevention System: monitors network traffic for suspicious activity." },
                     { term: "Social Engineering", def: "Manipulating people into divulging confidential information or performing actions." },
                     { term: "PKI", def: "Public Key Infrastructure: a framework for managing digital certificates and encryption keys." },
                     { term: "DDoS", def: "Distributed Denial of Service: overwhelming a system with traffic to make it unavailable." },
@@ -1216,7 +1216,7 @@ const StudentPortal = () => {
                   ]},
                   { track: "📈 Data Analytics", color: "#10b981", resources: [
                     { label: "Google Data Analytics", url: "https://grow.google/certificates/data-analytics/", type: "Course" },
-                    { label: "SQL Tutorial — W3Schools", url: "https://www.w3schools.com/sql/", type: "Tutorial" },
+                    { label: "SQL Tutorial W3Schools", url: "https://www.w3schools.com/sql/", type: "Tutorial" },
                     { label: "Tableau Public", url: "https://public.tableau.com/app/discover", type: "Tool" },
                     { label: "Kaggle Learn", url: "https://www.kaggle.com/learn", type: "Course" },
                     { label: "Mode SQL Tutorial", url: "https://mode.com/sql-tutorial/", type: "Tutorial" },
@@ -1235,7 +1235,7 @@ const StudentPortal = () => {
                     { term: "Big Data", def: "Extremely large datasets that require specialized tools to process and analyze." },
                     { term: "Pivot Table", def: "A data summarization tool used to reorganize and aggregate data in a spreadsheet." },
                     { term: "A/B Testing", def: "Comparing two versions of something to determine which performs better statistically." },
-                    { term: "Mean / Median / Mode", def: "Measures of central tendency: average, middle value, and most frequent value." },
+                    { term: "Mean Median Mode", def: "Measures of central tendency: average, middle value, and most frequent value." },
                     { term: "Standard Deviation", def: "A measure of how spread out values are from the mean in a dataset." },
                     { term: "Python", def: "A popular programming language widely used for data analysis and machine learning." },
                     { term: "Pandas", def: "A Python library providing data structures and data analysis tools." },
@@ -1255,7 +1255,7 @@ const StudentPortal = () => {
                     { label: "GitHub Actions Docs", url: "https://docs.github.com/en/actions", type: "Docs" },
                   ], glossary: [
                     { term: "DevOps", def: "A set of practices combining software development and IT operations to shorten delivery cycles." },
-                    { term: "CI/CD", def: "Continuous Integration/Continuous Delivery: automating code integration, testing, and deployment." },
+                    { term: "CI/CD", def: "Continuous Integration and Continuous Delivery: automating code integration, testing, and deployment." },
                     { term: "Container", def: "A lightweight, portable package containing an application and its dependencies." },
                     { term: "Docker", def: "A platform for developing, shipping, and running applications in containers." },
                     { term: "Kubernetes", def: "An open-source system for automating deployment, scaling, and management of containers." },
@@ -1276,7 +1276,7 @@ const StudentPortal = () => {
                     { term: "Ansible", def: "An open-source automation tool for configuration management and application deployment." },
                     { term: "SLA", def: "Service Level Agreement: a commitment between a provider and client on service standards." },
                     { term: "Rollback", def: "Reverting a deployment to a previous stable version after a failed release." },
-                    { term: "Blue/Green Deployment", def: "Running two identical production environments to enable zero-downtime releases." },
+                    { term: "Blue Green Deployment", def: "Running two identical production environments to enable zero-downtime releases." },
                     { term: "Observability", def: "The ability to understand a system internal state from its external outputs." },
                     { term: "Registry", def: "A storage and distribution system for Docker container images such as Docker Hub or ECR." },
                   ]},
@@ -1310,7 +1310,7 @@ const StudentPortal = () => {
                     { term: "Stateless", def: "An architecture where each request contains all information needed to process it." },
                     { term: "Design Patterns", def: "Reusable solutions to commonly occurring problems in software design." },
                     { term: "CAP Theorem", def: "States a distributed system can provide only two of: Consistency, Availability, Partition tolerance." },
-                    { term: "SaaS/PaaS/IaaS", def: "Cloud service models: Software, Platform, and Infrastructure as a Service." },
+                    { term: "SaaS PaaS IaaS", def: "Cloud service models: Software, Platform, and Infrastructure as a Service." },
                     { term: "Zero Trust", def: "A security model requiring strict identity verification for every person and device." },
                   ]},
                   { track: "📋 Business Analysis", color: "#a855f7", resources: [
@@ -1330,13 +1330,13 @@ const StudentPortal = () => {
                     { term: "FRD", def: "Functional Requirements Document: describes what a system must do." },
                     { term: "Process Mapping", def: "Creating a visual representation of a business process to analyze and improve it." },
                     { term: "SWOT Analysis", def: "Assessing Strengths, Weaknesses, Opportunities, and Threats of a business situation." },
-                    { term: "As-Is / To-Be", def: "Current state vs. desired future state analysis." },
+                    { term: "As-Is To-Be", def: "Current state vs. desired future state analysis." },
                     { term: "Elicitation", def: "The practice of drawing out requirements from stakeholders through interviews and workshops." },
                     { term: "Feasibility Study", def: "An assessment of the practicality and viability of a proposed project or solution." },
                     { term: "BPMN", def: "Business Process Model and Notation: a standard graphical notation for business processes." },
                     { term: "Data Flow Diagram", def: "A visual representation showing how data moves through a system." },
                     { term: "Traceability Matrix", def: "A document linking requirements to test cases to ensure all requirements are tested." },
-                    { term: "MoSCoW", def: "Prioritization technique: Must have, Should have, Could have, Won't have." },
+                    { term: "MoSCoW", def: "Prioritization technique: Must have, Should have, Could have, and Won't have." },
                     { term: "Prototype", def: "An early model of a solution used to test concepts and gather feedback." },
                     { term: "UAT", def: "User Acceptance Testing: final testing performed by end users before system go-live." },
                     { term: "ROI", def: "Return on Investment: a measure of the profitability of an investment." },
@@ -1379,39 +1379,6 @@ const StudentPortal = () => {
                           <div key={item.term} style={{ padding: "8px 10px", background: "rgba(255,255,255,0.03)", borderRadius: 8, borderLeft: "3px solid " + track.color + "60" }}>
                             <div style={{ fontSize: 12, fontWeight: 700, color: track.color, marginBottom: 2 }}>{item.term}</div>
                             <div style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1.5 }}>{item.def}</div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  );
-                })}
-              </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {track.resources.map((res) => (
-                        <a key={res.label} href={res.url} target="_blank" rel="noopener noreferrer"
-                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(255,255,255,0.04)', borderRadius: 8, textDecoration: 'none', transition: 'background 0.2s' }}
-                          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
-                          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
-                        >
-                          <span style={{ fontSize: 13, color: '#cbd5e1' }}>{res.label}</span>
-                          <span style={{ fontSize: 10, color: track.color, fontWeight: 600, background: track.color + '20', padding: '2px 8px', borderRadius: 4 }}>{res.type}</span>
-                        </a>
-                      ))}
-                    </div>
-                    <button
-                      onClick={() => setShowGlossary(!showGlossary)}
-                      style={{ marginTop: 12, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: showGlossary ? track.color + '20' : 'rgba(255,255,255,0.03)', border: '1px solid ' + track.color + '40', borderRadius: 8, cursor: 'pointer', transition: 'all 0.2s' }}
-                    >
-                      <span style={{ fontSize: 12, fontWeight: 700, color: track.color, letterSpacing: '0.05em' }}>📖 GLOSSARY</span>
-                      <span style={{ fontSize: 11, color: track.color }}>{showGlossary ? '▲ Hide' : '▼ Show ' + track.glossary.length + ' terms'}</span>
-                    </button>
-                    {showGlossary && (
-                      <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 320, overflowY: 'auto', paddingRight: 4 }}>
-                        {track.glossary.map((item) => (
-                          <div key={item.term} style={{ padding: '8px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, borderLeft: '3px solid ' + track.color + '60' }}>
-                            <div style={{ fontSize: 12, fontWeight: 700, color: track.color, marginBottom: 2 }}>{item.term}</div>
-                            <div style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.5 }}>{item.def}</div>
                           </div>
                         ))}
                       </div>
