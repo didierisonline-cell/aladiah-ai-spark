@@ -37,6 +37,7 @@ import {
   ArrowRight, CheckCircle, FileText, ExternalLink, Mic, Crown
 } from 'lucide-react';
 import CoursesSection from '@/components/CoursesSection';
+import ResourcesLibrary from '@/components/ResourcesLibrary';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
@@ -1125,65 +1126,9 @@ const StudentPortal = () => {
           {/* ── Resources tab ── */}
           {activeTab === 'resources' && (
             <div>
-              <h1 style={{ fontSize:'1.6rem', fontWeight:800, marginBottom:'1.75rem' }}>Resources Library</h1>
-              <div style={{ position:'relative' }}>
-                {tier === 'starter' && (
-                  <div style={{ position:'absolute', inset:0, zIndex:10, backdropFilter:'blur(6px)', background:'rgba(10,15,30,.5)', borderRadius:12, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:12 }}>
-                    <span style={{ fontSize:32 }}>🔒</span>
-                    <p style={{ color:'#fff', fontWeight:700, fontSize:16 }}>Unlock Full Access</p>
-                    <p style={{ color:DS.fm, fontSize:13, textAlign:'center', maxWidth:280 }}>Upgrade to access all resources, guides and official documentation</p>
-                    <button onClick={handleStarterUpgrade} style={{ background:DS.gold, color:'#000', fontWeight:800, padding:'10px 24px', borderRadius:8, border:'none', cursor:'pointer', fontSize:14 }}>Upgrade — $59.99/month</button>
-                  </div>
-                )}
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', gap:16 }}>
-                  {[
-                    { track:'📘 Scrum Master', color:'#3b82f6', resources:[
-                        {label:'Scrum Guide 2020',url:'https://scrumguides.org/docs/scrumguide/v2020/2020-Scrum-Guide-US.pdf',type:'PDF'},
-                        {label:'Scrum.org PSM I Practice',url:'https://www.scrum.org/open-assessments/scrum-open',type:'Practice Exam'},
-                        {label:'SAFe 6.0 Framework',url:'https://scaledagile.com/what-is-safe/',type:'Framework'},
-                        {label:'Agile Manifesto',url:'https://agilemanifesto.org/',type:'Reference'},
-                      ], glossary:[]},
-                    { track:'📊 Project Management', color:'#8b5cf6', resources:[
-                        {label:'PMBOK Guide',url:'https://www.pmi.org/pmbok-guide-standards/foundational/pmbok',type:'Standard'},
-                        {label:'PMP Exam Content Outline',url:'https://www.pmi.org/certifications/project-management-pmp',type:'Guide'},
-                        {label:'Agile Practice Guide',url:'https://www.pmi.org/pmbok-guide-standards/agile',type:'Guide'},
-                      ], glossary:[]},
-                    { track:'🤖 AI Mastery', color:'#f59e0b', resources:[
-                        {label:'Google AI Essentials',url:'https://grow.google/certificates/ai-essentials/',type:'Course'},
-                        {label:'Prompt Engineering Guide',url:'https://www.promptingguide.ai/',type:'Guide'},
-                        {label:'DeepLearning.AI Short Courses',url:'https://www.deeplearning.ai/short-courses/',type:'Course'},
-                      ], glossary:[]},
-                    { track:'🔐 Cybersecurity', color:'#ef4444', resources:[
-                        {label:'CompTIA Security+ Guide',url:'https://www.comptia.org/certifications/security',type:'Cert'},
-                        {label:'NIST Cybersecurity Framework',url:'https://www.nist.gov/cyberframework',type:'Framework'},
-                        {label:'OWASP Top 10',url:'https://owasp.org/www-project-top-ten/',type:'Guide'},
-                      ], glossary:[]},
-                    { track:'📈 Data Analytics', color:'#10b981', resources:[
-                        {label:'Google Data Analytics',url:'https://grow.google/certificates/data-analytics/',type:'Course'},
-                        {label:'SQL Tutorial',url:'https://www.w3schools.com/sql/',type:'Tutorial'},
-                        {label:'Kaggle Learn',url:'https://www.kaggle.com/learn',type:'Course'},
-                      ], glossary:[]},
-                    { track:'☁️ DevOps & Cloud', color:'#06b6d4', resources:[
-                        {label:'AWS Cloud Practitioner',url:'https://aws.amazon.com/certification/certified-cloud-practitioner/',type:'Cert'},
-                        {label:'Docker Documentation',url:'https://docs.docker.com/get-started/',type:'Docs'},
-                        {label:'Kubernetes Basics',url:'https://kubernetes.io/docs/tutorials/kubernetes-basics/',type:'Tutorial'},
-                      ], glossary:[]},
-                    { track:'🏗️ Solution Architect', color:'#f97316', resources:[
-                        {label:'AWS Solutions Architect',url:'https://aws.amazon.com/certification/certified-solutions-architect-associate/',type:'Cert'},
-                        {label:'AWS Well-Architected Framework',url:'https://aws.amazon.com/architecture/well-architected/',type:'Framework'},
-                        {label:'TOGAF Framework',url:'https://www.opengroup.org/togaf',type:'Framework'},
-                      ], glossary:[]},
-                    { track:'📋 Business Analysis', color:'#a855f7', resources:[
-                        {label:'BABOK Guide',url:'https://www.iiba.org/career-resources/a-business-analysis-professionals-foundation-for-success/babok/',type:'Standard'},
-                        {label:'PMI-PBA Certification',url:'https://www.pmi.org/certifications/business-analysis-pba',type:'Cert'},
-                        {label:'Lucidchart Free',url:'https://www.lucidchart.com/',type:'Tool'},
-                      ], glossary:[]},
-                  ].map(track => <ResourceTrackCard key={track.track} track={track} />)}
-                </div>
-              </div>
+              <ResourcesLibrary tier={tier} onUpgrade={handleStarterUpgrade} />
             </div>
           )}
-
           {/* ── Rewards tab ── */}
           {activeTab === 'rewards' && (
             <div>
