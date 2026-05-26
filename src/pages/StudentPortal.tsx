@@ -70,6 +70,48 @@ function sbFetch<T>(query: Promise<{ data: T | null; error: any }>, fallback: T,
   ]);
 }
 
+
+const ResourceTrackCard = ({ track }: { track: any }) => {
+  const [showGlossary, setShowGlossary] = React.useState(false);
+  return (
+    <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: 16 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+        <div style={{ width: 4, height: 20, background: track.color, borderRadius: 2 }} />
+        <span style={{ fontWeight: 700, fontSize: 14, color: "#e2e8f0" }}>{track.track}</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {track.resources.map((res: any) => (
+          <a key={res.label} href={res.url} target="_blank" rel="noopener noreferrer"
+            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", background: "rgba(255,255,255,0.04)", borderRadius: 8, textDecoration: "none", transition: "background 0.2s" }}
+            onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}
+            onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.04)")}
+          >
+            <span style={{ fontSize: 13, color: "#cbd5e1" }}>{res.label}</span>
+            <span style={{ fontSize: 10, color: track.color, fontWeight: 600, background: track.color + "20", padding: "2px 8px", borderRadius: 4 }}>{res.type}</span>
+          </a>
+        ))}
+      </div>
+      <button
+        onClick={() => setShowGlossary(!showGlossary)}
+        style={{ marginTop: 12, width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", background: showGlossary ? track.color + "20" : "rgba(255,255,255,0.03)", border: "1px solid " + track.color + "40", borderRadius: 8, cursor: "pointer", transition: "all 0.2s" }}
+      >
+        <span style={{ fontSize: 12, fontWeight: 700, color: track.color, letterSpacing: "0.05em" }}>📖 GLOSSARY</span>
+        <span style={{ fontSize: 11, color: track.color }}>{showGlossary ? "▲ Hide" : "▼ Show " + track.glossary.length + " terms"}</span>
+      </button>
+      {showGlossary && (
+        <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 6, maxHeight: 320, overflowY: "auto", paddingRight: 4 }}>
+          {track.glossary.map((item: any) => (
+            <div key={item.term} style={{ padding: "8px 10px", background: "rgba(255,255,255,0.03)", borderRadius: 8, borderLeft: "3px solid " + track.color + "60" }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: track.color, marginBottom: 2 }}>{item.term}</div>
+              <div style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1.5 }}>{item.def}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const StudentPortal = () => {
   const { user, loading: authLoading } = useAuth();
   const { language, t } = useLanguage();
@@ -1346,46 +1388,9 @@ const StudentPortal = () => {
                     { term: "Change Management", def: "The structured approach to transitioning individuals and organizations to a desired future state." },
                     { term: "Root Cause Analysis", def: "A method for identifying the underlying cause of a problem rather than its symptoms." },
                   ]},
-                ].map((track) => {
-                  const [showGlossary, setShowGlossary] = React.useState(false);
-                  return (
-                  <div key={track.track} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: 16 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                      <div style={{ width: 4, height: 20, background: track.color, borderRadius: 2 }} />
-                      <span style={{ fontWeight: 700, fontSize: 14, color: "#e2e8f0" }}>{track.track}</span>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                      {track.resources.map((res) => (
-                        <a key={res.label} href={res.url} target="_blank" rel="noopener noreferrer"
-                          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", background: "rgba(255,255,255,0.04)", borderRadius: 8, textDecoration: "none", transition: "background 0.2s" }}
-                          onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}
-                          onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.04)")}
-                        >
-                          <span style={{ fontSize: 13, color: "#cbd5e1" }}>{res.label}</span>
-                          <span style={{ fontSize: 10, color: track.color, fontWeight: 600, background: track.color + "20", padding: "2px 8px", borderRadius: 4 }}>{res.type}</span>
-                        </a>
-                      ))}
-                    </div>
-                    <button
-                      onClick={() => setShowGlossary(!showGlossary)}
-                      style={{ marginTop: 12, width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", background: showGlossary ? track.color + "20" : "rgba(255,255,255,0.03)", border: "1px solid " + track.color + "40", borderRadius: 8, cursor: "pointer", transition: "all 0.2s" }}
-                    >
-                      <span style={{ fontSize: 12, fontWeight: 700, color: track.color, letterSpacing: "0.05em" }}>📖 GLOSSARY</span>
-                      <span style={{ fontSize: 11, color: track.color }}>{showGlossary ? "▲ Hide" : "▼ Show " + track.glossary.length + " terms"}</span>
-                    </button>
-                    {showGlossary && (
-                      <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 6, maxHeight: 320, overflowY: "auto", paddingRight: 4 }}>
-                        {track.glossary.map((item) => (
-                          <div key={item.term} style={{ padding: "8px 10px", background: "rgba(255,255,255,0.03)", borderRadius: 8, borderLeft: "3px solid " + track.color + "60" }}>
-                            <div style={{ fontSize: 12, fontWeight: 700, color: track.color, marginBottom: 2 }}>{item.term}</div>
-                            <div style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1.5 }}>{item.def}</div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  );
-                })}
+                ].map((track) => (
+                  <ResourceTrackCard key={track.track} track={track} />
+                ))}
               </div>
               <p style={{ fontSize: 10, color: '#64748b', marginTop: 8, textAlign: 'center' }}>© Scrum.org, Scaled Agile, PMI, AWS, Google, Microsoft. Educational use only.</p>
             </div>
