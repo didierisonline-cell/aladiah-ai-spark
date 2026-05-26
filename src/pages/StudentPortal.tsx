@@ -72,7 +72,7 @@ function sbFetch<T>(query: Promise<{ data: T | null; error: any }>, fallback: T,
 
 
 const ResourceTrackCard = ({ track }: { track: any }) => {
-  const [showGlossary, setShowGlossary] = React.useState(false);
+  const [showGlossary, setShowGlossary] = useState(false);
   return (
     <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: 16 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
