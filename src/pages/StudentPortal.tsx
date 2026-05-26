@@ -41,15 +41,15 @@ import CoursesSection from '@/components/CoursesSection';
 type Msg = { role: 'user' | 'assistant'; content: string };
 
 const COURSE_ORDER = [
-  'Professional Scrum Master Certification',
-  'Agile Development and Scrum',
-  'Jira Scrum Project: Hands-on Training',
-  'Jira SCRUM Project: Hands-On Training',
-  'Projects & Simulations',
-  'Agile, Scrum & SAFe 6.0 Mastery',
-  'Agile, Scrum & Safe 6.0 Mastery',
-  'AI Mastery for Scrum Masters',
-  'AI Mastery for Scrum Masters & Project Managers',
+  'AI Cloud Engineer','AI Agent Engineer','AI Data Engineer','AI DevOps Engineer',
+  'AI Security Engineer','AI MLOps Engineer','AI Solutions Architect','AI Platform Engineer',
+  'AI Solutions Consultant','AI Product Manager','AI Business Operations','AI Sales Engineer',
+  'AI Business Analyst','AI Transformation Manager','AI Program Manager','AI Enterprise Architect',
+  'AI Governance Professional','Responsible AI','AI Compliance','AI Risk Management',
+  'AI Auditing','AI Policy','AI Ethics',
+  'AI UX Designer','Conversation Designer','Human-AI Interaction','AI Workflow Designer','AI Experience Architect',
+  'Professional Scrum Master Certification','Agile Development and Scrum',
+  'AI Mastery for Scrum Masters','AI Mastery for Scrum Masters & Project Managers',
 ];
 
 const EXCLUDED_COURSES = ['Rogers-Shaw', 'IT Merger', 'Network Integration'];
