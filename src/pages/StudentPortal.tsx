@@ -1081,20 +1081,16 @@ const StudentPortal = () => {
                 </div>
               )}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16, padding: 4 }}>
-                {(() => {
-                  const [openGlossary, setOpenGlossary] = (window as any).__glossaryState || [null, () => {}];
-                  return null;
-                })()}
                 {[
-                  { track: '📘 Scrum Master', color: '#3b82f6', resources: [
-                    { label: 'Scrum Guide 2020', url: 'https://scrumguides.org/docs/scrumguide/v2020/2020-Scrum-Guide-US.pdf', type: 'PDF' },
-                    { label: 'CSM Exam Study Guide', url: 'https://www.scrumalliance.org/get-certified/scrum-master-track/certified-scrummaster', type: 'Guide' },
-                    { label: 'SAFe 6.0 Framework', url: 'https://scaledagile.com/what-is-safe/', type: 'Framework' },
-                    { label: 'Scrum.org PSM I Practice', url: 'https://www.scrum.org/open-assessments/scrum-open', type: 'Practice Exam' },
-                    { label: 'Agile Manifesto', url: 'https://agilemanifesto.org/', type: 'Reference' },
+                  { track: "📘 Scrum Master", color: "#3b82f6", resources: [
+                    { label: "Scrum Guide 2020", url: "https://scrumguides.org/docs/scrumguide/v2020/2020-Scrum-Guide-US.pdf", type: "PDF" },
+                    { label: "CSM Exam Study Guide", url: "https://www.scrumalliance.org/get-certified/scrum-master-track/certified-scrummaster", type: "Guide" },
+                    { label: "SAFe 6.0 Framework", url: "https://scaledagile.com/what-is-safe/", type: "Framework" },
+                    { label: "Scrum.org PSM I Practice", url: "https://www.scrum.org/open-assessments/scrum-open", type: "Practice Exam" },
+                    { label: "Agile Manifesto", url: "https://agilemanifesto.org/", type: "Reference" },
                   ], glossary: [
-                    { term: 'Scrum', def: "A lightweight framework for developing and sustaining complex products using iterative, incremental practices." },
-                    { term: "Sprint", def: "A time-boxed iteration of 1–4 weeks during which a potentially releasable product increment is created." },
+                    { term: "Scrum", def: "A lightweight framework for developing and sustaining complex products using iterative, incremental practices." },
+                    { term: "Sprint", def: "A time-boxed iteration of 1-4 weeks during which a potentially releasable product increment is created." },
                     { term: "Product Owner", def: "The Scrum Team member accountable for maximizing product value and managing the Product Backlog." },
                     { term: "Scrum Master", def: "Servant-leader responsible for ensuring Scrum is understood and enacted; removes impediments." },
                     { term: "Development Team", def: "Cross-functional professionals who deliver a potentially releasable increment each Sprint." },
@@ -1114,69 +1110,69 @@ const StudentPortal = () => {
                     { term: "Backlog Refinement", def: "The ongoing process of reviewing, estimating, and ordering Product Backlog items." },
                     { term: "Sprint Goal", def: "A short objective that gives the Development Team guidance and focus during the Sprint." },
                     { term: "Burndown Chart", def: "A graphical representation of work left to do versus time remaining in the Sprint." },
-                    { term: "Empiricism", def: "Scrum is founded on empiricism — knowledge comes from experience and decisions based on what is known." },
-                    { term: "SAFe", def: "Scaled Agile Framework — a set of patterns for implementing Agile at enterprise scale." },
+                    { term: "Empiricism", def: "Scrum is founded on empiricism: knowledge comes from experience and decisions based on what is known." },
+                    { term: "SAFe", def: "Scaled Agile Framework: a set of patterns for implementing Agile at enterprise scale." },
                     { term: "Kanban", def: "A visual workflow management method used alongside or instead of Scrum." },
-                    { term: "WIP Limit", def: "Work-In-Progress limit — a constraint on the number of tasks in a given workflow stage." },
+                    { term: "WIP Limit", def: "Work-In-Progress limit: a constraint on the number of tasks in a given workflow stage." },
                   ]},
-                  { track: "📊 Project Management', color: '#8b5cf6', resources: [
-                    { label: 'PMBOK® Guide', url: 'https://www.pmi.org/pmbok-guide-standards/foundational/pmbok', type: 'Standard' },
-                    { label: 'PMP Exam Content Outline', url: 'https://www.pmi.org/certifications/project-management-pmp/earn-the-pmp/pmp-exam-preparation', type: 'Guide' },
-                    { label: 'Agile Practice Guide', url: 'https://www.pmi.org/pmbok-guide-standards/agile', type: 'Guide' },
-                    { label: 'PMI Free Practice Exam', url: 'https://www.pmi.org/certifications/project-management-pmp/earn-the-pmp/pmp-exam-preparation', type: 'Practice Exam' },
-                    { label: 'Rita Mulcahy PMP Prep', url: 'https://rmcproject.com/', type: 'Reference' },
+                  { track: "📊 Project Management", color: "#8b5cf6", resources: [
+                    { label: "PMBOK Guide", url: "https://www.pmi.org/pmbok-guide-standards/foundational/pmbok", type: "Standard" },
+                    { label: "PMP Exam Content Outline", url: "https://www.pmi.org/certifications/project-management-pmp/earn-the-pmp/pmp-exam-preparation", type: "Guide" },
+                    { label: "Agile Practice Guide", url: "https://www.pmi.org/pmbok-guide-standards/agile", type: "Guide" },
+                    { label: "PMI Free Practice Exam", url: "https://www.pmi.org/certifications/project-management-pmp/earn-the-pmp/pmp-exam-preparation", type: "Practice Exam" },
+                    { label: "Rita Mulcahy PMP Prep", url: "https://rmcproject.com/", type: "Reference" },
                   ], glossary: [
-                    { term: 'Project', def: "A temporary endeavor undertaken to create a unique product, service, or result." },
+                    { term: "Project", def: "A temporary endeavor undertaken to create a unique product, service, or result." },
                     { term: "Project Charter", def: "A document that formally authorizes a project and grants the PM authority to apply resources." },
                     { term: "Scope", def: "The work that needs to be accomplished to deliver a product, service, or result with specified features." },
-                    { term: "WBS", def: "Work Breakdown Structure — a hierarchical decomposition of the total scope of work." },
+                    { term: "WBS", def: "Work Breakdown Structure: a hierarchical decomposition of the total scope of work." },
                     { term: "Critical Path", def: "The longest sequence of dependent tasks that determines the shortest project duration." },
                     { term: "Milestone", def: "A significant point or event in a project, program, or portfolio." },
                     { term: "Risk Register", def: "A document that records identified risks, their analysis, and planned responses." },
-                    { term: "Stakeholder", def: "An individual, group, or organization that may affect, be affected by, or perceive itself to be affected by the project." },
+                    { term: "Stakeholder", def: "An individual or group that may affect or be affected by the project." },
                     { term: "RACI Matrix", def: "A chart mapping tasks to roles: Responsible, Accountable, Consulted, Informed." },
                     { term: "Earned Value", def: "The value of work actually performed, expressed in terms of the approved budget." },
-                    { term: "SPI", def: "Schedule Performance Index — ratio of earned value to planned value; >1 means ahead of schedule." },
-                    { term: "CPI", def: "Cost Performance Index — ratio of earned value to actual cost; >1 means under budget." },
+                    { term: "SPI", def: "Schedule Performance Index: ratio of earned value to planned value; above 1 means ahead of schedule." },
+                    { term: "CPI", def: "Cost Performance Index: ratio of earned value to actual cost; above 1 means under budget." },
                     { term: "Change Control", def: "A formal process for managing changes to project scope, schedule, or cost." },
-                    { term: "Baseline", def: "An approved plan for a project with approved changes; used for comparison to actual performance." },
-                    { term: "Lessons Learned", def: "Knowledge gained during a project that shows how project events were addressed." },
+                    { term: "Baseline", def: "An approved plan for a project used for comparison to actual performance." },
+                    { term: "Lessons Learned", def: "Knowledge gained during a project showing how events were addressed." },
                     { term: "Gantt Chart", def: "A bar chart that illustrates a project schedule with tasks and durations over time." },
                     { term: "Float / Slack", def: "The amount of time a task can be delayed without delaying the project end date." },
                     { term: "Procurement", def: "The process of obtaining goods and services from outside the performing organization." },
-                    { term: "SOW", def: "Statement of Work — a narrative description of products, services, or results to be delivered." },
-                    { term: "PMO", def: "Project Management Office — a department that standardizes project-related governance." },
-                    { term: "Agile", def: "An iterative approach to project management emphasizing flexibility, collaboration, and customer feedback." },
-                    { term: "Waterfall", def: "A linear sequential project management approach where each phase must be completed before the next begins." },
+                    { term: "SOW", def: "Statement of Work: a narrative description of products or services to be delivered." },
+                    { term: "PMO", def: "Project Management Office: a department that standardizes project-related governance." },
+                    { term: "Agile", def: "An iterative approach emphasizing flexibility, collaboration, and customer feedback." },
+                    { term: "Waterfall", def: "A linear sequential approach where each phase must complete before the next begins." },
                     { term: "Issue Log", def: "A project document used to record and monitor elements under discussion or in dispute." },
                     { term: "Resource Leveling", def: "A technique to optimize resource allocation by adjusting start and finish dates." },
-                    { term: "Quality Assurance", def: "The process of auditing the quality requirements and results to ensure standards are met." },
+                    { term: "Quality Assurance", def: "The process of auditing quality requirements to ensure standards are met." },
                   ]},
-                  { track: "🤖 AI Mastery', color: '#f59e0b', resources: [
-                    { label: 'Google AI Essentials', url: 'https://grow.google/certificates/ai-essentials/', type: 'Course' },
-                    { label: 'Microsoft AI Fundamentals', url: 'https://learn.microsoft.com/en-us/credentials/certifications/azure-ai-fundamentals/', type: 'Cert' },
-                    { label: 'Prompt Engineering Guide', url: 'https://www.promptingguide.ai/', type: 'Guide' },
-                    { label: 'DeepLearning.AI Short Courses', url: 'https://www.deeplearning.ai/short-courses/', type: 'Course' },
-                    { label: 'Hugging Face Learn', url: 'https://huggingface.co/learn', type: 'Reference' },
+                  { track: "🤖 AI Mastery", color: "#f59e0b", resources: [
+                    { label: "Google AI Essentials", url: "https://grow.google/certificates/ai-essentials/", type: "Course" },
+                    { label: "Microsoft AI Fundamentals", url: "https://learn.microsoft.com/en-us/credentials/certifications/azure-ai-fundamentals/", type: "Cert" },
+                    { label: "Prompt Engineering Guide", url: "https://www.promptingguide.ai/", type: "Guide" },
+                    { label: "DeepLearning.AI Short Courses", url: "https://www.deeplearning.ai/short-courses/", type: "Course" },
+                    { label: "Hugging Face Learn", url: "https://huggingface.co/learn", type: "Reference" },
                   ], glossary: [
-                    { term: 'Artificial Intelligence', def: "The simulation of human intelligence processes by computer systems." },
-                    { term: "Machine Learning", def: "A subset of AI where systems learn from data to improve performance without being explicitly programmed." },
+                    { term: "Artificial Intelligence", def: "The simulation of human intelligence processes by computer systems." },
+                    { term: "Machine Learning", def: "A subset of AI where systems learn from data to improve without being explicitly programmed." },
                     { term: "Deep Learning", def: "A subset of ML using neural networks with many layers to model complex patterns." },
-                    { term: "LLM", def: "Large Language Model — an AI model trained on vast text data to understand and generate human language." },
+                    { term: "LLM", def: "Large Language Model: an AI model trained on vast text data to understand and generate language." },
                     { term: "Prompt Engineering", def: "The practice of designing inputs to guide AI models toward desired outputs." },
                     { term: "Fine-tuning", def: "Additional training of a pre-trained model on a specific dataset to specialize its capabilities." },
-                    { term: "RAG", def: "Retrieval-Augmented Generation — combining a retrieval system with an LLM to ground responses in real data." },
+                    { term: "RAG", def: "Retrieval-Augmented Generation: combining a retrieval system with an LLM to ground responses in real data." },
                     { term: "Hallucination", def: "When an AI generates plausible-sounding but factually incorrect information." },
-                    { term: "Token", def: "The basic unit of text (word or subword) that LLMs process; also a unit of API usage." },
+                    { term: "Token", def: "The basic unit of text that LLMs process; also a unit of API usage." },
                     { term: "Embedding", def: "A numerical vector representation of text that captures semantic meaning." },
                     { term: "Neural Network", def: "A computational model inspired by the human brain, consisting of layers of interconnected nodes." },
-                    { term: "NLP", def: "Natural Language Processing — AI techniques for understanding and generating human language." },
+                    { term: "NLP", def: "Natural Language Processing: AI techniques for understanding and generating human language." },
                     { term: "Computer Vision", def: "AI field focused on enabling machines to interpret and understand visual information." },
-                    { term: "Generative AI", def: "AI systems that can create new content (text, images, audio) based on training data." },
-                    { term: "API", def: "Application Programming Interface — a way for software applications to communicate with AI services." },
+                    { term: "Generative AI", def: "AI systems that can create new content such as text, images, and audio." },
+                    { term: "API", def: "Application Programming Interface: a way for software to communicate with AI services." },
                     { term: "Zero-shot", def: "Prompting an AI to perform a task without providing examples in the prompt." },
                     { term: "Few-shot", def: "Providing a few examples in the prompt to guide the AI toward desired behavior." },
-                    { term: "Temperature", def: "A parameter controlling randomness in AI output; higher = more creative, lower = more deterministic." },
+                    { term: "Temperature", def: "A parameter controlling randomness in AI output; higher means more creative." },
                     { term: "Transformer", def: "The neural network architecture underlying most modern LLMs, using attention mechanisms." },
                     { term: "AI Ethics", def: "The study of moral issues arising from AI development, including bias, fairness, and accountability." },
                     { term: "Automation", def: "Using AI and software to perform tasks with minimal human intervention." },
@@ -1185,50 +1181,50 @@ const StudentPortal = () => {
                     { term: "Context Window", def: "The maximum amount of text an LLM can process in a single interaction." },
                     { term: "Inference", def: "The process of running a trained AI model to generate predictions or outputs." },
                   ]},
-                  { track: "🔐 Cybersecurity', color: '#ef4444', resources: [
-                    { label: 'CompTIA Security+ Guide', url: 'https://www.comptia.org/certifications/security', type: 'Cert' },
-                    { label: 'NIST Cybersecurity Framework', url: 'https://www.nist.gov/cyberframework', type: 'Framework' },
-                    { label: 'OWASP Top 10', url: 'https://owasp.org/www-project-top-ten/', type: 'Guide' },
-                    { label: 'Cybrary Free Courses', url: 'https://www.cybrary.it/', type: 'Course' },
-                    { label: 'TryHackMe Learning Paths', url: 'https://tryhackme.com/paths', type: 'Practice' },
+                  { track: "🔐 Cybersecurity", color: "#ef4444", resources: [
+                    { label: "CompTIA Security+ Guide", url: "https://www.comptia.org/certifications/security", type: "Cert" },
+                    { label: "NIST Cybersecurity Framework", url: "https://www.nist.gov/cyberframework", type: "Framework" },
+                    { label: "OWASP Top 10", url: "https://owasp.org/www-project-top-ten/", type: "Guide" },
+                    { label: "Cybrary Free Courses", url: "https://www.cybrary.it/", type: "Course" },
+                    { label: "TryHackMe Learning Paths", url: "https://tryhackme.com/paths", type: "Practice" },
                   ], glossary: [
-                    { term: 'CIA Triad', def: "Confidentiality, Integrity, Availability — the three core principles of information security." },
-                    { term: "Firewall", def: "A network security system that monitors and controls incoming and outgoing traffic based on rules." },
+                    { term: "CIA Triad", def: "Confidentiality, Integrity, Availability: the three core principles of information security." },
+                    { term: "Firewall", def: "A network security system that monitors and controls traffic based on security rules." },
                     { term: "Encryption", def: "The process of converting data into a coded format to prevent unauthorized access." },
-                    { term: "Phishing", def: "A social engineering attack using deceptive emails or messages to steal sensitive information." },
+                    { term: "Phishing", def: "A social engineering attack using deceptive messages to steal sensitive information." },
                     { term: "Malware", def: "Malicious software designed to disrupt, damage, or gain unauthorized access to systems." },
                     { term: "Ransomware", def: "Malware that encrypts victim data and demands payment for the decryption key." },
                     { term: "Vulnerability", def: "A weakness in a system that can be exploited by a threat actor." },
                     { term: "Penetration Testing", def: "Authorized simulated attack on a system to evaluate its security posture." },
                     { term: "Zero-Day", def: "A vulnerability unknown to the vendor for which no patch exists." },
-                    { term: "MFA", def: "Multi-Factor Authentication — requiring two or more verification methods to access a system." },
-                    { term: "SOC", def: "Security Operations Center — a team monitoring and responding to security incidents." },
-                    { term: "SIEM", def: "Security Information and Event Management — tools that aggregate and analyze security data." },
-                    { term: "VPN", def: "Virtual Private Network — encrypts internet traffic and masks the user's IP address." },
-                    { term: 'IDS/IPS', def: "Intrusion Detection/Prevention System — monitors network traffic for suspicious activity." },
+                    { term: "MFA", def: "Multi-Factor Authentication: requiring two or more verification methods to access a system." },
+                    { term: "SOC", def: "Security Operations Center: a team monitoring and responding to security incidents." },
+                    { term: "SIEM", def: "Security Information and Event Management: tools that aggregate and analyze security data." },
+                    { term: "VPN", def: "Virtual Private Network: encrypts internet traffic and masks the user IP address." },
+                    { term: "IDS/IPS", def: "Intrusion Detection/Prevention System: monitors network traffic for suspicious activity." },
                     { term: "Social Engineering", def: "Manipulating people into divulging confidential information or performing actions." },
-                    { term: "PKI", def: "Public Key Infrastructure — a framework for managing digital certificates and encryption keys." },
-                    { term: "DDoS", def: "Distributed Denial of Service — overwhelming a system with traffic to make it unavailable." },
+                    { term: "PKI", def: "Public Key Infrastructure: a framework for managing digital certificates and encryption keys." },
+                    { term: "DDoS", def: "Distributed Denial of Service: overwhelming a system with traffic to make it unavailable." },
                     { term: "Threat Actor", def: "An individual or group that poses a threat to cybersecurity." },
                     { term: "Risk Assessment", def: "The process of identifying, analyzing, and evaluating security risks." },
                     { term: "Patch Management", def: "The process of distributing and applying updates to software to fix vulnerabilities." },
-                    { term: "HTTPS", def: "HyperText Transfer Protocol Secure — encrypted communication between browser and server." },
+                    { term: "HTTPS", def: "HyperText Transfer Protocol Secure: encrypted communication between browser and server." },
                     { term: "Digital Forensics", def: "The process of collecting and analyzing digital evidence for investigations." },
                     { term: "Incident Response", def: "The organized approach to addressing and managing a security breach." },
                     { term: "Least Privilege", def: "Security principle granting users only the minimum access needed for their role." },
                     { term: "Authentication", def: "The process of verifying the identity of a user or system." },
                   ]},
-                  { track: "📈 Data Analytics', color: '#10b981', resources: [
-                    { label: 'Google Data Analytics', url: 'https://grow.google/certificates/data-analytics/', type: 'Course' },
-                    { label: 'SQL Tutorial — W3Schools', url: 'https://www.w3schools.com/sql/', type: 'Tutorial' },
-                    { label: 'Tableau Public', url: 'https://public.tableau.com/app/discover', type: 'Tool' },
-                    { label: 'Kaggle Learn', url: 'https://www.kaggle.com/learn', type: 'Course' },
-                    { label: 'Mode SQL Tutorial', url: 'https://mode.com/sql-tutorial/', type: 'Tutorial' },
+                  { track: "📈 Data Analytics", color: "#10b981", resources: [
+                    { label: "Google Data Analytics", url: "https://grow.google/certificates/data-analytics/", type: "Course" },
+                    { label: "SQL Tutorial — W3Schools", url: "https://www.w3schools.com/sql/", type: "Tutorial" },
+                    { label: "Tableau Public", url: "https://public.tableau.com/app/discover", type: "Tool" },
+                    { label: "Kaggle Learn", url: "https://www.kaggle.com/learn", type: "Course" },
+                    { label: "Mode SQL Tutorial", url: "https://mode.com/sql-tutorial/", type: "Tutorial" },
                   ], glossary: [
-                    { term: 'Data Analytics', def: "The process of examining datasets to draw conclusions and support decision-making." },
-                    { term: "SQL", def: "Structured Query Language — used to communicate with and manipulate relational databases." },
-                    { term: "ETL", def: "Extract, Transform, Load — the process of moving data from source systems to a data warehouse." },
-                    { term: "KPI", def: "Key Performance Indicator — a measurable value demonstrating how effectively objectives are achieved." },
+                    { term: "Data Analytics", def: "The process of examining datasets to draw conclusions and support decision-making." },
+                    { term: "SQL", def: "Structured Query Language: used to communicate with and manipulate relational databases." },
+                    { term: "ETL", def: "Extract, Transform, Load: the process of moving data from source systems to a data warehouse." },
+                    { term: "KPI", def: "Key Performance Indicator: a measurable value showing how effectively objectives are achieved." },
                     { term: "Dashboard", def: "A visual display of key metrics and data points for at-a-glance monitoring." },
                     { term: "Data Visualization", def: "The graphical representation of data to communicate insights clearly." },
                     { term: "Regression", def: "A statistical method for modeling relationships between variables to make predictions." },
@@ -1244,106 +1240,106 @@ const StudentPortal = () => {
                     { term: "Python", def: "A popular programming language widely used for data analysis and machine learning." },
                     { term: "Pandas", def: "A Python library providing data structures and data analysis tools." },
                     { term: "Tableau", def: "A leading data visualization tool for creating interactive dashboards." },
-                    { term: "Power BI", def: "Microsoft's business analytics tool for interactive data visualization." },
-                    { term: 'Data Lake', def: "A storage repository holding large amounts of raw data in its native format." },
+                    { term: "Power BI", def: "Microsoft business analytics tool for interactive data visualization." },
+                    { term: "Data Lake", def: "A storage repository holding large amounts of raw data in its native format." },
                     { term: "Cohort Analysis", def: "Analyzing behavior of a group of users who share a common characteristic over time." },
                     { term: "Funnel Analysis", def: "Tracking users through a series of steps to identify where drop-offs occur." },
                     { term: "Normalization", def: "Organizing database data to reduce redundancy and improve data integrity." },
                     { term: "Predictive Analytics", def: "Using historical data and statistical algorithms to forecast future outcomes." },
                   ]},
-                  { track: "☁️ DevOps & Cloud', color: '#06b6d4', resources: [
-                    { label: 'AWS Cloud Practitioner', url: 'https://aws.amazon.com/certification/certified-cloud-practitioner/', type: 'Cert' },
-                    { label: 'Docker Documentation', url: 'https://docs.docker.com/get-started/', type: 'Docs' },
-                    { label: 'Kubernetes Basics', url: 'https://kubernetes.io/docs/tutorials/kubernetes-basics/', type: 'Tutorial' },
-                    { label: 'Linux Foundation Free Courses', url: 'https://training.linuxfoundation.org/resources/?_sft_content_type=free-course', type: 'Course' },
-                    { label: 'GitHub Actions Docs', url: 'https://docs.github.com/en/actions', type: 'Docs' },
+                  { track: "☁️ DevOps & Cloud", color: "#06b6d4", resources: [
+                    { label: "AWS Cloud Practitioner", url: "https://aws.amazon.com/certification/certified-cloud-practitioner/", type: "Cert" },
+                    { label: "Docker Documentation", url: "https://docs.docker.com/get-started/", type: "Docs" },
+                    { label: "Kubernetes Basics", url: "https://kubernetes.io/docs/tutorials/kubernetes-basics/", type: "Tutorial" },
+                    { label: "Linux Foundation Free Courses", url: "https://training.linuxfoundation.org/resources/?_sft_content_type=free-course", type: "Course" },
+                    { label: "GitHub Actions Docs", url: "https://docs.github.com/en/actions", type: "Docs" },
                   ], glossary: [
-                    { term: 'DevOps', def: "A set of practices combining software development and IT operations to shorten delivery cycles." },
-                    { term: "CI/CD", def: "Continuous Integration/Continuous Delivery — automating code integration, testing, and deployment." },
+                    { term: "DevOps", def: "A set of practices combining software development and IT operations to shorten delivery cycles." },
+                    { term: "CI/CD", def: "Continuous Integration/Continuous Delivery: automating code integration, testing, and deployment." },
                     { term: "Container", def: "A lightweight, portable package containing an application and its dependencies." },
                     { term: "Docker", def: "A platform for developing, shipping, and running applications in containers." },
                     { term: "Kubernetes", def: "An open-source system for automating deployment, scaling, and management of containers." },
-                    { term: "IaC", def: "Infrastructure as Code — managing and provisioning infrastructure through machine-readable config files." },
+                    { term: "IaC", def: "Infrastructure as Code: managing and provisioning infrastructure through machine-readable config files." },
                     { term: "Cloud Computing", def: "Delivery of computing services over the internet on a pay-as-you-go basis." },
-                    { term: "AWS", def: "Amazon Web Services — the world's most comprehensive cloud platform." },
-                    { term: 'Microservices', def: "An architectural style structuring an application as a collection of small, independent services." },
+                    { term: "AWS", def: "Amazon Web Services: the world largest and most comprehensive cloud platform." },
+                    { term: "Microservices", def: "An architectural style structuring an application as a collection of small, independent services." },
                     { term: "Pipeline", def: "An automated sequence of steps for building, testing, and deploying software." },
                     { term: "Git", def: "A distributed version control system for tracking changes in source code." },
                     { term: "Load Balancer", def: "Distributes incoming network traffic across multiple servers to ensure availability." },
                     { term: "Auto Scaling", def: "Automatically adjusting compute resources based on demand." },
                     { term: "Terraform", def: "An IaC tool for building, changing, and versioning infrastructure safely and efficiently." },
                     { term: "Monitoring", def: "Continuously observing system metrics to detect issues and ensure performance." },
-                    { term: "SRE", def: "Site Reliability Engineering — applying software engineering practices to operations problems." },
+                    { term: "SRE", def: "Site Reliability Engineering: applying software engineering practices to operations problems." },
                     { term: "Serverless", def: "A cloud execution model where the provider manages server infrastructure automatically." },
-                    { term: "VPC", def: "Virtual Private Cloud — an isolated network section within a cloud provider's infrastructure." },
-                    { term: 'Helm', def: "A package manager for Kubernetes that simplifies application deployment." },
+                    { term: "VPC", def: "Virtual Private Cloud: an isolated network section within a cloud provider infrastructure." },
+                    { term: "Helm", def: "A package manager for Kubernetes that simplifies application deployment." },
                     { term: "Ansible", def: "An open-source automation tool for configuration management and application deployment." },
-                    { term: "SLA", def: "Service Level Agreement — a commitment between a provider and client on service standards." },
+                    { term: "SLA", def: "Service Level Agreement: a commitment between a provider and client on service standards." },
                     { term: "Rollback", def: "Reverting a deployment to a previous stable version after a failed release." },
                     { term: "Blue/Green Deployment", def: "Running two identical production environments to enable zero-downtime releases." },
-                    { term: "Observability", def: "The ability to understand a system's internal state from its external outputs." },
-                    { term: 'Registry', def: "A storage and distribution system for Docker container images (e.g., Docker Hub, ECR)." },
+                    { term: "Observability", def: "The ability to understand a system internal state from its external outputs." },
+                    { term: "Registry", def: "A storage and distribution system for Docker container images such as Docker Hub or ECR." },
                   ]},
-                  { track: "🏗️ Solution Architect', color: '#f97316', resources: [
-                    { label: 'AWS Solutions Architect', url: 'https://aws.amazon.com/certification/certified-solutions-architect-associate/', type: 'Cert' },
-                    { label: 'TOGAF Framework', url: 'https://www.opengroup.org/togaf', type: 'Framework' },
-                    { label: 'Azure Architecture Center', url: 'https://learn.microsoft.com/en-us/azure/architecture/', type: 'Guide' },
-                    { label: 'AWS Well-Architected Framework', url: 'https://aws.amazon.com/architecture/well-architected/', type: 'Framework' },
-                    { label: 'Google Cloud Architecture Center', url: 'https://cloud.google.com/architecture', type: 'Guide' },
+                  { track: "🏗️ Solution Architect", color: "#f97316", resources: [
+                    { label: "AWS Solutions Architect", url: "https://aws.amazon.com/certification/certified-solutions-architect-associate/", type: "Cert" },
+                    { label: "TOGAF Framework", url: "https://www.opengroup.org/togaf", type: "Framework" },
+                    { label: "Azure Architecture Center", url: "https://learn.microsoft.com/en-us/azure/architecture/", type: "Guide" },
+                    { label: "AWS Well-Architected Framework", url: "https://aws.amazon.com/architecture/well-architected/", type: "Framework" },
+                    { label: "Google Cloud Architecture Center", url: "https://cloud.google.com/architecture", type: "Guide" },
                   ], glossary: [
-                    { term: 'Solution Architecture', def: "The process of designing a technical solution to address specific business requirements." },
-                    { term: "TOGAF", def: "The Open Group Architecture Framework — a methodology for enterprise architecture." },
-                    { term: "Enterprise Architecture", def: "A blueprint defining the structure and operation of an organization's IT environment." },
-                    { term: 'High Availability', def: "System design ensuring a high level of operational performance with minimal downtime." },
+                    { term: "Solution Architecture", def: "The process of designing a technical solution to address specific business requirements." },
+                    { term: "TOGAF", def: "The Open Group Architecture Framework: a methodology for enterprise architecture." },
+                    { term: "Enterprise Architecture", def: "A blueprint defining the structure and operation of an organization IT environment." },
+                    { term: "High Availability", def: "System design ensuring a high level of operational performance with minimal downtime." },
                     { term: "Scalability", def: "The ability of a system to handle increased load by adding resources." },
-                    { term: "Fault Tolerance", def: "A system's ability to continue operating correctly when components fail." },
-                    { term: 'DR', def: "Disaster Recovery — strategies to restore IT systems after a catastrophic event." },
-                    { term: "RPO", def: "Recovery Point Objective — maximum acceptable data loss measured in time." },
-                    { term: "RTO", def: "Recovery Time Objective — maximum acceptable downtime after a disaster." },
+                    { term: "Fault Tolerance", def: "A system ability to continue operating correctly when components fail." },
+                    { term: "DR", def: "Disaster Recovery: strategies to restore IT systems after a catastrophic event." },
+                    { term: "RPO", def: "Recovery Point Objective: maximum acceptable data loss measured in time." },
+                    { term: "RTO", def: "Recovery Time Objective: maximum acceptable downtime after a disaster." },
                     { term: "API Gateway", def: "A server that acts as the entry point for clients to access backend services." },
-                    { term: "CDN", def: "Content Delivery Network — distributes content globally to reduce latency." },
+                    { term: "CDN", def: "Content Delivery Network: distributes content globally to reduce latency." },
                     { term: "Caching", def: "Storing frequently accessed data temporarily to improve performance." },
                     { term: "Database Sharding", def: "Partitioning a database into smaller, faster, more manageable pieces." },
                     { term: "Event-Driven Architecture", def: "A design pattern where components communicate through events." },
-                    { term: "SOA", def: "Service-Oriented Architecture — designing software as a collection of interoperable services." },
+                    { term: "SOA", def: "Service-Oriented Architecture: designing software as a collection of interoperable services." },
                     { term: "Latency", def: "The time delay between a request and the corresponding response." },
                     { term: "Throughput", def: "The amount of data processed by a system in a given time period." },
-                    { term: "Multi-tenancy", def: "A single instance of software serving multiple customers (tenants)." },
+                    { term: "Multi-tenancy", def: "A single instance of software serving multiple customers." },
                     { term: "Message Queue", def: "A communication method allowing applications to exchange messages asynchronously." },
-                    { term: "WAF", def: "Web Application Firewall — protects web applications by filtering malicious HTTP traffic." },
+                    { term: "WAF", def: "Web Application Firewall: protects web applications by filtering malicious HTTP traffic." },
                     { term: "Stateless", def: "An architecture where each request contains all information needed to process it." },
                     { term: "Design Patterns", def: "Reusable solutions to commonly occurring problems in software design." },
                     { term: "CAP Theorem", def: "States a distributed system can provide only two of: Consistency, Availability, Partition tolerance." },
                     { term: "SaaS/PaaS/IaaS", def: "Cloud service models: Software, Platform, and Infrastructure as a Service." },
                     { term: "Zero Trust", def: "A security model requiring strict identity verification for every person and device." },
                   ]},
-                  { track: "📋 Business Analysis', color: '#a855f7', resources: [
-                    { label: 'BABOK® Guide', url: 'https://www.iiba.org/career-resources/a-business-analysis-professionals-foundation-for-success/babok/', type: 'Standard' },
-                    { label: 'PMI-PBA Certification', url: 'https://www.pmi.org/certifications/business-analysis-pba', type: 'Cert' },
-                    { label: 'Requirements Engineering', url: 'https://www.iiba.org/professional-development/iiba-certifications/cbap/', type: 'Guide' },
-                    { label: 'Lucidchart (Free)', url: 'https://www.lucidchart.com/', type: 'Tool' },
-                    { label: 'Business Analysis Body of Knowledge', url: 'https://www.iiba.org/standards-and-resources/babok/', type: 'Reference' },
+                  { track: "📋 Business Analysis", color: "#a855f7", resources: [
+                    { label: "BABOK Guide", url: "https://www.iiba.org/career-resources/a-business-analysis-professionals-foundation-for-success/babok/", type: "Standard" },
+                    { label: "PMI-PBA Certification", url: "https://www.pmi.org/certifications/business-analysis-pba", type: "Cert" },
+                    { label: "Requirements Engineering", url: "https://www.iiba.org/professional-development/iiba-certifications/cbap/", type: "Guide" },
+                    { label: "Lucidchart Free", url: "https://www.lucidchart.com/", type: "Tool" },
+                    { label: "Business Analysis Body of Knowledge", url: "https://www.iiba.org/standards-and-resources/babok/", type: "Reference" },
                   ], glossary: [
-                    { term: 'Business Analysis', def: "The practice of enabling change in an organization by defining needs and recommending solutions." },
+                    { term: "Business Analysis", def: "The practice of enabling change in an organization by defining needs and recommending solutions." },
                     { term: "Requirements", def: "Documented needs that a solution must fulfill to meet stakeholder objectives." },
                     { term: "Stakeholder", def: "Anyone with an interest in or affected by the project or solution." },
                     { term: "Use Case", def: "A description of how a user interacts with a system to achieve a goal." },
                     { term: "User Story", def: "A short description of a feature from the end-user perspective used in Agile." },
                     { term: "Gap Analysis", def: "Comparing current state to desired future state to identify what needs to change." },
-                    { term: "BRD", def: "Business Requirements Document — a formal document describing business solutions for a project." },
-                    { term: "FRD", def: "Functional Requirements Document — describes what a system must do." },
+                    { term: "BRD", def: "Business Requirements Document: a formal document describing business solutions for a project." },
+                    { term: "FRD", def: "Functional Requirements Document: describes what a system must do." },
                     { term: "Process Mapping", def: "Creating a visual representation of a business process to analyze and improve it." },
                     { term: "SWOT Analysis", def: "Assessing Strengths, Weaknesses, Opportunities, and Threats of a business situation." },
-                    { term: "As-Is / To-Be", def: "Current state (As-Is) vs. desired future state (To-Be) analysis." },
-                    { term: "Elicitation", def: "The practice of drawing out requirements from stakeholders through interviews, workshops, etc." },
+                    { term: "As-Is / To-Be", def: "Current state vs. desired future state analysis." },
+                    { term: "Elicitation", def: "The practice of drawing out requirements from stakeholders through interviews and workshops." },
                     { term: "Feasibility Study", def: "An assessment of the practicality and viability of a proposed project or solution." },
-                    { term: "BPMN", def: "Business Process Model and Notation — a standard graphical notation for business processes." },
+                    { term: "BPMN", def: "Business Process Model and Notation: a standard graphical notation for business processes." },
                     { term: "Data Flow Diagram", def: "A visual representation showing how data moves through a system." },
                     { term: "Traceability Matrix", def: "A document linking requirements to test cases to ensure all requirements are tested." },
                     { term: "MoSCoW", def: "Prioritization technique: Must have, Should have, Could have, Won't have." },
-                    { term: 'Prototype', def: "An early model of a solution used to test concepts and gather feedback." },
-                    { term: "UAT", def: "User Acceptance Testing — final testing performed by end users before system go-live." },
-                    { term: "ROI", def: "Return on Investment — a measure of the profitability of an investment." },
+                    { term: "Prototype", def: "An early model of a solution used to test concepts and gather feedback." },
+                    { term: "UAT", def: "User Acceptance Testing: final testing performed by end users before system go-live." },
+                    { term: "ROI", def: "Return on Investment: a measure of the profitability of an investment." },
                     { term: "Business Case", def: "A justification for undertaking a project in terms of benefits, costs, and risks." },
                     { term: "Wireframe", def: "A low-fidelity visual guide representing the skeletal framework of a website or app." },
                     { term: "Entity Relationship Diagram", def: "A visual representation of data entities and their relationships in a database." },
@@ -1353,11 +1349,44 @@ const StudentPortal = () => {
                 ].map((track) => {
                   const [showGlossary, setShowGlossary] = React.useState(false);
                   return (
-                  <div key={track.track} style={{ background: "rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 16 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                  <div key={track.track} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: 16 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                       <div style={{ width: 4, height: 20, background: track.color, borderRadius: 2 }} />
-                      <span style={{ fontWeight: 700, fontSize: 14, color: '#e2e8f0' }}>{track.track}</span>
+                      <span style={{ fontWeight: 700, fontSize: 14, color: "#e2e8f0" }}>{track.track}</span>
                     </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                      {track.resources.map((res) => (
+                        <a key={res.label} href={res.url} target="_blank" rel="noopener noreferrer"
+                          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", background: "rgba(255,255,255,0.04)", borderRadius: 8, textDecoration: "none", transition: "background 0.2s" }}
+                          onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}
+                          onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.04)")}
+                        >
+                          <span style={{ fontSize: 13, color: "#cbd5e1" }}>{res.label}</span>
+                          <span style={{ fontSize: 10, color: track.color, fontWeight: 600, background: track.color + "20", padding: "2px 8px", borderRadius: 4 }}>{res.type}</span>
+                        </a>
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => setShowGlossary(!showGlossary)}
+                      style={{ marginTop: 12, width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", background: showGlossary ? track.color + "20" : "rgba(255,255,255,0.03)", border: "1px solid " + track.color + "40", borderRadius: 8, cursor: "pointer", transition: "all 0.2s" }}
+                    >
+                      <span style={{ fontSize: 12, fontWeight: 700, color: track.color, letterSpacing: "0.05em" }}>📖 GLOSSARY</span>
+                      <span style={{ fontSize: 11, color: track.color }}>{showGlossary ? "▲ Hide" : "▼ Show " + track.glossary.length + " terms"}</span>
+                    </button>
+                    {showGlossary && (
+                      <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 6, maxHeight: 320, overflowY: "auto", paddingRight: 4 }}>
+                        {track.glossary.map((item) => (
+                          <div key={item.term} style={{ padding: "8px 10px", background: "rgba(255,255,255,0.03)", borderRadius: 8, borderLeft: "3px solid " + track.color + "60" }}>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: track.color, marginBottom: 2 }}>{item.term}</div>
+                            <div style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1.5 }}>{item.def}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  );
+                })}
+              </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {track.resources.map((res) => (
                         <a key={res.label} href={res.url} target="_blank" rel="noopener noreferrer"
