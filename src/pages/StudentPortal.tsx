@@ -946,7 +946,7 @@ const StudentPortal = () => {
               </div>
 
               {/* Quick nav cards */}
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:'1rem' }}>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:'1rem', marginBottom:'2rem' }}>
                 {[
                   { icon:'👥', label:'Community', path:'/community' },
                   { icon:'⚔️', label:'Sprint Sim', path:'/simulation' },
@@ -962,6 +962,49 @@ const StudentPortal = () => {
                   </div>
                 ))}
               </div>
+
+              {/* Foundation Library + Enterprise Simulations — recommendation section */}
+              <div style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:DS.r, padding:'1.25rem 1.5rem', marginBottom:'1rem', borderLeft:`3px solid ${DS.gold}` }}>
+                <div style={{ display:'flex', alignItems:'center', gap:'.5rem', marginBottom:'.35rem' }}>
+                  <span style={{ fontSize:16 }}>💡</span>
+                  <span style={{ fontSize:14, fontWeight:700, color:DS.fg }}>New to AI? Start with the Foundation Library</span>
+                </div>
+                <p style={{ fontSize:12, color:DS.fm, lineHeight:1.65, marginBottom:'1rem' }}>
+                  If you're new to IT, Agile, or AI tools — start here. These 8 foundational programs are the bedrock of the Aladiah curriculum.
+                  Each earns an <strong style={{ color:DS.gold }}>Aladiah Associate™</strong> credential and counts toward your Talent Score™.
+                  Many feed directly into the 28 AI Workforce Programs above.
+                </p>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'.75rem' }}>
+                  {[
+                    { icon:'👥', title:'Scrum Master Certification', weeks:'8 weeks', color:DS.blue },
+                    { icon:'🎯', title:'Project Management Professional', weeks:'12 weeks', color:DS.blue },
+                    { icon:'🤖', title:'AI Tools for Managers', weeks:'6 weeks', color:DS.orange },
+                    { icon:'🛡️', title:'Cybersecurity Professional', weeks:'10 weeks', color:DS.orange },
+                    { icon:'🏗️', title:'Solution Architect', weeks:'12 weeks', color:DS.blue },
+                    { icon:'📊', title:'Data Analytics Professional', weeks:'8 weeks', color:DS.orange },
+                    { icon:'☁️', title:'DevOps & Cloud Engineering', weeks:'10 weeks', color:DS.blue },
+                    { icon:'📋', title:'Business Analysis Professional', weeks:'8 weeks', color:DS.orange },
+                  ].map((c, i) => (
+                    <div key={i} onClick={() => navigate('/courses')} style={{ background:DS.muted, border:`1px solid ${DS.border}`, borderRadius:'.65rem', padding:'1rem', cursor:'pointer', transition:'all .2s' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = c.color + '60'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = DS.border; (e.currentTarget as HTMLElement).style.transform = ''; }}>
+                      <div style={{ width:36, height:36, borderRadius:'.5rem', background: c.color + '22', border:`1px solid ${c.color}44`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, marginBottom:'.6rem' }}>{c.icon}</div>
+                      <div style={{ fontSize:12, fontWeight:700, color:DS.fg, marginBottom:'.25rem', lineHeight:1.3 }}>{c.title}</div>
+                      <div style={{ fontSize:10, color:DS.fm, marginBottom:'.6rem' }}>⏱ {c.weeks} · Online</div>
+                      <button onClick={e => { e.stopPropagation(); navigate('/courses'); }}
+                        style={{ width:'100%', padding:'.4rem', borderRadius:'.4rem', fontSize:11, fontWeight:700, color:'#fff', background:c.color, border:'none', cursor:'pointer' }}>
+                        Start Course →
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Full AI programs section */}
+              <CoursesSection progressData={courseProgresses.reduce((acc: Record<string,any>, cp: any) => {
+                if (cp.courseId) acc[`prog_${cp.courseId}`] = { progress: cp.pct || 0, completedLessons: cp.completed || 0, totalLessons: cp.total || 0 };
+                return acc;
+              }, {})} />
             </>
           )}
 
