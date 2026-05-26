@@ -31,7 +31,7 @@ import {
   ProgressDetailModal, StreakDetailModal, PointsDetailModal, LabsDetailModal
 } from '@/components/portal/StatDetailModals';
 import {
-  Bot, Send, BookOpen, Trophy, Flame, GraduationCap,
+  Bot, BookMarked, Send, BookOpen, Trophy, Flame, GraduationCap,
   FlaskConical, Star, Gift, Briefcase,
   TrendingUp, Award, Lightbulb, Sparkles, Clock,
   ArrowRight, CheckCircle, FileText, ExternalLink, Mic, Crown
