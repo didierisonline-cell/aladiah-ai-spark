@@ -302,38 +302,84 @@ const StudentPortal = () => {
     setStreak(s);
 
     const passedQuizIds = (progressRes.data || []).map(p => p.quiz_id as string);
+
+    // Build real progress from Supabase for any matching courses
+    const dbProgresses: Record<string, any> = {};
     const filteredCourses = (coursesRes.data || []).filter(course =>
       !EXCLUDED_COURSES.some(ex => course.title.includes(ex))
     );
-
-    const progresses = filteredCourses.map(course => {
+    filteredCourses.forEach(course => {
       const courseChapters = (chaptersRes.data || []).filter(ch => ch.course_id === course.id);
-      const courseVideos = (videosRes.data || []).filter(v => courseChapters.some(ch => ch.id === v.chapter_id));
       const chapterQuizzes = (quizzesRes.data || []).filter(
         q => courseChapters.some(ch => ch.id === q.chapter_id) && q.quiz_type === 'chapter_end'
       );
       const completedQuizzes = chapterQuizzes.filter(q => passedQuizIds.includes(q.id)).length;
       const totalItems = courseChapters.length;
-      const completedItems = completedQuizzes;
-
-      return {
+      dbProgresses[course.title.toLowerCase()] = {
         courseId: course.id,
-        title: course.title,
         total: totalItems,
-        completed: completedItems,
-        pct: totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0,
+        completed: completedQuizzes,
+        pct: totalItems > 0 ? Math.round((completedQuizzes / totalItems) * 100) : 0,
         nextChapterId: courseChapters.find(ch => {
           const chQuiz = chapterQuizzes.find(q => q.chapter_id === ch.id);
           return !chQuiz || !passedQuizIds.includes(chQuiz.id);
         })?.id || courseChapters[0]?.id,
-        chapters: courseChapters,
       };
     });
 
-    progresses.sort((a, b) => {
-      const aIdx = COURSE_ORDER.findIndex(name => a.title.toLowerCase().includes(name.toLowerCase()));
-      const bIdx = COURSE_ORDER.findIndex(name => b.title.toLowerCase().includes(name.toLowerCase()));
-      return (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
+    // NEW 28-program curriculum — always show these, overlay real progress where it exists
+    const NEW_PROGRAMS = [
+      // Engineering (8)
+      { title:'AI Cloud Engineer', school:'⚙️ AI Engineering', weeks:32, icon:'☁️' },
+      { title:'AI Agent Engineer', school:'⚙️ AI Engineering', weeks:30, icon:'🤖' },
+      { title:'AI Data Engineer', school:'⚙️ AI Engineering', weeks:28, icon:'📊' },
+      { title:'AI DevOps Engineer', school:'⚙️ AI Engineering', weeks:28, icon:'🔧' },
+      { title:'AI Security Engineer', school:'⚙️ AI Engineering', weeks:26, icon:'🛡️' },
+      { title:'AI MLOps Engineer', school:'⚙️ AI Engineering', weeks:28, icon:'🧬' },
+      { title:'AI Solutions Architect', school:'⚙️ AI Engineering', weeks:32, icon:'🏗️' },
+      { title:'AI Platform Engineer', school:'⚙️ AI Engineering', weeks:26, icon:'⚙️' },
+      // Business (8)
+      { title:'AI Solutions Consultant', school:'💼 AI Business', weeks:30, icon:'🧠' },
+      { title:'AI Product Manager', school:'💼 AI Business', weeks:28, icon:'📱' },
+      { title:'AI Business Operations', school:'💼 AI Business', weeks:24, icon:'⚡' },
+      { title:'AI Sales Engineer', school:'💼 AI Business', weeks:24, icon:'💰' },
+      { title:'AI Business Analyst', school:'💼 AI Business', weeks:26, icon:'📋' },
+      { title:'AI Transformation Manager', school:'💼 AI Business', weeks:28, icon:'🔄' },
+      { title:'AI Program Manager', school:'💼 AI Business', weeks:28, icon:'🗓️' },
+      { title:'AI Enterprise Architect', school:'💼 AI Business', weeks:32, icon:'🏛️' },
+      // Governance (7)
+      { title:'AI Governance Professional', school:'⚖️ Governance & Risk', weeks:26, icon:'⚖️' },
+      { title:'Responsible AI Specialist', school:'⚖️ Governance & Risk', weeks:24, icon:'🛡️' },
+      { title:'AI Compliance Officer', school:'⚖️ Governance & Risk', weeks:24, icon:'📜' },
+      { title:'AI Risk Manager', school:'⚖️ Governance & Risk', weeks:24, icon:'⚠️' },
+      { title:'AI Auditor', school:'⚖️ Governance & Risk', weeks:22, icon:'🔍' },
+      { title:'AI Policy Designer', school:'⚖️ Governance & Risk', weeks:22, icon:'📝' },
+      { title:'AI Ethics Specialist', school:'⚖️ Governance & Risk', weeks:20, icon:'🤝' },
+      // Human-AI (5)
+      { title:'AI UX Designer', school:'🎨 Human-AI Experience', weeks:26, icon:'🎨' },
+      { title:'Conversation Designer', school:'🎨 Human-AI Experience', weeks:24, icon:'💬' },
+      { title:'Human-AI Interaction Specialist', school:'🎨 Human-AI Experience', weeks:24, icon:'🔬' },
+      { title:'AI Workflow Designer', school:'🎨 Human-AI Experience', weeks:22, icon:'🔄' },
+      { title:'AI Experience Architect', school:'🎨 Human-AI Experience', weeks:28, icon:'🏛️' },
+    ];
+
+    const progresses = NEW_PROGRAMS.map((prog, i) => {
+      // Try to match real Supabase data by title
+      const dbKey = Object.keys(dbProgresses).find(k =>
+        k.includes(prog.title.toLowerCase()) || prog.title.toLowerCase().includes(k)
+      );
+      const db = dbKey ? dbProgresses[dbKey] : null;
+      return {
+        courseId: db?.courseId || `prog_${i + 1}`,
+        title: prog.title,
+        school: prog.school,
+        icon: prog.icon,
+        total: db?.total || prog.weeks,
+        completed: db?.completed || 0,
+        pct: db?.pct || 0,
+        nextChapterId: db?.nextChapterId || null,
+        isNew: !db,
+      };
     });
 
     setCourseProgresses(progresses);
@@ -568,7 +614,7 @@ const StudentPortal = () => {
 
   const SIDEBAR_LINKS = [
     { icon:'📊', label:'Overview',        path:'/portal',              key:'overview' },
-    { icon:'📚', label:'My Courses',      path:'/portal/courses',      key:'courses',    badge: courseProgresses.length > 0 ? String(courseProgresses.length) : undefined },
+    { icon:'📚', label:'My Courses',      path:'/portal/courses',      key:'courses',    badge: '28' },
     { icon:'⭐', label:'Talent Score™',   path:'/portal/talent-score', key:'talent-score' },
     { icon:'🏅', label:'Certifications',  path:'/portal',              key:'certifications' },
     { icon:'💼', label:'Career Tools',    path:'/portal/career',       key:'career' },
@@ -803,36 +849,62 @@ const StudentPortal = () => {
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1.25rem' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:'.5rem' }}>
                     <span style={{ color:DS.blue }}>🎓</span>
-                    <span style={{ fontSize:14, fontWeight:700 }}>Course Progress</span>
+                    <span style={{ fontSize:14, fontWeight:700 }}>AI Workforce Programs</span>
+                    <span style={{ fontSize:11, color:DS.fm }}>— 28 programs across 4 schools</span>
                   </div>
                   <a onClick={() => navigate('/portal/courses')} style={{ fontSize:12, fontWeight:700, color:DS.blue, cursor:'pointer' }}>View All →</a>
                 </div>
-                {courseProgresses.length === 0 ? (
-                  <div style={{ textAlign:'center', padding:'2rem', color:DS.fm, fontSize:13 }}>
-                    No courses yet.{' '}
-                    <span onClick={() => navigate('/courses')} style={{ color:DS.blue, cursor:'pointer', fontWeight:600 }}>Browse courses →</span>
-                  </div>
-                ) : courseProgresses.map((cp: any, i: number) => (
-                  <div key={cp.courseId || i} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'1rem 1.25rem', background:'transparent', border:`1px solid ${DS.border}`, borderRadius:DS.r, marginBottom:'.6rem', transition:'all .2s', cursor:'pointer' }}
-                    onClick={() => cp.nextChapterId ? navigate(`/course/${cp.courseId}/chapter/${cp.nextChapterId}`) : navigate('/courses')}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = DS.bb; (e.currentTarget as HTMLElement).style.transform = 'translateX(2px)'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = DS.border; (e.currentTarget as HTMLElement).style.transform = ''; }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:'1rem', flex:1 }}>
-                      <div style={{ width:28, height:28, borderRadius:'50%', background:DS.od, border:`2px solid ${DS.ob}`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:800, color:DS.orange, flexShrink:0 }}>{i+1}</div>
-                      <div style={{ flex:1 }}>
-                        <div style={{ fontSize:13, fontWeight:700 }}>{cp.title}</div>
-                        <div style={{ fontSize:11, color:DS.fm, marginTop:2 }}>{cp.pct || 0}% complete · {cp.completed || 0}/{cp.total || 0} lessons</div>
-                        <div style={{ height:4, background:'rgba(255,255,255,.06)', borderRadius:2, marginTop:6, overflow:'hidden' }}>
-                          <div style={{ height:'100%', width:`${cp.pct || 0}%`, background:`linear-gradient(90deg,${DS.orange},#F5895E)`, borderRadius:2 }}/>
-                        </div>
+
+                {/* Group by school */}
+                {['⚙️ AI Engineering','💼 AI Business','⚖️ Governance & Risk','🎨 Human-AI Experience'].map(school => {
+                  const schoolColors: Record<string,{color:string,colorD:string,colorB:string}> = {
+                    '⚙️ AI Engineering': {color:DS.blue,colorD:DS.bd,colorB:DS.bb},
+                    '💼 AI Business': {color:DS.orange,colorD:DS.od,colorB:DS.ob},
+                    '⚖️ Governance & Risk': {color:DS.gold,colorD:DS.gd,colorB:DS.gb},
+                    '🎨 Human-AI Experience': {color:DS.green,colorD:DS.grd,colorB:'rgba(34,201,138,.28)'},
+                  };
+                  const sc = schoolColors[school];
+                  const schoolProgs = courseProgresses.filter((cp:any) => cp.school === school);
+                  if (schoolProgs.length === 0) return null;
+                  return (
+                    <div key={school} style={{ marginBottom:'1rem' }}>
+                      {/* School header */}
+                      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'.5rem .75rem', background: sc.colorD, border:`1px solid ${sc.colorB}`, borderRadius:'.5rem .5rem 0 0', marginBottom:0 }}>
+                        <span style={{ fontSize:11, fontWeight:800, textTransform:'uppercase' as const, letterSpacing:'.5px', color:sc.color }}>{school}</span>
+                        <span style={{ fontSize:10, fontWeight:700, color:sc.color }}>{schoolProgs.length} programs</span>
+                      </div>
+                      {/* Programs */}
+                      <div style={{ border:`1px solid ${sc.colorB}`, borderTop:'none', borderRadius:'0 0 .5rem .5rem', overflow:'hidden' }}>
+                        {schoolProgs.map((cp:any, i:number) => (
+                          <div key={cp.courseId} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'.85rem 1rem', borderBottom: i < schoolProgs.length-1 ? `1px solid rgba(255,255,255,.04)` : 'none', cursor:'pointer', transition:'background .15s' }}
+                            onClick={() => cp.nextChapterId ? navigate(`/course/${cp.courseId}/chapter/${cp.nextChapterId}`) : navigate('/courses')}
+                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,.03)'}
+                            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}>
+                            <div style={{ display:'flex', alignItems:'center', gap:'.75rem', flex:1, minWidth:0 }}>
+                              <div style={{ width:26, height:26, borderRadius:'50%', background: sc.colorD, border:`2px solid ${sc.colorB}`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:800, color:sc.color, flexShrink:0 }}>
+                                {i + 1 + (['⚙️ AI Engineering','💼 AI Business','⚖️ Governance & Risk','🎨 Human-AI Experience'].indexOf(school) * 8)}
+                              </div>
+                              <div style={{ flex:1, minWidth:0 }}>
+                                <div style={{ fontSize:13, fontWeight:700, color:DS.fg, display:'flex', alignItems:'center', gap:'.4rem' }}>
+                                  {cp.title}
+                                  {cp.isNew && <span style={{ fontSize:9, fontWeight:800, padding:'1px 6px', borderRadius:999, background:sc.colorD, color:sc.color, border:`1px solid ${sc.colorB}`, letterSpacing:.5 }}>NEW</span>}
+                                </div>
+                                <div style={{ fontSize:10, color:DS.fm, marginTop:2 }}>{cp.pct}% complete · {cp.completed}/{cp.total} lessons · L100–L700</div>
+                                <div style={{ height:3, background:'rgba(255,255,255,.06)', borderRadius:2, marginTop:4, overflow:'hidden' }}>
+                                  <div style={{ height:'100%', width:`${cp.pct}%`, background:`linear-gradient(90deg,${sc.color},${sc.color}99)`, borderRadius:2 }}/>
+                                </div>
+                              </div>
+                            </div>
+                            <button onClick={e => { e.stopPropagation(); cp.nextChapterId ? navigate(`/course/${cp.courseId}/chapter/${cp.nextChapterId}`) : navigate('/courses'); }}
+                              style={{ fontSize:11, fontWeight:700, padding:'.38rem .85rem', borderRadius:'.5rem', background:'transparent', color:DS.fg, border:`1px solid ${DS.border}`, cursor:'pointer', marginLeft:'.75rem', flexShrink:0 }}>
+                              {cp.pct > 0 ? 'Continue →' : 'Start →'}
+                            </button>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                    <button onClick={e => { e.stopPropagation(); cp.nextChapterId ? navigate(`/course/${cp.courseId}/chapter/${cp.nextChapterId}`) : navigate('/courses'); }}
-                      style={{ fontSize:12, fontWeight:700, padding:'.48rem 1rem', borderRadius:'.5rem', background:'transparent', color:DS.fg, border:`1px solid ${DS.border}`, cursor:'pointer', marginLeft:'1rem', whiteSpace:'nowrap' }}>
-                      {cp.pct > 0 ? 'Continue →' : 'Start →'}
-                    </button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Knowledge graph + Talent Score side by side */}
