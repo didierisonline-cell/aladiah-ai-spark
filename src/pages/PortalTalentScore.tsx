@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
+import PortalSidebar from '@/components/PortalSidebar';
 import { useAuth } from '@/hooks/useAuth';
 import { useProgress } from '@/hooks/useProgress';
 
@@ -11,15 +12,6 @@ const DS = {
   green:'#22C98A', grd:'rgba(34,201,138,.12)',
 };
 
-const SIDEBAR_LINKS = [
-  { icon:'📊', label:'Overview', href:'/portal' },
-  { icon:'📚', label:'My Courses', href:'/portal/courses', badge:'3' },
-  { icon:'⭐', label:'Talent Score™', href:'/portal/talent-score' },
-  { icon:'🏅', label:'Certifications', href:'/portal' },
-  { icon:'💼', label:'Career Tools', href:'/portal/career' },
-  { icon:'🗂️', label:'My Portfolio', href:'/portal/portfolio' },
-  { icon:'⚙️', label:'Settings', href:'/portal/settings' },
-];
 
 const DIMENSIONS = [
   { label:'Knowledge Mastery', score:0, max:300, color:DS.blue },
@@ -41,24 +33,7 @@ export default function PortalTalentScore() {
       <Header />
       <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', minHeight: '100vh', paddingTop: 70 }}>
         {/* Sidebar */}
-        <aside style={{ background: DS.card, borderRight: `1px solid ${DS.border}`, padding: '1.75rem 0', position: 'sticky' as const, top: 70, height: 'calc(100vh - 70px)', overflowY: 'auto' as const }}>
-          <div style={{ padding: '1.25rem 1.5rem 1.5rem', borderBottom: `1px solid ${DS.border}` }}>
-            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg,#4A90F5,#7AB5FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: '.65rem' }}>{initials}</div>
-            <div style={{ fontSize: 14, fontWeight: 700 }}>{user?.email?.split('@')[0] || 'Student'}</div>
-            <div style={{ fontSize: 11, color: DS.fm, marginTop: 2 }}>Plan: <span style={{ color: DS.gold, fontWeight: 600 }}>All-Access Pass™</span></div>
-          </div>
-          <div style={{ padding: '.75rem 0' }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase' as const, color: '#4A5E7A', padding: '.5rem 1.5rem .25rem' }}>Dashboard</div>
-            {SIDEBAR_LINKS.map(link => (
-              <a key={link.href} href={link.href} onClick={e => { e.preventDefault(); navigate(link.href); }}
-                style={{ display: 'flex', alignItems: 'center', gap: '.75rem', padding: '.65rem 1.5rem', fontSize: 13, fontWeight: pathname === link.href ? 700 : 500, color: pathname === link.href ? DS.blue : DS.fm, background: pathname === link.href ? DS.bd : 'transparent', borderLeft: pathname === link.href ? `3px solid ${DS.blue}` : '3px solid transparent', textDecoration: 'none', transition: 'all .2s' }}>
-                <span style={{ width: 18, textAlign: 'center' as const }}>{link.icon}</span>
-                {link.label}
-                {link.badge && <span style={{ marginLeft: 'auto', fontSize: 10, background: DS.orange, color: '#fff', borderRadius: 999, padding: '1px 7px', fontWeight: 700 }}>{link.badge}</span>}
-              </a>
-            ))}
-          </div>
-        </aside>
+        <PortalSidebar />
 
         {/* Main */}
         <main style={{ padding: '2rem', background: DS.bg }}>

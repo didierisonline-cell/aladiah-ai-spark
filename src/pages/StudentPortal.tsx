@@ -614,16 +614,16 @@ const StudentPortal = () => {
   } as const;
 
   const SIDEBAR_LINKS = [
-    { icon:'📊', label:'Overview',        path:'/portal',              key:'overview' },
-    { icon:'📚', label:'My Courses',      path:'/portal/courses',      key:'courses',    badge: '28' },
-    { icon:'⭐', label:'Talent Score™',   path:'/portal/talent-score', key:'talent-score' },
-    { icon:'🏅', label:'Certifications',  path:'/portal',              key:'certifications' },
-    { icon:'💼', label:'Career Tools',    path:'/portal/career',       key:'career' },
-    { icon:'🗂️', label:'My Portfolio',    path:'/portal/portfolio',    key:'portfolio' },
-    { icon:'🧪', label:'Labs',            path:'/portal',              key:'labs' },
-    { icon:'📖', label:'Resources',       path:'/portal',              key:'resources' },
-    { icon:'👥', label:'Community',       path:'/community',           key:'community' },
-    { icon:'⚙️', label:'Settings',        path:'/portal/settings',     key:'settings' },
+    { icon:'📊', label: t('portal.sidebar.overview'),        path:'/portal',              key:'overview' },
+    { icon:'📚', label: t('portal.sidebar.my_courses'),      path:'/portal/courses',      key:'courses',    badge: '28' },
+    { icon:'⭐', label: t('portal.sidebar.talent_score'),    path:'/portal/talent-score', key:'talent-score' },
+    { icon:'🏅', label: t('portal.sidebar.certifications'),  path:'/portal',              key:'certifications' },
+    { icon:'💼', label: t('portal.sidebar.career_tools'),    path:'/portal/career',       key:'career' },
+    { icon:'🗂️', label: t('portal.sidebar.my_portfolio'),    path:'/portal/portfolio',    key:'portfolio' },
+    { icon:'🧪', label: t('portal.sidebar.labs'),            path:'/portal',              key:'labs' },
+    { icon:'📖', label: t('portal.sidebar.resources'),       path:'/portal',              key:'resources' },
+    { icon:'👥', label: t('portal.sidebar.community'),       path:'/community',           key:'community' },
+    { icon:'⚙️', label: t('portal.sidebar.settings'),        path:'/portal/settings',     key:'settings' },
   ];
 
   const initials = (firstName?.slice(0,1) || user?.email?.slice(0,1) || 'A').toUpperCase() +
@@ -728,12 +728,12 @@ const StudentPortal = () => {
           <div style={{ padding:'1.25rem 1.5rem 1.5rem', borderBottom:`1px solid ${DS.border}` }}>
             <div style={{ width:48, height:48, borderRadius:'50%', background:'linear-gradient(135deg,#4A90F5,#7AB5FF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, fontWeight:700, color:'#fff', marginBottom:'.65rem' }}>{initials}</div>
             <div style={{ fontSize:14, fontWeight:700 }}>{firstName || user?.email?.split('@')[0] || 'Student'}</div>
-            <div style={{ fontSize:11, color:DS.fm, marginTop:2 }}>Plan: <span style={{ color:DS.gold, fontWeight:600 }}>All-Access Pass™</span></div>
+            <div style={{ fontSize:11, color:DS.fm, marginTop:2 }}>{t('portal.sidebar.plan')}: <span style={{ color:DS.gold, fontWeight:600 }}>All-Access Pass™</span></div>
           </div>
 
           {/* Nav links */}
           <div style={{ padding:'.75rem 0' }}>
-            <div style={{ fontSize:9, fontWeight:700, letterSpacing:2, textTransform:'uppercase', color:DS.fd, padding:'.5rem 1.5rem .25rem' }}>Dashboard</div>
+            <div style={{ fontSize:9, fontWeight:700, letterSpacing:2, textTransform:'uppercase', color:DS.fd, padding:'.5rem 1.5rem .25rem' }}>{t('portal.sidebar.dashboard')}</div>
             {SIDEBAR_LINKS.map(link => {
               const active = link.key === activeTab;
               return (
@@ -757,11 +757,11 @@ const StudentPortal = () => {
               );
             })}
 
-            <div style={{ fontSize:9, fontWeight:700, letterSpacing:2, textTransform:'uppercase', color:DS.fd, padding:'.75rem 1.5rem .25rem', marginTop:4 }}>Account</div>
+            <div style={{ fontSize:9, fontWeight:700, letterSpacing:2, textTransform:'uppercase', color:DS.fd, padding:'.75rem 1.5rem .25rem', marginTop:4 }}>{t('portal.sidebar.account')}</div>
             <a onClick={() => navigate('/portal/settings')} style={sidebarLink(false)}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(74,144,245,.06)'; (e.currentTarget as HTMLElement).style.color = DS.fg; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = DS.fm; }}>
-              <span style={{ width:18, textAlign:'center' }}>⚙️</span> Settings
+              <span style={{ width:18, textAlign:'center' }}>⚙️</span> {t('portal.sidebar.settings')}
             </a>
             <a href="https://www.aladiahmanagement.com" target="_blank" rel="noopener noreferrer"
               style={{ ...sidebarLink(false), textDecoration:'none' }}

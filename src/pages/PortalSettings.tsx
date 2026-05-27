@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
+import PortalSidebar from '@/components/PortalSidebar';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -15,18 +16,6 @@ const DS = {
   r:'.75rem',
 };
 
-const SIDEBAR_LINKS = [
-  { icon:'📊', label:'Overview',        path:'/portal' },
-  { icon:'📚', label:'My Courses',      path:'/portal/courses', badge:'28' },
-  { icon:'⭐', label:'Talent Score™',   path:'/portal/talent-score' },
-  { icon:'🏅', label:'Certifications',  path:'/portal' },
-  { icon:'💼', label:'Career Tools',    path:'/portal/career' },
-  { icon:'🗂️', label:'My Portfolio',    path:'/portal/portfolio' },
-  { icon:'🧪', label:'Labs',            path:'/portal' },
-  { icon:'📖', label:'Resources',       path:'/portal' },
-  { icon:'👥', label:'Community',       path:'/community' },
-  { icon:'⚙️', label:'Settings',        path:'/portal/settings' },
-];
 
 const COUNTRIES = [
   '🇩🇴 Dominican Republic','🇺🇸 United States','🇨🇦 Canada','🇬🇧 United Kingdom',
@@ -181,15 +170,6 @@ export default function PortalSettings() {
     window.open('https://billing.stripe.com/p/login/test_eVq9AL0OuaMWazPgo41VK00', '_blank');
   };
 
-  const sidebarLinkStyle = (active: boolean): React.CSSProperties => ({
-    display:'flex', alignItems:'center', gap:'.75rem',
-    padding:'.65rem 1.5rem', fontSize:13,
-    fontWeight: active ? 700 : 500,
-    color: active ? DS.blue : DS.fm,
-    background: active ? DS.bd : 'transparent',
-    borderLeft: active ? `3px solid ${DS.blue}` : '3px solid transparent',
-    textDecoration:'none', cursor:'pointer', transition:'all .2s',
-  });
 
   return (
     <div style={{ background:DS.bg, minHeight:'100vh', fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif", color:DS.fg }}>
@@ -197,38 +177,7 @@ export default function PortalSettings() {
       <div style={{ display:'grid', gridTemplateColumns:'260px 1fr', minHeight:'100vh', paddingTop:70 }}>
 
         {/* ── Sidebar ── */}
-        <aside style={{ background:DS.card, borderRight:`1px solid ${DS.border}`, padding:'1.75rem 0', position:'sticky', top:70, height:'calc(100vh - 70px)', overflowY:'auto' }}>
-          <div style={{ padding:'1.25rem 1.5rem 1.5rem', borderBottom:`1px solid ${DS.border}` }}>
-            <div style={{ width:48, height:48, borderRadius:'50%', background:'linear-gradient(135deg,#4A90F5,#7AB5FF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, fontWeight:700, color:'#fff', marginBottom:'.65rem' }}>{initials}</div>
-            <div style={{ fontSize:14, fontWeight:700 }}>{user?.email?.split('@')[0] || 'Student'} — Student</div>
-            <div style={{ fontSize:11, color:DS.fm, marginTop:2 }}>Plan: <span style={{ color:DS.gold, fontWeight:600 }}>All-Access Pass™</span></div>
-          </div>
-          <div style={{ padding:'.75rem 0' }}>
-            <div style={{ fontSize:9, fontWeight:700, letterSpacing:2, textTransform:'uppercase', color:DS.fd, padding:'.5rem 1.5rem .25rem' }}>Dashboard</div>
-            {SIDEBAR_LINKS.map(link => (
-              <a key={link.path+link.label}
-                onClick={e => { e.preventDefault(); navigate(link.path); }}
-                style={sidebarLinkStyle(link.path === '/portal/settings' && link.label === 'Settings')}
-                onMouseEnter={e => { if (link.path !== '/portal/settings') { (e.currentTarget as HTMLElement).style.background='rgba(74,144,245,.06)'; (e.currentTarget as HTMLElement).style.color=DS.fg; }}}
-                onMouseLeave={e => { if (link.path !== '/portal/settings') { (e.currentTarget as HTMLElement).style.background='transparent'; (e.currentTarget as HTMLElement).style.color=DS.fm; }}}>
-                <span style={{ width:18, textAlign:'center', flexShrink:0 }}>{link.icon}</span>
-                {link.label}
-                {link.badge && <span style={{ marginLeft:'auto', fontSize:10, background:DS.orange, color:'#fff', borderRadius:999, padding:'1px 7px', fontWeight:700 }}>{link.badge}</span>}
-              </a>
-            ))}
-            <div style={{ fontSize:9, fontWeight:700, letterSpacing:2, textTransform:'uppercase', color:DS.fd, padding:'.75rem 1.5rem .25rem', marginTop:4 }}>Account</div>
-            <a onClick={() => navigate('/portal/settings')} style={sidebarLinkStyle(true)}
-              onMouseEnter={e => {}} onMouseLeave={e => {}}>
-              <span style={{ width:18, textAlign:'center' }}>⚙️</span> Settings
-            </a>
-            <a href="https://www.aladiahmanagement.com" target="_blank" rel="noopener noreferrer"
-              style={{ ...sidebarLinkStyle(false), textDecoration:'none' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background='rgba(74,144,245,.06)'; (e.currentTarget as HTMLElement).style.color=DS.fg; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background='transparent'; (e.currentTarget as HTMLElement).style.color=DS.fm; }}>
-              <span style={{ width:18, textAlign:'center' }}>🏢</span> Aladiah Management
-            </a>
-          </div>
-        </aside>
+        <PortalSidebar />
 
         {/* ── Main ── */}
         <main style={{ padding:'2rem', background:DS.bg, overflowY:'auto' }}>
