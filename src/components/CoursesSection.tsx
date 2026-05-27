@@ -359,6 +359,7 @@ const ResourceCard = ({ res }: { res: typeof RESOURCES[0] }) => {
 const CoursesSection = ({ progressData = {} }: Props) => {
   const nav = useNavigate();
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
+  const [programsCollapsed, setProgramsCollapsed] = React.useState(false);
 
   return (
     <div style={{ fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif" }}>
@@ -369,11 +370,13 @@ const CoursesSection = ({ progressData = {} }: Props) => {
             <span style={{ fontSize:14, fontWeight:700, color:DS.fg }}>AI Workforce Programs</span>
             <span style={{ fontSize:12, color:DS.fm, marginLeft:8 }}>28 programs · 4 schools · All-Access Pass</span>
           </div>
+          <button onClick={() => setProgramsCollapsed(p => !p)} style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, fontWeight:700, letterSpacing:'0.06em', textTransform:'uppercase', color: programsCollapsed ? DS.blue : DS.fm, background:'none', border:'1px solid '+DS.border, borderRadius:'0.4rem', padding:'3px 10px', cursor:'pointer', transition:'all 0.2s' }}><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: programsCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)', transition:'transform 0.25s ease', display:'block' }}><polyline points="6 9 12 15 18 9"/></svg>{programsCollapsed ? 'Show' : 'Hide'}</button>
           <button onClick={() => nav('/schools')} style={{ fontSize:12, fontWeight:700, color:DS.blue, background:'none', border:'none', cursor:'pointer' }}>Browse All Schools →</button>
         </div>
 
         {/* School cards grid */}
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:1, background:DS.border }}>
+          <div style={{ maxHeight: programsCollapsed ? '0px' : '9999px', overflow:'hidden', transition:'max-height 0.4s ease-in-out' }}>
           {SCHOOLS.map(school => {
             const schoolProgs = PROGRAMS.filter(p => p.school === school.id);
             const visibleProgs = schoolProgs.slice(0, 4);
@@ -429,6 +432,7 @@ const CoursesSection = ({ progressData = {} }: Props) => {
               </div>
             );
           })}
+          </div>
         </div>
       </div>
 
