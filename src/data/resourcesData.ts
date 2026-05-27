@@ -88,6 +88,11 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       { label: 'dbt Learn', url: 'https://courses.getdbt.com/', type: 'Course', free: true },
       { label: 'Snowflake University', url: 'https://learn.snowflake.com/', type: 'Course', free: true },
       { label: 'Apache Kafka Documentation', url: 'https://kafka.apache.org/documentation/', type: 'Official Docs', free: true },
+    
+      { label: 'AWS Certified ML Specialty', url: 'https://aws.amazon.com/certification/certified-machine-learning-specialty/', type: 'Cert', free: false },
+      { label: 'Google Professional ML Engineer', url: 'https://cloud.google.com/learn/certification/machine-learning-engineer', type: 'Cert', free: false },
+      { label: 'Databricks Certified Data Engineer', url: 'https://www.databricks.com/learn/certification/data-engineer-associate', type: 'Cert', free: false },
+      { label: 'dbt Certified Developer', url: 'https://www.getdbt.com/certifications/analytics-engineering-certification', type: 'Cert', free: false },
     ],
     glossary: [
       { term: 'LLM', def: 'Large Language Model — an AI model trained on vast text data to understand and generate natural language (GPT-4, Claude, Gemini).' },
@@ -184,6 +189,11 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       { label: 'AI Transformation Playbook (Andrew Ng)', url: 'https://landing.ai/ai-transformation-playbook/', type: 'Guide', free: true },
       { label: 'Stanford HAI Research', url: 'https://hai.stanford.edu/research', type: 'Research', free: true },
       { label: 'World Economic Forum AI Reports', url: 'https://www.weforum.org/topics/artificial-intelligence/', type: 'Reference', free: true },
+    
+      { label: 'PMI-ACP (Agile Certified Practitioner)', url: 'https://www.pmi.org/certifications/agile-acp', type: 'Cert', free: false },
+      { label: 'TOGAF 10 Certification', url: 'https://www.opengroup.org/certifications/togaf', type: 'Cert', free: false },
+      { label: 'Google Cloud Digital Leader', url: 'https://cloud.google.com/learn/certification/cloud-digital-leader', type: 'Cert', free: false },
+      { label: 'PROSCI Change Management Cert', url: 'https://www.prosci.com/certification', type: 'Cert', free: false },
     ],
     glossary: [
       { term: 'AI Strategy', def: 'A plan defining how an organization will use AI to achieve its business objectives, including prioritization and governance.' },
@@ -231,6 +241,11 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       { label: 'PMBOK Guide 7th Edition', url: 'https://www.pmi.org/pmbok-guide-standards/foundational/pmbok', type: 'Standard', free: false },
       { label: 'Lucidchart Free Diagramming', url: 'https://www.lucidchart.com/', type: 'Tool', free: true },
       { label: 'Miro Collaborative Whiteboard', url: 'https://miro.com/templates/', type: 'Tool', free: true },
+    
+      { label: 'PMP (Project Management Professional)', url: 'https://www.pmi.org/certifications/project-management-pmp', type: 'Cert', free: false },
+      { label: 'PMI-PBA (Business Analysis)', url: 'https://www.pmi.org/certifications/business-analysis-pba', type: 'Cert', free: false },
+      { label: 'IIBA CBAP (Business Analysis)', url: 'https://www.iiba.org/business-analysis-certifications/cbap/', type: 'Cert', free: false },
+      { label: 'SAFe 6.0 Product Owner/Manager', url: 'https://scaledagile.com/training/safe-product-owner-product-manager/', type: 'Cert', free: false },
     ],
     glossary: [
       { term: 'Product Roadmap', def: 'A strategic plan showing how a product will evolve over time, aligned with business goals.' },
@@ -280,6 +295,11 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       { label: 'Partnership on AI Resources', url: 'https://partnershiponai.org/resources/', type: 'Reference', free: true },
       { label: 'GDPR Official Text (EUR-Lex)', url: 'https://gdpr-info.eu/', type: 'Regulation', free: true },
       { label: 'White House AI Executive Order Summary', url: 'https://www.whitehouse.gov/briefing-room/statements-releases/2023/10/30/fact-sheet-president-biden-issues-executive-order-on-safe-secure-and-trustworthy-artificial-intelligence/', type: 'Reference', free: true },
+    
+      { label: 'IAPP CIPP/E (Privacy & Data Protection)', url: 'https://iapp.org/certify/cipp/', type: 'Cert', free: false },
+      { label: 'ISACA CGEIT (IT Governance)', url: 'https://www.isaca.org/credentialing/cgeit', type: 'Cert', free: false },
+      { label: 'ISO 42001 Lead Implementer', url: 'https://pecb.com/en/education-and-certification-for-individuals/artificial-intelligence/iso-iec-42001-lead-implementer', type: 'Cert', free: false },
+      { label: 'IAPP AI Governance Professional (AIGP)', url: 'https://iapp.org/certify/aigp/', type: 'Cert', free: false },
     ],
     glossary: [
       { term: 'AI Governance', def: 'The policies, processes, standards, and accountability structures ensuring AI is developed and deployed responsibly.' },
@@ -327,6 +347,11 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       { label: 'ISACA AI Audit Framework', url: 'https://www.isaca.org/resources/artificial-intelligence', type: 'Guide', free: false },
       { label: 'Fairness Indicators (Google)', url: 'https://ai.google/responsibilities/responsible-ai-practices/', type: 'Toolkit', free: true },
       { label: 'IBM AI Fairness 360 Toolkit', url: 'https://aif360.res.ibm.com/', type: 'Toolkit', free: true },
+    
+      { label: 'ISACA CRISC (Risk & Controls)', url: 'https://www.isaca.org/credentialing/crisc', type: 'Cert', free: false },
+      { label: 'ISACA CISA (IS Auditor)', url: 'https://www.isaca.org/credentialing/cisa', type: 'Cert', free: false },
+      { label: 'IAPP AI Governance Professional (AIGP)', url: 'https://iapp.org/certify/aigp/', type: 'Cert', free: false },
+      { label: 'IRM Certificate in Risk Management', url: 'https://www.theirm.org/qualifications-and-training/qualifications/certificate-in-risk-management/', type: 'Cert', free: false },
     ],
     glossary: [
       { term: 'AI Risk', def: 'The potential for negative consequences from AI system failures, misuse, or unintended behaviors.' },
@@ -376,6 +401,11 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       { label: 'Apple Human Interface Guidelines', url: 'https://developer.apple.com/design/human-interface-guidelines/', type: 'Guide', free: true },
       { label: 'Material Design Guidelines', url: 'https://m3.material.io/', type: 'Guide', free: true },
       { label: 'Stanford d.school Design Thinking', url: 'https://dschool.stanford.edu/resources', type: 'Guide', free: true },
+    
+      { label: 'Google UX Design Certificate', url: 'https://grow.google/certificates/ux-design/', type: 'Cert', free: false },
+      { label: 'Nielsen Norman Group UX Certification', url: 'https://www.nngroup.com/ux-certification/', type: 'Cert', free: false },
+      { label: 'Interaction Design Foundation UX Cert', url: 'https://www.interaction-design.org/courses', type: 'Cert', free: false },
+      { label: 'Voiceflow Conversation Design Cert', url: 'https://www.voiceflow.com/academy', type: 'Cert', free: true },
     ],
     glossary: [
       { term: 'Human-Centered Design', def: 'A design approach starting with deep understanding of the people who will use the product.' },
@@ -423,6 +453,11 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       { label: 'Microsoft Power Automate Docs', url: 'https://learn.microsoft.com/en-us/power-automate/', type: 'Official Docs', free: true },
       { label: 'Nielsen Norman Group Full Report', url: 'https://www.nngroup.com/reports/', type: 'Research', free: false },
       { label: 'Interaction Design Foundation', url: 'https://www.interaction-design.org/', type: 'Course', free: false },
+    
+      { label: 'SHRM Workplace Automation Cert', url: 'https://www.shrm.org/credentials', type: 'Cert', free: false },
+      { label: 'Automation Anywhere Certified Expert', url: 'https://university.automationanywhere.com/learn/certifications', type: 'Cert', free: true },
+      { label: 'UiPath RPA Developer Certification', url: 'https://www.uipath.com/learning/certification', type: 'Cert', free: true },
+      { label: 'Human Factors & Ergonomics Society Cert', url: 'https://www.hfes.org/Education/Certification', type: 'Cert', free: false },
     ],
     glossary: [
       { term: 'Human Factors', def: 'The scientific discipline studying interactions between humans and systems to optimize safety, comfort, and performance.' },
@@ -472,6 +507,12 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       { label: 'Agile Practice Guide (PMI/Agile Alliance)', url: 'https://www.pmi.org/pmbok-guide-standards/agile', type: 'Guide', free: false },
       { label: 'Kanban University Resources', url: 'https://kanban.university/resources/', type: 'Reference', free: true },
       { label: 'Liberating Structures', url: 'https://www.liberatingstructures.com/', type: 'Reference', free: true },
+    
+      { label: 'PSM I — Scrum.org (Free Assessment)', url: 'https://www.scrum.org/open-assessments/scrum-open', type: 'Practice Exam', free: true },
+      { label: 'Professional Scrum Master I (PSM I)', url: 'https://www.scrum.org/assessments/professional-scrum-master-i-certification', type: 'Cert', free: false },
+      { label: 'PMP — Project Management Professional', url: 'https://www.pmi.org/certifications/project-management-pmp', type: 'Cert', free: false },
+      { label: 'SAFe 6.0 Scrum Master (SSM)', url: 'https://scaledagile.com/training/leading-safe/', type: 'Cert', free: false },
+      { label: 'Certified Scrum Master (CSM)', url: 'https://www.scrumalliance.org/get-certified/scrum-master-track/certified-scrummaster', type: 'Cert', free: false },
     ],
     glossary: [
       { term: 'Scrum', def: 'A lightweight framework for developing complex products iteratively, with roles (PO, SM, Dev Team), events, and artifacts.' },
