@@ -359,21 +359,34 @@ const ResourceCard = ({ res }: { res: typeof RESOURCES[0] }) => {
 const CoursesSection = ({ progressData = {} }: Props) => {
   const nav = useNavigate();
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
+  const [workforceOpen, setWorkforceOpen] = useState(true);
 
   return (
     <div style={{ fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif" }}>
       {/* ── 4 Schools Grid ── */}
       <div style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:'.75rem', overflow:'hidden', marginBottom:'1.5rem' }}>
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'1rem 1.5rem', borderBottom:`1px solid ${DS.border}` }}>
-          <div>
-            <span style={{ fontSize:14, fontWeight:700, color:DS.fg }}>AI Workforce Programs</span>
-            <span style={{ fontSize:12, color:DS.fm, marginLeft:8 }}>28 programs · 4 schools · All-Access Pass</span>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'1rem 1.5rem', borderBottom: workforceOpen ? `1px solid ${DS.border}` : 'none', cursor:'pointer' }}
+          onClick={() => setWorkforceOpen(o => !o)}>
+          <div style={{ display:'flex', alignItems:'center', gap:'.75rem' }}>
+            {/* Chevron */}
+            <span style={{ fontSize:10, color:DS.fm, transition:'transform .2s', display:'inline-block', transform: workforceOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>▶</span>
+            <div>
+              <span style={{ fontSize:14, fontWeight:700, color:DS.fg }}>AI Workforce Programs</span>
+              <span style={{ fontSize:12, color:DS.fm, marginLeft:8 }}>28 programs · 4 schools · All-Access Pass</span>
+            </div>
           </div>
-          <button onClick={() => nav('/schools')} style={{ fontSize:12, fontWeight:700, color:DS.blue, background:'none', border:'none', cursor:'pointer' }}>Browse All Schools →</button>
+          <div style={{ display:'flex', alignItems:'center', gap:'.75rem' }}>
+            <span style={{ fontSize:11, color:DS.fm, fontWeight:600 }}>{workforceOpen ? 'Collapse ↑' : 'Expand ↓'}</span>
+            <button
+              onClick={e => { e.stopPropagation(); nav('/schools'); }}
+              style={{ fontSize:12, fontWeight:700, color:DS.blue, background:'none', border:'none', cursor:'pointer' }}>
+              Browse All Schools →
+            </button>
+          </div>
         </div>
 
-        {/* School cards grid */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:1, background:DS.border }}>
+        {/* School cards grid — collapsible */}
+        {workforceOpen && <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:1, background:DS.border }}>
           {SCHOOLS.map(school => {
             const schoolProgs = PROGRAMS.filter(p => p.school === school.id);
             const visibleProgs = schoolProgs.slice(0, 4);
@@ -429,7 +442,7 @@ const CoursesSection = ({ progressData = {} }: Props) => {
               </div>
             );
           })}
-        </div>
+        </div>}
       </div>
 
       {/* ── Enterprise Simulation Lab ── */}
