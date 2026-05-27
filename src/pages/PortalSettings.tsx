@@ -51,13 +51,13 @@ const LANGUAGES = [
   { flag:'🇳🇬', label:'Igbo', code:'ig' },
 ];
 
-const NOTIFICATIONS = [
-  { key:'course_reminders', label:'Course reminders', sub:'Daily nudges to continue your current lesson', default:true },
-  { key:'new_lesson', label:'New lesson available', sub:'When new content is added to your programs', default:true },
-  { key:'certification', label:'Certification updates', sub:'Progress milestones and eligibility alerts', default:true },
-  { key:'community', label:'Community activity', sub:'Replies to your posts and mentions', default:false },
-  { key:'jobs', label:'Job opportunities', sub:'Matched positions from employer portal', default:true },
-  { key:'weekly_email', label:'Weekly progress email', sub:"Summary of your week's activity", default:true },
+const NOTIFICATIONS_KEYS = [
+  { key:'course_reminders', labelKey:'portal.settings.notif_course', subKey:'portal.settings.notif_course_sub', default:true },
+  { key:'new_lesson', labelKey:'portal.settings.notif_lesson', subKey:'portal.settings.notif_lesson_sub', default:true },
+  { key:'certification', labelKey:'portal.settings.notif_cert', subKey:'portal.settings.notif_cert_sub', default:true },
+  { key:'community', labelKey:'portal.settings.notif_community', subKey:'portal.settings.notif_community_sub', default:false },
+  { key:'jobs', labelKey:'portal.settings.notif_jobs', subKey:'portal.settings.notif_jobs_sub', default:true },
+  { key:'weekly_email', labelKey:'portal.settings.notif_email', subKey:'portal.settings.notif_email_sub', default:true },
 ];
 
 // Toggle switch component
@@ -105,7 +105,7 @@ const sectionTitle = (label: string): React.CSSProperties => ({
 export default function PortalSettings() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
 
   const initials = (user?.email?.slice(0,1) || 'A').toUpperCase() + (user?.email?.split('@')[0]?.slice(1,2) || '').toUpperCase();
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || '';
@@ -117,12 +117,12 @@ export default function PortalSettings() {
   const [github, setGithub] = useState('');
   const [selectedLang, setSelectedLang] = useState(language || 'en');
   const [notifications, setNotifications] = useState<Record<string,boolean>>(
-    Object.fromEntries(NOTIFICATIONS.map(n => [n.key, n.default]))
+    Object.fromEntries(NOTIFICATIONS_KEYS.map(n => [n.key, n.default]))
   );
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState('');
 
-  // Days remaining (mock — 31 days)
+  // Days remaining (mock — {daysRemaining} {t('portal.settings.days')})
   const daysRemaining = 31;
   const cyclePercent = Math.round((daysRemaining / 30) * 100);
 
@@ -182,8 +182,8 @@ export default function PortalSettings() {
         {/* ── Main ── */}
         <main style={{ padding:'2rem', background:DS.bg, overflowY:'auto' }}>
           <div style={{ marginBottom:'1.75rem' }}>
-            <h1 style={{ fontSize:'1.6rem', fontWeight:800, margin:0 }}>Account Settings</h1>
-            <div style={{ fontSize:13, color:DS.fm, marginTop:'.2rem' }}>Manage your profile, subscription, and preferences</div>
+            <h1 style={{ fontSize:'1.6rem', fontWeight:800, margin:0 }}>{t('portal.settings.title')}</h1>
+            <div style={{ fontSize:13, color:DS.fm, marginTop:'.2rem' }}>{t('portal.settings.subtitle')}</div>
           </div>
 
           {/* 2-col grid */}
@@ -236,7 +236,7 @@ export default function PortalSettings() {
 
                 <button onClick={handleSaveProfile} disabled={saving}
                   style={{ fontSize:13, fontWeight:700, padding:'.55rem 1.25rem', borderRadius:'.5rem', background:DS.blue, color:'#fff', border:'none', cursor:'pointer', transition:'all .2s' }}>
-                  {saved === 'profile' ? '✓ Saved!' : saving ? 'Saving...' : 'Save Profile →'}
+                  {saved === 'profile' ? '✓ Saved!' : saving ? t('portal.settings.saving') : t('portal.settings.save_profile')}
                 </button>
               </div>
 
@@ -254,7 +254,7 @@ export default function PortalSettings() {
                 </div>
                 <button onClick={handleSaveLang}
                   style={{ fontSize:13, fontWeight:700, padding:'.55rem 1.25rem', borderRadius:'.5rem', background:DS.blue, color:'#fff', border:'none', cursor:'pointer' }}>
-                  {saved === 'lang' ? '✓ Saved!' : 'Save Preference →'}
+                  {saved === 'lang' ? '✓ Saved!' : t('portal.settings.save_pref')}
                 </button>
               </div>
 
@@ -262,11 +262,11 @@ export default function PortalSettings() {
               <div style={cardStyle}>
                 <div style={sectionTitle('🔔 Notifications')}>🔔 Notifications</div>
                 <div style={{ display:'flex', flexDirection:'column' as const }}>
-                  {NOTIFICATIONS.map((notif, i) => (
-                    <div key={notif.key} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'.65rem 0', borderBottom: i < NOTIFICATIONS.length-1 ? `1px solid rgba(255,255,255,.04)` : 'none' }}>
+                  {NOTIFICATIONS_KEYS.map((notif, i) => (
+                    <div key={notif.key} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'.65rem 0', borderBottom: i < NOTIFICATIONS_KEYS.length-1 ? `1px solid rgba(255,255,255,.04)` : 'none' }}>
                       <div>
-                        <div style={{ fontSize:13, color:DS.fg, fontWeight:500 }}>{notif.label}</div>
-                        <div style={{ fontSize:11, color:DS.fm, marginTop:2 }}>{notif.sub}</div>
+                        <div style={{ fontSize:13, color:DS.fg, fontWeight:500 }}>{t(notif.labelKey)}</div>
+                        <div style={{ fontSize:11, color:DS.fm, marginTop:2 }}>{t(notif.subKey)}</div>
                       </div>
                       <Toggle
                         on={notifications[notif.key]}
@@ -295,7 +295,7 @@ export default function PortalSettings() {
                 {/* Days remaining bar */}
                 <div style={{ background:DS.muted, border:`1px solid ${DS.border}`, borderRadius:'.45rem', padding:'.85rem', marginBottom:'1rem' }}>
                   <div style={{ display:'flex', justifyContent:'space-between', fontSize:12, marginBottom:6 }}>
-                    <span style={{ color:DS.fm }}>Days remaining this cycle</span>
+                    <span style={{ color:DS.fm }}>{t('portal.settings.days_remaining')}</span>
                     <span style={{ color:DS.fg, fontWeight:600 }}>{daysRemaining} days</span>
                   </div>
                   <div style={{ height:5, background:'rgba(255,255,255,.06)', borderRadius:3, overflow:'hidden' }}>
@@ -307,14 +307,14 @@ export default function PortalSettings() {
                 <div style={{ display:'flex', gap:'.5rem', flexWrap:'wrap' as const }}>
                   <button onClick={handleUpgradeAnnual}
                     style={{ fontSize:12, fontWeight:700, padding:'.5rem 1rem', borderRadius:'.5rem', background:DS.gold, color:'#0B111E', border:'none', cursor:'pointer' }}>
-                    Upgrade to Annual (Save 20%)
+                    {t('portal.settings.upgrade_annual')}
                   </button>
                   <button onClick={handleBillingHistory}
                     style={{ fontSize:12, fontWeight:600, padding:'.5rem 1rem', borderRadius:'.5rem', background:'transparent', color:DS.fg, border:`1px solid ${DS.border}`, cursor:'pointer' }}>
-                    Billing History
+                    {t('portal.settings.billing')}
                   </button>
                   <button style={{ fontSize:12, fontWeight:600, padding:'.5rem 1rem', borderRadius:'.5rem', background:'transparent', color:DS.orange, border:`1px solid ${DS.ob}`, cursor:'pointer' }}>
-                    Cancel Plan
+                    {t('portal.settings.cancel')}
                   </button>
                 </div>
               </div>
@@ -342,7 +342,7 @@ export default function PortalSettings() {
               <div style={{ marginTop:'.25rem' }}>
                 <button onClick={handleLogout}
                   style={{ width:'100%', padding:'.65rem', borderRadius:'.5rem', background:'transparent', color:DS.fm, border:`1px solid ${DS.border}`, fontSize:13, fontWeight:600, cursor:'pointer' }}>
-                  Sign Out
+                  {t('portal.settings.sign_out')}
                 </button>
               </div>
             </div>

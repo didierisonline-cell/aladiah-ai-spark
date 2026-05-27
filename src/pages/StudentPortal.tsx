@@ -782,26 +782,26 @@ const StudentPortal = () => {
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'1.75rem', flexWrap:'wrap', gap:'1rem' }}>
                 <div>
                   <div style={{ fontSize:10, fontWeight:700, letterSpacing:2, textTransform:'uppercase', color:DS.fm, marginBottom:'.25rem' }}>{today}</div>
-                  <h1 style={{ fontSize:'1.6rem', fontWeight:800, color:DS.fg }}>{firstName || user?.email?.split('@')[0] || 'Student'}'s Success Portal</h1>
+                  <h1 style={{ fontSize:'1.6rem', fontWeight:800, color:DS.fg }}>{firstName || user?.email?.split('@')[0] || 'Student'}'s Aladiah Success Portal</h1>
                   <div style={{ fontSize:13, color:DS.fm, marginTop:'.2rem' }}>
-                    Welcome back. Your next milestone:{' '}
+                    {t('portal.overview.next_milestone')}:{' '}
                     <span style={{ color:DS.blue, fontWeight:600 }}>
                       {courseProgresses.find(cp => cp.pct < 100)
-                        ? `Complete ${courseProgresses.find(cp => cp.pct < 100)?.title?.split(' ').slice(0,4).join(' ')}`
+                        ? `${t('portal.courses.continue_btn').replace(' →','').trim()} ${courseProgresses.find(cp => cp.pct < 100)?.title?.split(' ').slice(0,4).join(' ')}`
                         : 'All courses complete! 🎉'}
                     </span>
                   </div>
                 </div>
                 <div style={{ display:'flex', gap:'.65rem' }}>
                   <button onClick={() => navigate('/portal/talent-score')} style={{ fontSize:12, fontWeight:700, padding:'.48rem 1rem', borderRadius:'.5rem', background:DS.gd, color:DS.gold, border:`1px solid ${DS.gb}`, cursor:'pointer' }}>
-                    ⭐ My Score: {totalPoints}
+                    {t('portal.overview.my_score')}: {totalPoints}
                   </button>
                   <button onClick={() => {
                     const next = courseProgresses.find(cp => cp.pct < 100);
                     if (next?.nextChapterId) navigate(`/course/${next.courseId}/chapter/${next.nextChapterId}`);
                     else navigate('/courses');
                   }} style={{ fontSize:12, fontWeight:700, padding:'.48rem 1rem', borderRadius:'.5rem', background:DS.blue, color:'#fff', border:'none', cursor:'pointer' }}>
-                    Continue Learning →
+                    {t('portal.overview.continue')}
                   </button>
                 </div>
               </div>
@@ -810,8 +810,8 @@ const StudentPortal = () => {
               <div style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:DS.r, padding:'1.5rem', marginBottom:'1.5rem', borderLeft:`3px solid ${DS.blue}` }}>
                 <div style={{ display:'flex', alignItems:'center', gap:'.5rem', marginBottom:'1rem' }}>
                   <span style={{ color:DS.blue }}>⚡</span>
-                  <span style={{ fontSize:14, fontWeight:700 }}>Action Center</span>
-                  <span style={{ fontSize:12, color:DS.fm }}>— Stay on top of your assignments and important actions.</span>
+                  <span style={{ fontSize:14, fontWeight:700 }}>{t('portal.action_center')}</span>
+                  <span style={{ fontSize:12, color:DS.fm }}>— {t('portal.action_center.sub')}</span>
                 </div>
                 <div style={{ display:'flex', flexDirection:'column', gap:'.6rem' }}>
                   {actionItems.map((item, i) => (
@@ -831,10 +831,10 @@ const StudentPortal = () => {
               {/* Stats row */}
               <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'1rem', marginBottom:'1.75rem' }}>
                 {[
-                  { val: `${overallProgress}%`, lbl:'Overall Progress', color:DS.blue, onClick: () => setProgressModalOpen(true) },
-                  { val: String(streak), lbl:'Day Streak 🔥', color:DS.orange, onClick: () => setStreakModalOpen(true) },
-                  { val: totalPoints.toLocaleString(), lbl:'Points Earned', color:DS.gold, onClick: () => setPointsModalOpen(true) },
-                  { val: String(labs.filter(l => l.completed).length), lbl:'Labs Completed', color:DS.green, onClick: () => setLabsModalOpen(true) },
+                  { val: `${overallProgress}%`, lbl:t('portal.stat.overall_progress'), color:DS.blue, onClick: () => setProgressModalOpen(true) },
+                  { val: String(streak), lbl:t('portal.stat.day_streak') + ' 🔥', color:DS.orange, onClick: () => setStreakModalOpen(true) },
+                  { val: totalPoints.toLocaleString(), lbl:t('portal.stat.points_earned'), color:DS.gold, onClick: () => setPointsModalOpen(true) },
+                  { val: String(labs.filter(l => l.completed).length), lbl:t('portal.stat.labs_completed'), color:DS.green, onClick: () => setLabsModalOpen(true) },
                 ].map((s, i) => (
                   <div key={i} onClick={s.onClick} style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:DS.r, padding:'1.1rem 1.25rem', textAlign:'center', cursor:'pointer', transition:'all .2s' }}
                     onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = DS.bb}
@@ -850,10 +850,10 @@ const StudentPortal = () => {
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1.25rem' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:'.5rem' }}>
                     <span style={{ color:DS.blue }}>🎓</span>
-                    <span style={{ fontSize:14, fontWeight:700 }}>AI Workforce Programs</span>
-                    <span style={{ fontSize:11, color:DS.fm }}>— 28 programs across 4 schools</span>
+                    <span style={{ fontSize:14, fontWeight:700 }}>{t('portal.courses.ai_workforce')}</span>
+                    <span style={{ fontSize:11, color:DS.fm }}>— {t('portal.courses.programs_count')}</span>
                   </div>
-                  <a onClick={() => navigate('/portal/courses')} style={{ fontSize:12, fontWeight:700, color:DS.blue, cursor:'pointer' }}>View All →</a>
+                  <a onClick={() => navigate('/portal/courses')} style={{ fontSize:12, fontWeight:700, color:DS.blue, cursor:'pointer' }}>{t('portal.courses.view_all')}</a>
                 </div>
 
                 {/* Group by school */}
@@ -914,7 +914,7 @@ const StudentPortal = () => {
                 <div style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:DS.r, padding:'1.5rem' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:'.5rem', marginBottom:'1.1rem' }}>
                     <span style={{ color:DS.blue }}>🕸️</span>
-                    <span style={{ fontSize:14, fontWeight:700 }}>Knowledge Graph</span>
+                    <span style={{ fontSize:14, fontWeight:700 }}>{t('portal.knowledge.title')}</span>
                   </div>
                   <KnowledgeGraph
                     weakAreas={learningProfile ? (learningProfile.weakAreas?.map((w: any) => typeof w === 'string' ? w : w.topic) || []) : []}
@@ -927,7 +927,7 @@ const StudentPortal = () => {
                 <div style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:DS.r, padding:'1.5rem', textAlign:'center' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:'.5rem', marginBottom:'1.1rem', justifyContent:'center' }}>
                     <span style={{ color:DS.gold }}>⭐</span>
-                    <span style={{ fontSize:14, fontWeight:700 }}>Talent Score™</span>
+                    <span style={{ fontSize:14, fontWeight:700 }}>{t('portal.talent.title')}</span>
                   </div>
                   {/* Ring */}
                   <div style={{ position:'relative', width:120, height:120, margin:'0 auto 1rem' }}>
@@ -941,7 +941,7 @@ const StudentPortal = () => {
                     </div>
                   </div>
                   <button onClick={() => navigate('/portal/talent-score')} style={{ fontSize:12, fontWeight:700, padding:'.48rem 1rem', borderRadius:'.5rem', background:DS.gd, color:DS.gold, border:`1px solid ${DS.gb}`, cursor:'pointer' }}>
-                    View Full Breakdown →
+                    {t('portal.talent.view')}
                   </button>
                 </div>
               </div>
@@ -949,11 +949,11 @@ const StudentPortal = () => {
               {/* Quick nav cards */}
               <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:'1rem', marginBottom:'2rem' }}>
                 {[
-                  { icon:'👥', label:'Community', path:'/community' },
-                  { icon:'⚔️', label:'Sprint Sim', path:'/simulation' },
-                  { icon:'🎤', label:'Interview', path:'/interview' },
-                  { icon:'🎁', label:'Referrals', path:'/referral' },
-                  { icon:'🛍️', label:'Store', path:'/store' },
+                  { icon:'👥', label:t('portal.sidebar.community'), path:'/community' },
+                  { icon:'⚔️', label:t('portal.nav.sprint_sim'), path:'/simulation' },
+                  { icon:'🎤', label:t('portal.nav.interview'), path:'/interview' },
+                  { icon:'🎁', label:t('portal.nav.referrals'), path:'/referral' },
+                  { icon:'🛍️', label:t('portal.nav.store'), path:'/store' },
                 ].map((a, i) => (
                   <div key={i} onClick={() => navigate(a.path)} style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:DS.r, padding:'1rem', textAlign:'center', cursor:'pointer', transition:'all .2s' }}
                     onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = DS.bb; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
@@ -994,7 +994,7 @@ const StudentPortal = () => {
                       <div style={{ fontSize:10, color:DS.fm, marginBottom:'.6rem' }}>⏱ {c.weeks} · Online</div>
                       <button onClick={e => { e.stopPropagation(); navigate('/courses'); }}
                         style={{ width:'100%', padding:'.4rem', borderRadius:'.4rem', fontSize:11, fontWeight:700, color:'#fff', background:c.color, border:'none', cursor:'pointer' }}>
-                        Start Course →
+                        {t('portal.foundation.start')}
                       </button>
                     </div>
                   ))}
@@ -1190,10 +1190,10 @@ const StudentPortal = () => {
               <h1 style={{ fontSize:'1.6rem', fontWeight:800, marginBottom:'1.75rem' }}>My Certifications</h1>
               <div style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:DS.r, padding:'3rem 2rem', textAlign:'center' }}>
                 <div style={{ fontSize:48, marginBottom:'1rem' }}>🏅</div>
-                <h3 style={{ fontSize:'1.2rem', fontWeight:700, marginBottom:'.5rem' }}>No Certifications Yet</h3>
-                <p style={{ fontSize:13, color:DS.fm, maxWidth:400, margin:'0 auto 1.5rem', lineHeight:1.6 }}>Complete modules and pass quizzes at 85% or higher to earn Aladiah Certified™ credentials (L100–L700).</p>
+                <h3 style={{ fontSize:'1.2rem', fontWeight:700, marginBottom:'.5rem' }}>{t('portal.cert.empty')}</h3>
+                <p style={{ fontSize:13, color:DS.fm, maxWidth:400, margin:'0 auto 1.5rem', lineHeight:1.6 }}>{t('portal.cert.empty_sub')}</p>
                 <button onClick={() => { const next = courseProgresses.find(cp => cp.pct < 100); if (next?.nextChapterId) navigate(`/course/${next.courseId}/chapter/${next.nextChapterId}`); else navigate('/courses'); }}
-                  style={{ fontSize:13, fontWeight:700, padding:'.68rem 1.5rem', borderRadius:'.75rem', background:DS.gold, color:'#0B111E', border:'none', cursor:'pointer' }}>Start Earning →</button>
+                  style={{ fontSize:13, fontWeight:700, padding:'.68rem 1.5rem', borderRadius:'.75rem', background:DS.gold, color:'#0B111E', border:'none', cursor:'pointer' }}>{t('portal.cert.start')}</button>
               </div>
             </div>
           )}
