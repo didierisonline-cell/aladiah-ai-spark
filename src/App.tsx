@@ -36,6 +36,7 @@ import PortalTalentScore from "./pages/PortalTalentScore";
 import PortalPortfolio from "./pages/PortalPortfolio";
 import PortalSettings from "./pages/PortalSettings";
 import PortalCourses from "./pages/PortalCourses";
+import PortalCourseDetail from "./pages/PortalCourseDetail";
 
 const queryClient = new QueryClient();
 
@@ -73,6 +74,7 @@ const AppContent = () => {
         {/* Portal */}
         <Route path="/portal" element={<ProtectedRoute><StudentPortal /></ProtectedRoute>} />
         <Route path="/portal/courses" element={<ProtectedRoute><PortalCourses /></ProtectedRoute>} />
+        <Route path="/portal/course/:courseId" element={<ProtectedRoute><PortalCourseDetail /></ProtectedRoute>} />
         <Route path="/portal/talent-score" element={<ProtectedRoute><PortalTalentScore /></ProtectedRoute>} />
         <Route path="/portal/portfolio" element={<ProtectedRoute><PortalPortfolio /></ProtectedRoute>} />
         <Route path="/portal/settings" element={<ProtectedRoute><PortalSettings /></ProtectedRoute>} />

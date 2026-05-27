@@ -2,30 +2,70 @@ import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import PortalSidebar from '@/components/PortalSidebar';
 import { useAuth } from '@/hooks/useAuth';
-import { useProgress } from '@/hooks/useProgress';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', border:'#1E2D47', fg:'#EDF2F7', fm:'#8596AD',
-  blue:'#4A90F5', bd:'rgba(74,144,245,.14)', bb:'rgba(74,144,245,.28)',
+  blue:'#4A90F5', bb:'rgba(74,144,245,.28)',
   orange:'#F0622A', od:'rgba(240,98,42,.14)', ob:'rgba(240,98,42,.28)',
-  gold:'#F5B81A', green:'#22C98A',
+  green:'#22C98A',
 };
 
+const SCHOOL_COLORS: Record<string, string> = {
+  'AI Engineering': '#4A90F5',
+  'AI Business': '#F0622A',
+  'Governance & Risk': '#22C98A',
+  'Human-AI Experience': '#9B59B6',
+};
+
+const COURSE_ICONS: Record<string, string> = {
+  'AI Cloud Engineer': '☁️',
+  'AI Agent Engineer': '🤖',
+  'AI Data Engineer': '🗄️',
+  'AI DevOps Engineer': '⚙️',
+  'AI Security Engineer': '🛡️',
+  'AI MLOps Engineer': '🔁',
+  'AI Platform Engineer': '🏗️',
+  'AI Governance Professional': '⚖️',
+  'AI Product Manager': '📱',
+  'AI Business Analyst': '📊',
+  'AI Solutions Consultant': '💼',
+  'AI Sales Engineer': '🎯',
+  'AI Transformation Manager': '🔄',
+  'AI Enterprise Architect': '🏛️',
+  'AI Program Manager': '📋',
+  'AI Business Operations': '📈',
+  'Responsible AI Specialist': '🌱',
+  'AI Compliance Officer': '📜',
+  'AI Risk Manager': '⚠️',
+  'AI Auditor': '🔍',
+  'AI Policy Designer': '🗝️',
+  'AI Ethics Specialist': '🧭',
+  'AI UX Designer': '🎨',
+  'Conversation Designer': '💬',
+  'Human-AI Interaction Specialist': '🤝',
+  'AI Workflow Designer': '🔀',
+  'AI Experience Architect': '✨',
+};
 
 export default function PortalCourses() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const initials = user?.email?.slice(0,2).toUpperCase() || 'AA';
-  const pathname = '/portal/courses';
   const [courses, setCourses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
-    supabase.from('courses').select('id, title, description').order('sort_order').then(({ data }) => {
-      if (data) setCourses(data);
-    });
+    supabase
+      .from('courses')
+      .select('id, title, description')
+      .eq('is_published', true)
+      .order('title')
+      .then(({ data }) => {
+        if (data) setCourses(data);
+        setLoading(false);
+      });
   }, [user]);
 
   return (
@@ -36,34 +76,43 @@ export default function PortalCourses() {
         <main style={{ padding: '2rem', background: DS.bg }}>
           <div style={{ marginBottom: '1.75rem' }}>
             <h1 style={{ fontSize: '1.6rem', fontWeight: 800 }}>My Courses</h1>
-            <div style={{ fontSize: 13, color: DS.fm, marginTop: '.2rem' }}>Your enrolled programs and progress.</div>
+            <div style={{ fontSize: 13, color: DS.fm, marginTop: '.2rem' }}>Select a course to start learning.</div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '.6rem' }}>
-            {courses.length > 0 ? courses.map((c, i) => (
-              <div key={c.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1.25rem', background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', transition: 'all .2s' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = DS.bb; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = DS.border; }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: DS.od, border: `2px solid ${DS.ob}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: DS.orange, flexShrink: 0 }}>{i+1}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700 }}>{c.title}</div>
-                    <div style={{ fontSize: 11, color: DS.fm, marginTop: 2 }}>0% complete</div>
-                    <div style={{ height: 4, background: 'rgba(255,255,255,.06)', borderRadius: 2, marginTop: 6, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: '0%', background: `linear-gradient(90deg,${DS.orange},#F5895E)`, borderRadius: 2 }}/>
+
+          {loading ? (
+            <div style={{ color: DS.fm, fontSize: 14 }}>Loading courses...</div>
+          ) : courses.length === 0 ? (
+            <div style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', padding: '3rem', textAlign: 'center' }}>
+              <div style={{ fontSize: 32, marginBottom: '.75rem' }}>📚</div>
+              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: '.5rem' }}>No Courses Yet</div>
+              <div style={{ fontSize: 13, color: DS.fm }}>Check back soon — courses are being added.</div>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+              {courses.map((c) => {
+                const icon = COURSE_ICONS[c.title] || '📖';
+                return (
+                  <div
+                    key={c.id}
+                    onClick={() => navigate(`/portal/course/${c.id}`)}
+                    style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.875rem', padding: '1.5rem', cursor: 'pointer', transition: 'all .18s' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = DS.bb; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 24px rgba(0,0,0,.25)'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = DS.border; (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
+                  >
+                    <div style={{ fontSize: 32, marginBottom: '.75rem' }}>{icon}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: '.4rem', lineHeight: 1.3 }}>{c.title}</div>
+                    <div style={{ fontSize: 12, color: DS.fm, lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>
+                      {c.description}
+                    </div>
+                    <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: 11, color: DS.green, fontWeight: 600 }}>All-Access Pass™</span>
+                      <span style={{ fontSize: 12, color: DS.fm }}>Start →</span>
                     </div>
                   </div>
-                </div>
-                <button onClick={() => navigate('/courses')} style={{ fontSize: 12, fontWeight: 700, padding: '.48rem 1rem', borderRadius: '.5rem', background: 'transparent', color: DS.fg, border: `1px solid ${DS.border}`, cursor: 'pointer', marginLeft: '1rem', whiteSpace: 'nowrap' as const }}>Continue →</button>
-              </div>
-            )) : (
-              <div style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', padding: '3rem', textAlign: 'center' as const }}>
-                <div style={{ fontSize: 32, marginBottom: '.75rem' }}>📚</div>
-                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: '.5rem' }}>No Courses Yet</div>
-                <div style={{ fontSize: 13, color: DS.fm, marginBottom: '1.25rem' }}>Your enrolled courses will appear here.</div>
-                <button onClick={() => navigate('/courses')} style={{ fontSize: 13, fontWeight: 700, padding: '.68rem 1.5rem', borderRadius: '.75rem', background: DS.blue, color: '#fff', border: 'none', cursor: 'pointer' }}>Browse Courses →</button>
-              </div>
-            )}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </main>
       </div>
     </div>
