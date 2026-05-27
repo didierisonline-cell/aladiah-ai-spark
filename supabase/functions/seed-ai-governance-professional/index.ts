@@ -557,9 +557,9 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
-    const { data: existingCourse } = await supabase.from("courses").select("id").eq("title", courseData.title).single();
+    const { data: existingCourse } = await supabase.from("courses").select("id").eq("title", courseData.title).maybeSingle();
     if (existingCourse) {
-      return new Response(JSON.stringify({ message: "Course already exists", courseId: existingCourse.id }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      await supabase.from("courses").delete().eq("id", existingCourse.id);
     }
     const { data: course, error: courseError } = await supabase.from("courses").insert({
       title: courseData.title, description: courseData.description, is_published: true, translations: courseData.translations,
@@ -588,7 +588,7 @@ serve(async (req) => {
         await supabase.from("quiz_questions").insert({ quiz_id: endQuiz.id, question_text: q.question_text, scenario_context: q.scenario_context, options: q.options, correct_answer_index: q.correct_answer_index, explanation: q.explanation, order_index: i });
       }
     }
-    return new Response(JSON.stringify({ message: `${courseData.title} created successfully`, courseId: course.id }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ message: "AI Governance Professional — rich version seeded", courseId: course.id }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return new Response(JSON.stringify({ error: message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
