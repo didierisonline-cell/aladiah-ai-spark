@@ -1,125 +1,163 @@
 import { useState } from 'react';
-import { RESOURCE_TRACKS, ResourceTrack } from '@/data/resourcesData';
+import { RESOURCE_TRACKS } from '@/data/resourcesData';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', muted:'#18243A', border:'#1E2D47',
   fg:'#EDF2F7', fm:'#8596AD', fd:'#4A5E7A',
-  blue:'#4A90F5', bd:'rgba(74,144,245,.14)', bb:'rgba(74,144,245,.28)',
-  orange:'#F0622A',
-  gold:'#F5B81A', gd:'rgba(245,184,26,.12)', gb:'rgba(245,184,26,.28)',
-  green:'#22C98A', grd:'rgba(34,201,138,.12)',
+  blue:'#4A90F5', orange:'#F0622A', green:'#22C98A', gold:'#F5B81A',
 };
-
-const SCHOOL_FILTERS = [
-  { label: 'All Schools', value: '' },
-  { label: '⚙️ AI Engineering', value: '⚙️ AI Engineering' },
-  { label: '💼 AI Business', value: '💼 AI Business' },
-  { label: '⚖️ Governance & Risk', value: '⚖️ Governance & Risk' },
-  { label: '🎨 Human-AI Experience', value: '🎨 Human-AI Experience' },
-  { label: '🏛️ Foundation Library', value: '🏛️ Foundation Library' },
-];
 
 const TYPE_COLORS: Record<string, string> = {
-  'Official Docs': DS.blue,
-  'Course': DS.green,
-  'Cert': DS.gold,
-  'Framework': DS.orange,
-  'Standard': '#A78BFA',
-  'Guide': DS.blue,
-  'Practice Exam': DS.green,
-  'Tool': DS.orange,
-  'Reference': DS.fm,
-  'Community': DS.green,
-  'YouTube': '#FF4444',
-  'Research': '#A78BFA',
-  'Regulation': DS.gold,
-  'Toolkit': DS.green,
-  'Tutorial': DS.blue,
+  'Official Docs': DS.blue, 'Course': DS.green, 'Cert': DS.gold,
+  'Framework': DS.orange, 'Standard': '#A78BFA', 'Guide': DS.blue,
+  'Practice Exam': DS.green, 'Tool': DS.orange, 'Reference': DS.fm,
+  'Community': DS.green, 'YouTube': '#FF4444', 'Research': '#A78BFA',
+  'Regulation': DS.gold, 'Toolkit': DS.green, 'Tutorial': DS.blue,
 };
 
-const TrackCard = ({ track }: { track: ResourceTrack }) => {
+const SCHOOLS = [
+  { label: '⚙️ AI Engineering', value: '⚙️ AI Engineering', color: DS.blue },
+  { label: '💼 AI Business', value: '💼 AI Business', color: DS.orange },
+  { label: '⚖️ Governance & Risk', value: '⚖️ Governance & Risk', color: DS.green },
+  { label: '🎨 Human-AI Experience', value: '🎨 Human-AI Experience', color: '#9B59B6' },
+];
+
+function ProgramCard({ track, isSelected, onClick }: { track: any; isSelected: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        width: '100%', textAlign: 'left', padding: '10px 14px',
+        background: isSelected ? track.color + '22' : 'rgba(255,255,255,.03)',
+        border: `1px solid ${isSelected ? track.color + '80' : DS.border}`,
+        borderRadius: '.6rem', cursor: 'pointer', transition: 'all .15s',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '.5rem',
+      }}
+      onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.borderColor = track.color + '50'; }}
+      onMouseLeave={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.borderColor = DS.border; }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '.6rem', minWidth: 0 }}>
+        <span style={{ fontSize: 16, flexShrink: 0 }}>{track.icon}</span>
+        <span style={{ fontSize: 12, fontWeight: isSelected ? 700 : 600, color: isSelected ? track.color : DS.fg, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>
+          {track.programs[0]}
+        </span>
+      </div>
+      <span style={{ fontSize: 10, color: DS.fm, flexShrink: 0, fontWeight: 600 }}>
+        {track.resources.length}
+      </span>
+    </button>
+  );
+}
+
+function ResourceDetail({ track }: { track: any }) {
   const [glossaryOpen, setGlossaryOpen] = useState(false);
   const [glossarySearch, setGlossarySearch] = useState('');
 
-  const filteredGlossary = track.glossary.filter(t =>
+  const filteredGlossary = track.glossary.filter((t: any) =>
     glossarySearch === '' ||
     t.term.toLowerCase().includes(glossarySearch.toLowerCase()) ||
     t.def.toLowerCase().includes(glossarySearch.toLowerCase())
   );
 
   return (
-    <div style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', overflow: 'hidden', transition: 'border-color .2s' }}
-      onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = track.color + '60'}
-      onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderColor = DS.border}>
-
-      {/* Header */}
-      <div style={{ padding: '1rem 1.25rem', borderBottom: `1px solid ${DS.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: track.color + '10' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '.6rem' }}>
-          <div style={{ width: 4, height: 20, background: track.color, borderRadius: 2 }} />
+    <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '1rem' }}>
+      {/* Program header */}
+      <div style={{
+        background: track.color + '18', border: `1px solid ${track.color + '40'}`,
+        borderRadius: '.75rem', padding: '1.25rem',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '.75rem', marginBottom: '.5rem' }}>
+          <span style={{ fontSize: 28 }}>{track.icon}</span>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: DS.fg }}>{track.icon} {track.id.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ')}</div>
-            <div style={{ fontSize: 10, color: track.color, fontWeight: 600, marginTop: 1 }}>{track.school}</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 800, color: DS.fg }}>{track.programs[0]}</div>
+            <div style={{ fontSize: 11, color: track.color, fontWeight: 600, marginTop: 2 }}>{track.school}</div>
           </div>
         </div>
-        <div style={{ fontSize: 10, fontWeight: 700, color: DS.fm, background: DS.muted, border: `1px solid ${DS.border}`, borderRadius: 999, padding: '2px 8px' }}>
-          {track.resources.length} resources · {track.glossary.length} terms
+        <div style={{ display: 'flex', gap: '.75rem', marginTop: '.5rem' }}>
+          <span style={{ fontSize: 11, color: DS.fm }}>
+            <span style={{ color: track.color, fontWeight: 700 }}>{track.resources.length}</span> resources
+          </span>
+          <span style={{ fontSize: 11, color: DS.fm }}>
+            <span style={{ color: track.color, fontWeight: 700 }}>{track.glossary.length}</span> glossary terms
+          </span>
+          <span style={{ fontSize: 11, color: DS.fm }}>
+            <span style={{ color: DS.green, fontWeight: 700 }}>{track.resources.filter((r: any) => r.free).length}</span> free
+          </span>
         </div>
       </div>
 
-      {/* Programs covered */}
-      <div style={{ padding: '.6rem 1.25rem', borderBottom: `1px solid ${DS.border}`, display: 'flex', flexWrap: 'wrap' as const, gap: '.3rem' }}>
-        {track.programs.map(p => (
-          <span key={p} style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 999, background: track.color + '18', color: track.color, border: `1px solid ${track.color}40` }}>{p}</span>
-        ))}
+      {/* Resources list */}
+      <div style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', overflow: 'hidden' }}>
+        <div style={{ padding: '10px 14px', borderBottom: `1px solid ${DS.border}`, background: 'rgba(255,255,255,.03)' }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: DS.fm, textTransform: 'uppercase' as const, letterSpacing: '.08em' }}>RESOURCES</span>
+        </div>
+        <div style={{ padding: '.75rem', display: 'flex', flexDirection: 'column' as const, gap: '.4rem' }}>
+          {track.resources.map((res: any, i: number) => (
+            <a key={i} href={res.url} target="_blank" rel="noopener noreferrer"
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '9px 12px', background: 'rgba(255,255,255,.03)',
+                border: `1px solid ${DS.border}`, borderRadius: '.5rem',
+                textDecoration: 'none', transition: 'all .15s', gap: '.75rem',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,.07)'; (e.currentTarget as HTMLElement).style.borderColor = track.color + '60'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,.03)'; (e.currentTarget as HTMLElement).style.borderColor = DS.border; }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', minWidth: 0, flex: 1 }}>
+                <span style={{ fontSize: 11, color: track.color, flexShrink: 0 }}>↗</span>
+                <span style={{ fontSize: 12, color: DS.fg, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{res.label}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '.4rem', flexShrink: 0 }}>
+                {res.free && (
+                  <span style={{ fontSize: 9, fontWeight: 700, color: DS.green, background: 'rgba(34,201,138,.12)', border: '1px solid rgba(34,201,138,.28)', borderRadius: 999, padding: '1px 6px' }}>FREE</span>
+                )}
+                <span style={{
+                  fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, whiteSpace: 'nowrap' as const,
+                  color: TYPE_COLORS[res.type] || DS.fm,
+                  background: (TYPE_COLORS[res.type] || DS.fm) + '22',
+                }}>{res.type}</span>
+              </div>
+            </a>
+          ))}
+        </div>
       </div>
 
-      {/* Resources */}
-      <div style={{ padding: '.75rem 1.25rem', display: 'flex', flexDirection: 'column' as const, gap: '.35rem' }}>
-        {track.resources.map((res, i) => (
-          <a key={i} href={res.url} target="_blank" rel="noopener noreferrer"
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 10px', background: 'rgba(255,255,255,.03)', border: `1px solid ${DS.border}`, borderRadius: '.45rem', textDecoration: 'none', transition: 'all .15s', gap: '.5rem' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,.07)'; (e.currentTarget as HTMLElement).style.borderColor = track.color + '50'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,.03)'; (e.currentTarget as HTMLElement).style.borderColor = DS.border; }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', minWidth: 0 }}>
-              <span style={{ fontSize: 11, color: DS.fm, flexShrink: 0 }}>↗</span>
-              <span style={{ fontSize: 12, color: DS.fg, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{res.label}</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '.4rem', flexShrink: 0 }}>
-              {res.free && <span style={{ fontSize: 9, fontWeight: 700, color: DS.green, background: DS.grd, border: '1px solid rgba(34,201,138,.28)', borderRadius: 999, padding: '1px 6px' }}>FREE</span>}
-              <span style={{ fontSize: 10, fontWeight: 700, color: TYPE_COLORS[res.type] || DS.fm, background: (TYPE_COLORS[res.type] || DS.fm) + '20', padding: '2px 7px', borderRadius: 4, whiteSpace: 'nowrap' as const }}>{res.type}</span>
-            </div>
-          </a>
-        ))}
-      </div>
-
-      {/* Glossary toggle */}
-      <div style={{ padding: '0 1.25rem 1rem' }}>
-        <button onClick={() => setGlossaryOpen(!glossaryOpen)}
-          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: glossaryOpen ? track.color + '20' : 'rgba(255,255,255,.03)', border: `1px solid ${track.color}40`, borderRadius: '.5rem', cursor: 'pointer', transition: 'all .2s' }}>
+      {/* Glossary */}
+      <div style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', overflow: 'hidden' }}>
+        <button
+          onClick={() => setGlossaryOpen(!glossaryOpen)}
+          style={{
+            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '10px 14px', background: glossaryOpen ? track.color + '18' : 'transparent',
+            border: 'none', cursor: 'pointer', transition: 'all .2s',
+          }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
-            <span style={{ fontSize: 13 }}>📖</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: track.color, letterSpacing: '.5px' }}>GLOSSARY</span>
-            <span style={{ fontSize: 10, color: DS.fm }}>— {track.glossary.length} key terms</span>
+            <span style={{ fontSize: 14 }}>📖</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: track.color, letterSpacing: '.05em' }}>GLOSSARY</span>
+            <span style={{ fontSize: 11, color: DS.fm }}>— {track.glossary.length} key terms</span>
           </div>
-          <span style={{ fontSize: 12, color: track.color }}>{glossaryOpen ? '▲ Hide' : '▼ Show'}</span>
+          <span style={{ fontSize: 11, color: track.color }}>{glossaryOpen ? '▲ Hide' : '▼ Show terms'}</span>
         </button>
 
         {glossaryOpen && (
-          <div style={{ marginTop: '.5rem' }}>
-            {/* Glossary search */}
+          <div style={{ padding: '.75rem', borderTop: `1px solid ${DS.border}` }}>
             <input
               value={glossarySearch}
               onChange={e => setGlossarySearch(e.target.value)}
               placeholder={`Search ${track.glossary.length} terms...`}
-              style={{ width: '100%', background: DS.muted, border: `1px solid ${DS.border}`, borderRadius: '.5rem', padding: '7px 10px', color: DS.fg, fontFamily: 'inherit', fontSize: 12, outline: 'none', marginBottom: '.5rem', boxSizing: 'border-box' as const }}
+              style={{
+                width: '100%', background: DS.muted, border: `1px solid ${DS.border}`,
+                borderRadius: '.5rem', padding: '7px 10px', color: DS.fg,
+                fontFamily: 'inherit', fontSize: 12, outline: 'none', marginBottom: '.6rem',
+                boxSizing: 'border-box' as const,
+              }}
             />
-            <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '.35rem', maxHeight: 360, overflowY: 'auto' as const, paddingRight: 4 }}>
+            <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '.4rem', maxHeight: 320, overflowY: 'auto' as const }}>
               {filteredGlossary.length === 0 ? (
                 <div style={{ fontSize: 12, color: DS.fm, textAlign: 'center' as const, padding: '1rem' }}>No terms matching "{glossarySearch}"</div>
-              ) : filteredGlossary.map(term => (
-                <div key={term.term} style={{ padding: '8px 10px', background: 'rgba(255,255,255,.03)', borderRadius: '.45rem', borderLeft: `3px solid ${track.color}60` }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: track.color, marginBottom: 2 }}>{term.term}</div>
-                  <div style={{ fontSize: 11, color: DS.fm, lineHeight: 1.55 }}>{term.def}</div>
+              ) : filteredGlossary.map((term: any) => (
+                <div key={term.term} style={{ padding: '8px 12px', background: 'rgba(255,255,255,.03)', borderRadius: '.45rem', borderLeft: `3px solid ${track.color}70` }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: track.color, marginBottom: 3 }}>{term.term}</div>
+                  <div style={{ fontSize: 11, color: DS.fm, lineHeight: 1.6 }}>{term.def}</div>
                 </div>
               ))}
             </div>
@@ -128,22 +166,40 @@ const TrackCard = ({ track }: { track: ResourceTrack }) => {
       </div>
     </div>
   );
-};
+}
 
 interface Props { tier?: string; onUpgrade?: () => void; }
 
-const ResourcesLibrary = ({ tier = 'active', onUpgrade }: Props) => {
-  const [schoolFilter, setSchoolFilter] = useState('');
+const ResourcesLibrary = ({ tier = 'active' }: Props) => {
+  const [selectedSchool, setSelectedSchool] = useState('⚙️ AI Engineering');
+  const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
 
-  const filtered = RESOURCE_TRACKS.filter(t => {
-    const matchSchool = schoolFilter === '' || t.school === schoolFilter;
-    const matchSearch = search === '' ||
-      t.programs.some(p => p.toLowerCase().includes(search.toLowerCase())) ||
-      t.resources.some(r => r.label.toLowerCase().includes(search.toLowerCase())) ||
-      t.glossary.some(g => g.term.toLowerCase().includes(search.toLowerCase()));
-    return matchSchool && matchSearch;
-  });
+  // Build school → programs map
+  const schoolTracks = RESOURCE_TRACKS.filter(t => t.school === selectedSchool);
+
+  // Filter by search
+  const filteredTracks = search === ''
+    ? schoolTracks
+    : RESOURCE_TRACKS.filter(t =>
+        t.programs[0].toLowerCase().includes(search.toLowerCase()) ||
+        t.resources.some(r => r.label.toLowerCase().includes(search.toLowerCase())) ||
+        t.glossary.some(g => g.term.toLowerCase().includes(search.toLowerCase()))
+      );
+
+  const displayTracks = search !== '' ? filteredTracks : schoolTracks;
+
+  const selectedTrack = selectedTrackId
+    ? RESOURCE_TRACKS.find(t => t.id === selectedTrackId)
+    : (displayTracks.length > 0 ? displayTracks[0] : null);
+
+  // Auto-select first track when school changes
+  const handleSchoolChange = (school: string) => {
+    setSelectedSchool(school);
+    setSearch('');
+    const firstInSchool = RESOURCE_TRACKS.find(t => t.school === school);
+    setSelectedTrackId(firstInSchool ? firstInSchool.id : null);
+  };
 
   const totalResources = RESOURCE_TRACKS.reduce((s, t) => s + t.resources.length, 0);
   const totalTerms = RESOURCE_TRACKS.reduce((s, t) => s + t.glossary.length, 0);
@@ -152,63 +208,96 @@ const ResourcesLibrary = ({ tier = 'active', onUpgrade }: Props) => {
     <div style={{ fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>
       {/* Header */}
       <div style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' as const, gap: '1rem', marginBottom: '.75rem' }}>
-          <div>
-            <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: DS.fg, margin: 0 }}>📚 Resources Library</h2>
-            <div style={{ fontSize: 12, color: DS.fm, marginTop: 3 }}>
-              {totalResources} curated resources · {totalTerms} glossary terms · {RESOURCE_TRACKS.length} tracks · Official sources only
-            </div>
-          </div>
-        </div>
-
-        {/* Search */}
-        <input
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Search programs, resources, or glossary terms..."
-          style={{ width: '100%', background: DS.muted, border: `1px solid ${DS.border}`, borderRadius: '.65rem', padding: '.65rem 1rem', color: DS.fg, fontFamily: 'inherit', fontSize: 13, outline: 'none', marginBottom: '.75rem', boxSizing: 'border-box' as const }}
-          onFocus={e => (e.target as HTMLElement).style.borderColor = DS.blue}
-          onBlur={e => (e.target as HTMLElement).style.borderColor = DS.border}
-        />
-
-        {/* School filter tabs */}
-        <div style={{ display: 'flex', gap: '.4rem', flexWrap: 'wrap' as const }}>
-          {SCHOOL_FILTERS.map(f => (
-            <button key={f.value} onClick={() => setSchoolFilter(f.value)}
-              style={{ fontSize: 11, fontWeight: 700, padding: '.3rem .85rem', borderRadius: 999, cursor: 'pointer', transition: 'all .15s',
-                background: schoolFilter === f.value ? DS.blue : DS.muted,
-                color: schoolFilter === f.value ? '#fff' : DS.fm,
-                border: `1px solid ${schoolFilter === f.value ? DS.blue : DS.border}`,
-              }}>
-              {f.label}
-            </button>
-          ))}
+        <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: DS.fg, margin: '0 0 .25rem 0' }}>
+          📚 Resources Library
+        </h2>
+        <div style={{ fontSize: 12, color: DS.fm }}>
+          Official sources only · {totalResources} curated resources · {totalTerms} glossary terms · Organized by program
         </div>
       </div>
 
-      {/* Results count */}
-      {(search || schoolFilter) && (
-        <div style={{ fontSize: 12, color: DS.fm, marginBottom: '1rem' }}>
-          Showing {filtered.length} of {RESOURCE_TRACKS.length} tracks
-          {search && ` matching "${search}"`}
+      {/* Search bar */}
+      <input
+        value={search}
+        onChange={e => { setSearch(e.target.value); setSelectedTrackId(null); }}
+        placeholder="Search any program, resource, or glossary term..."
+        style={{
+          width: '100%', background: DS.muted, border: `1px solid ${DS.border}`,
+          borderRadius: '.65rem', padding: '.65rem 1rem', color: DS.fg,
+          fontFamily: 'inherit', fontSize: 13, outline: 'none', marginBottom: '1rem',
+          boxSizing: 'border-box' as const,
+        }}
+        onFocus={e => (e.target as HTMLElement).style.borderColor = DS.blue}
+        onBlur={e => (e.target as HTMLElement).style.borderColor = DS.border}
+      />
+
+      {/* School tabs */}
+      {search === '' && (
+        <div style={{ display: 'flex', gap: '.4rem', flexWrap: 'wrap' as const, marginBottom: '1.25rem' }}>
+          {SCHOOLS.map(s => (
+            <button
+              key={s.value}
+              onClick={() => handleSchoolChange(s.value)}
+              style={{
+                fontSize: 12, fontWeight: 700, padding: '.4rem 1rem', borderRadius: 999,
+                cursor: 'pointer', transition: 'all .15s',
+                background: selectedSchool === s.value ? s.color : DS.muted,
+                color: selectedSchool === s.value ? '#fff' : DS.fm,
+                border: `1px solid ${selectedSchool === s.value ? s.color : DS.border}`,
+              }}>
+              {s.label}
+            </button>
+          ))}
         </div>
       )}
 
-      {/* Track cards grid */}
-      {filtered.length === 0 ? (
-        <div style={{ textAlign: 'center' as const, padding: '3rem', color: DS.fm }}>
-          <div style={{ fontSize: 32, marginBottom: '.75rem' }}>🔍</div>
-          <div style={{ fontSize: 14, fontWeight: 600 }}>No tracks found</div>
-          <div style={{ fontSize: 12, marginTop: '.35rem' }}>Try a different search term or filter</div>
-        </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.25rem' }}>
-          {filtered.map(track => <TrackCard key={track.id} track={track} />)}
+      {/* Search results notice */}
+      {search !== '' && (
+        <div style={{ fontSize: 12, color: DS.fm, marginBottom: '.75rem' }}>
+          {filteredTracks.length} program{filteredTracks.length !== 1 ? 's' : ''} matching "{search}"
+          <button onClick={() => setSearch('')} style={{ marginLeft: '.5rem', fontSize: 11, color: DS.blue, background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Clear</button>
         </div>
       )}
+
+      {/* Two-column layout: program list + detail */}
+      <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: '1rem', alignItems: 'start' }}>
+
+        {/* Left: Program list */}
+        <div style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', overflow: 'hidden' }}>
+          <div style={{ padding: '8px 12px', borderBottom: `1px solid ${DS.border}`, background: 'rgba(255,255,255,.03)' }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: DS.fm, textTransform: 'uppercase' as const, letterSpacing: '.1em' }}>
+              {search !== '' ? 'SEARCH RESULTS' : `${displayTracks.length} PROGRAMS`}
+            </span>
+          </div>
+          <div style={{ padding: '.5rem', display: 'flex', flexDirection: 'column' as const, gap: '.3rem', maxHeight: 600, overflowY: 'auto' as const }}>
+            {displayTracks.length === 0 ? (
+              <div style={{ padding: '1.5rem', textAlign: 'center' as const, color: DS.fm, fontSize: 12 }}>No programs found</div>
+            ) : displayTracks.map(track => (
+              <ProgramCard
+                key={track.id}
+                track={track}
+                isSelected={(selectedTrack?.id === track.id)}
+                onClick={() => setSelectedTrackId(track.id)}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Right: Resource detail */}
+        <div>
+          {selectedTrack ? (
+            <ResourceDetail track={selectedTrack} />
+          ) : (
+            <div style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', padding: '3rem', textAlign: 'center' as const, color: DS.fm }}>
+              <div style={{ fontSize: 32, marginBottom: '.75rem' }}>📚</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Select a program to see its resources</div>
+            </div>
+          )}
+        </div>
+      </div>
 
       <p style={{ fontSize: 10, color: DS.fd, textAlign: 'center' as const, marginTop: '1.5rem', lineHeight: 1.6 }}>
-        © AWS, Google, Microsoft, NIST, ISO, EU, IIBA, PMI, Scrum.org, SAFe, ACM. All resources link to official sources. Educational reference only.
+        All resources link to official sources — AWS, Google, Microsoft, NIST, ISO, EU, IIBA, PMI, SAFe. Educational reference only.
       </p>
     </div>
   );
