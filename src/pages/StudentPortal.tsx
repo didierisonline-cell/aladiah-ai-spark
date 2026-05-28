@@ -139,17 +139,53 @@ const TOOLS = [
   { icon: '💰', lbl: 'salary_insights',   sub: 'know_worth',    path: '/portal/my-career-path' },
 ];
 const SCHOOL_ICONS: Record<string,string> = {
-  'AI Engineering':'⚙️','AI Business':'💼','Governance & Risk':'⚖️',
-  'Human-AI Experience':'🎨','Cybersecurity':'🛡️','Data Science':'📊','Product & Design':'🎯',
+  'AI Engineering':'⚙️',
+  'AI Business':'💼',
+  'Governance & Risk':'⚖️',
+  'Human-AI Experience':'🎨',
 };
 const COURSE_SCHOOL: Record<string,string> = {
-  'AI Cloud Engineer':'AI Engineering','AI Agent Engineer':'AI Engineering','AI Data Engineer':'AI Engineering',
-  'AI DevOps Engineer':'AI Engineering','AI Security Engineer':'AI Engineering','AI MLOps Engineer':'AI Engineering',
-  'AI Solutions Architect':'AI Engineering','AI Platform Engineer':'AI Engineering',
-  'AI Solutions Consultant':'AI Business','AI Product Manager':'AI Business','AI Business Operations':'AI Business',
-  'AI Sales Engineer':'AI Business','AI Business Analyst':'AI Business','AI Transformation Manager':'AI Business',
-  'AI Governance Professional':'Governance & Risk','Responsible AI Specialist':'Governance & Risk',
-  'AI UX Designer':'Human-AI Experience','Conversation Designer':'Human-AI Experience',
+  // AI Engineering
+  'AI Agent Engineer':'AI Engineering',
+  'AI Cloud Engineer':'AI Engineering',
+  'AI Data Engineer':'AI Engineering',
+  'AI DevOps Engineer':'AI Engineering',
+  'AI MLOps Engineer':'AI Engineering',
+  'AI Platform Engineer':'AI Engineering',
+  'AI Security Engineer':'AI Engineering',
+  'AI Solutions Architect':'AI Engineering',
+  'DevOps & Cloud Engineering Professional Certification':'AI Engineering',
+  // AI Business
+  'AI Business Analyst':'AI Business',
+  'AI Business Operations':'AI Business',
+  'AI Enterprise Architect':'AI Business',
+  'AI Product Manager':'AI Business',
+  'AI Program Manager':'AI Business',
+  'AI Sales Engineer':'AI Business',
+  'AI Solutions Consultant':'AI Business',
+  'AI Transformation Manager':'AI Business',
+  'Business Analysis Professional Certification':'AI Business',
+  // Governance & Risk
+  'AI Auditor':'Governance & Risk',
+  'AI Compliance Officer':'Governance & Risk',
+  'AI Ethics Specialist':'Governance & Risk',
+  'AI Governance Professional':'Governance & Risk',
+  'AI Policy Designer':'Governance & Risk',
+  'AI Risk Manager':'Governance & Risk',
+  'Responsible AI Specialist':'Governance & Risk',
+  // Human-AI Experience
+  'AI Experience Architect':'Human-AI Experience',
+  'AI UX Designer':'Human-AI Experience',
+  'AI Workflow Designer':'Human-AI Experience',
+  'Conversation Designer':'Human-AI Experience',
+  'Human-AI Interaction Specialist Certification':'Human-AI Experience',
+  // Certifications (map to closest school)
+  'AI Mastery for Scrum Masters & Project Managers':'AI Engineering',
+  'Cybersecurity Professional Certification':'Governance & Risk',
+  'Data Analytics Professional Certification':'AI Engineering',
+  'Project Management Professional Certification':'AI Business',
+  'Scrum Master Profession':'AI Business',
+  'Solution Architect Professional Certification':'AI Engineering',
 };
 const EXCLUDED = ['Rogers-Shaw','IT Merger','Network Integration'];
 
@@ -533,7 +569,7 @@ export default function StudentPortal() {
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'16px 20px 10px'}}>
                 <div>
                   <span style={{fontSize:14,fontWeight:800}}>{T('ai_workforce')}</span>
-                  <span style={{fontSize:11,color:'#475569',marginLeft:7}}>— 28 {T('programs_schools')}</span>
+                  <span style={{fontSize:11,color:'#475569',marginLeft:7}}>— {courses.length} {T('programs_schools')}</span>
                 </div>
                 <button onClick={()=>navigate('/portal/courses')} style={{background:'none',border:'none',color:'#6366f1',fontSize:11,fontWeight:700,cursor:'pointer',fontFamily:'inherit'}}>{T('view_all')}</button>
               </div>
