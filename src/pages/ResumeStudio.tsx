@@ -283,12 +283,18 @@ const ResumeStudio = () => {
             <p style={{ fontSize:12, color:DS.fm, margin:'3px 0 0' }}>Click any text on the resume to edit it directly · Content stretches as you type</p>
           </div>
           <div style={{ display:'flex', gap:8 }}>
-            <button onClick={() => document.execCommand('undo')}
+            <button onClick={() => {
+                const el = document.querySelector('#resume-doc [contenteditable]') as HTMLElement;
+                if (el) { el.focus(); document.execCommand('undo'); }
+              }}
               title="Undo (Cmd+Z)"
               style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 12px', background:'transparent', border:'1px solid '+DS.border, borderRadius:'.5rem', color:DS.fm, fontSize:12, fontWeight:600, cursor:'pointer' }}>
               ↩ Undo
             </button>
-            <button onClick={() => document.execCommand('redo')}
+            <button onClick={() => {
+                const el = document.querySelector('#resume-doc [contenteditable]') as HTMLElement;
+                if (el) { el.focus(); document.execCommand('redo'); }
+              }}
               title="Redo (Cmd+Shift+Z)"
               style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 12px', background:'transparent', border:'1px solid '+DS.border, borderRadius:'.5rem', color:DS.fm, fontSize:12, fontWeight:600, cursor:'pointer' }}>
               ↪ Redo
