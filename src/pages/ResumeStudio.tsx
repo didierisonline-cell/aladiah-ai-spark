@@ -198,16 +198,14 @@ const ResumeStudio = () => {
           ? { fontSize:s.ornate?26:s.darkHeader?28:32, fontWeight:700, letterSpacing:s.ornate?6:s.darkHeader?5:4, textTransform:'uppercase' as const, margin:'0 0 8px', textAlign:s.centered||s.ornate?'center':'left', color:s.darkHeader?'#fff':'#1a1a1a', fontFamily:s.font }
           : { fontSize:22, fontWeight:700, color:s.darkHeader?'#fff':'#1a1a1a', margin:'0 0 4px', fontFamily:s.font }
         )}
-        dangerouslySetInnerHTML={{ __html: resume.fullName }}
-      />
+      >{resume.fullName}</div>
       {s.ornate && <div style={{ width:60, height:3, background:s.gold, margin:'0 auto 12px', display:'block' }}/>}
       <div style={{ display:'flex', gap:8, flexWrap:'wrap' as const, justifyContent:s.centered||s.ornate?'center':'flex-start' }}>
         {['email','phone','location'].map(f => (
           <span key={f} contentEditable suppressContentEditableWarning
             onInput={e => set(f as keyof ResumeData)((e.target as HTMLElement).innerText)}
             style={fieldStyle({ fontSize:11, color:s.darkHeader?'rgba(255,255,255,.8)':s.ornate?s.gold:'#555', fontFamily:s.font })}
-            dangerouslySetInnerHTML={{ __html: resume[f as keyof ResumeData] || (f==='email'?'email@example.com':f==='phone'?'Phone':f==='location'?'Location':f) }}
-          />
+          >{resume[f as keyof ResumeData] || (f==='email'?'email@example.com':f==='phone'?'Phone':f==='location'?'Location':f)}</span>
         ))}
       </div>
     </div>
@@ -220,8 +218,7 @@ const ResumeStudio = () => {
         contentEditable suppressContentEditableWarning
         onInput={e => set(field)((e.target as HTMLDivElement).innerText)}
         style={fieldStyle({ fontSize:13, lineHeight:1.85, whiteSpace:'pre-wrap' as const, wordBreak:'break-word' as const, color:'#333', fontFamily:s.font, width:'100%' })}
-        dangerouslySetInnerHTML={{ __html: resume[field] || '' }}
-      />
+      >{resume[field] || ''}</div>
     </Section>
   );
 
@@ -250,12 +247,12 @@ const ResumeStudio = () => {
       <Section title="Skills" accent={s.gold||s.accent}>
         <div contentEditable suppressContentEditableWarning onInput={e => set('skills')((e.target as HTMLDivElement).innerText)}
           style={fieldStyle({ fontSize:11, lineHeight:1.8, color:s.sidebarColor||'#333', whiteSpace:'pre-wrap' as const })}
-          dangerouslySetInnerHTML={{ __html: resume.skills }}/>
+          >{resume.skills}</div>
       </Section>
       <Section title="Certifications" accent={s.gold||s.accent}>
         <div contentEditable suppressContentEditableWarning onInput={e => set('certifications')((e.target as HTMLDivElement).innerText)}
           style={fieldStyle({ fontSize:11, lineHeight:1.8, color:s.sidebarColor||'#333', whiteSpace:'pre-wrap' as const })}
-          dangerouslySetInnerHTML={{ __html: resume.certifications }}/>
+          >{resume.certifications}</div>
       </Section>
     </div>
   ) : null;
