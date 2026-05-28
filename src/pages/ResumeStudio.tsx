@@ -108,6 +108,8 @@ const ResumeStudio = () => {
   const [saved, setSaved] = useState(false);
   const [aiLoading, setAiLoading] = useState<string|null>(null);
   const [showTemplates, setShowTemplates] = useState(false);
+  const historyRef = useRef<ResumeData[]>([MOCK]);
+  const historyIdxRef = useRef(0);
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] || 'Student';
   const tpl = TEMPLATES.find(t => t.id === template) || TEMPLATES[4];
@@ -170,7 +172,39 @@ const ResumeStudio = () => {
     setAiLoading(null);
   };
 
-  const set = (field: keyof ResumeData) => (v:string) => setResume(r => ({ ...r, [field]: v }));
+  const set = (field: keyof ResumeData) => (v:string) => {
+    setResume(r => {
+      const next = { ...r, [field]: v };
+      // Push to history, drop any redo states
+      const h = historyRef.current.slice(0, historyIdxRef.current + 1);
+      h.push(next);
+      if (h.length > 100) h.shift();
+      historyRef.current = h;
+      historyIdxRef.current = h.length - 1;
+      return next;
+    });
+  };
+  const undo = () => {
+    if (historyIdxRef.current <= 0) return;
+    historyIdxRef.current--;
+    const prev = historyRef.current[historyIdxRef.current];
+    setResume(prev);
+    // Sync all contentEditable fields
+    Object.keys(prev).forEach(k => {
+      const el = document.querySelector(`[data-field="${k}"]`) as HTMLElement;
+      if (el) el.innerText = prev[k as keyof ResumeData];
+    });
+  };
+  const redo = () => {
+    if (historyIdxRef.current >= historyRef.current.length - 1) return;
+    historyIdxRef.current++;
+    const next = historyRef.current[historyIdxRef.current];
+    setResume(next);
+    Object.keys(next).forEach(k => {
+      const el = document.querySelector(`[data-field="${k}"]`) as HTMLElement;
+      if (el) el.innerText = next[k as keyof ResumeData];
+    });
+  };
 
   // Template-specific styles
   const styles: Record<string, any> = {
@@ -280,19 +314,13 @@ const ResumeStudio = () => {
             <p style={{ fontSize:12, color:DS.fm, margin:'3px 0 0' }}>Click any text on the resume to edit it directly · Content stretches as you type</p>
           </div>
           <div style={{ display:'flex', gap:8 }}>
-            <button onClick={() => {
-                const el = document.querySelector('#resume-doc [contenteditable]') as HTMLElement;
-                if (el) { el.focus(); document.execCommand('undo'); }
-              }}
-              title="Undo (Cmd+Z)"
+            <button onClick={undo}
+              title="Undo"
               style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 12px', background:'transparent', border:'1px solid '+DS.border, borderRadius:'.5rem', color:DS.fm, fontSize:12, fontWeight:600, cursor:'pointer' }}>
               ↩ Undo
             </button>
-            <button onClick={() => {
-                const el = document.querySelector('#resume-doc [contenteditable]') as HTMLElement;
-                if (el) { el.focus(); document.execCommand('redo'); }
-              }}
-              title="Redo (Cmd+Shift+Z)"
+            <button onClick={redo}
+              title="Redo"
               style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 12px', background:'transparent', border:'1px solid '+DS.border, borderRadius:'.5rem', color:DS.fm, fontSize:12, fontWeight:600, cursor:'pointer' }}>
               ↪ Redo
             </button>
