@@ -2,12 +2,6 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 const cors = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type"};
 
-const MODULES = [import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-const cors = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type"};
-
-const Q = (qt,sc,opts,ai,ex) => ({question_text:qt,scenario_context:sc,options:opts,correct_answer_index:ai,explanation:ex});
-
 const MODULES = [
 {
   title:"Module 1: AI Threat Landscape, Attack Taxonomy, and Defense Architecture",
@@ -206,10 +200,11 @@ const MODULES = [
     {"question_text":"What is the Anthropic sleeper agent research implication for AI security testing?","scenario_context":"Redesigning your AI security validation process.","options":["Behavioral testing provides complete security guarantees","LLMs can be trained to pass all behavioral security testing while containing hidden backdoors activated only in production conditions — fundamentally challenging the assumption that behavioral evaluation provides reliable security guarantees. Mechanistic interpretability for verification beyond behavioral testing is motivated by this finding.","Only models trained adversarially can contain sleeper agents","The research found no practical vulnerability"],"correct_answer_index":1,"explanation":"The sleeper agent finding represents a fundamental security challenge: if models can be designed to behave safely during evaluation while acting maliciously in deployment, behavioral security testing cannot provide the guarantees we assumed. This motivates interpretability-based verification as a security necessity."}
   ]
 }
+
 ];
 
 const TITLE = "AI Security Engineer";
-const DESC = "Master AI-specific security engineering across 8 comprehensive modules covering adversarial ML, prompt injection defense, model supply chain security, differential privacy, red teaming, regulatory compliance (EU AI Act, NIST AI RMF, GDPR), secure AI architecture, and incident response.";
+const DESC = "Master AI-specific security engineering: adversarial ML, prompt injection defense, model supply chain security, differential privacy, red teaming, EU AI Act, NIST AI RMF, GDPR, secure AI architecture, and incident response.";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
@@ -218,15 +213,7 @@ serve(async (req) => {
     const { data: ex } = await supabase.from("courses").select("id").eq("title", TITLE).maybeSingle();
     if (ex) await supabase.from("courses").delete().eq("id", ex.id);
     const { data: course, error: ce } = await supabase.from("courses").insert({
-      title: TITLE, description: DESC, is_published: true,
-      translations: {
-        es:{title:"Ingeniero de Seguridad IA",description:"Domina la seguridad especifica de IA: ML adversarial, inyeccion de prompts y red teaming."},
-        fr:{title:"Ingenieur Securite IA",description:"Maitrisez la securite specifique a l IA: ML adversarial et red teaming."},
-        de:{title:"KI-Sicherheitsingenieur",description:"Meistern Sie KI-spezifische Sicherheit: adversariales ML und Prompt-Injection."},
-        zh:{title:"AI安全工程师",description:"掌握AI特定安全：对抗性ML和提示词注入防御。"},
-        ar:{title:"مهندس أمن الذكاء الاصطناعي",description:"أتقن أمن الذكاء الاصطناعي."},
-        ja:{title:"AIセキュリティエンジニア",description:"AIセキュリティエンジニアリングをマスターする。"}
-      }
+      title: TITLE, description: DESC, is_published: true, translations: {}
     }).select().single();
     if (ce) throw ce;
     for (const ch of MODULES) {
@@ -237,14 +224,10 @@ serve(async (req) => {
       if (che) throw che;
       for (const vid of ch.videos) {
         const transcript = vid.points.join("\n\n");
-        const trans = {
-          en:{title:vid.title,transcript}, es:{title:vid.title,transcript},
-          fr:{title:vid.title,transcript}, de:{title:vid.title,transcript},
-          zh:{title:vid.title,transcript}, ar:{title:vid.title,transcript}, ja:{title:vid.title,transcript}
-        };
+        const tr = {en:{title:vid.title,transcript},es:{title:vid.title,transcript},fr:{title:vid.title,transcript},de:{title:vid.title,transcript},zh:{title:vid.title,transcript},ar:{title:vid.title,transcript},ja:{title:vid.title,transcript}};
         const { data: video, error: ve } = await supabase.from("videos").insert({
           chapter_id: chapter.id, title: vid.title, description: vid.description,
-          order_index: vid.order_index, translations: trans
+          order_index: vid.order_index, translations: tr
         }).select().single();
         if (ve) throw ve;
         const { data: quiz, error: qe } = await supabase.from("quizzes").insert({
@@ -253,11 +236,7 @@ serve(async (req) => {
         if (qe) throw qe;
         for (let i = 0; i < vid.questions.length; i++) {
           const q = vid.questions[i];
-          await supabase.from("quiz_questions").insert({
-            quiz_id: quiz.id, question_text: q.question_text, scenario_context: q.scenario_context,
-            options: q.options, correct_answer_index: q.correct_answer_index,
-            explanation: q.explanation, order_index: i
-          });
+          await supabase.from("quiz_questions").insert({quiz_id: quiz.id, question_text: q.question_text, scenario_context: q.scenario_context, options: q.options, correct_answer_index: q.correct_answer_index, explanation: q.explanation, order_index: i});
         }
       }
       const { data: eq, error: eqe } = await supabase.from("quizzes").insert({
@@ -266,15 +245,11 @@ serve(async (req) => {
       if (eqe) throw eqe;
       for (let i = 0; i < ch.endQuiz.length; i++) {
         const q = ch.endQuiz[i];
-        await supabase.from("quiz_questions").insert({
-          quiz_id: eq.id, question_text: q.question_text, scenario_context: q.scenario_context,
-          options: q.options, correct_answer_index: q.correct_answer_index,
-          explanation: q.explanation, order_index: i
-        });
+        await supabase.from("quiz_questions").insert({quiz_id: eq.id, question_text: q.question_text, scenario_context: q.scenario_context, options: q.options, correct_answer_index: q.correct_answer_index, explanation: q.explanation, order_index: i});
       }
     }
-    return new Response(JSON.stringify({ message: "AI Security Engineer v2 — 3 modules seeded", courseId: course.id, modules: MODULES.length }), { headers: { ...cors, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({message:"AI Security Engineer v2 seeded",courseId:course.id,modules:MODULES.length}), {headers:{...cors,"Content-Type":"application/json"}});
   } catch (e) {
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }), { status: 500, headers: { ...cors, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({error: e instanceof Error ? e.message : String(e)}), {status:500,headers:{...cors,"Content-Type":"application/json"}});
   }
 });
