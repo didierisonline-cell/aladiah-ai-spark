@@ -172,13 +172,27 @@ const ResumeStudio = () => {
     setAiLoading(null);
   };
 
+  // onInput: silently track value without triggering re-render (no cursor jump)
+  const liveValues = useRef<Partial<ResumeData>>({});
+  const onFieldInput = (field: keyof ResumeData) => (e: React.FormEvent<HTMLElement>) => {
+    liveValues.current[field] = (e.target as HTMLElement).innerText;
+  };
+  // onBlur: commit to state + push history (no re-render while typing)
+  const onFieldBlur = (field: keyof ResumeData) => () => {
+    const v = liveValues.current[field];
+    if (v === undefined) return;
+    setResume(r => {
+      if (r[field] === v) return r;
+      const next = { ...r, [field]: v };
+      const h = historyRef.current.slice(0, historyIdxRef.current + 1);
+      h.push(next);
+      if (h.length > 100) h.shift();
+      historyRef.current = h;
+      historyIdxRef.current = h.length - 1;
+      return next;
+    });
+  };
   const set = (field: keyof ResumeData) => (v:string) => {
-    // Save cursor position before state update
-    const sel = window.getSelection();
-    const range = sel && sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
-    const anchorNode = sel?.anchorNode;
-    const anchorOffset = sel?.anchorOffset ?? 0;
-
     setResume(r => {
       const next = { ...r, [field]: v };
       const h = historyRef.current.slice(0, historyIdxRef.current + 1);
@@ -188,18 +202,6 @@ const ResumeStudio = () => {
       historyIdxRef.current = h.length - 1;
       return next;
     });
-
-    // Restore cursor position after React re-render
-    if (anchorNode) {
-      requestAnimationFrame(() => {
-        try {
-          const sel2 = window.getSelection();
-          if (sel2 && anchorNode.isConnected) {
-            sel2.collapse(anchorNode, anchorOffset);
-          }
-        } catch {}
-      });
-    }
   };
   const undo = () => {
     if (historyIdxRef.current <= 0) return;
@@ -244,7 +246,7 @@ const ResumeStudio = () => {
     <div>
       <div
         contentEditable suppressContentEditableWarning
-        onInput={e => set('fullName')((e.target as HTMLDivElement).innerText)}
+        onInput={onFieldInput('fullName')} onBlur={onFieldBlur('fullName')}
         style={fieldStyle(s.centered || s.darkHeader || s.ornate
           ? { fontSize:s.ornate?26:s.darkHeader?28:32, fontWeight:700, letterSpacing:s.ornate?6:s.darkHeader?5:4, textTransform:'uppercase' as const, margin:'0 0 8px', textAlign:s.centered||s.ornate?'center':'left', color:s.darkHeader?'#fff':'#1a1a1a', fontFamily:s.font }
           : { fontSize:22, fontWeight:700, color:s.darkHeader?'#fff':'#1a1a1a', margin:'0 0 4px', fontFamily:s.font }
@@ -254,7 +256,7 @@ const ResumeStudio = () => {
       <div style={{ display:'flex', gap:8, flexWrap:'wrap' as const, justifyContent:s.centered||s.ornate?'center':'flex-start' }}>
         {['email','phone','location'].map(f => (
           <span key={f} contentEditable suppressContentEditableWarning
-            onInput={e => set(f as keyof ResumeData)((e.target as HTMLElement).innerText)}
+            onInput={onFieldInput(f as keyof ResumeData)} onBlur={onFieldBlur(f as keyof ResumeData)}
             style={fieldStyle({ fontSize:11, color:s.darkHeader?'rgba(255,255,255,.8)':s.ornate?s.gold:'#555', fontFamily:s.font })}
           >{resume[f as keyof ResumeData] || (f==='email'?'email@example.com':f==='phone'?'Phone':f==='location'?'Location':f)}</span>
         ))}
@@ -267,7 +269,7 @@ const ResumeStudio = () => {
       <div
         data-field={field}
         contentEditable suppressContentEditableWarning
-        onInput={e => set(field)((e.target as HTMLDivElement).innerText)}
+        onInput={onFieldInput(field)} onBlur={onFieldBlur(field)}
         style={fieldStyle({ fontSize:13, lineHeight:1.85, whiteSpace:'pre-wrap' as const, wordBreak:'break-word' as const, color:'#333', fontFamily:s.font, width:'100%' })}
       >{resume[field] || ''}</div>
     </Section>
@@ -296,12 +298,12 @@ const ResumeStudio = () => {
   const sidebarContent = () => s.sidebar ? (
     <div style={{ background:s.sidebarBg, padding:'28px 20px', color:s.sidebarColor, borderLeft:s.sidebarBg===s.bg?`1px solid ${DS.border}`:'none' }}>
       <Section title="Skills" accent={s.gold||s.accent}>
-        <div contentEditable suppressContentEditableWarning onInput={e => set('skills')((e.target as HTMLDivElement).innerText)}
+        <div contentEditable suppressContentEditableWarning onInput={onFieldInput('skills')} onBlur={onFieldBlur('skills')}
           style={fieldStyle({ fontSize:11, lineHeight:1.8, color:s.sidebarColor||'#333', whiteSpace:'pre-wrap' as const })}
           >{resume.skills}</div>
       </Section>
       <Section title="Certifications" accent={s.gold||s.accent}>
-        <div contentEditable suppressContentEditableWarning onInput={e => set('certifications')((e.target as HTMLDivElement).innerText)}
+        <div contentEditable suppressContentEditableWarning onInput={onFieldInput('certifications')} onBlur={onFieldBlur('certifications')}
           style={fieldStyle({ fontSize:11, lineHeight:1.8, color:s.sidebarColor||'#333', whiteSpace:'pre-wrap' as const })}
           >{resume.certifications}</div>
       </Section>
