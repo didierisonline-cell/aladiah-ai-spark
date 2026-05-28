@@ -356,6 +356,39 @@ const ResourceCard = ({ res }: { res: typeof RESOURCES[0] }) => {
   );
 };
 
+
+const CAREERS = [
+  { name:'Conversation Designer',       school:'Human-AI Experience',    color:'#22C98A', min:75,  max:130, top:160, demand:'Growing',  remote:95, roles:['Dialogue Designer','Bot Developer','UX Writer'] },
+  { name:'AI Workflow Designer',        school:'Human-AI Experience',    color:'#22C98A', min:80,  max:140, top:170, demand:'High',     remote:90, roles:['RPA Developer','Process Automation Eng.','AI Ops'] },
+  { name:'AI UX Designer',             school:'Human-AI Experience',    color:'#22C98A', min:85,  max:145, top:180, demand:'High',     remote:88, roles:['Product Designer','UX Researcher','AI Experience Lead'] },
+  { name:'Human-AI Interaction Spec.', school:'Human-AI Experience',    color:'#22C98A', min:88,  max:150, top:185, demand:'High',     remote:85, roles:['HCI Researcher','CX Lead','AI Interaction Designer'] },
+  { name:'AI Compliance Officer',      school:'Governance & Risk',      color:'#F5B81A', min:90,  max:155, top:190, demand:'Booming',  remote:75, roles:['Compliance Analyst','Risk Officer','Regulatory Lead'] },
+  { name:'Responsible AI Specialist',  school:'Governance & Risk',      color:'#F5B81A', min:92,  max:158, top:195, demand:'Booming',  remote:80, roles:['AI Ethics Lead','Trust & Safety Eng.','Policy Analyst'] },
+  { name:'AI Business Analyst',        school:'Business Transformation',color:'#F0622A', min:95,  max:155, top:185, demand:'High',     remote:80, roles:['Business Analyst','Data Analyst','Process Optimizer'] },
+  { name:'AI Auditor',                 school:'Governance & Risk',      color:'#F5B81A', min:95,  max:162, top:200, demand:'High',     remote:72, roles:['Model Risk Auditor','AI Assurance Lead','IA Manager'] },
+  { name:'AI Ethics Specialist',       school:'Governance & Risk',      color:'#F5B81A', min:95,  max:160, top:200, demand:'High',     remote:82, roles:['AI Ethics Researcher','Trust Lead','Policy Writer'] },
+  { name:'AI Experience Architect',    school:'Human-AI Experience',    color:'#22C98A', min:95,  max:165, top:210, demand:'V.High',   remote:82, roles:['Principal UX Architect','AI Product Lead','CX Architect'] },
+  { name:'AI Risk Manager',            school:'Governance & Risk',      color:'#F5B81A', min:100, max:168, top:210, demand:'Booming',  remote:70, roles:['Enterprise Risk Mgr','Model Risk Analyst','CRO Advisor'] },
+  { name:'AI Policy Designer',         school:'Governance & Risk',      color:'#F5B81A', min:100, max:170, top:215, demand:'High',     remote:78, roles:['Policy Strategist','Gov. Affairs Lead','AI Reg. Counsel'] },
+  { name:'AI Business Operations',     school:'Business Transformation',color:'#F0622A', min:100, max:165, top:200, demand:'High',     remote:72, roles:['AI Ops Manager','Business Transformation Lead','COO Advisor'] },
+  { name:'AI Sales Engineer',          school:'Business Transformation',color:'#F0622A', min:100, max:170, top:220, demand:'V.High',   remote:75, roles:['Solutions Engineer','Pre-Sales AI Lead','Tech Sales'] },
+  { name:'AI Governance Professional', school:'Governance & Risk',      color:'#F5B81A', min:105, max:175, top:225, demand:'V.High',   remote:75, roles:['Chief AI Officer','Governance Director','AI Board Advisor'] },
+  { name:'AI Product Manager',         school:'Business Transformation',color:'#F0622A', min:110, max:180, top:230, demand:'Booming',  remote:85, roles:['AI Product Manager','AI Product Owner','Head of AI Products'] },
+  { name:'AI Solutions Consultant',    school:'Business Transformation',color:'#F0622A', min:110, max:175, top:220, demand:'V.High',   remote:80, roles:['AI Consultant','Digital Transformation Lead','Strategy Partner'] },
+  { name:'AI DevOps Engineer',         school:'AI Engineering',         color:'#4A90F5', min:110, max:165, top:210, demand:'High',     remote:90, roles:['MLOps Engineer','DevOps AI Lead','Platform Engineer'] },
+  { name:'AI Data Engineer',           school:'AI Engineering',         color:'#4A90F5', min:115, max:170, top:215, demand:'V.High',   remote:88, roles:['Data Engineer','ML Data Architect','Pipeline Engineer'] },
+  { name:'AI Transformation Manager',  school:'Business Transformation',color:'#F0622A', min:115, max:185, top:235, demand:'High',     remote:70, roles:['Transformation Director','Change Lead','AI Program Director'] },
+  { name:'AI Security Engineer',       school:'AI Engineering',         color:'#4A90F5', min:120, max:180, top:225, demand:'Booming',  remote:85, roles:['AI Security Architect','Red Team AI','Adversarial ML Eng.'] },
+  { name:'AI Agent Engineer',          school:'AI Engineering',         color:'#4A90F5', min:120, max:185, top:235, demand:'Booming',  remote:92, roles:['AI Agent Developer','Autonomous Systems Eng.','LLM Engineer'] },
+  { name:'AI MLOps Engineer',          school:'AI Engineering',         color:'#4A90F5', min:120, max:180, top:228, demand:'Booming',  remote:90, roles:['MLOps Engineer','Model Deployment Lead','AI Infra Eng.'] },
+  { name:'AI Program Manager',         school:'Business Transformation',color:'#F0622A', min:120, max:190, top:240, demand:'High',     remote:72, roles:['Program Director','PMO AI Lead','Delivery Principal'] },
+  { name:'AI Platform Engineer',       school:'AI Engineering',         color:'#4A90F5', min:125, max:195, top:245, demand:'V.High',   remote:88, roles:['Platform Engineer','AI Infra Lead','Cloud ML Architect'] },
+  { name:'AI Enterprise Architect',    school:'Business Transformation',color:'#F0622A', min:130, max:200, top:260, demand:'V.High',   remote:78, roles:['Enterprise Architect','Chief Architect','CTO Advisor'] },
+  { name:'AI Cloud Engineer',          school:'AI Engineering',         color:'#4A90F5', min:130, max:200, top:250, demand:'V.High',   remote:90, roles:['Cloud AI Architect','ML Infrastructure Lead','Solutions Architect'] },
+  { name:'AI Solutions Architect',     school:'AI Engineering',         color:'#4A90F5', min:150, max:230, top:300, demand:'Critical', remote:85, roles:['Principal AI Architect','Chief AI Officer','Distinguished Engineer'] },
+].sort((a:any,b:any) => a.min - b.min);
+const DC:Record<string,string> = { 'Growing':'#22C98A','High':'#4A90F5','V.High':'#F5B81A','Booming':'#F0622A','Critical':'#E040FB' };
+
 const CoursesSection = ({ progressData = {} }: Props) => {
   const nav = useNavigate();
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
@@ -364,7 +397,8 @@ const CoursesSection = ({ progressData = {} }: Props) => {
   return (
     <div style={{ fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif" }}>
       {/* ── 4 Schools Grid ── */}
-      <div style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:'.75rem', overflow:'hidden', marginBottom:'1.5rem' }}>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 320px', gap:'1rem', marginBottom:'1.5rem', alignItems:'start' }}>
+      <div style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:'.75rem', overflow:'hidden' }}>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'1rem 1.5rem', borderBottom: workforceOpen ? `1px solid ${DS.border}` : 'none', cursor:'pointer' }}
           onClick={() => setWorkforceOpen(o => !o)}>
           <div style={{ display:'flex', alignItems:'center', gap:'.75rem' }}>
@@ -445,6 +479,46 @@ const CoursesSection = ({ progressData = {} }: Props) => {
           })}
     </div>
         </div>}
+      </div>
+
+      {/* Salary Panel */}
+      <div style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:'.75rem', overflow:'hidden', position:'sticky' as const, top:'1rem' }}>
+        <div style={{ padding:'1rem 1.25rem', borderBottom:`1px solid ${DS.border}` }}>
+          <div style={{ fontSize:13, fontWeight:800, color:DS.fg }}>💼 Career Salary Guide</div>
+          <div style={{ fontSize:11, color:DS.fm, marginTop:2 }}>28 roles · lowest → highest · USD 2025</div>
+        </div>
+        <div style={{ maxHeight:520, overflowY:'auto' as const }}>
+          {CAREERS.map((c:any,i:number) => (
+            <div key={i} style={{ padding:'.55rem 1rem', borderBottom:`1px solid rgba(255,255,255,.04)` }}
+              onMouseEnter={e=>(e.currentTarget as HTMLElement).style.background='rgba(255,255,255,.04)'}
+              onMouseLeave={e=>(e.currentTarget as HTMLElement).style.background='transparent'}>
+              <div style={{ display:'flex', justifyContent:'space-between', marginBottom:3 }}>
+                <span style={{ fontSize:11, fontWeight:700, color:DS.fg }}>{c.name}</span>
+                <div style={{ display:'flex', gap:4, alignItems:'center' }}>
+                  <span style={{ fontSize:9, fontWeight:800, padding:'1px 5px', borderRadius:99, background:(DC[c.demand]||DS.blue)+'22', color:DC[c.demand]||DS.blue }}>{c.demand}</span>
+                  <span style={{ fontSize:9, color:DS.fm }}>🌍{c.remote}%</span>
+                </div>
+              </div>
+              <div style={{ display:'flex', alignItems:'center', gap:5, marginBottom:4 }}>
+                <span style={{ fontSize:10, color:c.color, fontWeight:700, minWidth:40 }}>${c.min}K</span>
+                <div style={{ flex:1, height:3, borderRadius:99, background:'rgba(255,255,255,.07)' }}>
+                  <div style={{ width:`${Math.round((c.max/300)*100)}%`, height:'100%', borderRadius:99, background:`linear-gradient(90deg,${c.color}66,${c.color})` }}/>
+                </div>
+                <span style={{ fontSize:10, color:DS.fg, fontWeight:700, minWidth:40, textAlign:'right' as const }}>${c.max}K</span>
+                <span style={{ fontSize:9, color:DS.gold, fontWeight:700 }}>↑${ c.top}K</span>
+              </div>
+              <div style={{ display:'flex', gap:'.25rem', flexWrap:'wrap' as const }}>
+                {c.roles.map((r:string,j:number)=>(
+                  <span key={j} style={{ fontSize:9, padding:'1px 5px', borderRadius:99, background:'rgba(255,255,255,.05)', color:DS.fm, border:`1px solid rgba(255,255,255,.07)` }}>{r}</span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding:'.6rem', borderTop:`1px solid ${DS.border}`, textAlign:'center' as const }}>
+          <span style={{ fontSize:10, color:DS.fm }}>Global market data · Aladiah Academy 2025</span>
+        </div>
+      </div>
       </div>
 
       {/* ── Enterprise Simulation Lab ── */}
