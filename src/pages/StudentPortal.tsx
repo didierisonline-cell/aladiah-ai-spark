@@ -286,7 +286,8 @@ export default function StudentPortal() {
   const initials = (userName[0]||'A').toUpperCase()+(userName[1]||'').toUpperCase();
   const topCourse = courses.find(c=>c.pct>0&&c.pct<100)||courses[0];
   const overallPct = courses.length>0?Math.round(courses.reduce((s,c)=>s+c.pct,0)/courses.length):0;
-  const schools = [...new Set(courses.map(c=>c.school||'AI Engineering'))];
+  // Always show all 4 schools in fixed order
+  const ALL_SCHOOLS = ['AI Engineering','AI Business','Governance & Risk','Human-AI Experience'];
   const schoolCourses = courses.filter(c=>(c.school||'AI Engineering')===activeSchool);
 
   if (!creedLoaded) return <div style={{background:'#020817',minHeight:'100vh'}} />;
@@ -575,17 +576,26 @@ export default function StudentPortal() {
               </div>
               <div style={{display:'grid',gridTemplateColumns:'155px 1fr'}}>
                 <div style={{background:'rgba(4,10,32,.5)',padding:'6px 0',borderRight:'1px solid rgba(255,255,255,.06)'}}>
-                  {(schools.length>0?schools:Object.keys(SCHOOL_ICONS).slice(0,4)).map(sch=>(
+                  {ALL_SCHOOLS.map(sch=>{
+                    const cnt = courses.filter(c=>(c.school||'AI Engineering')===sch).length;
+                    return (
                     <div key={sch} onClick={()=>setActiveSchool(sch)} style={{display:'flex',alignItems:'center',gap:8,padding:'11px 13px',cursor:'pointer',fontSize:12.5,color:activeSchool===sch?'#a5b4fc':'#64748b',background:activeSchool===sch?'rgba(99,102,241,.16)':'transparent',fontWeight:activeSchool===sch?700:500,transition:'all .15s'}}>
                       <div style={{width:26,height:26,borderRadius:7,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,background:activeSchool===sch?'rgba(99,102,241,.2)':'rgba(255,255,255,.05)',flexShrink:0}}>
                         {SCHOOL_ICONS[sch]||'📚'}
                       </div>
-                      {sch}
+                      <span style={{flex:1}}>{sch}</span>
+                      {cnt>0&&<span style={{fontSize:9,background:'rgba(99,102,241,.25)',color:'#a5b4fc',borderRadius:99,padding:'1px 6px',fontWeight:700}}>{cnt}</span>}
                     </div>
-                  ))}
+                  )})}
+                
                 </div>
-                <div style={{padding:'8px 16px 12px'}}>
-                  {(schoolCourses.length>0?schoolCourses:courses).slice(0,5).map((cp,idx)=>(
+                <div style={{padding:'8px 16px 12px',overflowY:'auto',maxHeight:320}}>
+                  {schoolCourses.length===0 && (
+                    <div style={{padding:'24px 12px',textAlign:'center',color:'#334155',fontSize:12}}>
+                      Loading courses…
+                    </div>
+                  )}
+                  {schoolCourses.map((cp,idx)=>(
                     <div key={cp.id} onClick={()=>navigate(`/portal/course/${cp.id}`)} style={{display:'grid',gridTemplateColumns:'34px 1fr 125px 85px',gap:12,alignItems:'center',padding:'10px 6px',borderRadius:9,borderBottom:'1px solid rgba(255,255,255,.05)',cursor:'pointer',transition:'all .15s'}}>
                       <div style={{width:34,height:34,borderRadius:'50%',background:'linear-gradient(135deg,#4f46e5,#7c3aed)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:800,color:'#fff',flexShrink:0}}>
                         {idx+1}
