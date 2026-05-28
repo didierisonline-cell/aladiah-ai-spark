@@ -223,7 +223,7 @@ serve(async (req) => {
       }).select().single();
       if (che) throw che;
       for (const vid of ch.videos) {
-        const transcript = vid.points.join("\n\n");
+        const transcript = (vid.points || (vid.lessonScript && vid.lessonScript.mainPoints) || []).join("\n\n");
         const tr = {en:{title:vid.title,transcript},es:{title:vid.title,transcript},fr:{title:vid.title,transcript},de:{title:vid.title,transcript},zh:{title:vid.title,transcript},ar:{title:vid.title,transcript},ja:{title:vid.title,transcript}};
         const { data: video, error: ve } = await supabase.from("videos").insert({
           chapter_id: chapter.id, title: vid.title, description: vid.description,
@@ -234,8 +234,8 @@ serve(async (req) => {
           video_id: video.id, chapter_id: chapter.id, quiz_type: "mini_video", passing_score: 85
         }).select().single();
         if (qe) throw qe;
-        for (let i = 0; i < vid.questions.length; i++) {
-          const q = vid.questions[i];
+        const qs = vid.questions || []; for (let i = 0; i < qs.length; i++) {
+          const q = qs[i];
           await supabase.from("quiz_questions").insert({quiz_id: quiz.id, question_text: q.question_text, scenario_context: q.scenario_context, options: q.options, correct_answer_index: q.correct_answer_index, explanation: q.explanation, order_index: i});
         }
       }
