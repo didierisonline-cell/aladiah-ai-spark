@@ -182,26 +182,53 @@ const ResumeStudio = () => {
     setUploadMsg('Reading your resume...');
     try {
       let text = '';
-      if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
-        // For PDFs: read as ArrayBuffer and extract readable text chunks
+      const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      if (isPDF) {
+        // Send PDF directly to Claude as base64 — Claude reads PDFs natively
         const buf = await file.arrayBuffer();
         const bytes = new Uint8Array(buf);
-        const decoder = new TextDecoder('utf-8', { fatal: false });
-        const raw = decoder.decode(bytes);
-        // Extract text between BT/ET PDF operators and visible strings
-        const chunks: string[] = [];
-        const btMatches = raw.matchAll(/BT[\s\S]*?ET/g);
-        for (const m of btMatches) {
-          const strMatches = m[0].matchAll(/\(([^)]{1,500})\)/g);
-          for (const s of strMatches) chunks.push(s[1]);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+        const base64 = btoa(binary);
+        setUploadMsg('AI is reading your PDF...');
+        try {
+          const pdfRes = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: 'claude-sonnet-4-20250514',
+              max_tokens: 2000,
+              messages: [{ role: 'user', content: [
+                { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } },
+                { type: 'text', text: 'Extract resume information from this PDF and return ONLY a valid JSON object with these exact keys: fullName, email, phone, location, summary, experience, education, skills, certifications, projects. For experience/education/projects use newlines between entries. If a field is not found use empty string. Return only the JSON, no preamble, no markdown backticks.' }
+              ]}]
+            })
+          });
+          const pdfData = await pdfRes.json();
+          const raw = pdfData.content?.[0]?.text || '{}';
+          const clean = raw.replace(/```json|```/g, '').trim();
+          const parsed = JSON.parse(clean);
+          const newResume = { ...MOCK, ...parsed };
+          setResume(newResume);
+          Object.keys(newResume).forEach(k => {
+            const el = document.querySelector('[data-field="' + k + '"]') as HTMLElement;
+            if (el) el.innerText = newResume[k as keyof ResumeData] || '';
+          });
+          setTimeout(() => {
+            const nameEl = document.querySelector('#resume-doc [contenteditable]') as HTMLElement;
+            if (nameEl) nameEl.innerText = newResume.fullName || '';
+          }, 100);
+          setUploadMsg('✓ Resume imported! Your information is now in the template.');
+          setTimeout(() => setUploadMsg(''), 5000);
+        } catch(pdfErr) {
+          setUploadMsg('Could not read PDF — try saving as .txt and uploading that instead.');
+          setTimeout(() => setUploadMsg(''), 5000);
         }
-        // Also grab plain readable ASCII text
-          const readable = raw.split('').filter(c => c.charCodeAt(0) >= 32 && c.charCodeAt(0) <= 126).join('').replace(/\s+/g, ' ');
-        text = chunks.join(' ') + ' ' + readable;
-        if (text.trim().length < 50) throw new Error('Could not extract PDF text');
-      } else {
-        text = await file.text();
+        setUploading(false);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        return;
       }
+      text = await file.text();
       setUploadMsg('AI is extracting your information...');
       const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
