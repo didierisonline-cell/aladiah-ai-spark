@@ -74,9 +74,12 @@ export default function PortalCourses() {
       <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', minHeight: '100vh', paddingTop: 70 }}>
         <PortalSidebar />
         <main style={{ padding: '2rem', background: DS.bg }}>
-          <div style={{ marginBottom: '1.75rem' }}>
-            <h1 style={{ fontSize: '1.6rem', fontWeight: 800 }}>My Courses</h1>
-            <div style={{ fontSize: 13, color: DS.fm, marginTop: '.2rem' }}>Select a course to start learning.</div>
+          <div style={{ marginBottom: '1.75rem', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+            <div>
+              <h1 style={{ fontSize: '1.6rem', fontWeight: 800 }}>My Courses</h1>
+              <div style={{ fontSize: 13, color: DS.fm, marginTop: '.2rem' }}>Select a course to start learning.</div>
+            </div>
+            <button onClick={() => navigate('/portal/my-career-path')} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', background: 'linear-gradient(135deg, #4A90F5, #7AB5FF)', border: 'none', borderRadius: '.75rem', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 14px rgba(74,144,245,.35)', whiteSpace: 'nowrap' }}>🎯 My Career Path</button>
           </div>
 
           {loading ? (

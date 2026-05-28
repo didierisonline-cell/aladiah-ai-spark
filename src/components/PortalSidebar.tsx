@@ -20,6 +20,7 @@ export default function PortalSidebar() {
   const LINKS = [
     { icon:'📊', label: t('portal.sidebar.overview'),       path:'/portal', hash: '' },
     { icon:'📚', label: t('portal.sidebar.my_courses'),     path:'/portal/courses', badge:'28', hash: '' },
+    { icon:'🎯', label: 'My Career Path',                   path:'/portal/my-career-path', hash: '' },
     { icon:'⭐', label: t('portal.sidebar.talent_score'),   path:'/portal/talent-score', hash: '' },
     { icon:'🏅', label: t('portal.sidebar.certifications'), path:'/portal', hash: 'certifications' },
     { icon:'💼', label: t('portal.sidebar.career_tools'),   path:'/portal/career', hash: '' },

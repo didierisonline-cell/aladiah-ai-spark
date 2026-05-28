@@ -37,6 +37,7 @@ import PortalPortfolio from "./pages/PortalPortfolio";
 import PortalSettings from "./pages/PortalSettings";
 import PortalCourses from "./pages/PortalCourses";
 import PortalCourseDetail from "./pages/PortalCourseDetail";
+import MyCareerPath from "./pages/MyCareerPath";
 
 const queryClient = new QueryClient();
 
@@ -79,6 +80,7 @@ const AppContent = () => {
         <Route path="/portal/portfolio" element={<ProtectedRoute><PortalPortfolio /></ProtectedRoute>} />
         <Route path="/portal/settings" element={<ProtectedRoute><PortalSettings /></ProtectedRoute>} />
         <Route path="/portal/career" element={<ProtectedRoute><ResumeStudio /></ProtectedRoute>} />
+        <Route path="/portal/my-career-path" element={<ProtectedRoute><MyCareerPath /></ProtectedRoute>} />
         {/* Tools */}
         <Route path="/resume-studio" element={<ProtectedRoute><ResumeStudio /></ProtectedRoute>} />
         <Route path="/interview" element={<ProtectedRoute><InterviewSimulator /></ProtectedRoute>} />
