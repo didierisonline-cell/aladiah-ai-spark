@@ -18,20 +18,21 @@ export default function PortalSidebar() {
                    (user?.email?.split('@')[0]?.slice(1,2) || '').toUpperCase();
 
   const LINKS = [
-    { icon:'📊', label: t('portal.sidebar.overview'),       path:'/portal' },
-    { icon:'📚', label: t('portal.sidebar.my_courses'),     path:'/portal/courses', badge:'28' },
-    { icon:'⭐', label: t('portal.sidebar.talent_score'),   path:'/portal/talent-score' },
-    { icon:'🏅', label: t('portal.sidebar.certifications'), path:'/portal' },
-    { icon:'💼', label: t('portal.sidebar.career_tools'),   path:'/portal/career' },
-    { icon:'🗂️', label: t('portal.sidebar.my_portfolio'),   path:'/portal/portfolio' },
-    { icon:'🧪', label: t('portal.sidebar.labs'),           path:'/portal' },
-    { icon:'📖', label: t('portal.sidebar.resources'),      path:'/portal' },
-    { icon:'👥', label: t('portal.sidebar.community'),      path:'/community' },
-    { icon:'⚙️', label: t('portal.sidebar.settings'),       path:'/portal/settings' },
+    { icon:'📊', label: t('portal.sidebar.overview'),       path:'/portal', hash: '' },
+    { icon:'📚', label: t('portal.sidebar.my_courses'),     path:'/portal/courses', badge:'28', hash: '' },
+    { icon:'⭐', label: t('portal.sidebar.talent_score'),   path:'/portal/talent-score', hash: '' },
+    { icon:'🏅', label: t('portal.sidebar.certifications'), path:'/portal', hash: 'certifications' },
+    { icon:'💼', label: t('portal.sidebar.career_tools'),   path:'/portal/career', hash: '' },
+    { icon:'🗂️', label: t('portal.sidebar.my_portfolio'),   path:'/portal/portfolio', hash: '' },
+    { icon:'🧪', label: t('portal.sidebar.labs'),           path:'/portal', hash: 'labs' },
+    { icon:'📖', label: t('portal.sidebar.resources'),      path:'/portal', hash: 'resources' },
+    { icon:'👥', label: t('portal.sidebar.community'),      path:'/community', hash: '' },
+    { icon:'⚙️', label: t('portal.sidebar.settings'),       path:'/portal/settings', hash: '' },
   ];
 
-  const isActive = (path: string, label: string) => {
-    if (path === '/portal' && label === t('portal.sidebar.overview')) return pathname === '/portal';
+  const isActive = (path: string, hash: string, label: string) => {
+    if (hash) return pathname === path && window.location.hash === '#' + hash;
+    if (path === '/portal' && label === t('portal.sidebar.overview')) return pathname === '/portal' && !window.location.hash;
     return pathname === path;
   };
 
@@ -60,9 +61,9 @@ export default function PortalSidebar() {
           {t('portal.sidebar.dashboard')}
         </div>
         {LINKS.map(link => {
-          const active = isActive(link.path, link.label);
+          const active = isActive(link.path, link.hash || '', link.label);
           return (
-            <a key={link.label} onClick={e => { e.preventDefault(); navigate(link.path); }}
+            <a key={link.label} onClick={e => { e.preventDefault(); navigate(link.path + (link.hash ? '#' + link.hash : '')); }}
               style={linkStyle(active)}
               onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLElement).style.background='rgba(74,144,245,.06)'; (e.currentTarget as HTMLElement).style.color=DS.fg; }}}
               onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLElement).style.background='transparent'; (e.currentTarget as HTMLElement).style.color=DS.fm; }}}>

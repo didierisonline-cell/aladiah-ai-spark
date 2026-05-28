@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { PAGE_SUBTITLE_CLASS, CARD_SUBTITLE_CLASS } from '@/lib/typography';
 import ReactMarkdown from 'react-markdown';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -120,6 +120,7 @@ const StudentPortal = () => {
   const { tier, tierName, hasFeature } = useSubscription();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { hash } = useLocation();
   const [subStatus, setSubStatus] = useState<'loading'|'active'|'none'>('active');
 
   useEffect(() => {
@@ -153,6 +154,16 @@ const StudentPortal = () => {
   const { profile: learningProfile, recordQuestion, getDueReviews } = useLearningProfile(user?.id);
 
   const [activeTab, setActiveTab] = useState('overview');
+
+  // Sync URL hash to active tab for sidebar deep-linking
+  useEffect(() => {
+    const tab = hash.replace('#', '');
+    if (tab && ['certifications','labs','resources','assistant','rewards'].includes(tab)) {
+      setActiveTab(tab);
+    } else if (!tab && activeTab !== 'overview') {
+      // only reset to overview if we navigated away via hash
+    }
+  }, [hash]);
   const [chatMessages, setChatMessages] = useState<Msg[]>([]);
   const [chatInput, setChatInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
