@@ -471,6 +471,20 @@ const TEMPLATES = [
       </div>`
   },
 ];
+
+const MOCK: ResumeData = {
+  fullName: 'Alexandra Chen',
+  email: 'alexandra.chen@email.com',
+  phone: '+1 (212) 555-0182',
+  location: 'New York, NY',
+  summary: 'Seasoned AI Program Director with 12+ years leading enterprise digital transformation. Proven track record delivering $80M+ in operational savings. Expert in Agile at scale, cross-functional leadership, and building high-performance engineering teams.',
+  experience: 'AI Program Director — Goldman Sachs (2021–Present)\\n• Led 6 Scrum teams (48 engineers) on AI risk platform\\n• Reduced validation cycle 92% — 14 days to 36 hours\\n• Managed $12M budget with 98% on-time delivery\\n\\nSenior Scrum Master — JPMorgan Chase (2018–2021)\\n• Coached 4 agile teams across 3 time zones\\n• Increased sprint velocity by 45%\\n\\nScrum Master — Deloitte Digital (2015–2018)\\n• Implemented SAFe across 200-person division',
+  education: 'M.S. Computer Science — Columbia University (2013)\\nB.S. Information Systems — NYU Stern (2011)\\nExecutive Leadership — Harvard Business School (2022)',
+  skills: 'Scrum, SAFe, Kanban, AI Strategy, Program Management, Agile Coaching, Risk Management, OKR Facilitation, Jira, Azure DevOps, Data Analytics',
+  certifications: 'PSM III (Scrum.org 2023) · SAFe 6 Program Consultant · PMP · AI Certificate MIT · Aladiah Academy Certified',
+  projects: 'AI Risk Platform: $8M initiative reducing false positives 67%\\nDigital Transformation: 18-month Agile adoption for 1,200 employees\\nPredictive Analytics: Real-time KPI system used by 40+ executives',
+};
+
 const TABS = [
   { id:'personal', label:'Personal', icon:'👤', fields:[
     {key:'fullName', label:'Full Name', ph:'John Doe', type:'input'},
@@ -607,18 +621,27 @@ const ResumeStudio = () => {
 
         {/* Template picker */}
         {showTemplates && (
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, marginBottom:'1.5rem' }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:12, marginBottom:'1.5rem' }}>
             {TEMPLATES.map(t => (
-              <button key={t.id} onClick={() => { setTemplate(t.id); setShowTemplates(false); }}
-                style={{ padding:'1rem', background:template===t.id?t.accent+'22':DS.card, border:'2px solid '+(template===t.id?t.accent:DS.border), borderRadius:'.75rem', cursor:'pointer', textAlign:'left' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
-                  <div style={{ width:16, height:16, borderRadius:4, background:t.accent }}/>
-                  <span style={{ fontSize:14, fontWeight:700, color:DS.fg }}>{t.name}</span>
-                  {template===t.id && <span style={{ fontSize:10, color:t.accent, fontWeight:700, marginLeft:'auto' }}>ACTIVE</span>}
+              <div key={t.id} onClick={() => { setTemplate(t.id); setShowTemplates(false); }}
+                style={{ border:'2px solid '+(template===t.id?t.accent:DS.border), borderRadius:'.75rem', overflow:'hidden', cursor:'pointer', background:template===t.id?t.accent+'11':DS.card }}>
+                <div style={{ padding:'8px 12px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:`1px solid ${DS.border}` }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:7 }}>
+                    <div style={{ width:12, height:12, borderRadius:3, background:t.accent }}/>
+                    <span style={{ fontSize:12, fontWeight:700, color:DS.fg }}>{t.name}</span>
+                  </div>
+                  {template===t.id ? <span style={{ fontSize:9, color:t.accent, fontWeight:800, padding:'1px 6px', borderRadius:99, background:t.accent+'22' }}>ACTIVE</span> : <span style={{ fontSize:10, color:DS.blue }}>Select</span>}
                 </div>
-                <p style={{ fontSize:11, color:DS.fm, margin:0 }}>{t.desc}</p>
-              </button>
-            ))}
+                <div style={{ height:220, overflow:'hidden', background:'#f5f4f0' }}>
+                  <div style={{ transform:'scale(0.38)', transformOrigin:'top left', width:'263%', pointerEvents:'none' as const }}>
+                    <div dangerouslySetInnerHTML={{ __html: t.render(MOCK) }}/>
+                  </div>
+                </div>
+                <div style={{ padding:'6px 12px', borderTop:`1px solid ${DS.border}` }}>
+                  <p style={{ fontSize:9, color:DS.fm, margin:0 }}>{t.desc}</p>
+                </div>
+              </div>
+            ))})
           </div>
         )}
 
