@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
-import BackToPortal from '@/components/portal/BackToPortal';
+import PortalSidebar from '@/components/PortalSidebar';
 import { Save, Download, Sparkles, CheckCircle, Loader2, LayoutTemplate, X } from 'lucide-react';
 
 interface ResumeData {
@@ -416,18 +416,19 @@ ${text.slice(0, 8000)}` }]
   };
 
   return (
-    <div style={{ minHeight:'100vh', background:DS.bg, fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif" }}>
+    <div style={{ minHeight:'100vh', background:DS.bg, fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif", color:DS.fg }}>
       <Header />
-      <div style={{ maxWidth:1100, margin:'0 auto', padding:'80px 1.5rem 2rem' }}>
-        <BackToPortal />
+      <div style={{ display:'grid', gridTemplateColumns:'260px 1fr', minHeight:'100vh', paddingTop:70 }}>
+        <PortalSidebar />
+        <main style={{ padding:'2rem', background:DS.bg, overflowX:'hidden', minWidth:0, width:'100%' }}>
 
         {/* Top bar */}
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1.25rem' }}>
+        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:'1.25rem', gap:'1rem', flexWrap:'wrap' as const }}>
           <div>
             <h1 style={{ fontSize:'1.4rem', fontWeight:800, color:DS.fg, margin:0 }}>Resume Builder Studio</h1>
             <p style={{ fontSize:12, color:DS.fm, margin:'3px 0 0' }}>Click any text on the resume to edit it directly · Content stretches as you type</p>
           </div>
-          <div style={{ display:'flex', gap:8 }}>
+          <div style={{ display:'flex', gap:6, flexWrap:'wrap' as const }}>
             <button onClick={undo}
               title="Undo"
               style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 12px', background:'transparent', border:'1px solid '+DS.border, borderRadius:'.5rem', color:DS.fm, fontSize:12, fontWeight:600, cursor:'pointer' }}>
@@ -498,7 +499,7 @@ ${text.slice(0, 8000)}` }]
         </div>
 
         {/* THE RESUME — direct edit */}
-        <div id="resume-doc" style={{ background:'#fff', boxShadow:'0 4px 40px rgba(0,0,0,.25)', borderRadius:8, overflow:'hidden', fontFamily:s.font }}>
+        <div id="resume-doc" style={{ background:'#fff', boxShadow:'0 4px 40px rgba(0,0,0,.25)', borderRadius:8, overflow:'hidden', fontFamily:s.font, maxWidth:'100%', width:'100%' }}>
           {(s.darkHeader||s.colorHeader||s.gradHeader||s.greenHeader) && (
             <div style={{ background:s.headerBg||s.sidebarBg||s.accent, padding:'30px 36px' }}>
               {renderHeader()}
@@ -531,6 +532,7 @@ ${text.slice(0, 8000)}` }]
         <p style={{ fontSize:11, color:DS.fm, textAlign:'center' as const, marginTop:12 }}>
           All changes are live · Click Save to store · Click Download to export as HTML
         </p>
+        </main>
       </div>
     </div>
   );
