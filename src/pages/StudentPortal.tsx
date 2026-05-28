@@ -161,7 +161,6 @@ const StudentPortal = () => {
   const [labs, setLabs] = useState<any[]>([]);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [courseProgresses, setCourseProgresses] = useState<any[]>([]);
-  const [portalCoursesOpen, setPortalCoursesOpen] = useState(true);
   const [portalCollapsed, setPortalCollapsed] = useState(false);
   const [labSearch, setLabSearch] = useState('');
   const [labModeActive, setLabModeActive] = useState(false);
@@ -1016,17 +1015,14 @@ const StudentPortal = () => {
                       <svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round' style={{ transform: portalCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)', transition:'transform 0.25s ease', display:'block' as const }}><polyline points='6 9 12 15 18 9'/></svg>
                       {portalCollapsed ? 'Show' : 'Hide'}
                     </button>
-                    <button onClick={() => setPortalCoursesOpen(p => !p)} style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, fontWeight:700, color: portalCoursesOpen ? '#8596AD' : '#4A90F5', background:'none', border:'1px solid #1E2D47', borderRadius:'0.4rem', padding:'3px 10px', cursor:'pointer', transition:'all 0.2s' }}><svg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round' style={{ transform: portalCoursesOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition:'transform 0.25s', display:'block' }}><polyline points='6 9 12 15 18 9'/></svg>{portalCoursesOpen ? 'Hide' : 'Show'}</button>
                     <button onClick={() => window.location.href='/schools'} style={{ fontSize:12, fontWeight:700, color:'#4A90F5', background:'none', border:'none', cursor:'pointer' }}>View All →</button>
                   </div>
                 </div>
                 <div style={{ maxHeight: portalCollapsed ? '0px' : '9999px', overflow:'hidden', transition:'max-height 0.4s ease-in-out' }}>
-                  <div style={{ maxHeight: portalCoursesOpen ? '9999px' : '0px', overflow:'hidden', transition:'max-height 0.4s ease-in-out' }}>
                   <CoursesSection progressData={courseProgresses.reduce((acc: Record<string,any>, cp: any) => {
                 if (cp.courseId) acc[`prog_${cp.courseId}`] = { progress: cp.pct || 0, completedLessons: cp.completed || 0, totalLessons: cp.total || 0 };
                 return acc;
               }, {})} />
-                  </div>
                 </div>
               </div>
             </>
