@@ -475,7 +475,7 @@ const CoursesSection = ({ progressData = {} }: Props) => {
                 </div>
               </div>
               <div style={{ borderLeft:'1px solid #1E2D47', paddingLeft:'1.25rem' }}>
-                <div style={{ fontSize:10, fontWeight:800, color:'#8596AD', letterSpacing:'.5px', textTransform:'uppercase', marginBottom:'.6rem' }}>💼 Careers &amp; Salaries</div>
+                <div style={{ fontSize:10, fontWeight:800, color:'#8596AD', letterSpacing:'.5px', textTransform:'uppercase', marginBottom:'.6rem' }}>💼 Careers & Salaries</div>
                 {CAREERS.filter((c:any) => c.school === school.name).map((c:any, i:number) => (
                   <div key={i} style={{ marginBottom:'.6rem' }}>
                     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:2 }}>
