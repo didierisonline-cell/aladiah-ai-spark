@@ -426,7 +426,7 @@ const CoursesSection = ({ progressData = {} }: Props) => {
             const visibleProgs = schoolProgs.slice(0, 4);
             const extra = schoolProgs.length - 4;
             return (
-              <div key={school.id} style={{ background:DS.bg, padding:'1.25rem' }}>
+              <div key={school.id} style={{ background:DS.bg, padding:'1.25rem', display:'grid', gridTemplateColumns:'1fr 260px', gap:'1.5rem', alignItems:'start' }}><div>
                 {/* School header */}
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'.75rem' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:'.5rem' }}>
@@ -474,6 +474,24 @@ const CoursesSection = ({ progressData = {} }: Props) => {
                   </button>
                 </div>
               </div>
+              <div style={{ borderLeft:'1px solid #1E2D47', paddingLeft:'1.25rem' }}>
+                <div style={{ fontSize:10, fontWeight:800, color:'#8596AD', letterSpacing:'.5px', textTransform:'uppercase', marginBottom:'.6rem' }}>💼 Careers &amp; Salaries</div>
+                {CAREERS.filter((c:any) => c.school === school.name).map((c:any, i:number) => (
+                  <div key={i} style={{ marginBottom:'.6rem' }}>
+                    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:2 }}>
+                      <span style={{ fontSize:11, fontWeight:700, color:'#EDF2F7' }}>{c.name}</span>
+                      <span style={{ fontSize:9, fontWeight:700, padding:'1px 5px', borderRadius:99, background:(DC[c.demand]||'#4A90F5')+'22', color:DC[c.demand]||'#4A90F5' }}>{c.demand}</span>
+                    </div>
+                    <div style={{ display:'flex', alignItems:'center', gap:4 }}>
+                      <span style={{ fontSize:10, color:school.color, fontWeight:700, minWidth:34 }}>${c.min}K</span>
+                      <div style={{ flex:1, height:3, borderRadius:99, background:'rgba(255,255,255,.07)' }}><div style={{ width:Math.round((c.max/300)*100)+'%', height:'100%', borderRadius:99, background:'linear-gradient(90deg,'+school.color+'55,'+school.color+')' }}/></div>
+                      <span style={{ fontSize:10, color:'#EDF2F7', fontWeight:700, minWidth:34, textAlign:'right' }}>${c.max}K</span>
+                      <span style={{ fontSize:9, color:'#F5B81A' }}>↑${c.top}K</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
             );
           })}
     </div>
