@@ -173,9 +173,14 @@ const ResumeStudio = () => {
   };
 
   const set = (field: keyof ResumeData) => (v:string) => {
+    // Save cursor position before state update
+    const sel = window.getSelection();
+    const range = sel && sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
+    const anchorNode = sel?.anchorNode;
+    const anchorOffset = sel?.anchorOffset ?? 0;
+
     setResume(r => {
       const next = { ...r, [field]: v };
-      // Push to history, drop any redo states
       const h = historyRef.current.slice(0, historyIdxRef.current + 1);
       h.push(next);
       if (h.length > 100) h.shift();
@@ -183,6 +188,18 @@ const ResumeStudio = () => {
       historyIdxRef.current = h.length - 1;
       return next;
     });
+
+    // Restore cursor position after React re-render
+    if (anchorNode) {
+      requestAnimationFrame(() => {
+        try {
+          const sel2 = window.getSelection();
+          if (sel2 && anchorNode.isConnected) {
+            sel2.collapse(anchorNode, anchorOffset);
+          }
+        } catch {}
+      });
+    }
   };
   const undo = () => {
     if (historyIdxRef.current <= 0) return;
