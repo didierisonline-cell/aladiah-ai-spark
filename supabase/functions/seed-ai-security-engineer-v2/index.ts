@@ -209,11 +209,10 @@ const MODULES = [
 ];
 
 const TITLE = "AI Security Engineer";
-const DESC = "Master AI-specific security engineering across 8 comprehensive modules. Covers adversarial ML, prompt injection defense, model supply chain security, differential privacy, red teaming, regulatory compliance (EU AI Act, NIST AI RMF, GDPR), secure AI architecture, and incident response. The most comprehensive AI security curriculum available.";
-
+const DESC = "Master AI-specific security engineering across 8 comprehensive modules covering adversarial ML, prompt injection defense, model supply chain security, differential privacy, red teaming, regulatory compliance (EU AI Act, NIST AI RMF, GDPR), secure AI architecture, and incident response.";
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response(null, { headers: cors });
   try {
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const { data: ex } = await supabase.from("courses").select("id").eq("title", TITLE).maybeSingle();
@@ -221,39 +220,61 @@ serve(async (req) => {
     const { data: course, error: ce } = await supabase.from("courses").insert({
       title: TITLE, description: DESC, is_published: true,
       translations: {
-        es:{title:"Ingeniero de Seguridad IA",description:"Domina la seguridad específica de IA: ML adversarial, inyección de prompts y red teaming."},
-        fr:{title:"Ingénieur Sécurité IA",description:"Maîtrisez la sécurité spécifique à l'IA: ML adversarial et red teaming."},
+        es:{title:"Ingeniero de Seguridad IA",description:"Domina la seguridad especifica de IA: ML adversarial, inyeccion de prompts y red teaming."},
+        fr:{title:"Ingenieur Securite IA",description:"Maitrisez la securite specifique a l IA: ML adversarial et red teaming."},
         de:{title:"KI-Sicherheitsingenieur",description:"Meistern Sie KI-spezifische Sicherheit: adversariales ML und Prompt-Injection."},
         zh:{title:"AI安全工程师",description:"掌握AI特定安全：对抗性ML和提示词注入防御。"},
-        ar:{title:"مهندس أمن الذكاء الاصطناعي",description:"أتقن أمن الذكاء الاصطناعي: ML العدائي والدفاع ضد حقن البرومبت."},
+        ar:{title:"مهندس أمن الذكاء الاصطناعي",description:"أتقن أمن الذكاء الاصطناعي."},
         ja:{title:"AIセキュリティエンジニア",description:"AIセキュリティエンジニアリングをマスターする。"}
       }
     }).select().single();
     if (ce) throw ce;
     for (const ch of MODULES) {
-      const { data: chapter, error: che } = await supabase.from("chapters").insert({ course_id: course.id, title: ch.title, description: ch.description, order_index: ch.order_index, translations: {} }).select().single();
+      const { data: chapter, error: che } = await supabase.from("chapters").insert({
+        course_id: course.id, title: ch.title, description: ch.description,
+        order_index: ch.order_index, translations: {}
+      }).select().single();
       if (che) throw che;
       for (const vid of ch.videos) {
-        const transcript = vid.lessonScript.mainPoints.join("\n\n");
-        const trans = { en:{title:vid.title,transcript}, es:{title:vid.title,transcript}, fr:{title:vid.title,transcript}, de:{title:vid.title,transcript}, zh:{title:vid.title,transcript}, ar:{title:vid.title,transcript}, ja:{title:vid.title,transcript} };
-        const { data: video, error: ve } = await supabase.from("videos").insert({ chapter_id: chapter.id, title: vid.title, description: vid.description, order_index: vid.order_index, translations: trans }).select().single();
+        const transcript = vid.points.join("\n\n");
+        const trans = {
+          en:{title:vid.title,transcript}, es:{title:vid.title,transcript},
+          fr:{title:vid.title,transcript}, de:{title:vid.title,transcript},
+          zh:{title:vid.title,transcript}, ar:{title:vid.title,transcript}, ja:{title:vid.title,transcript}
+        };
+        const { data: video, error: ve } = await supabase.from("videos").insert({
+          chapter_id: chapter.id, title: vid.title, description: vid.description,
+          order_index: vid.order_index, translations: trans
+        }).select().single();
         if (ve) throw ve;
-        const { data: quiz, error: qe } = await supabase.from("quizzes").insert({ video_id: video.id, chapter_id: chapter.id, quiz_type: "mini_video", passing_score: 85 }).select().single();
+        const { data: quiz, error: qe } = await supabase.from("quizzes").insert({
+          video_id: video.id, chapter_id: chapter.id, quiz_type: "mini_video", passing_score: 85
+        }).select().single();
         if (qe) throw qe;
         for (let i = 0; i < vid.questions.length; i++) {
           const q = vid.questions[i];
-          await supabase.from("quiz_questions").insert({ quiz_id: quiz.id, question_text: q.question_text, scenario_context: q.scenario_context, options: q.options, correct_answer_index: q.correct_answer_index, explanation: q.explanation, order_index: i });
+          await supabase.from("quiz_questions").insert({
+            quiz_id: quiz.id, question_text: q.question_text, scenario_context: q.scenario_context,
+            options: q.options, correct_answer_index: q.correct_answer_index,
+            explanation: q.explanation, order_index: i
+          });
         }
       }
-      const { data: eq, error: eqe } = await supabase.from("quizzes").insert({ chapter_id: chapter.id, quiz_type: "chapter_end", passing_score: 85 }).select().single();
+      const { data: eq, error: eqe } = await supabase.from("quizzes").insert({
+        chapter_id: chapter.id, quiz_type: "chapter_end", passing_score: 85
+      }).select().single();
       if (eqe) throw eqe;
       for (let i = 0; i < ch.endQuiz.length; i++) {
         const q = ch.endQuiz[i];
-        await supabase.from("quiz_questions").insert({ quiz_id: eq.id, question_text: q.question_text, scenario_context: q.scenario_context, options: q.options, correct_answer_index: q.correct_answer_index, explanation: q.explanation, order_index: i });
+        await supabase.from("quiz_questions").insert({
+          quiz_id: eq.id, question_text: q.question_text, scenario_context: q.scenario_context,
+          options: q.options, correct_answer_index: q.correct_answer_index,
+          explanation: q.explanation, order_index: i
+        });
       }
     }
-    return new Response(JSON.stringify({ message: "AI Security Engineer v2 — 8 modules seeded", courseId: course.id }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-  } catch (e: unknown) {
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ message: "AI Security Engineer v2 — 3 modules seeded", courseId: course.id, modules: MODULES.length }), { headers: { ...cors, "Content-Type": "application/json" } });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }), { status: 500, headers: { ...cors, "Content-Type": "application/json" } });
   }
 });
