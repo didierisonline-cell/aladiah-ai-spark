@@ -359,7 +359,6 @@ const ResourceCard = ({ res }: { res: typeof RESOURCES[0] }) => {
 const CoursesSection = ({ progressData = {} }: Props) => {
   const nav = useNavigate();
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
-  const [programsCollapsed, setProgramsCollapsed] = React.useState(false);
   const [workforceOpen, setWorkforceOpen] = useState(true);
 
   return (
