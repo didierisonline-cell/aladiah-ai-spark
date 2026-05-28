@@ -372,8 +372,7 @@ const CoursesSection = ({ progressData = {} }: Props) => {
             {/* Chevron */}
             <span style={{ fontSize:10, color:DS.fm, transition:'transform .2s', display:'inline-block', transform: workforceOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>▶</span>
             <div>
-              <span style={{ fontSize:14, fontWeight:700, color:DS.fg }}>AI Workforce Programs</span>
-              <span style={{ fontSize:12, color:DS.fm, marginLeft:8 }}>28 programs · 4 schools · All-Access Pass</span>
+              <span style={{ fontSize:14, fontWeight:700, color:DS.fg }}>AI Career Opportunities</span>
             </div>
           </div>
           <div style={{ display:'flex', alignItems:'center', gap:'.75rem' }}>
