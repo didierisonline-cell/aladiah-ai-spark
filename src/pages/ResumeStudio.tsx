@@ -108,6 +108,9 @@ const ResumeStudio = () => {
   const [saved, setSaved] = useState(false);
   const [aiLoading, setAiLoading] = useState<string|null>(null);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadMsg, setUploadMsg] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const historyRef = useRef<ResumeData[]>([MOCK]);
   const historyIdxRef = useRef(0);
 
@@ -170,6 +173,51 @@ const ResumeStudio = () => {
       if (el) el.innerText = text;
     } catch {}
     setAiLoading(null);
+  };
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setUploadMsg('Reading your resume...');
+    try {
+      const text = await file.text();
+      setUploadMsg('AI is extracting your information...');
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 2000,
+          messages: [{ role: 'user', content: `Extract resume information from this text and return ONLY a valid JSON object with these exact keys: fullName, email, phone, location, summary, experience, education, skills, certifications, projects. For experience/education/projects use newlines between entries. If a field is not found, use empty string. Resume text:
+
+${text.slice(0, 8000)}` }]
+        })
+      });
+      const data = await res.json();
+      const raw = data.content?.[0]?.text || '{}';
+      const clean = raw.replace(/\`\`\`json|\`\`\`/g, '').trim();
+      const parsed = JSON.parse(clean);
+      const newResume = { ...MOCK, ...parsed };
+      setResume(newResume);
+      // Sync all contentEditable fields
+      Object.keys(newResume).forEach(k => {
+          const el = document.querySelector('[data-field="' + k + '"]') as HTMLElement;
+        if (el) el.innerText = newResume[k as keyof ResumeData] || '';
+      });
+      // Update header fields
+      setTimeout(() => {
+        const nameEl = document.querySelector('#resume-doc [contenteditable]') as HTMLElement;
+        if (nameEl) nameEl.innerText = newResume.fullName || '';
+      }, 100);
+      setUploadMsg('✓ Resume imported! Your information is now in the template.');
+      setTimeout(() => setUploadMsg(''), 5000);
+    } catch (err) {
+      setUploadMsg('Could not read resume — try copying and pasting the text directly.');
+      setTimeout(() => setUploadMsg(''), 5000);
+    }
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   // onInput: silently track value without triggering re-render (no cursor jump)
@@ -343,6 +391,11 @@ const ResumeStudio = () => {
               style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 12px', background:'transparent', border:'1px solid '+DS.border, borderRadius:'.5rem', color:DS.fm, fontSize:12, fontWeight:600, cursor:'pointer' }}>
               ↪ Redo
             </button>
+            <input ref={fileInputRef} type="file" accept=".txt,.pdf,.doc,.docx" onChange={handleUpload} style={{ display:'none' }}/>
+            <button onClick={() => fileInputRef.current?.click()} disabled={uploading}
+              style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 14px', background:'rgba(34,201,138,.12)', border:'1px solid rgba(34,201,138,.3)', borderRadius:'.5rem', color:'#22C98A', fontSize:12, fontWeight:700, cursor:'pointer' }}>
+              {uploading ? '⏳ Reading...' : '📄 Upload Resume'}
+            </button>
             <button onClick={() => setShowTemplates(!showTemplates)}
               style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 14px', background:showTemplates?DS.blue+'22':'transparent', border:'1px solid '+(showTemplates?DS.blue:DS.border), borderRadius:'.5rem', color:showTemplates?DS.blue:DS.fm, fontSize:12, fontWeight:600, cursor:'pointer' }}>
               <LayoutTemplate size={13}/> Templates
@@ -382,6 +435,13 @@ const ResumeStudio = () => {
           </div>
         )}
 
+        {/* Upload status */}
+        {uploadMsg && (
+          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:'1rem', padding:'8px 14px', background: uploadMsg.startsWith('✓') ? 'rgba(34,201,138,.1)' : 'rgba(74,144,245,.1)', border:'1px solid '+(uploadMsg.startsWith('✓')?'rgba(34,201,138,.3)':'rgba(74,144,245,.2)'), borderRadius:'.5rem' }}>
+            <span style={{ fontSize:13 }}>{uploadMsg.startsWith('✓') ? '✅' : '⏳'}</span>
+            <p style={{ fontSize:12, color: uploadMsg.startsWith('✓') ? '#22C98A' : DS.blue, margin:0 }}>{uploadMsg}</p>
+          </div>
+        )}
         {/* Edit hint */}
         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:'1rem', padding:'8px 14px', background:'rgba(74,144,245,.08)', border:'1px solid rgba(74,144,245,.2)', borderRadius:'.5rem' }}>
           <span style={{ fontSize:18 }}>✏️</span>
