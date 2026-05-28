@@ -161,7 +161,6 @@ const StudentPortal = () => {
   const [labs, setLabs] = useState<any[]>([]);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [courseProgresses, setCourseProgresses] = useState<any[]>([]);
-  const [portalCollapsed, setPortalCollapsed] = useState(false);
   const [labSearch, setLabSearch] = useState('');
   const [labModeActive, setLabModeActive] = useState(false);
   const [labTopic, setLabTopic] = useState('');
@@ -1003,28 +1002,10 @@ const StudentPortal = () => {
               </div>
 
               {/* Full AI programs section */}
-              <div style={{ marginBottom:'1rem' }}>
-                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 0 0.5rem 0' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <span style={{ fontSize:14, fontWeight:700, color:'#EDF2F7' }}>🎯 AI Workforce Programs</span>
-                    <span style={{ fontSize:12, color:'#8596AD' }}>— 28 programs across 4 schools</span>
-                  </div>
-                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <button onClick={() => setPortalCollapsed((p:boolean) => !p)}
-                      style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, fontWeight:700, letterSpacing:'0.06em', textTransform:'uppercase' as const, color: portalCollapsed ? '#4A90F5' : '#8596AD', background:'none', border:'1px solid #1E2D47', borderRadius:'0.4rem', padding:'3px 10px', cursor:'pointer' }}>
-                      <svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round' style={{ transform: portalCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)', transition:'transform 0.25s ease', display:'block' as const }}><polyline points='6 9 12 15 18 9'/></svg>
-                      {portalCollapsed ? 'Show' : 'Hide'}
-                    </button>
-                    <button onClick={() => window.location.href='/schools'} style={{ fontSize:12, fontWeight:700, color:'#4A90F5', background:'none', border:'none', cursor:'pointer' }}>View All →</button>
-                  </div>
-                </div>
-                <div style={{ maxHeight: portalCollapsed ? '0px' : '9999px', overflow:'hidden', transition:'max-height 0.4s ease-in-out' }}>
-                  <CoursesSection progressData={courseProgresses.reduce((acc: Record<string,any>, cp: any) => {
+              <CoursesSection progressData={courseProgresses.reduce((acc: Record<string,any>, cp: any) => {
                 if (cp.courseId) acc[`prog_${cp.courseId}`] = { progress: cp.pct || 0, completedLessons: cp.completed || 0, totalLessons: cp.total || 0 };
                 return acc;
               }, {})} />
-                </div>
-              </div>
             </>
           )}
 
