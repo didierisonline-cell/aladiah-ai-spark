@@ -387,7 +387,7 @@ const CoursesSection = ({ progressData = {} }: Props) => {
 
         {/* School cards grid — collapsible */}
         {workforceOpen && <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:1, background:DS.border }}>
-          <div style={{maxHeight:programsCollapsed?'0px':'9999px',overflow:'hidden',transition:'max-height 0.4s ease-in-out'}}>
+          <div style={{maxHeight:'9999px',overflow:'hidden',transition:'max-height 0.4s ease-in-out'}}>
     {SCHOOLS.map(school => {
             const schoolProgs = PROGRAMS.filter(p => p.school === school.id);
             const visibleProgs = schoolProgs.slice(0, 4);
