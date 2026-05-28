@@ -2,6 +2,10 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 const cors = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type"};
 
+const Q = (question_text, scenario_context, options, correct_answer_index, explanation) =>
+  ({question_text, scenario_context, options, correct_answer_index, explanation});
+
+
 const MODULES = [
 {
   title:"Module 1: AI Threat Landscape, Attack Taxonomy, and Defense Architecture",
