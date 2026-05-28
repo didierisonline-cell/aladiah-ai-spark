@@ -261,12 +261,23 @@ export default function StudentPortal() {
         const total = vids.length;
         const doneCount = vids.filter((v:any)=>done.has(v.id)).length;
         const pct = total>0?Math.round((doneCount/total)*100):0;
-        const isCert = CERT_TITLES.some(ct=>course.title?.includes(ct)||ct.includes(course.title));
-        const school = isCert ? 'Certifications' : (COURSE_SCHOOL[course.title] || null);
+        // Fuzzy match: check exact first, then partial
+        const titleLower = course.title?.toLowerCase()||'';
+        const isCert = CERT_TITLES.some(ct=>titleLower.includes(ct.toLowerCase())||ct.toLowerCase().includes(titleLower));
+        let school: string|null = COURSE_SCHOOL[course.title] || null;
+        if (!school && !isCert) {
+          // Fuzzy: find the first key that is contained in or contains the title
+          const key = Object.keys(COURSE_SCHOOL).find(k=>
+            titleLower.includes(k.toLowerCase()) || k.toLowerCase().includes(titleLower)
+          );
+          school = key ? COURSE_SCHOOL[key] : null;
+        }
         return { id:course.id, title:course.title, total, done:doneCount, pct, school, isCert };
       }));
 
-      setCourses(progData.filter((p:any)=>p.total>0).sort((a:any,b:any)=>b.pct-a.pct||b.done-a.done));
+      // Include ALL courses (even unseeded ones) so school counts are correct
+      console.log('[Portal] Course school assignments:', progData.map(p=>({title:p.title,school:p.school,isCert:p.isCert,total:p.total})));
+      setCourses(progData.sort((a:any,b:any)=>b.pct-a.pct||b.done-a.done));
 
       // Streak
       const quizDates = await sbFetch(
