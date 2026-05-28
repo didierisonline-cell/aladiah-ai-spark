@@ -510,7 +510,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
   },
 
   // ── AI ENGINEERING (new) ──
-  { id:"ai-solutions-architect", school:"⚙️ AI Engineering", color:"#4A90F5", icon:"🏛️",
+  { id:"ai-solutions-architect", school:'⚙️ AI Engineering', color:"#4A90F5", icon:"🏛️",
     programs:["AI Solutions Architect"],
     resources:[
       {label:"AWS Well-Architected Framework", url:"https://aws.amazon.com/architecture/well-architected/", type:"Framework", free:true},
@@ -524,7 +524,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"Reference Architecture", def:"A template of best practices for a particular domain of architecture."},
       {term:"Trade-off Analysis", def:"Evaluating competing architectural qualities to make informed design decisions."},
     ]},
-  { id:"ai-platform-engineer", school:"⚙️ AI Engineering", color:"#4A90F5", icon:"🔧",
+  { id:"ai-platform-engineer", school:'⚙️ AI Engineering', color:"#4A90F5", icon:"🔧",
     programs:["AI Platform Engineer"],
     resources:[
       {label:"Kubernetes Official Docs", url:"https://kubernetes.io/docs/", type:"Official Docs", free:true},
@@ -540,7 +540,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
     ]},
 
   // ── AI BUSINESS ──
-  { id:"ai-solutions-consultant", school:"💼 AI Business", color:"#F0622A", icon:"🤝",
+  { id:"ai-solutions-consultant", school:'💼 AI Business', color:"#F0622A", icon:"🤝",
     programs:["AI Solutions Consultant"],
     resources:[
       {label:"McKinsey State of AI Report", url:"https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai", type:"Report", free:true},
@@ -552,7 +552,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"Value Proposition", def:"The unique value an AI solution delivers to a customer or business."},
       {term:"ROI Framework", def:"A structured approach to measuring the return on AI investments."},
     ]},
-  { id:"ai-product-manager", school:"💼 AI Business", color:"#F0622A", icon:"📱",
+  { id:"ai-product-manager", school:'💼 AI Business', color:"#F0622A", icon:"📱",
     programs:["AI Product Manager"],
     resources:[
       {label:"Google PAIR Guidebook", url:"https://pair.withgoogle.com/guidebook/", type:"Guide", free:true},
@@ -564,7 +564,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"Product-Market Fit", def:"The degree to which an AI product satisfies strong market demand."},
       {term:"North Star Metric", def:"The single metric that best captures the core value an AI product delivers."},
     ]},
-  { id:"ai-business-operations", school:"💼 AI Business", color:"#F0622A", icon:"⚙️",
+  { id:"ai-business-operations", school:'💼 AI Business', color:"#F0622A", icon:"⚙️",
     programs:["AI Business Operations"],
     resources:[
       {label:"Zapier AI Automation Guide", url:"https://zapier.com/blog/ai-automation/", type:"Guide", free:true},
@@ -576,7 +576,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"Process Automation", def:"Using AI to execute repetitive business processes without human intervention."},
       {term:"Digital Twin", def:"A virtual replica of a business process used for simulation and optimization."},
     ]},
-  { id:"ai-sales-engineer", school:"💼 AI Business", color:"#F0622A", icon:"💡",
+  { id:"ai-sales-engineer", school:'💼 AI Business', color:"#F0622A", icon:"💡",
     programs:["AI Sales Engineer"],
     resources:[
       {label:"Salesforce Einstein AI Guide", url:"https://www.salesforce.com/products/einstein/overview/", type:"Guide", free:true},
@@ -588,7 +588,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"Technical Discovery", def:"The process of uncovering a prospect technical requirements and constraints."},
       {term:"Proof of Concept", def:"A demonstration that an AI solution can solve a specific business problem."},
     ]},
-  { id:"ai-business-analyst", school:"💼 AI Business", color:"#F0622A", icon:"📊",
+  { id:"ai-business-analyst", school:'💼 AI Business', color:"#F0622A", icon:"📊",
     programs:["AI Business Analyst"],
     resources:[
       {label:"IIBA BABOK Guide", url:"https://www.iiba.org/babok/", type:"Standard", free:false},
@@ -601,7 +601,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"Requirements Elicitation", def:"The process of gathering and defining business requirements for AI systems."},
       {term:"As-Is vs To-Be", def:"Documenting current state processes versus desired future state with AI."},
     ]},
-  { id:"ai-transformation-manager", school:"💼 AI Business", color:"#F0622A", icon:"🔄",
+  { id:"ai-transformation-manager", school:'💼 AI Business', color:"#F0622A", icon:"🔄",
     programs:["AI Transformation Manager"],
     resources:[
       {label:"McKinsey Transformation Guide", url:"https://www.mckinsey.com/capabilities/people-and-organizational-performance/our-insights", type:"Guide", free:true},
@@ -613,7 +613,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"Change Management", def:"A structured approach to transitioning individuals and organizations to a desired future state."},
       {term:"Digital Transformation", def:"The integration of digital technology into all areas of a business."},
     ]},
-  { id:"ai-program-manager", school:"💼 AI Business", color:"#F0622A", icon:"📋",
+  { id:"ai-program-manager", school:'💼 AI Business', color:"#F0622A", icon:"📋",
     programs:["AI Program Manager"],
     resources:[
       {label:"PMI PMBOK Guide", url:"https://www.pmi.org/pmbok-guide-standards", type:"Standard", free:false},
@@ -625,7 +625,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"Program Roadmap", def:"A high-level visual summary of AI program goals and milestones over time."},
       {term:"Dependency Management", def:"Identifying and managing interdependencies between AI projects and teams."},
     ]},
-  { id:"ai-enterprise-architect", school:"💼 AI Business", color:"#F0622A", icon:"🏢",
+  { id:"ai-enterprise-architect", school:'💼 AI Business', color:"#F0622A", icon:"🏢",
     programs:["AI Enterprise Architect"],
     resources:[
       {label:"TOGAF Enterprise Architecture", url:"https://www.opengroup.org/togaf", type:"Standard", free:false},
@@ -639,7 +639,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
     ]},
 
   // ── GOVERNANCE & RISK ──
-  { id:"responsible-ai-specialist", school:"⚖️ Governance & Risk", color:"#22C98A", icon:"🤝",
+  { id:"responsible-ai-specialist", school:'⚖️ Governance & Risk', color:"#22C98A", icon:"🤝",
     programs:["Responsible AI Specialist"],
     resources:[
       {label:"Google Responsible AI Practices", url:"https://ai.google/responsibility/responsible-ai-practices/", type:"Guide", free:true},
@@ -652,7 +652,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"Responsible AI", def:"The practice of developing and deploying AI in a way that is safe, fair, and beneficial."},
       {term:"AI Safety", def:"The field focused on ensuring AI systems behave as intended without causing unintended harm."},
     ]},
-  { id:"ai-compliance-officer", school:"⚖️ Governance & Risk", color:"#22C98A", icon:"📋",
+  { id:"ai-compliance-officer", school:'⚖️ Governance & Risk', color:"#22C98A", icon:"📋",
     programs:["AI Compliance Officer"],
     resources:[
       {label:"EU AI Act Full Text", url:"https://artificialintelligenceact.eu/", type:"Regulation", free:true},
@@ -665,7 +665,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"Regulatory Compliance", def:"Adherence to laws, regulations, and guidelines relevant to AI systems."},
       {term:"Conformity Assessment", def:"The process of demonstrating that an AI system meets specified requirements."},
     ]},
-  { id:"ai-risk-manager", school:"⚖️ Governance & Risk", color:"#22C98A", icon:"⚠️",
+  { id:"ai-risk-manager", school:'⚖️ Governance & Risk', color:"#22C98A", icon:"⚠️",
     programs:["AI Risk Manager"],
     resources:[
       {label:"NIST AI RMF Playbook", url:"https://airc.nist.gov/Docs/1", type:"Framework", free:true},
@@ -677,7 +677,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"Risk Appetite", def:"The amount and type of risk an organization is willing to accept in pursuit of its objectives."},
       {term:"Residual Risk", def:"The risk remaining after controls and mitigations have been applied."},
     ]},
-  { id:"ai-auditor", school:"⚖️ Governance & Risk", color:"#22C98A", icon:"🔍",
+  { id:"ai-auditor", school:'⚖️ Governance & Risk', color:"#22C98A", icon:"🔍",
     programs:["AI Auditor"],
     resources:[
       {label:"ISACA AI Audit Guidance", url:"https://www.isaca.org/resources/artificial-intelligence", type:"Guide", free:false},
@@ -689,7 +689,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"Model Audit", def:"A systematic examination of an AI model design, data, and outputs."},
       {term:"Audit Trail", def:"A chronological record of all decisions, changes, and events in an AI system."},
     ]},
-  { id:"ai-policy-designer", school:"⚖️ Governance & Risk", color:"#22C98A", icon:"📜",
+  { id:"ai-policy-designer", school:'⚖️ Governance & Risk', color:"#22C98A", icon:"📜",
     programs:["AI Policy Designer"],
     resources:[
       {label:"OECD AI Principles", url:"https://oecd.ai/en/ai-principles", type:"Reference", free:true},
@@ -701,7 +701,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"AI Policy", def:"A set of guidelines governing the development, deployment, and use of AI systems."},
       {term:"Algorithmic Impact Assessment", def:"An evaluation of the potential impacts of an AI system on individuals and communities."},
     ]},
-  { id:"ai-ethics-specialist", school:"⚖️ Governance & Risk", color:"#22C98A", icon:"⚖️",
+  { id:"ai-ethics-specialist", school:'⚖️ Governance & Risk', color:"#22C98A", icon:"⚖️",
     programs:["AI Ethics Specialist"],
     resources:[
       {label:"Fast.AI Practical Ethics Course", url:"https://ethics.fast.ai/", type:"Course", free:true},
@@ -715,7 +715,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
     ]},
 
   // ── HUMAN-AI EXPERIENCE ──
-  { id:"ai-ux-designer", school:"🎨 Human-AI Experience", color:"#9B59B6", icon:"🎨",
+  { id:"ai-ux-designer", school:'🎨 Human-AI Experience', color:"#9B59B6", icon:"🎨",
     programs:["AI UX Designer"],
     resources:[
       {label:"Google PAIR Guidebook", url:"https://pair.withgoogle.com/guidebook/", type:"Guide", free:true},
@@ -728,7 +728,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"Human-Centered AI", def:"An approach to AI development that prioritizes human needs, values, and experiences."},
       {term:"Progressive Disclosure", def:"A UX pattern that reveals information gradually to avoid overwhelming users."},
     ]},
-  { id:"conversation-designer", school:"🎨 Human-AI Experience", color:"#9B59B6", icon:"💬",
+  { id:"conversation-designer", school:'🎨 Human-AI Experience', color:"#9B59B6", icon:"💬",
     programs:["Conversation Designer"],
     resources:[
       {label:"Conversation Design Institute", url:"https://www.conversationdesigninstitute.com/", type:"Course", free:false},
@@ -740,7 +740,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"Dialog Flow", def:"The sequence of turns in a conversation between a user and a conversational AI."},
       {term:"Intent Classification", def:"The process of identifying the user goal or purpose from their input."},
     ]},
-  { id:"human-ai-interaction-specialist", school:"🎨 Human-AI Experience", color:"#9B59B6", icon:"🤖",
+  { id:"human-ai-interaction-specialist", school:'🎨 Human-AI Experience', color:"#9B59B6", icon:"🤖",
     programs:["Human-AI Interaction Specialist"],
     resources:[
       {label:"Stanford HAI Research", url:"https://hai.stanford.edu/research", type:"Research", free:true},
@@ -752,7 +752,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"Human-in-the-Loop", def:"An AI system design that includes human oversight at key decision points."},
       {term:"Cognitive Load", def:"The mental effort required to interact with an AI system."},
     ]},
-  { id:"ai-workflow-designer", school:"🎨 Human-AI Experience", color:"#9B59B6", icon:"🔀",
+  { id:"ai-workflow-designer", school:'🎨 Human-AI Experience', color:"#9B59B6", icon:"🔀",
     programs:["AI Workflow Designer"],
     resources:[
       {label:"n8n Workflow Documentation", url:"https://docs.n8n.io/", type:"Official Docs", free:true},
@@ -764,7 +764,7 @@ export const RESOURCE_TRACKS: ResourceTrack[] = [
       {term:"Agentic Workflow", def:"An AI pipeline where autonomous agents plan and execute multi-step tasks."},
       {term:"Orchestration", def:"Coordinating multiple AI agents or tools to accomplish a complex task."},
     ]},
-  { id:"ai-experience-architect", school:"🎨 Human-AI Experience", color:"#9B59B6", icon:"✨",
+  { id:"ai-experience-architect", school:'🎨 Human-AI Experience', color:"#9B59B6", icon:"✨",
     programs:["AI Experience Architect"],
     resources:[
       {label:"Service Design Thinking", url:"https://www.thisisservicedesignthinking.com/", type:"Reference", free:true},
