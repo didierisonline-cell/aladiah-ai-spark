@@ -145,48 +145,53 @@ const SCHOOL_ICONS: Record<string,string> = {
   'Human-AI Experience':'🎨',
 };
 const COURSE_SCHOOL: Record<string,string> = {
-  // AI Engineering
-  'AI Agent Engineer':'AI Engineering',
-  'AI Cloud Engineer':'AI Engineering',
-  'AI Data Engineer':'AI Engineering',
-  'AI DevOps Engineer':'AI Engineering',
-  'AI MLOps Engineer':'AI Engineering',
-  'AI Platform Engineer':'AI Engineering',
-  'AI Security Engineer':'AI Engineering',
-  'AI Solutions Architect':'AI Engineering',
-  'DevOps & Cloud Engineering Professional Certification':'AI Engineering',
-  // AI Business
-  'AI Business Analyst':'AI Business',
-  'AI Business Operations':'AI Business',
-  'AI Enterprise Architect':'AI Business',
-  'AI Product Manager':'AI Business',
-  'AI Program Manager':'AI Business',
-  'AI Sales Engineer':'AI Business',
-  'AI Solutions Consultant':'AI Business',
-  'AI Transformation Manager':'AI Business',
-  'Business Analysis Professional Certification':'AI Business',
-  // Governance & Risk
-  'AI Auditor':'Governance & Risk',
-  'AI Compliance Officer':'Governance & Risk',
-  'AI Ethics Specialist':'Governance & Risk',
-  'AI Governance Professional':'Governance & Risk',
-  'AI Policy Designer':'Governance & Risk',
-  'AI Risk Manager':'Governance & Risk',
-  'Responsible AI Specialist':'Governance & Risk',
-  // Human-AI Experience
-  'AI Experience Architect':'Human-AI Experience',
-  'AI UX Designer':'Human-AI Experience',
-  'AI Workflow Designer':'Human-AI Experience',
-  'Conversation Designer':'Human-AI Experience',
-  'Human-AI Interaction Specialist Certification':'Human-AI Experience',
-  // Certifications (map to closest school)
-  'AI Mastery for Scrum Masters & Project Managers':'AI Engineering',
-  'Cybersecurity Professional Certification':'Governance & Risk',
-  'Data Analytics Professional Certification':'AI Engineering',
-  'Project Management Professional Certification':'AI Business',
-  'Scrum Master Profession':'AI Business',
-  'Solution Architect Professional Certification':'AI Engineering',
+  // ── School of AI Engineering (8) ──────────────────────────────────────────
+  'AI Cloud Engineer':                              'AI Engineering',
+  'AI Agent Engineer':                              'AI Engineering',
+  'AI Data Engineer':                               'AI Engineering',
+  'AI DevOps Engineer':                             'AI Engineering',
+  'AI Security Engineer':                           'AI Engineering',
+  'AI MLOps Engineer':                              'AI Engineering',
+  'AI Platform Engineer':                           'AI Engineering',
+  'AI Solutions Architect':                         'AI Engineering',
+  // ── School of AI Business Transformation (8) ──────────────────────────────
+  'AI Solutions Consultant':                        'AI Business',
+  'AI Product Manager':                             'AI Business',
+  'AI Program Manager':                             'AI Business',
+  'AI Transformation Manager':                      'AI Business',
+  'AI Business Analyst':                            'AI Business',
+  'AI Sales Engineer':                              'AI Business',
+  'AI Enterprise Architect':                        'AI Business',
+  'AI Business Operations':                         'AI Business',
+  // ── School of Governance & Risk (7) ───────────────────────────────────────
+  'AI Governance Professional':                     'Governance & Risk',
+  'Responsible AI Specialist':                      'Governance & Risk',
+  'AI Compliance Officer':                          'Governance & Risk',
+  'AI Risk Manager':                                'Governance & Risk',
+  'AI Auditor':                                     'Governance & Risk',
+  'AI Ethics Specialist':                           'Governance & Risk',
+  'AI Policy Designer':                             'Governance & Risk',
+  // ── School of Human-AI Experience (5) ─────────────────────────────────────
+  'AI UX Designer':                                 'Human-AI Experience',
+  'Conversation Designer':                          'Human-AI Experience',
+  'Human-AI Interaction Specialist':                'Human-AI Experience',
+  'Human-AI Interaction Specialist Certification':  'Human-AI Experience',
+  'AI Workflow Designer':                           'Human-AI Experience',
+  'AI Experience Architect':                        'Human-AI Experience',
 };
+
+// Certifications — shown separately, NOT in school tabs
+const CERT_TITLES = [
+  'Data Analytics Professional Certification',
+  'Solution Architect Professional Certification',
+  'DevOps & Cloud Engineering Professional',
+  'DevOps & Cloud Engineering Professional Certification',
+  'AI Mastery for Scrum Masters & Project Managers',
+  'Scrum Master Profession',
+  'Project Management Professional Certification',
+  'Business Analysis Professional Certification',
+  'Cybersecurity Professional Certification',
+];
 const EXCLUDED = ['Rogers-Shaw','IT Merger','Network Integration'];
 
 function sbFetch<T>(query: Promise<{data:T|null;error:any}>, fallback:T, ms=5000):Promise<T> {
@@ -256,8 +261,9 @@ export default function StudentPortal() {
         const total = vids.length;
         const doneCount = vids.filter((v:any)=>done.has(v.id)).length;
         const pct = total>0?Math.round((doneCount/total)*100):0;
-        return { id:course.id, title:course.title, total, done:doneCount, pct,
-          school:COURSE_SCHOOL[course.title]||'AI Engineering' };
+        const isCert = CERT_TITLES.some(ct=>course.title?.includes(ct)||ct.includes(course.title));
+        const school = isCert ? 'Certifications' : (COURSE_SCHOOL[course.title] || null);
+        return { id:course.id, title:course.title, total, done:doneCount, pct, school, isCert };
       }));
 
       setCourses(progData.filter((p:any)=>p.total>0).sort((a:any,b:any)=>b.pct-a.pct||b.done-a.done));
@@ -286,9 +292,9 @@ export default function StudentPortal() {
   const initials = (userName[0]||'A').toUpperCase()+(userName[1]||'').toUpperCase();
   const topCourse = courses.find(c=>c.pct>0&&c.pct<100)||courses[0];
   const overallPct = courses.length>0?Math.round(courses.reduce((s,c)=>s+c.pct,0)/courses.length):0;
-  // Always show all 4 schools in fixed order
   const ALL_SCHOOLS = ['AI Engineering','AI Business','Governance & Risk','Human-AI Experience'];
-  const schoolCourses = courses.filter(c=>(c.school||'AI Engineering')===activeSchool);
+  const schoolCourses = courses.filter(c=>c.school===activeSchool);
+  const certCourses = courses.filter(c=>c.isCert);
 
   if (!creedLoaded) return <div style={{background:'#020817',minHeight:'100vh'}} />;
   if (needsCreed) return (
@@ -570,14 +576,14 @@ export default function StudentPortal() {
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'16px 20px 10px'}}>
                 <div>
                   <span style={{fontSize:14,fontWeight:800}}>{T('ai_workforce')}</span>
-                  <span style={{fontSize:11,color:'#475569',marginLeft:7}}>— {courses.length} {T('programs_schools')}</span>
+                  <span style={{fontSize:11,color:'#475569',marginLeft:7}}>— {courses.filter(c=>!c.isCert).length||28} {T('programs_schools')}</span>
                 </div>
                 <button onClick={()=>navigate('/portal/courses')} style={{background:'none',border:'none',color:'#6366f1',fontSize:11,fontWeight:700,cursor:'pointer',fontFamily:'inherit'}}>{T('view_all')}</button>
               </div>
               <div style={{display:'grid',gridTemplateColumns:'155px 1fr'}}>
                 <div style={{background:'rgba(4,10,32,.5)',padding:'6px 0',borderRight:'1px solid rgba(255,255,255,.06)'}}>
                   {ALL_SCHOOLS.map(sch=>{
-                    const cnt = courses.filter(c=>(c.school||'AI Engineering')===sch).length;
+                    const cnt = courses.filter(c=>c.school===sch).length;
                     return (
                     <div key={sch} onClick={()=>setActiveSchool(sch)} style={{display:'flex',alignItems:'center',gap:8,padding:'11px 13px',cursor:'pointer',fontSize:12.5,color:activeSchool===sch?'#a5b4fc':'#64748b',background:activeSchool===sch?'rgba(99,102,241,.16)':'transparent',fontWeight:activeSchool===sch?700:500,transition:'all .15s'}}>
                       <div style={{width:26,height:26,borderRadius:7,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,background:activeSchool===sch?'rgba(99,102,241,.2)':'rgba(255,255,255,.05)',flexShrink:0}}>
