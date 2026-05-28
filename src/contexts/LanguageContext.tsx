@@ -179,7 +179,7 @@ const translations: Record<Language, Record<string, string>> = {
     'portal.sidebar.dashboard': 'Dashboard',
     'portal.sidebar.account': 'Account',
     'portal.sidebar.overview': 'Overview',
-    'portal.sidebar.my_courses': 'My Courses',
+    'portal.sidebar.my_courses': 'My Academy',
     'portal.sidebar.talent_score': 'Talent Score™',
     'portal.sidebar.certifications': 'Certifications',
     'portal.sidebar.career_tools': 'Career Tools',
