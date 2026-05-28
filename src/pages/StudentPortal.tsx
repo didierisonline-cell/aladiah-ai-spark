@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useProgress } from '@/hooks/useProgress';
 import { useSubscription } from '@/hooks/useSubscription';
-import { CreedAcknowledgmentGate } from '@/components/CreedAcknowledgmentGate';
+import { CreedAcknowledgmentGate, shouldShowCreedGate } from '@/components/CreedAcknowledgmentGate';
 import CourseSelectionGate from '@/components/CourseSelectionGate';
 import { StreakDetailModal, PointsDetailModal, LabsDetailModal } from '@/components/portal/StatDetailModals';
 import globeBg from '@/assets/global-network-bg.png';
@@ -170,9 +170,9 @@ export default function StudentPortal() {
   const { progress: overallProgress } = useProgress(user?.id);
   const { tier } = useSubscription();
 
-  const [needsCreed, setNeedsCreed] = useState(false);
+  const [needsCreed, setNeedsCreed] = useState(shouldShowCreedGate());
   const [needsCourseSelection, setNeedsCourseSelection] = useState(false);
-  const [creedLoaded, setCreedLoaded] = useState(false);
+  const [creedLoaded, setCreedLoaded] = useState(true);
   const [totalPoints, setTotalPoints] = useState(0);
   const [streak, setStreak] = useState(0);
   const [labs, setLabs] = useState<any[]>([]);
@@ -190,13 +190,6 @@ export default function StudentPortal() {
 
   const T = (key: string) => t(lang, key);
   useEffect(() => { setLang(language || 'en'); }, [language]);
-
-  // Creed gate
-  useEffect(() => {
-    if (!user) return;
-    if (!localStorage.getItem(`creed_ack_${user.id}`)) setNeedsCreed(true);
-    setCreedLoaded(true);
-  }, [user]);
 
   // Load all student data
   useEffect(() => {
@@ -262,10 +255,7 @@ export default function StudentPortal() {
 
   if (!creedLoaded) return <div style={{background:'#020817',minHeight:'100vh'}} />;
   if (needsCreed) return (
-    <CreedAcknowledgmentGate onAcknowledged={()=>{
-      localStorage.setItem(`creed_ack_${user?.id}`,'true');
-      setNeedsCreed(false);
-    }} />
+    <CreedAcknowledgmentGate onAcknowledge={() => setNeedsCreed(false)} />
   );
   if (needsCourseSelection) return (
     <CourseSelectionGate onCourseSelected={()=>setNeedsCourseSelection(false)} />
