@@ -181,7 +181,6 @@ const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps)
         </Card>
 
         {/* Resume Builder - Links to Studio (Tier 2+) */}
-        <TierLock feature="resume_builder" tierName="Accelerator">
         <Card className="p-6 space-y-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
@@ -246,7 +245,6 @@ const CareerTools = ({ overallProgress, onSwitchToAssistant }: CareerToolsProps)
             )}
           </div>
         </Card>
-        </TierLock>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
