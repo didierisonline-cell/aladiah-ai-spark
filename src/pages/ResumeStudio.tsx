@@ -181,7 +181,27 @@ const ResumeStudio = () => {
     setUploading(true);
     setUploadMsg('Reading your resume...');
     try {
-      const text = await file.text();
+      let text = '';
+      if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+        // For PDFs: read as ArrayBuffer and extract readable text chunks
+        const buf = await file.arrayBuffer();
+        const bytes = new Uint8Array(buf);
+        const decoder = new TextDecoder('utf-8', { fatal: false });
+        const raw = decoder.decode(bytes);
+        // Extract text between BT/ET PDF operators and visible strings
+        const chunks: string[] = [];
+        const btMatches = raw.matchAll(/BT[\s\S]*?ET/g);
+        for (const m of btMatches) {
+          const strMatches = m[0].matchAll(/\(([^)]{1,500})\)/g);
+          for (const s of strMatches) chunks.push(s[1]);
+        }
+        // Also grab plain readable ASCII text
+          const readable = raw.split('').filter(c => c.charCodeAt(0) >= 32 && c.charCodeAt(0) <= 126).join('').replace(/\s+/g, ' ');
+        text = chunks.join(' ') + ' ' + readable;
+        if (text.trim().length < 50) throw new Error('Could not extract PDF text');
+      } else {
+        text = await file.text();
+      }
       setUploadMsg('AI is extracting your information...');
       const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
