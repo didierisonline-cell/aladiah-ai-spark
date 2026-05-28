@@ -210,14 +210,6 @@ ${resume.projects}
       <Header />
       <main className="container mx-auto px-4 py-8 pt-24">
         <BackToPortal />
-        {!hasFeature('resume_builder') ? (
-          <div className="text-center py-20">
-            <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-            <h2 className="text-2xl font-bold mb-2">AI Resume Builder</h2>
-            <p className="text-muted-foreground mb-6">Access your AI Resume Builder below.</p>
-            <Button variant="coral" onClick={() => navigate('/pricing')}>View Plans</Button>
-          </div>
-        ) : (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
@@ -360,7 +352,6 @@ ${resume.projects}
             </div>
           </div>
         </motion.div>
-        )}
       </main>
     </div>
   );
