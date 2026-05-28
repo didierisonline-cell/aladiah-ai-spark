@@ -397,8 +397,7 @@ const CoursesSection = ({ progressData = {} }: Props) => {
   return (
     <div style={{ fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif" }}>
       {/* ── 4 Schools Grid ── */}
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 320px', gap:'1rem', marginBottom:'1.5rem', alignItems:'start' }}>
-      <div style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:'.75rem', overflow:'hidden' }}>
+      <div style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:'.75rem', overflow:'hidden', marginBottom:'1.5rem' }}>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'1rem 1.5rem', borderBottom: workforceOpen ? `1px solid ${DS.border}` : 'none', cursor:'pointer' }}
           onClick={() => setWorkforceOpen(o => !o)}>
           <div style={{ display:'flex', alignItems:'center', gap:'.75rem' }}>
@@ -466,7 +465,7 @@ const CoursesSection = ({ progressData = {} }: Props) => {
                 {/* Footer row */}
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                   <div style={{ display:'flex', gap:'1rem' }}>
-                    <span style={{ fontSize:11, color:DS.fm }}>💰 <strong style={{ color:DS.fg }}>{school.salary}</strong></span>
+                    <span style={{ fontSize:11, color:DS.fm }}>💰 <strong style={{ color:school.color }}>{school.salary}</strong></span>
                     <span style={{ fontSize:11, color:DS.fm }}>🏅 <strong style={{ color:DS.fg }}>L100–L700</strong></span>
                   </div>
                   <button onClick={() => nav('/schools')}
@@ -481,45 +480,6 @@ const CoursesSection = ({ progressData = {} }: Props) => {
         </div>}
       </div>
 
-      {/* Salary Panel */}
-      <div style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:'.75rem', overflow:'hidden', position:'sticky' as const, top:'1rem' }}>
-        <div style={{ padding:'1rem 1.25rem', borderBottom:`1px solid ${DS.border}` }}>
-          <div style={{ fontSize:13, fontWeight:800, color:DS.fg }}>💼 Career Salary Guide</div>
-          <div style={{ fontSize:11, color:DS.fm, marginTop:2 }}>28 roles · lowest → highest · USD 2025</div>
-        </div>
-        <div style={{ maxHeight:520, overflowY:'auto' as const }}>
-          {CAREERS.map((c:any,i:number) => (
-            <div key={i} style={{ padding:'.55rem 1rem', borderBottom:`1px solid rgba(255,255,255,.04)` }}
-              onMouseEnter={e=>(e.currentTarget as HTMLElement).style.background='rgba(255,255,255,.04)'}
-              onMouseLeave={e=>(e.currentTarget as HTMLElement).style.background='transparent'}>
-              <div style={{ display:'flex', justifyContent:'space-between', marginBottom:3 }}>
-                <span style={{ fontSize:11, fontWeight:700, color:DS.fg }}>{c.name}</span>
-                <div style={{ display:'flex', gap:4, alignItems:'center' }}>
-                  <span style={{ fontSize:9, fontWeight:800, padding:'1px 5px', borderRadius:99, background:(DC[c.demand]||DS.blue)+'22', color:DC[c.demand]||DS.blue }}>{c.demand}</span>
-                  <span style={{ fontSize:9, color:DS.fm }}>🌍{c.remote}%</span>
-                </div>
-              </div>
-              <div style={{ display:'flex', alignItems:'center', gap:5, marginBottom:4 }}>
-                <span style={{ fontSize:10, color:c.color, fontWeight:700, minWidth:40 }}>${c.min}K</span>
-                <div style={{ flex:1, height:3, borderRadius:99, background:'rgba(255,255,255,.07)' }}>
-                  <div style={{ width:`${Math.round((c.max/300)*100)}%`, height:'100%', borderRadius:99, background:`linear-gradient(90deg,${c.color}66,${c.color})` }}/>
-                </div>
-                <span style={{ fontSize:10, color:DS.fg, fontWeight:700, minWidth:40, textAlign:'right' as const }}>${c.max}K</span>
-                <span style={{ fontSize:9, color:DS.gold, fontWeight:700 }}>↑${ c.top}K</span>
-              </div>
-              <div style={{ display:'flex', gap:'.25rem', flexWrap:'wrap' as const }}>
-                {c.roles.map((r:string,j:number)=>(
-                  <span key={j} style={{ fontSize:9, padding:'1px 5px', borderRadius:99, background:'rgba(255,255,255,.05)', color:DS.fm, border:`1px solid rgba(255,255,255,.07)` }}>{r}</span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div style={{ padding:'.6rem', borderTop:`1px solid ${DS.border}`, textAlign:'center' as const }}>
-          <span style={{ fontSize:10, color:DS.fm }}>Global market data · Aladiah Academy 2025</span>
-        </div>
-      </div>
-      </div>
 
       {/* ── Enterprise Simulation Lab ── */}
       <div style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:'.75rem', overflow:'hidden', marginBottom:'1.5rem' }}>
