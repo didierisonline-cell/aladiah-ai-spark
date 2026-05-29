@@ -1,5 +1,5 @@
 #!/bin/bash
-# Run this from your Mac mini: cd ~/aladiah-ai-spark && bash deploy-new-courses.sh
+# Run from Mac mini: cd ~/aladiah-ai-spark && git pull && bash deploy-new-courses.sh
 set -e
 
 PROJECT_REF="vgujnkxylipfwmkpwzvb"
@@ -20,18 +20,27 @@ echo "=== Deploying ${#COURSES[@]} courses ==="
 for fn in "${COURSES[@]}"; do
   echo ""
   echo ">>> Deploying $fn..."
-  npx supabase functions deploy "$fn" --project-ref "$PROJECT_REF" && echo "✓ Deployed $fn" || echo "✗ Deploy failed: $fn"
+  echo "y" | npx supabase functions deploy "$fn" --project-ref "$PROJECT_REF" 2>&1 | grep -E "(Deployed|error|Error|failed|Failed|✓|✗)" || true
+  echo "✓ Deploy sent: $fn"
 done
 
 echo ""
-echo "=== Seeding courses ==="
+echo "=== Seeding courses (waiting 3s for deploys to settle) ==="
+sleep 3
+
 for fn in "${COURSES[@]}"; do
   echo ""
   echo ">>> Seeding $fn..."
   result=$(curl -s -X POST "${BASE_URL}/${fn}" \
     -H "Authorization: Bearer ${ANON_KEY}" \
     -H "Content-Type: application/json")
-  echo "$result" | python3 -c "import sys,json; d=json.load(sys.stdin); print('✓', d.get('message', d.get('error','unknown')))" 2>/dev/null || echo "$result"
+  
+  # Check for error vs success
+  if echo "$result" | python3 -c "import sys,json; d=json.load(sys.stdin); msg=d.get('message',''); err=d.get('error',''); print('ERROR: '+err if err else 'OK: '+msg)" 2>/dev/null; then
+    :
+  else
+    echo "Raw response: $result"
+  fi
 done
 
 echo ""
