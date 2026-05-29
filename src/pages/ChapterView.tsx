@@ -19,6 +19,42 @@ interface Quiz { id: string; chapter_id: string; quiz_type: string; }
 
 function Bars({ active }: { active: boolean }) {
   const h = [0.5, 0.9, 0.65, 1.1, 0.75, 1.0, 0.6];
+  const getStudyGuidePdf = (courseTitle: string): string | null => {
+    const m: Record<string,string> = {
+      'AI Cloud Engineer':'ai-cloud-engineer-study-guide.pdf',
+      'AI Agent Engineer':'ai-agent-engineer-study-guide.pdf',
+      'AI Data Engineer':'ai-data-engineer-study-guide.pdf',
+      'AI DevOps Engineer':'ai-devops-engineer-study-guide.pdf',
+      'AI Security Engineer':'ai-security-engineer-study-guide.pdf',
+      'AI MLOps Engineer':'ai-mlops-engineer-study-guide.pdf',
+      'AI Solutions Architect':'ai-solutions-architect-study-guide.pdf',
+      'AI Platform Engineer':'ai-platform-engineer-study-guide.pdf',
+      'AI Solutions Consultant':'ai-solutions-consultant-study-guide.pdf',
+      'AI Product Manager':'ai-product-manager-study-guide.pdf',
+      'AI Business Operations':'ai-business-operations-study-guide.pdf',
+      'AI Sales Engineer':'ai-sales-engineer-study-guide.pdf',
+      'AI Business Analyst':'ai-business-analyst-study-guide.pdf',
+      'AI Transformation Manager':'ai-transformation-mgr-study-guide.pdf',
+      'AI Program Manager':'ai-program-manager-study-guide.pdf',
+      'AI Enterprise Architect':'ai-enterprise-architect-study-guide.pdf',
+      'AI Governance Professional':'ai-governance-pro-study-guide.pdf',
+      'Responsible AI Specialist':'responsible-ai-study-guide.pdf',
+      'AI Compliance Officer':'ai-compliance-officer-study-guide.pdf',
+      'AI Risk Manager':'ai-risk-manager-study-guide.pdf',
+      'AI Auditor':'ai-auditor-study-guide.pdf',
+      'AI Policy Designer':'ai-policy-designer-study-guide.pdf',
+      'AI Ethics Specialist':'ai-ethics-specialist-study-guide.pdf',
+      'AI UX Designer':'ai-ux-designer-study-guide.pdf',
+      'Conversation Designer':'conversation-designer-study-guide.pdf',
+      'Human-AI Interaction Specialist':'human-ai-interaction-study-guide.pdf',
+      'AI Workflow Designer':'ai-workflow-designer-study-guide.pdf',
+      'AI Experience Architect':'ai-experience-architect-study-guide.pdf',
+    };
+    const f = m[courseTitle]; if (!f) return null;
+    return 'https://vgujnkxylipfwmkpwzvb.supabase.co/storage/v1/object/public/study-guides/'+f;
+  };
+
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 2, height: 20 }}>
       {h.map((v, i) => (
@@ -43,6 +79,7 @@ export default function ChapterView() {
   const { language, t } = useLanguage();
 
   const [course, setCourse] = useState<Course | null>(null);
+  const [showStudyGuide, setShowStudyGuide] = useState(false);
   const [chapter, setChapter] = useState<Chapter | null>(null);
   const [videos, setVideos] = useState<Video[]>([]);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
@@ -597,6 +634,27 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
                 </button>
               )}
             </div>
+
+            {course && getStudyGuidePdf(course.title) && (
+              <div style={{borderTop:'1px solid rgba(96,165,250,0.08)',padding:'16px 24px'}}>
+                <button onClick={()=>setShowStudyGuide(v=>!v)} style={{width:'100%',padding:'12px 0',borderRadius:12,border:'1px solid rgba(212,175,55,0.3)',background:showStudyGuide?'rgba(212,175,55,0.12)':'rgba(212,175,55,0.06)',color:'#d4af37',fontSize:14,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
+                  📖 {showStudyGuide?'Close Study Guide':'Course Study Guide'}
+                </button>
+                {showStudyGuide && (
+                  <div style={{marginTop:12,borderRadius:12,overflow:'hidden',border:'1px solid rgba(212,175,55,0.2)'}}>
+                    <div style={{padding:'8px 14px',borderBottom:'1px solid rgba(212,175,55,0.15)',background:'rgba(212,175,55,0.08)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                      <span style={{fontSize:12,fontWeight:700,color:'#d4af37'}}>📚 {course.title} — Study Guide</span>
+                      <span style={{fontSize:11,color:'#64748b'}}>Read-only</span>
+                    </div>
+                    <iframe src={getStudyGuidePdf(course.title)+'#toolbar=0&navpanes=0&scrollbar=1'} style={{width:'100%',height:520,border:'none',background:'#0a0f1e'}} title="Study Guide" />
+                    <div style={{padding:'6px 14px',borderTop:'1px solid rgba(212,175,55,0.1)',textAlign:'center'}}>
+                      <span style={{fontSize:11,color:'#475569'}}>Aladiah Academy · Solo Excelencia™</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
           </div>
         </div>
 
