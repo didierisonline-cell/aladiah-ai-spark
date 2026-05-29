@@ -19,41 +19,6 @@ interface Quiz { id: string; chapter_id: string; quiz_type: string; }
 
 function Bars({ active }: { active: boolean }) {
   const h = [0.5, 0.9, 0.65, 1.1, 0.75, 1.0, 0.6];
-  const getStudyGuidePdf = (courseTitle: string): string | null => {
-    const m: Record<string,string> = {
-      'AI Cloud Engineer':'ai-cloud-engineer-study-guide.pdf',
-      'AI Agent Engineer':'ai-agent-engineer-study-guide.pdf',
-      'AI Data Engineer':'ai-data-engineer-study-guide.pdf',
-      'AI DevOps Engineer':'ai-devops-engineer-study-guide.pdf',
-      'AI Security Engineer':'ai-security-engineer-study-guide.pdf',
-      'AI MLOps Engineer':'ai-mlops-engineer-study-guide.pdf',
-      'AI Solutions Architect':'ai-solutions-architect-study-guide.pdf',
-      'AI Platform Engineer':'ai-platform-engineer-study-guide.pdf',
-      'AI Solutions Consultant':'ai-solutions-consultant-study-guide.pdf',
-      'AI Product Manager':'ai-product-manager-study-guide.pdf',
-      'AI Business Operations':'ai-business-operations-study-guide.pdf',
-      'AI Sales Engineer':'ai-sales-engineer-study-guide.pdf',
-      'AI Business Analyst':'ai-business-analyst-study-guide.pdf',
-      'AI Transformation Manager':'ai-transformation-mgr-study-guide.pdf',
-      'AI Program Manager':'ai-program-manager-study-guide.pdf',
-      'AI Enterprise Architect':'ai-enterprise-architect-study-guide.pdf',
-      'AI Governance Professional':'ai-governance-pro-study-guide.pdf',
-      'Responsible AI Specialist':'responsible-ai-study-guide.pdf',
-      'AI Compliance Officer':'ai-compliance-officer-study-guide.pdf',
-      'AI Risk Manager':'ai-risk-manager-study-guide.pdf',
-      'AI Auditor':'ai-auditor-study-guide.pdf',
-      'AI Policy Designer':'ai-policy-designer-study-guide.pdf',
-      'AI Ethics Specialist':'ai-ethics-specialist-study-guide.pdf',
-      'AI UX Designer':'ai-ux-designer-study-guide.pdf',
-      'Conversation Designer':'conversation-designer-study-guide.pdf',
-      'Human-AI Interaction Specialist':'human-ai-interaction-study-guide.pdf',
-      'AI Workflow Designer':'ai-workflow-designer-study-guide.pdf',
-      'AI Experience Architect':'ai-experience-architect-study-guide.pdf',
-    };
-    const f = m[courseTitle]; if (!f) return null;
-    return 'https://vgujnkxylipfwmkpwzvb.supabase.co/storage/v1/object/public/study-guides/'+f;
-  };
-
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 2, height: 20 }}>
@@ -80,6 +45,10 @@ export default function ChapterView() {
 
   const [course, setCourse] = useState<Course | null>(null);
   const [showStudyGuide, setShowStudyGuide] = useState(false);
+  const getStudyGuidePdf = (t: string): string | null => {
+    const m: Record<string,string> = {'AI Cloud Engineer':'ai-cloud-engineer-study-guide.pdf','AI Agent Engineer':'ai-agent-engineer-study-guide.pdf','AI Data Engineer':'ai-data-engineer-study-guide.pdf','AI DevOps Engineer':'ai-devops-engineer-study-guide.pdf','AI Security Engineer':'ai-security-engineer-study-guide.pdf','AI MLOps Engineer':'ai-mlops-engineer-study-guide.pdf','AI Solutions Architect':'ai-solutions-architect-study-guide.pdf','AI Platform Engineer':'ai-platform-engineer-study-guide.pdf','AI Solutions Consultant':'ai-solutions-consultant-study-guide.pdf','AI Product Manager':'ai-product-manager-study-guide.pdf','AI Business Operations':'ai-business-operations-study-guide.pdf','AI Sales Engineer':'ai-sales-engineer-study-guide.pdf','AI Business Analyst':'ai-business-analyst-study-guide.pdf','AI Transformation Manager':'ai-transformation-mgr-study-guide.pdf','AI Program Manager':'ai-program-manager-study-guide.pdf','AI Enterprise Architect':'ai-enterprise-architect-study-guide.pdf','AI Governance Professional':'ai-governance-pro-study-guide.pdf','Responsible AI Specialist':'responsible-ai-study-guide.pdf','AI Compliance Officer':'ai-compliance-officer-study-guide.pdf','AI Risk Manager':'ai-risk-manager-study-guide.pdf','AI Auditor':'ai-auditor-study-guide.pdf','AI Policy Designer':'ai-policy-designer-study-guide.pdf','AI Ethics Specialist':'ai-ethics-specialist-study-guide.pdf','AI UX Designer':'ai-ux-designer-study-guide.pdf','Conversation Designer':'conversation-designer-study-guide.pdf','Human-AI Interaction Specialist':'human-ai-interaction-study-guide.pdf','AI Workflow Designer':'ai-workflow-designer-study-guide.pdf','AI Experience Architect':'ai-experience-architect-study-guide.pdf'};
+    const f = m[t]; return f ? 'https://vgujnkxylipfwmkpwzvb.supabase.co/storage/v1/object/public/study-guides/'+f : null;
+  };
   const [chapter, setChapter] = useState<Chapter | null>(null);
   const [videos, setVideos] = useState<Video[]>([]);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
