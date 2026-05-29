@@ -645,7 +645,7 @@ export default function StudentPortal() {
             {/* Tools Dock */}
             <div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',background:'linear-gradient(155deg,rgba(8,20,52,.88),rgba(5,13,38,.92))',border:'1px solid rgba(99,102,241,.12)',borderRadius:16,overflow:'hidden',boxShadow:'0 8px 40px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.07)'}}>
               {TOOLS.map((tool,i)=>(
-                <button key={i} onClick={()=>navigate(tool.path)} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'16px 8px',borderRight:i<4?'1px solid rgba(255,255,255,.06)':'none',cursor:'pointer',textAlign:'center',background:'none',border:i<4?'none':'none',borderRight:i<4?'1px solid rgba(255,255,255,.06)':undefined,fontFamily:'inherit',transition:'all .2s'}}>
+                <button key={i} onClick={()=>navigate(tool.path)} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'16px 8px',borderRight:i<4?'1px solid rgba(255,255,255,.06)':undefined,cursor:'pointer',textAlign:'center',background:'none',border:'none',fontFamily:'inherit',transition:'all .2s'}}>
                   <div style={{width:42,height:42,borderRadius:11,display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,background:[
                     'rgba(99,102,241,.2)','rgba(52,211,153,.18)','rgba(245,158,11,.18)','rgba(96,165,250,.18)','rgba(251,146,60,.18)'
                   ][i]}}>
