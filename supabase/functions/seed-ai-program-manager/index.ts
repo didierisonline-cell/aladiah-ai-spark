@@ -32,347 +32,88 @@ const courseData = {
     }
   },
   "modules": [
-    {
-      "title": "Module 1: AI Program Management Fundamentals",
-      "desc": "Program vs. project vs. portfolio management for AI (the three-level model), the AI program lifecycle (strategy → initiation → planning → execution → monitoring → closure), PMI PMBOK 7 adapted for AI programs, unique AI program challenges (research dependencies, probabilistic timelines, data dependencies, model uncertainty), and the AI program manager's value proposition. Case study: Managing Google's 1,000+ active AI programs.",
-      "lessons": [
-        {
-          "title": "Foundations: AI Program Management Fundamentals",
-          "desc": "Program vs. project vs. portfolio management for AI (the three-level model), the AI program lifecycle (strategy → initiation → planning → execution → monitoring → closure), PMI PMBOK 7 adapted for AI programs, unique AI program challenges (research dependencies, probabilistic timelines, data dependencies, model uncertainty), and the AI program manager's value proposition. Case study: Managing Google's 1,000+ active AI programs."
-        },
-        {
-          "title": "Module 1.2 Deep Dive: the AI program lifecycle (strategy → initiation → planning → execution → monitoring → closure)",
-          "desc": "Program vs. project vs. portfolio management for AI (the three-level model), the AI program lifecycle (strategy → initiation → planning → execution → monitoring → closure), PMI PMBOK 7 adapted for AI . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 1.3 Deep Dive: PMI PMBOK 7 adapted for AI programs",
-          "desc": "Program vs. project vs. portfolio management for AI (the three-level model), the AI program lifecycle (strategy → initiation → planning → execution → monitoring → closure), PMI PMBOK 7 adapted for AI . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 1.4 Deep Dive: unique AI program challenges (research dependencies",
-          "desc": "Program vs. project vs. portfolio management for AI (the three-level model), the AI program lifecycle (strategy → initiation → planning → execution → monitoring → closure), PMI PMBOK 7 adapted for AI . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 1.5 Deep Dive: probabilistic timelines",
-          "desc": "Program vs. project vs. portfolio management for AI (the three-level model), the AI program lifecycle (strategy → initiation → planning → execution → monitoring → closure), PMI PMBOK 7 adapted for AI . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 1.6 Deep Dive: data dependencies",
-          "desc": "Program vs. project vs. portfolio management for AI (the three-level model), the AI program lifecycle (strategy → initiation → planning → execution → monitoring → closure), PMI PMBOK 7 adapted for AI . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Assessment & Synthesis: Module 1",
-          "desc": "Comprehensive assessment applying all concepts from Module 1: AI Program Management Fundamentals. Scenario-based challenges drawn from real enterprise deployments test your mastery of every topic covered. Program vs. project vs. portfolio management for AI (the three-level model), the AI program lifecycle (strategy → initiation → planning → execution → "
-        }
-      ]
-    },
-    {
-      "title": "Module 2: AI Program Planning — Scope, Timeline, and Resource Management",
-      "desc": "AI program scope definition (preventing research scope creep), timeline planning with AI uncertainty (Monte Carlo simulation for ML project schedules — never give a single date for AI projects), resource planning for scarce AI talent (the ML engineer supply constraint), dependency mapping for AI programs (data dependencies, model dependencies, infrastructure dependencies), and the AI program plan template.",
-      "lessons": [
-        {
-          "title": "Foundations: AI Program Planning — Scope, Timeline, and Resource Management",
-          "desc": "AI program scope definition (preventing research scope creep), timeline planning with AI uncertainty (Monte Carlo simulation for ML project schedules — never give a single date for AI projects), resource planning for scarce AI talent (the ML engineer supply constraint), dependency mapping for AI programs (data dependencies, model dependencies, infrastructure dependencies), and the AI program plan template."
-        },
-        {
-          "title": "Module 2.2 Deep Dive: timeline planning with AI uncertainty (Monte Carlo simulation for ML project schedules — never give a single date for AI projects)",
-          "desc": "AI program scope definition (preventing research scope creep), timeline planning with AI uncertainty (Monte Carlo simulation for ML project schedules — never give a single date for AI projects), resou. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 2.3 Deep Dive: resource planning for scarce AI talent (the ML engineer supply constraint)",
-          "desc": "AI program scope definition (preventing research scope creep), timeline planning with AI uncertainty (Monte Carlo simulation for ML project schedules — never give a single date for AI projects), resou. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 2.4 Deep Dive: dependency mapping for AI programs (data dependencies",
-          "desc": "AI program scope definition (preventing research scope creep), timeline planning with AI uncertainty (Monte Carlo simulation for ML project schedules — never give a single date for AI projects), resou. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 2.5 Deep Dive: model dependencies",
-          "desc": "AI program scope definition (preventing research scope creep), timeline planning with AI uncertainty (Monte Carlo simulation for ML project schedules — never give a single date for AI projects), resou. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 2.6 Deep Dive: infrastructure dependencies)",
-          "desc": "AI program scope definition (preventing research scope creep), timeline planning with AI uncertainty (Monte Carlo simulation for ML project schedules — never give a single date for AI projects), resou. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Assessment & Synthesis: Module 2",
-          "desc": "Comprehensive assessment applying all concepts from Module 2: AI Program Planning — Scope, Timeline, and Resource Management. Scenario-based challenges drawn from real enterprise deployments test your mastery of every topic covered. AI program scope definition (preventing research scope creep), timeline planning with AI uncertainty (Monte Carlo simulation for ML project schedules "
-        }
-      ]
-    },
-    {
-      "title": "Module 3: Agile Program Management — SAFe, LeSS, and the Spotify Model for AI",
-      "desc": "SAFe (Scaled Agile Framework) applied to AI programs (ART for AI — the Agile Release Train), LeSS (Large-Scale Scrum) for ML team coordination, the Spotify model squads/tribes/chapters/guilds applied to AI organizations, PI Planning for AI programs (Program Increment Planning with ML-specific ceremonies), and managing the research vs. delivery tension. What Scrum masters need to know about ML sprints.",
-      "lessons": [
-        {
-          "title": "Foundations: Agile Program Management — SAFe, LeSS, and the Spotify Model for AI",
-          "desc": "SAFe (Scaled Agile Framework) applied to AI programs (ART for AI — the Agile Release Train), LeSS (Large-Scale Scrum) for ML team coordination, the Spotify model squads/tribes/chapters/guilds applied to AI organizations, PI Planning for AI programs (Program Increment Planning with ML-specific ceremonies), and managing the research vs. delivery tension. What Scrum masters need to know about ML sprints."
-        },
-        {
-          "title": "Module 3.2 Deep Dive: LeSS (Large-Scale Scrum) for ML team coordination",
-          "desc": "SAFe (Scaled Agile Framework) applied to AI programs (ART for AI — the Agile Release Train), LeSS (Large-Scale Scrum) for ML team coordination, the Spotify model squads/tribes/chapters/guilds applied . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 3.3 Deep Dive: the Spotify model squads/tribes/chapters/guilds applied to AI organizations",
-          "desc": "SAFe (Scaled Agile Framework) applied to AI programs (ART for AI — the Agile Release Train), LeSS (Large-Scale Scrum) for ML team coordination, the Spotify model squads/tribes/chapters/guilds applied . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 3.4 Deep Dive: PI Planning for AI programs (Program Increment Planning with ML-specific ceremonies)",
-          "desc": "SAFe (Scaled Agile Framework) applied to AI programs (ART for AI — the Agile Release Train), LeSS (Large-Scale Scrum) for ML team coordination, the Spotify model squads/tribes/chapters/guilds applied . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 3.5 Deep Dive: and managing the research vs. delivery tension. What Scrum masters need to know about ML sprints.",
-          "desc": "SAFe (Scaled Agile Framework) applied to AI programs (ART for AI — the Agile Release Train), LeSS (Large-Scale Scrum) for ML team coordination, the Spotify model squads/tribes/chapters/guilds applied . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 3.6 Deep Dive: SAFe (Scaled Agile Framework) applied to AI programs (ART fo",
-          "desc": "SAFe (Scaled Agile Framework) applied to AI programs (ART for AI — the Agile Release Train), LeSS (Large-Scale Scrum) for ML team coordination, the Spotify model squads/tribes/chapters/guilds applied . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Assessment & Synthesis: Module 3",
-          "desc": "Comprehensive assessment applying all concepts from Module 3: Agile Program Management — SAFe, LeSS, and the Spotify Model for AI. Scenario-based challenges drawn from real enterprise deployments test your mastery of every topic covered. SAFe (Scaled Agile Framework) applied to AI programs (ART for AI — the Agile Release Train), LeSS (Large-Scale Scrum) for ML team coordination, the Sp"
-        }
-      ]
-    },
-    {
-      "title": "Module 4: Stakeholder Management and Executive Communication",
-      "desc": "AI program stakeholder mapping (who influences success?), the AI program status report that executives actually read (the one-page format with the three questions: Are we on track? Do we have what we need? What decisions do you need to make?), managing up effectively (communicating AI uncertainty to non-technical executives), managing across (coordinating business, IT, and data science stakeholders), and the steering committee governance. Template: AI program dashboard.",
-      "lessons": [
-        {
-          "title": "Foundations: Stakeholder Management and Executive Communication",
-          "desc": "AI program stakeholder mapping (who influences success?), the AI program status report that executives actually read (the one-page format with the three questions: Are we on track? Do we have what we need? What decisions do you need to make?), managing up effectively (communicating AI uncertainty to non-technical executives), managing across (coordinating business, IT, and data science stakeholders), and the steering committee governance. Template: AI program dashboard."
-        },
-        {
-          "title": "Module 4.2 Deep Dive: the AI program status report that executives actually read (the one-page format with the three questions: Are we on track? Do we have what we need? What decisions do you need to make?)",
-          "desc": "AI program stakeholder mapping (who influences success?), the AI program status report that executives actually read (the one-page format with the three questions: Are we on track? Do we have what we . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 4.3 Deep Dive: managing up effectively (communicating AI uncertainty to non-technical executives)",
-          "desc": "AI program stakeholder mapping (who influences success?), the AI program status report that executives actually read (the one-page format with the three questions: Are we on track? Do we have what we . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 4.4 Deep Dive: managing across (coordinating business",
-          "desc": "AI program stakeholder mapping (who influences success?), the AI program status report that executives actually read (the one-page format with the three questions: Are we on track? Do we have what we . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 4.5 Deep Dive: IT",
-          "desc": "AI program stakeholder mapping (who influences success?), the AI program status report that executives actually read (the one-page format with the three questions: Are we on track? Do we have what we . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 4.6 Deep Dive: and data science stakeholders)",
-          "desc": "AI program stakeholder mapping (who influences success?), the AI program status report that executives actually read (the one-page format with the three questions: Are we on track? Do we have what we . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Assessment & Synthesis: Module 4",
-          "desc": "Comprehensive assessment applying all concepts from Module 4: Stakeholder Management and Executive Communication. Scenario-based challenges drawn from real enterprise deployments test your mastery of every topic covered. AI program stakeholder mapping (who influences success?), the AI program status report that executives actually read (the one-page format with the thr"
-        }
-      ]
-    },
-    {
-      "title": "Module 5: AI Program Risk Management — The Risks That Kill AI Programs",
-      "desc": "AI-specific program risk taxonomy (technical: model performance risk, data quality risk; organizational: talent attrition, sponsorship loss; regulatory: compliance requirement changes; vendor: API deprecation, pricing changes; ethical: bias discovery post-launch), the AI program risk register, risk probability × impact scoring, risk response strategies (avoid/reduce/transfer/accept), and the early warning indicators for at-risk AI programs.",
-      "lessons": [
-        {
-          "title": "Foundations: AI Program Risk Management — The Risks That Kill AI Programs",
-          "desc": "AI-specific program risk taxonomy (technical: model performance risk, data quality risk; organizational: talent attrition, sponsorship loss; regulatory: compliance requirement changes; vendor: API deprecation, pricing changes; ethical: bias discovery post-launch), the AI program risk register, risk probability × impact scoring, risk response strategies (avoid/reduce/transfer/accept), and the early warning indicators for at-risk AI programs."
-        },
-        {
-          "title": "Module 5.2 Deep Dive: data quality risk; organizational: talent attrition",
-          "desc": "AI-specific program risk taxonomy (technical: model performance risk, data quality risk; organizational: talent attrition, sponsorship loss; regulatory: compliance requirement changes; vendor: API dep. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 5.3 Deep Dive: sponsorship loss; regulatory: compliance requirement changes; vendor: API deprecation",
-          "desc": "AI-specific program risk taxonomy (technical: model performance risk, data quality risk; organizational: talent attrition, sponsorship loss; regulatory: compliance requirement changes; vendor: API dep. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 5.4 Deep Dive: pricing changes; ethical: bias discovery post-launch)",
-          "desc": "AI-specific program risk taxonomy (technical: model performance risk, data quality risk; organizational: talent attrition, sponsorship loss; regulatory: compliance requirement changes; vendor: API dep. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 5.5 Deep Dive: the AI program risk register",
-          "desc": "AI-specific program risk taxonomy (technical: model performance risk, data quality risk; organizational: talent attrition, sponsorship loss; regulatory: compliance requirement changes; vendor: API dep. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 5.6 Deep Dive: risk probability × impact scoring",
-          "desc": "AI-specific program risk taxonomy (technical: model performance risk, data quality risk; organizational: talent attrition, sponsorship loss; regulatory: compliance requirement changes; vendor: API dep. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Assessment & Synthesis: Module 5",
-          "desc": "Comprehensive assessment applying all concepts from Module 5: AI Program Risk Management — The Risks That Kill AI Programs. Scenario-based challenges drawn from real enterprise deployments test your mastery of every topic covered. AI-specific program risk taxonomy (technical: model performance risk, data quality risk; organizational: talent attrition, sponsorship loss; regulator"
-        }
-      ]
-    },
-    {
-      "title": "Module 6: AI Program Budget Management and FinOps",
-      "desc": "AI program budget structure (compute infrastructure, data acquisition, talent, tools, licenses — and why compute is often 60% of budget), cloud cost management for AI programs (budget alerts at 80%/100%, reserved capacity planning, spot instance strategy), the build-vs-buy financial analysis for AI programs, managing budget variances in research-heavy programs, and AI program financial reporting. Template: AI program budget tracker with scenario modeling.",
-      "lessons": [
-        {
-          "title": "Foundations: AI Program Budget Management and FinOps",
-          "desc": "AI program budget structure (compute infrastructure, data acquisition, talent, tools, licenses — and why compute is often 60% of budget), cloud cost management for AI programs (budget alerts at 80%/100%, reserved capacity planning, spot instance strategy), the build-vs-buy financial analysis for AI programs, managing budget variances in research-heavy programs, and AI program financial reporting. Template: AI program budget tracker with scenario modeling."
-        },
-        {
-          "title": "Module 6.2 Deep Dive: data acquisition",
-          "desc": "AI program budget structure (compute infrastructure, data acquisition, talent, tools, licenses — and why compute is often 60% of budget), cloud cost management for AI programs (budget alerts at 80%/10. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 6.3 Deep Dive: talent",
-          "desc": "AI program budget structure (compute infrastructure, data acquisition, talent, tools, licenses — and why compute is often 60% of budget), cloud cost management for AI programs (budget alerts at 80%/10. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 6.4 Deep Dive: tools",
-          "desc": "AI program budget structure (compute infrastructure, data acquisition, talent, tools, licenses — and why compute is often 60% of budget), cloud cost management for AI programs (budget alerts at 80%/10. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 6.5 Deep Dive: licenses — and why compute is often 60% of budget)",
-          "desc": "AI program budget structure (compute infrastructure, data acquisition, talent, tools, licenses — and why compute is often 60% of budget), cloud cost management for AI programs (budget alerts at 80%/10. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 6.6 Deep Dive: cloud cost management for AI programs (budget alerts at 80%/100%",
-          "desc": "AI program budget structure (compute infrastructure, data acquisition, talent, tools, licenses — and why compute is often 60% of budget), cloud cost management for AI programs (budget alerts at 80%/10. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Assessment & Synthesis: Module 6",
-          "desc": "Comprehensive assessment applying all concepts from Module 6: AI Program Budget Management and FinOps. Scenario-based challenges drawn from real enterprise deployments test your mastery of every topic covered. AI program budget structure (compute infrastructure, data acquisition, talent, tools, licenses — and why compute is often 60% of budget), cloud cost m"
-        }
-      ]
-    },
-    {
-      "title": "Module 7: Vendor and Partner Management for AI Programs",
-      "desc": "AI vendor evaluation and selection methodology (RFP for AI services, vendor scoring matrix), AI service SLA negotiation (model performance SLAs are new — how to structure them), vendor risk assessment for AI (single-vendor concentration risk, API deprecation risk, pricing risk), managing multi-vendor AI programs (coordination overhead, integration complexity), and the vendor governance framework.",
-      "lessons": [
-        {
-          "title": "Foundations: Vendor and Partner Management for AI Programs",
-          "desc": "AI vendor evaluation and selection methodology (RFP for AI services, vendor scoring matrix), AI service SLA negotiation (model performance SLAs are new — how to structure them), vendor risk assessment for AI (single-vendor concentration risk, API deprecation risk, pricing risk), managing multi-vendor AI programs (coordination overhead, integration complexity), and the vendor governance framework."
-        },
-        {
-          "title": "Module 7.2 Deep Dive: vendor scoring matrix)",
-          "desc": "AI vendor evaluation and selection methodology (RFP for AI services, vendor scoring matrix), AI service SLA negotiation (model performance SLAs are new — how to structure them), vendor risk assessment. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 7.3 Deep Dive: AI service SLA negotiation (model performance SLAs are new — how to structure them)",
-          "desc": "AI vendor evaluation and selection methodology (RFP for AI services, vendor scoring matrix), AI service SLA negotiation (model performance SLAs are new — how to structure them), vendor risk assessment. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 7.4 Deep Dive: vendor risk assessment for AI (single-vendor concentration risk",
-          "desc": "AI vendor evaluation and selection methodology (RFP for AI services, vendor scoring matrix), AI service SLA negotiation (model performance SLAs are new — how to structure them), vendor risk assessment. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 7.5 Deep Dive: API deprecation risk",
-          "desc": "AI vendor evaluation and selection methodology (RFP for AI services, vendor scoring matrix), AI service SLA negotiation (model performance SLAs are new — how to structure them), vendor risk assessment. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 7.6 Deep Dive: pricing risk)",
-          "desc": "AI vendor evaluation and selection methodology (RFP for AI services, vendor scoring matrix), AI service SLA negotiation (model performance SLAs are new — how to structure them), vendor risk assessment. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Assessment & Synthesis: Module 7",
-          "desc": "Comprehensive assessment applying all concepts from Module 7: Vendor and Partner Management for AI Programs. Scenario-based challenges drawn from real enterprise deployments test your mastery of every topic covered. AI vendor evaluation and selection methodology (RFP for AI services, vendor scoring matrix), AI service SLA negotiation (model performance SLAs are ne"
-        }
-      ]
-    },
-    {
-      "title": "Module 8: AI Ethics and Responsible AI in Program Delivery",
-      "desc": "Responsible AI framework integration into program management (NIST AI RMF governance function applied to programs), ethics review checkpoints in the AI program lifecycle, managing mid-program ethical discoveries (what to do when bias is found 80% through development), the 'kill switch' decision framework for harmful AI programs, and building responsible AI gates into program approval processes.",
-      "lessons": [
-        {
-          "title": "Foundations: AI Ethics and Responsible AI in Program Delivery",
-          "desc": "Responsible AI framework integration into program management (NIST AI RMF governance function applied to programs), ethics review checkpoints in the AI program lifecycle, managing mid-program ethical discoveries (what to do when bias is found 80% through development), the 'kill switch' decision framework for harmful AI programs, and building responsible AI gates into program approval processes."
-        },
-        {
-          "title": "Module 8.2 Deep Dive: ethics review checkpoints in the AI program lifecycle",
-          "desc": "Responsible AI framework integration into program management (NIST AI RMF governance function applied to programs), ethics review checkpoints in the AI program lifecycle, managing mid-program ethical . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 8.3 Deep Dive: managing mid-program ethical discoveries (what to do when bias is found 80% through development)",
-          "desc": "Responsible AI framework integration into program management (NIST AI RMF governance function applied to programs), ethics review checkpoints in the AI program lifecycle, managing mid-program ethical . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 8.4 Deep Dive: the 'kill switch' decision framework for harmful AI programs",
-          "desc": "Responsible AI framework integration into program management (NIST AI RMF governance function applied to programs), ethics review checkpoints in the AI program lifecycle, managing mid-program ethical . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 8.5 Deep Dive: and building responsible AI gates into program approval processes.",
-          "desc": "Responsible AI framework integration into program management (NIST AI RMF governance function applied to programs), ethics review checkpoints in the AI program lifecycle, managing mid-program ethical . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 8.6 Deep Dive: Responsible AI framework integration into program management",
-          "desc": "Responsible AI framework integration into program management (NIST AI RMF governance function applied to programs), ethics review checkpoints in the AI program lifecycle, managing mid-program ethical . Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Assessment & Synthesis: Module 8",
-          "desc": "Comprehensive assessment applying all concepts from Module 8: AI Ethics and Responsible AI in Program Delivery. Scenario-based challenges drawn from real enterprise deployments test your mastery of every topic covered. Responsible AI framework integration into program management (NIST AI RMF governance function applied to programs), ethics review checkpoints in the A"
-        }
-      ]
-    },
-    {
-      "title": "Module 9: AI Program Quality and Testing Management",
-      "desc": "Quality management planning for AI programs (test strategy: unit → integration → system → acceptance → production monitoring), managing the model validation process (independent validation requirement, timeline impact), coordinating UAT for AI features (users testing probabilistic systems need special guidance), managing defects in ML systems (what is a 'bug' in an AI system?), and the AI program go-live criteria.",
-      "lessons": [
-        {
-          "title": "Foundations: AI Program Quality and Testing Management",
-          "desc": "Quality management planning for AI programs (test strategy: unit → integration → system → acceptance → production monitoring), managing the model validation process (independent validation requirement, timeline impact), coordinating UAT for AI features (users testing probabilistic systems need special guidance), managing defects in ML systems (what is a 'bug' in an AI system?), and the AI program go-live criteria."
-        },
-        {
-          "title": "Module 9.2 Deep Dive: managing the model validation process (independent validation requirement",
-          "desc": "Quality management planning for AI programs (test strategy: unit → integration → system → acceptance → production monitoring), managing the model validation process (independent validation requirement. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 9.3 Deep Dive: timeline impact)",
-          "desc": "Quality management planning for AI programs (test strategy: unit → integration → system → acceptance → production monitoring), managing the model validation process (independent validation requirement. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 9.4 Deep Dive: coordinating UAT for AI features (users testing probabilistic systems need special guidance)",
-          "desc": "Quality management planning for AI programs (test strategy: unit → integration → system → acceptance → production monitoring), managing the model validation process (independent validation requirement. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 9.5 Deep Dive: managing defects in ML systems (what is a 'bug' in an AI system?)",
-          "desc": "Quality management planning for AI programs (test strategy: unit → integration → system → acceptance → production monitoring), managing the model validation process (independent validation requirement. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 9.6 Deep Dive: and the AI program go-live criteria.",
-          "desc": "Quality management planning for AI programs (test strategy: unit → integration → system → acceptance → production monitoring), managing the model validation process (independent validation requirement. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Assessment & Synthesis: Module 9",
-          "desc": "Comprehensive assessment applying all concepts from Module 9: AI Program Quality and Testing Management. Scenario-based challenges drawn from real enterprise deployments test your mastery of every topic covered. Quality management planning for AI programs (test strategy: unit → integration → system → acceptance → production monitoring), managing the model vali"
-        }
-      ]
-    },
-    {
-      "title": "Module 10: AI Program Leadership and Capstone",
-      "desc": "AI PM career path and compensation ($150K-$280K for senior AI PMs), building the AI PMO, lessons from the most expensive AI program failures (and what better program management would have changed), and the capstone: develop a complete program charter, integrated program plan, risk register, stakeholder management plan, communication plan, and budget for a complex multi-stream AI transformation program.",
-      "lessons": [
-        {
-          "title": "Foundations: AI Program Leadership and Capstone",
-          "desc": "AI PM career path and compensation ($150K-$280K for senior AI PMs), building the AI PMO, lessons from the most expensive AI program failures (and what better program management would have changed), and the capstone: develop a complete program charter, integrated program plan, risk register, stakeholder management plan, communication plan, and budget for a complex multi-stream AI transformation program."
-        },
-        {
-          "title": "Module 10.2 Deep Dive: building the AI PMO",
-          "desc": "AI PM career path and compensation ($150K-$280K for senior AI PMs), building the AI PMO, lessons from the most expensive AI program failures (and what better program management would have changed), an. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 10.3 Deep Dive: lessons from the most expensive AI program failures (and what better program management would have changed)",
-          "desc": "AI PM career path and compensation ($150K-$280K for senior AI PMs), building the AI PMO, lessons from the most expensive AI program failures (and what better program management would have changed), an. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 10.4 Deep Dive: and the capstone: develop a complete program charter",
-          "desc": "AI PM career path and compensation ($150K-$280K for senior AI PMs), building the AI PMO, lessons from the most expensive AI program failures (and what better program management would have changed), an. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 10.5 Deep Dive: integrated program plan",
-          "desc": "AI PM career path and compensation ($150K-$280K for senior AI PMs), building the AI PMO, lessons from the most expensive AI program failures (and what better program management would have changed), an. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Module 10.6 Deep Dive: risk register",
-          "desc": "AI PM career path and compensation ($150K-$280K for senior AI PMs), building the AI PMO, lessons from the most expensive AI program failures (and what better program management would have changed), an. Production patterns and real case studies from world-class organizations ground this lesson in applicable expertise."
-        },
-        {
-          "title": "Assessment & Synthesis: Module 10",
-          "desc": "Comprehensive assessment applying all concepts from Module 10: AI Program Leadership and Capstone. Scenario-based challenges drawn from real enterprise deployments test your mastery of every topic covered. AI PM career path and compensation ($150K-$280K for senior AI PMs), building the AI PMO, lessons from the most expensive AI program failures (and what"
-        }
-      ]
-    }
-  ]
+  {"title": "Module 1: AI Program Management Fundamentals", "desc": "Portfolio thinking, dependency management, executive stakeholder navigation, and governance for multi-project AI programs.", "lessons": [
+    {"title": "1.1 What AI Program Managers Do", "desc": "Program management differs from project management: orchestrating a portfolio of related projects toward strategic outcomes. AI Program Manager responsibilities: define AI program strategy, align cross-enterprise stakeholders, manage interdependencies between AI projects, measure program-level business outcomes, maintain program governance. Common program constructs: AI Center of Excellence, enterprise AI transformation, complex multi-model initiative. Case: Google Workspace AI — coordinating Gmail, Meet, Docs, Sheets AI across multiple product teams while maintaining user experience consistency."},
+    {"title": "1.2 AI Portfolio Management", "desc": "Portfolio investment categories: innovation (high uncertainty, high upside), growth (scaling proven AI), sustaining (maintaining production systems). Composition: 60% sustaining, 30% growth, 10% innovation. Portfolio health metrics: time-to-production, value realization rate, category distribution. Portfolio rationalization: killing AI zombie projects is highest-leverage activity. Case: Microsoft evolving from scattered AI initiatives to coordinated portfolio with AI Portfolio Review Board."},
+    {"title": "1.3 Dependency Management", "desc": "Dependency types: data (model A needs pipeline B's output), infrastructure (deployment needs platform C), talent (specialist needed across multiple projects), organizational (business unit process redesign before AI deployment). Dependency mapping, critical path analysis, buffer management at hand-off points. Case: enterprise bank AI transformation — dependency map revealed 3 infrastructure projects blocking 12 AI initiatives simultaneously."},
+    {"title": "1.4 Executive Stakeholder Management", "desc": "Stakeholder mapping: decision authority, organizational influence, veto/accelerate power. Communication cadence: monthly steering (status, decisions, risks), quarterly executive review (outcomes, portfolio, investments). Framework: translate technical metrics to business outcomes — '87% accuracy' → '$3M additional fraud prevented annually.' Program sponsor relationship: air cover for difficult decisions. Case: Amazon retail AI program management maintaining VP-level alignment across Finance, Technology, Operations, Marketing."},
+    {"title": "1.5 AI Resource Management", "desc": "ML talent allocation: expensive ($250K+ total comp) and scarce, skills matching critical. GPU compute allocation: priority framework for competing training jobs. Resource conflict resolution. Capacity planning 6-12 months ahead. Build vs. borrow vs. buy talent. Case: Uber allocating ML engineers across 200+ simultaneous AI projects using skills registry and project-matching system."},
+    {"title": "1.6 AI Program Governance", "desc": "Decision rights matrix: project team, program manager, steering committee, executive sponsor. Quality gates: data readiness (available, validated, sufficient), model quality (meets accuracy threshold on representative data), production readiness (latency, reliability, security). Gate failure response. Case: Microsoft responsible AI — privacy review, fairness assessment, accountability documentation required for every customer-facing AI feature."},
+    {"title": "1.7 Assessment: Program Design", "desc": "Design AI program for retail enterprise transformation: strategy, portfolio of 8 projects with rationale, dependency map, governance structure, resource plan, executive communication calendar."}
+  ]},
+  {"title": "Module 2: AI Transformation Programs", "desc": "Enterprise change management, capability building, AI CoE design, and measuring transformation progress.", "lessons": [
+    {"title": "2.1 Why AI Transformations Fail", "desc": "Failure modes: technology-first thinking, capability neglect, governance vacuum, adoption failure, no value measurement. Success factors: executive commitment, specific outcome targets, 15-20% budget for capability building, governance from day 1. Transformation readiness: culture, leadership alignment, data foundation. Case: GE Predix vs. Microsoft internal AI transformation — extracting critical success factors."},
+    {"title": "2.2 Enterprise Change Management for AI", "desc": "ADKAR framework: Awareness, Desire, Knowledge, Ability, Reinforcement. AI-specific resistance: job displacement fear, technical intimidation, workflow disruption. Culture shift challenge: intuition-based to data-driven decision making takes 2-3 years. Case: JPMorgan training 50,000+ employees on AI and data skills over 3 years."},
+    {"title": "2.3 AI Capability Building at Scale", "desc": "Skill inventory, role-based learning paths: executives (4-hour awareness), business users (8-hour collaboration), analysts (40-hour ML basics), engineers (100-hour applied ML). Delivery channels. Measurement. AWS/Google/Microsoft enterprise training programs. Case: Walmart 'AI for All' — 50,000 associates trained on AI fundamentals in 18 months."},
+    {"title": "2.4 AI Center of Excellence Design", "desc": "CoE models: centralized (efficient but bottleneck), federated (scalable but inconsistent), hybrid (most common). CoE services: use case identification, development support, standards/governance, training. Maturity: start centralized, evolve to hybrid. Success metrics: AI use cases in production, business value, self-service rate. Case: Ford CoE from 50 to 500 AI engineers over 3 years."},
+    {"title": "2.5 Measuring Transformation Progress", "desc": "Framework: capability metrics (leading), deployment metrics (leading), outcome metrics (lagging). AI transformation dashboard. The valley of disappointment: sustaining investment before value materializes. Case: Siemens quarterly transformation scorecard presented to executive leadership."},
+    {"title": "2.6 Cross-Industry Transformation Case Studies", "desc": "Healthcare: Mayo Clinic 5-year journey. Financial services: Goldman Sachs technology repositioning. Retail: Walmart vs. Amazon supply chain AI. Manufacturing: GE Predix lessons. Common success and failure patterns across all industries. Case: side-by-side comparison of successful vs. failed AI transformation extracting critical decision points."},
+    {"title": "2.7 Assessment: Transformation Program Plan", "desc": "Design 3-year AI transformation for healthcare network: vision, business objectives, change management, capability curriculum by role, CoE design, measurement framework, executive communication plan."}
+  ]},
+  {"title": "Module 3: AI Program Planning", "desc": "OKRs, roadmaps, estimation, risk management, and program reporting.", "lessons": [
+    {"title": "3.1 AI Program OKRs", "desc": "OKR structure for AI: Objective (qualitative, inspiring), Key Results (quantitative, measurable business outcomes, not feature deliveries). Example: 'Become AI leader in supply chain' → '25% stockout reduction Q4, AI serving 80% replenishment decisions Q2 next year, $50M inventory cost reduction year 2.' Anti-patterns: output OKRs, sandbagging, business disconnection. Cascading OKRs from program to project to team. Case: Google AI program OKR system for stretch goals without sacrificing quality."},
+    {"title": "3.2 AI Program Roadmapping", "desc": "Design principles: value first (quick wins build confidence), risk management (front-load risky experiments), dependency respect, resource leveling. Phased roadmap: Foundation → Scale → Transformation. Scenario planning: optimistic, base, conservative. Communication: 1-page executive vs. detailed Gantt. Case: Amazon Alexa roadmap evolution from music speaker to enterprise AI platform over 8 years."},
+    {"title": "3.3 Risk Management for AI Programs", "desc": "Risk taxonomy: technical, organizational, external, strategic. Quantification: probability × impact. Response strategies: avoid, mitigate, transfer, accept. Risk register with owners. Top AI program risks: talent (mitigation: redundancy, cross-training), data quality (early assessment, parallel remediation), adoption (change management from day 1). Case: managing ML team departure risk without derailing 2-year program."},
+    {"title": "3.4 AI Program Estimation", "desc": "Approaches: expert judgment, analogical, parametric, three-point. The range mindset: timelines as ranges not points. Estimate deterioration problem: early estimates become commitments. Explicit estimate review milestones as program knowledge matures. Case: early estimate treated as commitment — consequences vs. program with estimates as living documents."},
+    {"title": "3.5 Program Reporting and Executive Communication", "desc": "Cadence: weekly team (operational), monthly steering (strategic), quarterly executive (portfolio). RAG status indicators, business outcome metrics prominently displayed. Honest status culture. Translation: 'model accuracy +3%' → '$5M additional annual fraud prevention.' Case: presenting a behind-schedule AI program without triggering panic — the communication strategy."},
+    {"title": "3.6 Agile Program Management for AI", "desc": "SAFe for AI: Program Increment planning coordinating multiple AI teams. AI team composition challenge for Agile. Shippable increment definition for ML. PI planning event for AI programs. Case: Spotify adapting SAFe for ML development uncertainty."},
+    {"title": "3.7 Assessment: Program Plan", "desc": "Complete program plan for autonomous telco customer service AI: OKRs, phased roadmap, risk register, resource plan, reporting templates, executive approval presentation."}
+  ]},
+  {"title": "Module 4: Managing AI Teams", "desc": "Roles, recruiting, culture, performance management, cross-functional dynamics.", "lessons": [
+    {"title": "4.1 The AI Team Ecosystem", "desc": "Roles: ML Scientists (research), ML Engineers (productionize), Data Engineers (pipelines), Data Scientists (analysis), AI PMs (what to build), AI Program Managers (coordinate). Coordination failures: science-to-engineering handoffs, data-to-science handoffs, engineering-to-product handoffs. Case: Airbnb's explicit collaboration model between ML Scientists, Engineers, and Data Scientists."},
+    {"title": "4.2 Recruiting and Retaining ML Talent", "desc": "Where to find: academic labs, AI companies, NeurIPS/ICML conferences. Evaluation: take-home assignments, real problem interviews, research paper discussion. Compensation: $200-350K total comp at top companies. Retention: technical challenge, research opportunities, team quality, impact visibility. Competing against Google/Meta/OpenAI. Case: mid-size company building world-class team through unique technical challenges and research freedom."},
+    {"title": "4.3 Building High-Performance AI Team Culture", "desc": "Characteristics: psychological safety, intellectual honesty (no HiPPO), rigorous experimentation, fast failure, technical excellence. Anti-patterns: perfectionism paralysis, hero culture, demo culture. Safety culture: celebrate what was learned not just achieved. Case: DeepMind balancing research culture with product delivery."},
+    {"title": "4.4 Performance Management for ML Teams", "desc": "Dimensions: technical contribution, productivity, collaboration, impact. Challenge: experiments 'fail' — evaluate methodology quality not just outcomes. Goal setting: research goals vs. product goals. Managing underperformers. Case: leading AI lab evaluation rubric — impact, technical excellence, collaboration assessed independently."},
+    {"title": "4.5 Navigating Organizational Politics", "desc": "Dynamics: business units want AI but won't resource it, IT wants control, Legal/Compliance aren't staffed for AI velocity, Finance wants ROI before investment. RACI for AI programs. The WIIFM principle. Influence failure modes. Case: navigating conflict between central IT wanting infrastructure control and business unit needing AI velocity."},
+    {"title": "4.6 Remote and Distributed AI Teams", "desc": "Design principles: overlapping synchronous hours (protected), async defaults for documentation, explicit communication norms, explicit culture. Tools: experiment tracking, documentation platforms, video collaboration, code collaboration. The async experiment review delay challenge. Case: distributed team across San Francisco, London, Bangalore — collaboration model and meeting structure."},
+    {"title": "4.7 Assessment: Team Design Plan", "desc": "Team structure and management for financial services AI program: composition with rationale, hiring plan, performance management framework, collaboration model, culture design, cross-functional relationships with IT, Legal, Compliance, business units."}
+  ]},
+  {"title": "Module 5: AI Program Operations", "desc": "Delivery cadences, quality management, budgeting, risk in production, retrospectives.", "lessons": [
+    {"title": "5.1 Operational Cadences", "desc": "Framework: daily standup, weekly team sync, bi-weekly sprint review, monthly program steering, quarterly strategic review. Meeting design: async status, synchronous decisions. Decision log. Case: DeepMind weekly research review format — balancing scientific discussion with delivery focus."},
+    {"title": "5.2 AI Quality Management", "desc": "Dimensions: model, data, system, integration quality. Quality gates in delivery lifecycle: data validation, model validation, system testing, production readiness. Automated quality checks in CI/CD. Quality culture: team's responsibility not separate QA function. Case: Netflix quality management across 100+ production ML models."},
+    {"title": "5.3 Program Budgeting", "desc": "Components: people (60-70%), infrastructure, data, external support. Cost tracking per project and per ML experiment run. GPU cost controls: usage-based spikes. ROI tracking: connect costs to value quarterly. Budget communication to non-technical executives. Case: Series C startup financial management extending runway while maintaining ML velocity."},
+    {"title": "5.4 Production Risk Management", "desc": "Risks: model drift, data pipeline failures, infrastructure incidents, adversarial attacks, regulatory changes. Ongoing monitoring: performance, data quality, infrastructure. Pre-defined response playbooks. Case: pre-COVID model experiencing severe drift post-COVID — detection and response."},
+    {"title": "5.5 Retrospectives and Learning Loops", "desc": "Formats: project, milestone, quarterly program retrospectives. Facilitation: psychological safety, actionable improvements (vague → specific), close the loop. Learning organization: retrospective insights → process updates. AI-specific: model experiment post-mortems, deployment post-mortems. Case: mature AI program quarterly retrospective format and specific improvements."},
+    {"title": "5.6 Scaling from Pilot to Enterprise", "desc": "Failure modes: technology doesn't scale, organizational capacity doesn't scale, value case doesn't scale, governance doesn't scale. Scaling readiness assessment. The factory model: repeatable process not custom engineering per use case. Platform investment requirement. Case: Capital One scaling from 100 to 1,000 production AI models."},
+    {"title": "5.7 Assessment: Operations Design", "desc": "Operational framework for retail company with 30 production AI models across 5 business units: cadence calendar, quality management with specific gates, financial management, production risk plan, retrospective process, scaling strategy for 20 additional models."}
+  ]},
+  {"title": "Module 6: Strategic AI Program Leadership", "desc": "Strategy, board communication, organizational influence, executive presence.", "lessons": [
+    {"title": "6.1 Strategic Thinking for AI Program Leaders", "desc": "Operate at business strategy + technical capability intersection. Strategic frameworks: Porter's competitive advantage through AI, disruption theory, platform economics with data network effects. The AI strategy conversation: how to participate in and drive executive AI strategy discussions. Case: AI Program Leader shaping 5-year financial services AI strategy."},
+    {"title": "6.2 Communicating AI Value: Board to Front Line", "desc": "Board: AI as strategic investment and competitive necessity. CEO/CFO: ROI, payback period, risk mitigation. Business unit leaders: operational efficiency and revenue. Front-line: personal impact and support. Translation ladder: same program, different story for each level. Case: Microsoft communicating Copilot vision from Satya Nadella to individual product teams."},
+    {"title": "6.3 Building an AI Program Office", "desc": "Services: program management, governance, talent, platform oversight, communication. Positioning: close to executive leadership (CTO, CDO, CEO). Metrics: portfolio performance, governance effectiveness, talent pipeline, platform utilization. Case: Amazon AI Program Office under Andy Jassy — structure and governance enabling AI across every business unit."},
+    {"title": "6.4 Influencing Without Authority", "desc": "Influence strategies: expertise, relationship, vision, coalition, reciprocity. Organizational influence map. WIIFM principle for every stakeholder. Failure modes: relying on non-existent authority, burning capital on unimportant battles, being known as a complainer. Case: convincing reluctant IT organization to prioritize AI infrastructure — influence strategy and relationship building."},
+    {"title": "6.5 AI Program Budgeting at Scale: CFO Conversations", "desc": "AI investment thesis for capital allocation. CFO conversation preparation: 3-year investment, expected returns, payback period, risk mitigation. Business case structure. Portfolio business case: capability beyond sum of individual ROIs. Case: presenting $50M AI transformation business case to a CFO — structure and questions to prepare for."},
+    {"title": "6.6 Building Personal Brand as AI Program Leader", "desc": "Dimensions: expertise, perspective, communication, network. Brand building: conference speaking, writing, advisory roles, mentoring. Thought leadership platforms: LinkedIn, PMI publications, industry conferences, podcasts. The thought leadership flywheel: writing → speaking → advisory seats → executive network → opportunities → richer experiences. Case: VP of AI Programs building 50K LinkedIn following and its career impact."},
+    {"title": "6.7 Capstone: Strategic Program Presentation", "desc": "Board update for 3-year enterprise AI transformation at 18 months in: executive summary, program health dashboard, business value realized vs. projected, strategic risk assessment, investment recommendations for years 2-3, competitive AI positioning analysis."}
+  ]},
+  {"title": "Module 7: Specialized AI Program Management", "desc": "Regulated industries, international programs, innovation programs, vendor management.", "lessons": [
+    {"title": "7.1 AI Programs in Regulated Industries", "desc": "Financial services: SR 11-7 model risk management as program framework, regulatory examination preparation as milestone, model inventory as ongoing function. Healthcare: FDA clearance as program gate, clinical validation as program phase. Insurance: state filings as milestones, actuarial validation as quality gate. Regulatory timeline uncertainty: build into schedules. Case: managing FDA clearance for AI medical device — 510(k) program plan."},
+    {"title": "7.2 International AI Programs", "desc": "Regulatory: EU AI Act documentation, China content compliance, US state laws. Cultural: decision-making styles, relationship norms, communication styles. Coordination: time zone management, documentation culture, inclusive meetings. Data: GDPR residency, China PIPL localization, US technology transfer restrictions. Case: global program across US, EU, Asia — coordination model, regulatory adaptations, cultural bridges."},
+    {"title": "7.3 AI Innovation Programs", "desc": "Models: AI lab, skunkworks, incubator, venture investment. Management differences: success criteria (learning > delivery), higher failure tolerance, smaller resources, longer timeline. Innovation-to-production pipeline. Portfolio theory: maintain portfolio of bets. Case: Google X moonshot program — selection criteria, program management, graduation to mainstream products."},
+    {"title": "7.4 AI Vendor Management Programs", "desc": "Scope: selection, contract management, performance management, strategic relationship. AI-specific vendor risk: model degradation after updates, lock-in, regulatory risk, data risk. Vendor rationalization: most enterprises have too many AI vendors. Case: major bank AI vendor portfolio rationalization — evaluation criteria, consolidation, cost savings."},
+    {"title": "7.5 Data-Driven Program Management", "desc": "Analytics sources: PM systems, ML experiment tracking, business outcome systems. Predictive health scoring: signals predicting program success/failure. AI tools for program managers: meeting summaries, status report generation, risk prediction. Data maturity ladder for PM: manual → automated → predictive. Case: predictive analytics for AI program portfolio — signals that predicted success and interventions that improved outcomes."},
+    {"title": "7.6 Certifications and Professional Development", "desc": "Core certifications: PMP, PgMP, PMI-ACP, cloud AI certifications, AI Program Manager credential. Technical literacy: enough ML to challenge decisions, not build models. Industry involvement: PMI AI working group, community of practice. 3-year career development plan. Case: VP of AI Programs career trajectory — certifications, experiences, relationships."},
+    {"title": "7.7 Capstone: Innovation Program Design", "desc": "AI innovation program for insurance company exploring transformation: innovation model, governance, 10 focus areas, team design, budget model, stage-gate process, executive investment pitch."}
+  ]},
+  {"title": "Module 8: AI Program Management Career", "desc": "Advancement, compensation, executive presence, team building, thought leadership.", "lessons": [
+    {"title": "8.1 Career Paths and Compensation", "desc": "Levels: Coordinator → Project Manager → Program Manager → Senior PM → Director → VP. Compensation 2024: PM L3 $120-160K, Senior $160-220K, Director $220-300K, VP $300-500K. AI premium: 20-40% over traditional PM. Career acceleration: large-scale AI transformation delivery opens executive doors. Case: 5-year trajectory from Senior PM to VP of AI Programs."},
+    {"title": "8.2 Building Technical Credibility", "desc": "Signals: correct ML terminology, substantive technical questions, challenging decisions with alternatives. Development: Andrew Ng ML courses, Chip Huyen's Designing ML Systems, technical blog reading, pairing with ML engineers. Timeline: 6 months learning, 12 months practice, 18 months recognized credibility. Case: traditional PM building technical credibility to become AI program management leader."},
+    {"title": "8.3 Executive Presence", "desc": "Dimensions: communication, gravitas, appearance, decisiveness. Skills: technical-to-business translation (instant and fluent), handling aggressive executive questions, building AI narrative. Development: 360-degree feedback, executive coaching, deliberate practice. Case: executive presence development — specific feedback, interventions, career impact."},
+    {"title": "8.4 Building a World-Class AI Program Team", "desc": "Design: hire for learning ability, diversity of perspective, analytical and soft skill balance. Culture: psychological safety, accountability, continuous improvement, impact orientation. Leadership behaviors: clear vision, personal development investment, credit sharing, honest feedback. Case: highest-performing AI program team at Fortune 500 — team design decisions and leadership practices."},
+    {"title": "8.5 Thought Leadership", "desc": "Topics: AI governance, delivery methodologies, value measurement, transformation case studies, talent management. Content strategy: 3 genuine expertise areas, quarterly publishing minimum. Platforms: LinkedIn, PMI publications, industry conferences, podcasts. Case: program director building 50K LinkedIn following on AI program management — content strategy and career impact."},
+    {"title": "8.6 Mentoring and Sponsoring", "desc": "Mentoring vs. sponsoring distinction. Effective mentoring: structured development plans, monthly cadence, challenge and stretch, network introduction. Building a mentoring program. Sponsorship imperative: sponsors change careers. Case: VP building mentoring program developing 10 future AI program leaders in 3 years."},
+    {"title": "8.7 Final Capstone: Career Acceleration Plan", "desc": "3-year plan for mid-level AI PM targeting Director at a tech company: technical literacy curriculum, executive presence development, thought leadership strategy (10 articles, 2 talks), network targets, certification roadmap, mentoring relationships, 6/12/24/36-month milestones."}
+  ]},
+  {"title": "Module 9: Future of AI Program Management", "desc": "AI tools for program management, autonomous programs, foundation model impact, responsible AI at scale.", "lessons": [
+    {"title": "9.1 AI Tools Transforming Program Management", "desc": "AI for status reporting: automated generation from project data, exception-based reporting. AI for risk management: predictive scoring, early warning systems. AI for resource management: skills matching, utilization optimization. AI for communication: meeting summaries, report generation. Productivity gain: 40% reduction in administrative overhead. Case: PMO reducing administrative work by 40% with AI tools."},
+    {"title": "9.2 Governing AI Agents", "desc": "New challenges: tracking agent work, quality at scale, organizational change from agent workforce, governing customer/critical system interactions. Governance framework: permission scoping, monitoring, audit, escalation. Case: managing AI agent workforce deployment at professional services firm — governance framework and lessons learned."},
+    {"title": "9.3 AI-First Program Management", "desc": "AI-native program design: AI agents + human overseers, AI orchestration, automated quality checks, real-time analytics. Human role: direction, stakeholder management, exception handling, judgment calls. Transition path: traditional → AI-assisted → AI-native. Case: first successful major program using primarily AI agents."},
+    {"title": "9.4 Responsible AI at Scale", "desc": "Scale responsibility: programs affecting millions carry different obligations. Governance requirements: bias audit milestone, privacy impact gate, human oversight deliverable, EU AI Act conformity. Program manager ethical role: advocate, escalate concerns. Systemic AI risk beyond individual programs. Case: healthcare AI program manager navigating technically compliant but ethically concerning system."},
+    {"title": "9.5 Foundation Models Impact on AI Programs", "desc": "Program management implications: shorter timelines (months vs. years), different skills (prompt engineering vs. model training), different infrastructure (API vs. custom compute), different cost model (per-token vs. fixed). Portfolio shift: adoption, integration, customization programs. Skill evolution: less ML oversight, more vendor management, governance, integration architecture. Case: program formerly taking 18 months now taking 3 months with GPT-4."},
+    {"title": "9.6 Building the AI PM Discipline", "desc": "Discipline building: publishing frameworks, contributing to PMI AI working group, developing training curricula, researching success factors. Body of knowledge: what every AI PM must know. Community building: conferences, communities of practice, certification bodies. Career opportunity: shaping the discipline creates recognized expertise. Case: PMI developing AI program management discipline — working groups, research, certification path."},
+    {"title": "9.7 Final Module: Your AI Program Management Legacy", "desc": "Legacy thinking: what programs will you have delivered that made a difference? What practitioners developed? What frameworks contributed? High-impact career: deliver programs, build capability, develop leaders, advance the discipline. Responsibility: AI program managers shape how AI is deployed at scale — with the power comes the obligation to deploy AI responsibly and equitably."}
+  ]}
+]
 };
 
 serve(async (req) => {
