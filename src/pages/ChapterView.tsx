@@ -20,6 +20,44 @@ interface Quiz { id: string; chapter_id: string; quiz_type: string; }
 function Bars({ active }: { active: boolean }) {
   const h = [0.5, 0.9, 0.65, 1.1, 0.75, 1.0, 0.6];
 
+  const generateLessonVisuals = async (lesson: any, courseTitle: string) => {
+    if (!lesson || visualsLessonId === lesson.id) return;
+    setVisualsLessonId(lesson.id);
+    setVisualsLoading(true);
+    setLessonVisuals([]);
+    try {
+      const { data: cached } = await supabase.from('lesson_visuals').select('svgs').eq('lesson_id', lesson.id).maybeSingle();
+      if (cached?.svgs && Array.isArray(cached.svgs) && cached.svgs.length > 0) {
+        setLessonVisuals(cached.svgs as string[]);
+        setVisualsLoading(false);
+        return;
+      }
+    } catch {}
+    try {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': import.meta.env.VITE_ANTHROPIC_API_KEY || '', 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001', max_tokens: 4000,
+          system: 'You are a technical diagram creator for an elite AI academy. Create clean professional SVG diagrams with white backgrounds. Return ONLY a JSON array of 2 SVG strings, no markdown.',
+          messages: [{ role: 'user', content: `Create 2 professional educational SVG diagrams for: Course: ${courseTitle}, Lesson: ${lesson.title || ''}, Description: ${lesson.description || ''}. Return ["<svg>...</svg>","<svg>...</svg>"]. Each SVG: viewBox="0 0 700 380", white background #ffffff, dark text #1e293b, blue accents #1d4ed8, clear title, technically accurate diagram (architecture, flowchart, or framework), professional O-Reilly book style.` }]
+        })
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        let text = (data.content?.[0]?.text || '[]').trim();
+        if (text.startsWith('\`\`\`')) text = text.split('\n').slice(1).join('\n').replace(/\`\`\`\s*$/, '');
+        const svgs: string[] = JSON.parse(text);
+        if (Array.isArray(svgs) && svgs.length > 0) {
+          setLessonVisuals(svgs);
+          supabase.from('lesson_visuals').upsert({ lesson_id: lesson.id, svgs }).then(() => {});
+        }
+      }
+    } catch(e) { console.warn('Visual gen failed:', e); }
+    setVisualsLoading(false);
+  };
+
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 2, height: 20 }}>
       {h.map((v, i) => (
@@ -45,6 +83,9 @@ export default function ChapterView() {
 
   const [course, setCourse] = useState<Course | null>(null);
   const [showStudyGuide, setShowStudyGuide] = useState(false);
+  const [lessonVisuals, setLessonVisuals] = useState<string[]>([]);
+  const [visualsLoading, setVisualsLoading] = useState(false);
+  const [visualsLessonId, setVisualsLessonId] = useState<string>('');
   const getStudyGuidePdf = (t: string): string | null => {
     const m: Record<string,string> = {'AI Cloud Engineer':'ai-cloud-engineer-study-guide.pdf','AI Agent Engineer':'ai-agent-engineer-study-guide.pdf','AI Data Engineer':'ai-data-engineer-study-guide.pdf','AI DevOps Engineer':'ai-devops-engineer-study-guide.pdf','AI Security Engineer':'ai-security-engineer-study-guide.pdf','AI MLOps Engineer':'ai-mlops-engineer-study-guide.pdf','AI Solutions Architect':'ai-solutions-architect-study-guide.pdf','AI Platform Engineer':'ai-platform-engineer-study-guide.pdf','AI Solutions Consultant':'ai-solutions-consultant-study-guide.pdf','AI Product Manager':'ai-product-manager-study-guide.pdf','AI Business Operations':'ai-business-operations-study-guide.pdf','AI Sales Engineer':'ai-sales-engineer-study-guide.pdf','AI Business Analyst':'ai-business-analyst-study-guide.pdf','AI Transformation Manager':'ai-transformation-mgr-study-guide.pdf','AI Program Manager':'ai-program-manager-study-guide.pdf','AI Enterprise Architect':'ai-enterprise-architect-study-guide.pdf','AI Governance Professional':'ai-governance-pro-study-guide.pdf','Responsible AI Specialist':'responsible-ai-study-guide.pdf','AI Compliance Officer':'ai-compliance-officer-study-guide.pdf','AI Risk Manager':'ai-risk-manager-study-guide.pdf','AI Auditor':'ai-auditor-study-guide.pdf','AI Policy Designer':'ai-policy-designer-study-guide.pdf','AI Ethics Specialist':'ai-ethics-specialist-study-guide.pdf','AI UX Designer':'ai-ux-designer-study-guide.pdf','Conversation Designer':'conversation-designer-study-guide.pdf','Human-AI Interaction Specialist':'human-ai-interaction-study-guide.pdf','AI Workflow Designer':'ai-workflow-designer-study-guide.pdf','AI Experience Architect':'ai-experience-architect-study-guide.pdf'};
     const f = m[t]; return f ? 'https://vgujnkxylipfwmkpwzvb.supabase.co/storage/v1/object/public/study-guides/'+f : null;
@@ -222,6 +263,10 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
   const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 
   useEffect(() => { loadData(); }, [chapterId]);
+
+  useEffect(() => {
+    if (currentLesson && course) generateLessonVisuals(currentLesson, course.title);
+  }, [currentLesson?.id, course?.title]);
 
   // Auto-reset Prof. Didier when student clicks a different lesson
   const activeLessonIdRef = useRef<string>('');
@@ -538,6 +583,33 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               </div>
             )}
           </motion.div>
+
+          {/* Visual Breakdown */}
+          <div style={{ marginBottom: 32 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+              <div style={{ width: 3, height: 18, borderRadius: 2, background: 'linear-gradient(135deg,#1d4ed8,#7c3aed)' }} />
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Visual Breakdown</span>
+            </div>
+            {visualsLoading && (
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(96,165,250,0.12)', borderRadius: 14, padding: '32px 24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+                <div style={{ width: 20, height: 20, border: '2px solid #1e40af', borderTop: '2px solid #60a5fa', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                <span style={{ fontSize: 13, color: '#475569' }}>Generating visual diagrams...</span>
+              </div>
+            )}
+            {!visualsLoading && lessonVisuals.length === 0 && (
+              <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(96,165,250,0.08)', borderRadius: 14, padding: '20px', textAlign: 'center' }}>
+                <span style={{ fontSize: 13, color: '#334155' }}>Visual diagrams will appear here.</span>
+              </div>
+            )}
+            {lessonVisuals.map((svg, i) => (
+              <div key={i} style={{ marginBottom: 20, borderRadius: 14, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 4px 24px rgba(0,0,0,0.18)' }}>
+                <div style={{ background: '#f8fafc', padding: '8px 16px', borderBottom: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '.06em' }}>Diagram {i + 1}</span>
+                </div>
+                <div style={{ background: '#ffffff', padding: '16px', display: 'flex', justifyContent: 'center' }} dangerouslySetInnerHTML={{ __html: svg }} />
+              </div>
+            ))}
+          </div>
 
           {/* ── Prof. Didier Embedded Panel ── */}
           <div style={{ background: 'linear-gradient(160deg,#0f172a,#0d1b3e)', border: '1px solid rgba(96,165,250,0.2)', borderRadius: 20, overflow: 'hidden', marginBottom: 32 }}>
