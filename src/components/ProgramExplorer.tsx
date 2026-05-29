@@ -219,7 +219,7 @@ export const ProgramExplorer = ({ program, onClose }: Props) => {
               ))}
             </div>
             <div style={{ fontSize: 11, color: DS.fd, marginTop: '.65rem', textAlign: 'center' as const }}>
-              + additional modules through L700
+              10 modules · 70 lessons · L100 through L700
             </div>
           </div>
 
