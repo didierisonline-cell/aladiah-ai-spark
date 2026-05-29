@@ -225,6 +225,8 @@ export default function StudentPortal() {
   const [pointsModal, setPointsModal] = useState(false);
   const [labsModal, setLabsModal] = useState(false);
   const [profChat, setProfChat] = useState(false);
+  const [profGreeting, setProfGreeting] = useState<string>('');
+  const [profLoading, setProfLoading] = useState(false);
   const [lang, setLang] = useState(language || 'en');
   const [talentScore] = useState(612);
   const [hoursLeft] = useState(412);
@@ -297,6 +299,82 @@ export default function StudentPortal() {
     }
     load();
   }, [user]);
+
+  // Generate personalized AI greeting from Prof. Didier
+  const generateProfGreeting = async () => {
+    if (profLoading) return;
+    setProfLoading(true);
+    setProfGreeting('');
+    setProfChat(true);
+
+    try {
+      // Build student context snapshot
+      const started = courses.filter(c => c.pct > 0 && !c.isCert);
+      const completed = courses.filter(c => c.pct === 100 && !c.isCert);
+      const notStarted = courses.filter(c => c.pct === 0 && !c.isCert);
+      const inProgress = courses.filter(c => c.pct > 0 && c.pct < 100 && !c.isCert);
+      const topInProgress = inProgress.sort((a,b) => b.pct - a.pct).slice(0, 3);
+      const hour = new Date().getHours();
+      const timeOfDay = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+
+      const studentContext = `
+Student name: ${userName}
+Time of day: ${timeOfDay}
+Overall progress across all courses: ${overallPct}%
+Day streak: ${streak} consecutive days
+Total points earned: ${totalPoints}
+Certifications earned: ${certCount}
+
+Courses in progress (${inProgress.length}):
+${topInProgress.map(c => `- ${c.title}: ${c.pct}% complete (${c.done}/${c.total} lessons done)`).join('\n') || 'None yet'}
+
+Completed courses (${completed.length}): ${completed.map(c=>c.title).join(', ') || 'None yet'}
+Not started yet (${notStarted.length} courses available)
+
+Platform: Aladiah Academy — AI-focused professional certifications
+Language preference: ${lang}
+      `.trim();
+
+      const systemPrompt = `You are Professor Didier, the AI mentor of Aladiah Academy — an elite AI-focused professional certification platform. Your tagline is "Solo Excelencia" (Only Excellence).
+
+Your personality: warm, direct, motivating, highly knowledgeable about AI careers. You speak like a world-class mentor who genuinely cares about each student's success. You are NOT generic — you give real, specific, actionable feedback based on the student's actual data.
+
+You respond in the student's language (${lang === 'es' ? 'Spanish' : lang === 'fr' ? 'French' : lang === 'de' ? 'German' : lang === 'zh' ? 'Chinese' : lang === 'ar' ? 'Arabic' : lang === 'ja' ? 'Japanese' : 'English'}).
+
+Your greeting must:
+1. Open with a warm, personalized greeting using their name and time of day (2-3 sentences max)
+2. Give a sharp, honest analysis of where they stand — reference their ACTUAL numbers (streak, progress %, specific courses)
+3. Make 2-3 SPECIFIC recommendations: which course to focus on next, which chapters to revisit if behind, what to do today
+4. Close with one powerful motivating line tied to their specific AI career path
+
+Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No bullet points — flowing conversational text.`;
+
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 400,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: `Generate my personalized greeting based on this data:\n\n${studentContext}` }]
+        })
+      });
+
+      const data = await response.json();
+      const text = data?.content?.[0]?.text || '';
+      if (text) {
+        setProfGreeting(text);
+      } else {
+        setProfGreeting(`Good ${timeOfDay}, ${userName}! I've analyzed your progress across Aladiah Academy. You're at ${overallPct}% overall with a ${streak}-day streak — that consistency is exactly what separates students who make it to the top. Let's keep pushing forward. Your AI career starts here.`);
+      }
+    } catch {
+      const hour = new Date().getHours();
+      const timeOfDay = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+      setProfGreeting(`Good ${timeOfDay}, ${userName}! I've reviewed your progress across Aladiah Academy. You're at ${overallPct}% overall with a ${streak}-day streak. Keep that momentum going — consistency is everything in this field. Let's get to work.`);
+    } finally {
+      setProfLoading(false);
+    }
+  };
 
   const userName = user?.email?.split('@')[0]||'Student';
   const displayName = userName.length>12?userName.slice(0,12):userName;
@@ -525,7 +603,7 @@ export default function StudentPortal() {
                 </div>
                 <div style={{fontSize:13,fontWeight:700,marginBottom:4,maxWidth:'58%'}}>{T('ai_mentor')}</div>
                 <div style={{fontSize:11,color:'#94a3b8',lineHeight:1.6,marginBottom:13,maxWidth:'58%'}}>{T('ai_mentor_sub')}</div>
-                <button onClick={()=>setProfChat(true)} style={{border:'none',borderRadius:8,fontSize:12,fontWeight:700,padding:'8px 16px',cursor:'pointer',fontFamily:'inherit',background:'linear-gradient(90deg,#7c3aed,#6d28d9)',color:'#fff',boxShadow:'0 0 14px rgba(124,58,237,.4)'}}>
+                <button onClick={generateProfGreeting} style={{border:'none',borderRadius:8,fontSize:12,fontWeight:700,padding:'8px 16px',cursor:'pointer',fontFamily:'inherit',background:'linear-gradient(90deg,#7c3aed,#6d28d9)',color:'#fff',boxShadow:'0 0 14px rgba(124,58,237,.4)'}}>
                   {T('chat_now')}
                 </button>
               </div>
@@ -683,7 +761,7 @@ export default function StudentPortal() {
                 {T('prof_greeting')}, {displayName}! <span style={{color:'#f59e0b'}}>🌟</span>
               </div>
               <p style={{fontSize:11,color:'#94a3b8',lineHeight:1.55,marginBottom:10}}>{T('prof_analyzed')}</p>
-              <button onClick={()=>setProfChat(true)} style={{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',height:38,padding:'0 12px',background:'linear-gradient(90deg,#1d4ed8,#2563eb)',border:'none',borderRadius:9,color:'#fff',fontSize:12,fontWeight:700,cursor:'pointer',fontFamily:'inherit',boxShadow:'0 0 20px rgba(37,99,235,.38)'}}>
+              <button onClick={generateProfGreeting} style={{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',height:38,padding:'0 12px',background:'linear-gradient(90deg,#1d4ed8,#2563eb)',border:'none',borderRadius:9,color:'#fff',fontSize:12,fontWeight:700,cursor:'pointer',fontFamily:'inherit',boxShadow:'0 0 20px rgba(37,99,235,.38)'}}>
                 <span>🎙️ {T('talk_prof')}</span>
                 <div style={{display:'flex',alignItems:'center',gap:2}}>
                   {[5,9,13,9,6,4].map((h,i)=>(
@@ -776,24 +854,78 @@ export default function StudentPortal() {
       <PointsDetailModal open={pointsModal} onClose={()=>setPointsModal(false)} points={totalPoints} />
       <LabsDetailModal open={labsModal} onClose={()=>setLabsModal(false)} labs={labs} />
 
-      {/* Prof Chat overlay */}
+      {/* Prof Chat overlay — AI-powered personalized greeting */}
       {profChat&&(
-        <div onClick={()=>setProfChat(false)} style={{position:'fixed',inset:0,background:'rgba(0,0,0,.7)',zIndex:999,display:'flex',alignItems:'center',justifyContent:'center'}}>
-          <div onClick={e=>e.stopPropagation()} style={{background:'#0d1829',border:'1px solid rgba(59,130,246,.3)',borderRadius:20,padding:'2rem',maxWidth:480,width:'90%',boxShadow:'0 40px 80px rgba(0,0,0,.6)'}}>
-            <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16}}>
-              <div style={{width:48,height:48,borderRadius:'50%',background:'rgba(15,35,80,.85)',border:'2px solid rgba(59,130,246,.6)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,fontWeight:800,color:'#60a5fa'}}>AI</div>
-              <div>
-                <div style={{fontWeight:800,color:'#fff'}}>Professor Didier AI</div>
-                <div style={{fontSize:11,color:'#34d399'}}>● Online</div>
+        <div onClick={()=>{if(!profLoading)setProfChat(false)}} style={{position:'fixed',inset:0,background:'rgba(0,0,0,.75)',zIndex:999,display:'flex',alignItems:'center',justifyContent:'center',backdropFilter:'blur(4px)'}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:'linear-gradient(160deg,#0d1829,#080f1e)',border:'1px solid rgba(59,130,246,.35)',borderRadius:22,padding:'1.75rem',maxWidth:500,width:'92%',boxShadow:'0 40px 80px rgba(0,0,0,.7)',position:'relative',overflow:'hidden'}}>
+            {/* Glow accent */}
+            <div style={{position:'absolute',top:-60,right:-60,width:180,height:180,borderRadius:'50%',background:'radial-gradient(circle,rgba(37,99,235,.18),transparent 70%)',pointerEvents:'none'}}/>
+            {/* Header */}
+            <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:18}}>
+              <div style={{width:50,height:50,borderRadius:'50%',background:'rgba(15,35,80,.9)',border:'2px solid rgba(59,130,246,.6)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:17,fontWeight:800,color:'#60a5fa',flexShrink:0,boxShadow:'0 0 20px rgba(59,130,246,.3)'}}>AI</div>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:800,color:'#fff',fontSize:15}}>Professor Didier AI</div>
+                <div style={{fontSize:11,color:'#34d399',display:'flex',alignItems:'center',gap:4}}>
+                  <span style={{width:6,height:6,borderRadius:'50%',background:'#34d399',display:'inline-block'}}/>
+                  {profLoading ? 'Analyzing your progress...' : 'Your Personal Mentor'}
+                </div>
               </div>
-              <button onClick={()=>setProfChat(false)} style={{marginLeft:'auto',background:'none',border:'none',color:'#64748b',fontSize:20,cursor:'pointer'}}>×</button>
+              <button onClick={()=>{if(!profLoading)setProfChat(false)}} style={{background:'none',border:'1px solid rgba(255,255,255,.1)',borderRadius:8,color:'#64748b',fontSize:18,cursor:'pointer',width:32,height:32,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>×</button>
             </div>
-            <div style={{fontSize:13,color:'#94a3b8',lineHeight:1.7,marginBottom:16}}>
-              {T('prof_greeting')}, {displayName}! {T('prof_analyzed')}
+            {/* Message area */}
+            <div style={{background:'rgba(6,16,42,.7)',border:'1px solid rgba(59,130,246,.18)',borderRadius:14,padding:'16px 18px',marginBottom:16,minHeight:120,position:'relative'}}>
+              {profLoading ? (
+                <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:14,padding:'20px 0'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:4}}>
+                    {[4,8,14,10,16,12,8,14,10,6].map((h,i)=>(
+                      <div key={i} style={{width:4,borderRadius:99,background:'linear-gradient(to top,#2563eb,#67e8f9)',height:h,animation:'wave 1s ease-in-out infinite',animationDelay:`${i*0.1}s`}}/>
+                    ))}
+                  </div>
+                  <div style={{fontSize:12,color:'#60a5fa',fontWeight:600,textAlign:'center',lineHeight:1.6}}>
+                    Prof. Didier is reviewing your progress<br/>
+                    <span style={{color:'#475569',fontWeight:400,fontSize:11}}>Personalizing your mentoring session...</span>
+                  </div>
+                </div>
+              ) : profGreeting ? (
+                <p style={{fontSize:13,color:'#cbd5e1',lineHeight:1.8,margin:0}}>{profGreeting}</p>
+              ) : (
+                <p style={{fontSize:12,color:'#475569',lineHeight:1.7,margin:0,fontStyle:'italic',textAlign:'center',paddingTop:8}}>
+                  Your personalized mentoring session is ready. Prof. Didier will analyze your progress and give you a custom action plan.
+                </p>
+              )}
             </div>
-            <button onClick={()=>{setProfChat(false);navigate('/portal/courses');}} style={{width:'100%',padding:12,background:'linear-gradient(90deg,#2563eb,#6366f1)',border:'none',borderRadius:12,color:'#fff',fontWeight:700,cursor:'pointer',fontFamily:'inherit'}}>
-              Go to My Courses
-            </button>
+            {/* Stats row */}
+            {!profLoading && (
+              <div style={{display:'flex',gap:8,marginBottom:16}}>
+                {[
+                  {val:`${overallPct}%`,lbl:'Overall',color:'#6366f1'},
+                  {val:`${streak}🔥`,lbl:'Streak',color:'#f97316'},
+                  {val:totalPoints.toLocaleString(),lbl:'Points',color:'#f59e0b'},
+                  {val:`${courses.filter(c=>c.pct>0&&!c.isCert).length}`,lbl:'Active',color:'#34d399'},
+                ].map((s,i)=>(
+                  <div key={i} style={{flex:1,background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.07)',borderRadius:10,padding:'8px 4px',textAlign:'center'}}>
+                    <div style={{fontSize:14,fontWeight:800,color:s.color}}>{s.val}</div>
+                    <div style={{fontSize:9,color:'#475569',marginTop:1}}>{s.lbl}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {/* Action buttons */}
+            <div style={{display:'flex',gap:8}}>
+              {profGreeting && !profLoading && (
+                <button onClick={generateProfGreeting} style={{flex:1,padding:'11px 0',background:'rgba(37,99,235,.15)',border:'1px solid rgba(37,99,235,.4)',borderRadius:11,color:'#60a5fa',fontWeight:700,cursor:'pointer',fontFamily:'inherit',fontSize:12}}>
+                  🔄 Refresh
+                </button>
+              )}
+              {!profGreeting && !profLoading && (
+                <button onClick={generateProfGreeting} style={{flex:2,padding:'12px 0',background:'linear-gradient(90deg,#2563eb,#6366f1)',border:'none',borderRadius:11,color:'#fff',fontWeight:700,cursor:'pointer',fontFamily:'inherit',fontSize:13,boxShadow:'0 0 20px rgba(37,99,235,.4)'}}>
+                  🎙️ Get My Analysis
+                </button>
+              )}
+              <button onClick={()=>{setProfChat(false);navigate('/portal/courses');}} style={{flex:2,padding:'12px 0',background:profGreeting?'linear-gradient(90deg,#2563eb,#6366f1)':'rgba(255,255,255,.06)',border:profGreeting?'none':'1px solid rgba(255,255,255,.1)',borderRadius:11,color:'#fff',fontWeight:700,cursor:'pointer',fontFamily:'inherit',fontSize:12}}>
+                📚 Go to Courses
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -804,6 +936,7 @@ export default function StudentPortal() {
         *::-webkit-scrollbar-track{background:transparent}
         *::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+        @keyframes wave{0%,100%{transform:scaleY(1);opacity:.8}50%{transform:scaleY(2.2);opacity:1}}
       `}</style>
     </div>
   );
