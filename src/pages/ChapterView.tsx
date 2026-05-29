@@ -20,6 +20,9 @@ interface Quiz { id: string; chapter_id: string; quiz_type: string; }
 function Bars({ active }: { active: boolean }) {
   const h = [0.5, 0.9, 0.65, 1.1, 0.75, 1.0, 0.6];
 
+
+
+  // Visual diagram generation
   const generateLessonVisuals = async (lesson: any, courseTitle: string) => {
     if (!lesson || visualsLessonId === lesson.id) return;
     setVisualsLessonId(lesson.id);
@@ -28,25 +31,20 @@ function Bars({ active }: { active: boolean }) {
     try {
       const { data: cached } = await supabase.from('lesson_visuals').select('svgs').eq('lesson_id', lesson.id).maybeSingle();
       if (cached?.svgs && Array.isArray(cached.svgs) && cached.svgs.length > 0) {
-        setLessonVisuals(cached.svgs as string[]);
-        setVisualsLoading(false);
-        return;
+        setLessonVisuals(cached.svgs as string[]); setVisualsLoading(false); return;
       }
     } catch {}
     try {
+      const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY || '';
+      const prompt = `Create 2 professional educational SVG diagrams. Course: ${courseTitle}. Lesson: ${lesson.title || ''}. Description: ${lesson.description || ''}. Return JSON array: ["<svg viewBox=\"0 0 700 380\" xmlns=\"http://www.w3.org/2000/svg\">...</svg>","<svg viewBox=\"0 0 700 380\" xmlns=\"http://www.w3.org/2000/svg\">...</svg>"]. White background, dark text #1e293b, blue #1d4ed8 accents, clear title, technically accurate, O-Reilly professional style.`;
       const resp = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-api-key': import.meta.env.VITE_ANTHROPIC_API_KEY || '', 'anthropic-version': '2023-06-01' },
-        body: JSON.stringify({
-          model: 'claude-haiku-4-5-20251001', max_tokens: 4000,
-          system: 'You are a technical diagram creator for an elite AI academy. Create clean professional SVG diagrams with white backgrounds. Return ONLY a JSON array of 2 SVG strings, no markdown.',
-          messages: [{ role: 'user', content: `Create 2 professional educational SVG diagrams for: Course: ${courseTitle}, Lesson: ${lesson.title || ''}, Description: ${lesson.description || ''}. Return ["<svg>...</svg>","<svg>...</svg>"]. Each SVG: viewBox="0 0 700 380", white background #ffffff, dark text #1e293b, blue accents #1d4ed8, clear title, technically accurate diagram (architecture, flowchart, or framework), professional O-Reilly book style.` }]
-        })
+        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 4000, system: 'Return ONLY a valid JSON array of 2 SVG strings. No markdown, no explanation.', messages: [{ role: 'user', content: prompt }] })
       });
       if (resp.ok) {
         const data = await resp.json();
-        let text = (data.content?.[0]?.text || '[]').trim();
-        if (text.startsWith('\`\`\`')) text = text.split('\n').slice(1).join('\n').replace(/\`\`\`\s*$/, '');
+        let text = (data.content?.[0]?.text || '[]').trim().replace(/^```[\w]*\n?/, '').replace(/```$/, '');
         const svgs: string[] = JSON.parse(text);
         if (Array.isArray(svgs) && svgs.length > 0) {
           setLessonVisuals(svgs);
@@ -56,6 +54,10 @@ function Bars({ active }: { active: boolean }) {
     } catch(e) { console.warn('Visual gen failed:', e); }
     setVisualsLoading(false);
   };
+
+  useEffect(() => {
+    if (currentLesson && course) { generateLessonVisuals(currentLesson, course.title); }
+  }, [currentLesson?.id]);
 
 
   return (
@@ -264,9 +266,6 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
 
   useEffect(() => { loadData(); }, [chapterId]);
 
-  useEffect(() => {
-    if (currentLesson && course) generateLessonVisuals(currentLesson, course.title);
-  }, [currentLesson?.id, course?.title]);
 
   // Auto-reset Prof. Didier when student clicks a different lesson
   const activeLessonIdRef = useRef<string>('');
@@ -583,7 +582,6 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               </div>
             )}
           </motion.div>
-
           {/* Visual Breakdown */}
           <div style={{ marginBottom: 32 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
@@ -611,7 +609,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
             ))}
           </div>
 
-          {/* ── Prof. Didier Embedded Panel ── */}
+                    {/* ── Prof. Didier Embedded Panel ── */}
           <div style={{ background: 'linear-gradient(160deg,#0f172a,#0d1b3e)', border: '1px solid rgba(96,165,250,0.2)', borderRadius: 20, overflow: 'hidden', marginBottom: 32 }}>
 
             {/* Header */}
