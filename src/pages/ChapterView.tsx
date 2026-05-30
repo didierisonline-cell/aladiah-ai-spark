@@ -46,9 +46,11 @@ function Bars({ active }: { active: boolean }) {
     setVisualsLoading(false);
   };
 
+
+
   useEffect(() => {
     if (currentLesson && course) { generateLessonVisuals(currentLesson, course.title); }
-  }, [currentLesson?.id]);
+  }, [currentLesson?.id]); // eslint-disable-line
 
 
   return (
