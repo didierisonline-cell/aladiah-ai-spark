@@ -1,94 +1,94 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 
-const DS = {
-  card:'#111D30', border:'#1E2D47', fg:'#EDF2F7', fm:'#8596AD', fd:'#4A5E7A',
-  blue:'#4A90F5', bd:'rgba(74,144,245,.14)',
-  orange:'#F0622A', gold:'#F5B81A',
-};
+interface PortalSidebarProps {
+  hoursLeft?: number;
+  coursesCount?: number;
+}
 
-export default function PortalSidebar() {
+export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalSidebarProps) {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const { t } = useLanguage();
+  const location = useLocation();
+
   const { user } = useAuth();
+  const namePart = user?.email?.split('@')[0] || 'Student';
+  const displayName = namePart;
+  const initials = (
+    (namePart.slice(0, 1) || 'A') + (namePart.slice(1, 2) || '')
+  ).toUpperCase();
 
-  const initials = (user?.email?.slice(0,1) || 'A').toUpperCase() +
-                   (user?.email?.split('@')[0]?.slice(1,2) || '').toUpperCase();
-
-  const LINKS = [
-    { icon:'📊', label: t('portal.sidebar.overview'),       path:'/portal', hash: '' },
-    { icon:'📚', label: 'My Academy',                       path:'/portal/courses', hash: '' },
-    { icon:'🎯', label: 'My Career Path',                   path:'/portal/my-career-path', hash: '' },
-    { icon:'⭐', label: t('portal.sidebar.talent_score'),   path:'/portal/talent-score', hash: '' },
-    { icon:'🏅', label: t('portal.sidebar.certifications'), path:'/portal', hash: 'certifications' },
-    { icon:'💼', label: t('portal.sidebar.career_tools'),   path:'/portal/career', hash: '' },
-    { icon:'🗂️', label: t('portal.sidebar.my_portfolio'),   path:'/portal/portfolio', hash: '' },
-    { icon:'🧪', label: t('portal.sidebar.labs'),           path:'/portal', hash: 'labs' },
-    { icon:'📖', label: t('portal.sidebar.resources'),      path:'/portal', hash: 'resources' },
-    { icon:'👥', label: t('portal.sidebar.community'),      path:'/community', hash: '' },
-    { icon:'⚙️', label: t('portal.sidebar.settings'),       path:'/portal/settings', hash: '' },
+  const LINKS: { icon: string; lbl: string; path: string; exact?: boolean; badge?: number }[] = [
+    { icon: '🏠', lbl: 'Overview', path: '/portal', exact: true },
+    { icon: '📚', lbl: 'My Academy', path: '/portal/courses', badge: coursesCount || undefined },
+    { icon: '🎯', lbl: 'My Career Path', path: '/portal/my-career-path' },
+    { icon: '⭐', lbl: 'Talent Score™', path: '/portal/talent-score' },
+    { icon: '🏅', lbl: 'Certifications', path: '/portal/courses' },
+    { icon: '💼', lbl: 'Career Tools', path: '/portal/career' },
+    { icon: '🗂️', lbl: 'My Portfolio', path: '/portal/portfolio' },
+    { icon: '🧪', lbl: 'Labs', path: '/portal' },
+    { icon: '🤖', lbl: 'AI Mentor', path: '/portal' },
+    { icon: '👥', lbl: 'Community', path: '/community' },
+    { icon: '🏆', lbl: 'Leaderboard', path: '/portal/talent-score' },
+    { icon: '📅', lbl: 'Events', path: '/community' },
   ];
 
-  const isActive = (path: string, hash: string, label: string) => {
-    if (hash) return pathname === path && window.location.hash === '#' + hash;
-    if (path === '/portal' && label === t('portal.sidebar.overview')) return pathname === '/portal' && !window.location.hash;
-    return pathname === path;
-  };
-
-  const linkStyle = (active: boolean): React.CSSProperties => ({
-    display:'flex', alignItems:'center', gap:'.75rem',
-    padding:'.65rem 1.5rem', fontSize:13,
-    fontWeight: active ? 700 : 500,
-    color: active ? DS.blue : DS.fm,
-    background: active ? DS.bd : 'transparent',
-    borderLeft: active ? `3px solid ${DS.blue}` : '3px solid transparent',
-    textDecoration:'none', cursor:'pointer', transition:'all .2s',
-  });
-
   return (
-    <aside style={{ background:DS.card, borderRight:`1px solid ${DS.border}`, padding:'1.75rem 0', position:'sticky', top:70, height:'calc(100vh - 70px)', overflowY:'auto' }}>
+    <aside style={{ background: 'rgba(2,6,18,.72)', backdropFilter: 'blur(20px)', display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRight: 'none', position: 'relative', zIndex: 5 }}>
       {/* User block */}
-      <div style={{ padding:'1.25rem 1.5rem 1.5rem', borderBottom:`1px solid ${DS.border}` }}>
-        <div style={{ width:48, height:48, borderRadius:'50%', background:'linear-gradient(135deg,#4A90F5,#7AB5FF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, fontWeight:700, color:'#fff', marginBottom:'.65rem' }}>{initials}</div>
-        <div style={{ fontSize:14, fontWeight:700, color:DS.fg }}>{user?.email?.split('@')[0] || 'Student'}</div>
-        <div style={{ fontSize:11, color:DS.fm, marginTop:2 }}>{t('portal.sidebar.plan')}: <span style={{ color:DS.gold, fontWeight:600 }}>All-Access Pass™</span></div>
+      <div style={{ padding: '20px 14px 16px', borderBottom: '1px solid rgba(255,255,255,.06)', flexShrink: 0 }}>
+        <div style={{ position: 'relative', width: 64, height: 64, marginBottom: 12 }}>
+          <div style={{ position: 'absolute', inset: -3, borderRadius: '50%', background: 'linear-gradient(135deg,#3b82f6,#7c3aed,#a855f7)', boxShadow: '0 0 18px rgba(59,130,246,.75),0 0 35px rgba(124,58,237,.5)' }} />
+          <div style={{ position: 'absolute', inset: 3, borderRadius: '50%', background: 'linear-gradient(160deg,#1a2550,#0d1535,#080d28)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 800, color: '#fff' }}>
+            {initials}
+          </div>
+        </div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 7 }}>{displayName}</div>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(10,20,55,.75)', border: '1px solid rgba(255,255,255,.11)', color: '#c7d2fe', padding: '5px 10px', borderRadius: 8, fontSize: 12, fontWeight: 500, marginBottom: 5 }}>
+          Pro Member <span style={{ color: '#818cf8' }}>◆</span>
+        </div>
+        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 13 }}>Plan: <b style={{ color: '#e2e8f8' }}>All-Access Pass™</b></div>
+        <div style={{ background: 'rgba(5,15,40,.65)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 10, padding: '10px 12px' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 7, marginBottom: 7 }}>
+            <span style={{ fontSize: 24, fontWeight: 900, color: '#f97316', textShadow: '0 0 18px rgba(249,115,22,.5)' }}>{hoursLeft}</span>
+            <span style={{ fontSize: 11.5, color: '#94a3b8' }}>Hours to Employable</span>
+          </div>
+          <div style={{ height: 5, background: 'rgba(255,255,255,.08)', borderRadius: 99, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${(hoursLeft / 600) * 100}%`, background: 'linear-gradient(90deg,#f97316,#fb923c)', borderRadius: 99, boxShadow: '0 0 10px rgba(249,115,22,.5)' }} />
+          </div>
+        </div>
       </div>
 
       {/* Nav links */}
-      <div style={{ padding:'.75rem 0' }}>
-        <div style={{ fontSize:9, fontWeight:700, letterSpacing:2, textTransform:'uppercase' as const, color:DS.fd, padding:'.5rem 1.5rem .25rem' }}>
-          {t('portal.sidebar.dashboard')}
-        </div>
+      <div style={{ flex: 1, overflow: 'auto' }}>
         {LINKS.map(link => {
-          const active = isActive(link.path, link.hash || '', link.label);
+          const isOn = link.exact ? location.pathname === '/portal' : location.pathname === link.path;
           return (
-            <a key={link.label} onClick={e => { e.preventDefault(); navigate(link.path + (link.hash ? '#' + link.hash : '')); }}
-              style={linkStyle(active)}
-              onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLElement).style.background='rgba(74,144,245,.06)'; (e.currentTarget as HTMLElement).style.color=DS.fg; }}}
-              onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLElement).style.background='transparent'; (e.currentTarget as HTMLElement).style.color=DS.fm; }}}>
-              <span style={{ width:18, textAlign:'center' as const, flexShrink:0 }}>{link.icon}</span>
-              {link.label}
-              {link.badge && <span style={{ marginLeft:'auto', fontSize:10, background:DS.orange, color:'#fff', borderRadius:999, padding:'1px 7px', fontWeight:700 }}>{link.badge}</span>}
-            </a>
+            <button key={link.lbl} onClick={() => navigate(link.path)} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: isOn ? '#fff' : '#64748b', fontSize: 13, fontWeight: isOn ? 700 : 500, cursor: 'pointer', border: 'none', background: isOn ? 'linear-gradient(90deg,rgba(59,130,246,.22),rgba(99,102,241,.05))' : 'none', borderLeft: `3px solid ${isOn ? '#3b82f6' : 'transparent'}`, width: '100%', textAlign: 'left', fontFamily: 'inherit', transition: 'all .15s' }}>
+              <span style={{ fontSize: 15, width: 18, textAlign: 'center', flexShrink: 0 }}>{link.icon}</span>
+              {link.lbl}
+              {link.badge && <span style={{ marginLeft: 'auto', background: '#f97316', color: '#fff', borderRadius: 99, fontSize: 10, padding: '2px 7px', fontWeight: 800 }}>{link.badge}</span>}
+            </button>
           );
         })}
+        <div style={{ padding: '12px 15px 4px', fontSize: 9, fontWeight: 700, letterSpacing: '.18em', textTransform: 'uppercase', color: '#2a3a55' }}>Account</div>
+        <button onClick={() => navigate('/portal/settings')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
+          <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>⚙️</span>Settings
+        </button>
+        <a href="https://www.aladiahmanagement.com" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, textDecoration: 'none' }}>
+          <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>🏢</span>Aladiah Management
+        </a>
+        <button onClick={() => navigate('/portal')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
+          <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>❓</span>Help &amp; Support
+        </button>
+      </div>
 
-        <div style={{ fontSize:9, fontWeight:700, letterSpacing:2, textTransform:'uppercase' as const, color:DS.fd, padding:'.75rem 1.5rem .25rem', marginTop:4 }}>
-          {t('portal.sidebar.account')}
+      {/* Refer & Earn */}
+      <div style={{ margin: '12px 10px 14px', padding: 13, background: 'linear-gradient(135deg,rgba(37,99,235,.28),rgba(124,58,237,.32))', border: '1px solid rgba(99,102,241,.28)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexShrink: 0 }}>
+        <div>
+          <div style={{ fontSize: 12.5, fontWeight: 700, color: '#fff', marginBottom: 3 }}>🎁 Refer & Earn</div>
+          <div style={{ fontSize: 10.5, color: '#93c5fd', lineHeight: 1.4 }}>Invite friends and earn premium rewards</div>
         </div>
-        <a onClick={() => navigate('/portal/settings')} style={linkStyle(pathname === '/portal/settings')}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background='rgba(74,144,245,.06)'; (e.currentTarget as HTMLElement).style.color=DS.fg; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background='transparent'; (e.currentTarget as HTMLElement).style.color=DS.fm; }}>
-          <span style={{ width:18, textAlign:'center' as const }}>⚙️</span> {t('portal.sidebar.settings')}
-        </a>
-        <a href="https://www.aladiahmanagement.com" target="_blank" rel="noopener noreferrer"
-          style={{ ...linkStyle(false), textDecoration:'none' }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background='rgba(74,144,245,.06)'; (e.currentTarget as HTMLElement).style.color=DS.fg; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background='transparent'; (e.currentTarget as HTMLElement).style.color=DS.fm; }}>
-          <span style={{ width:18, textAlign:'center' as const }}>🏢</span> Aladiah Management
-        </a>
+        <span style={{ fontSize: 24 }}>🎁</span>
       </div>
     </aside>
   );
