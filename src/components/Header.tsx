@@ -190,12 +190,15 @@ function AuthNavButton({ navigate, isPortal }: { navigate: (p: string) => void; 
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // Sign out of Supabase first, then clear local token, then hard-redirect.
+    try { await supabase.auth.signOut(); } catch { /* ignore network errors */ }
     const key = Object.keys(localStorage).find(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
     if (key) localStorage.removeItem(key);
     setUser(null);
-    navigate('/');
-    supabase.auth.signOut().catch(() => {});
+    // Hard redirect (full reload) guarantees all in-memory auth state is wiped
+    // so the student lands cleanly on the login page, fully logged out.
+    window.location.href = '/auth';
   };
 
   const btnStyle = (bg: string, color: string, border?: string) => ({
