@@ -22,35 +22,9 @@ function Bars({ active }: { active: boolean }) {
 
 
 
-  // Visual diagram generation
-  const generateLessonVisuals = async (lesson: any, courseTitle: string) => {
-    if (!lesson || visualsLessonId === lesson.id) return;
-    setVisualsLessonId(lesson.id);
-    setVisualsLoading(true);
-    setLessonVisuals([]);
-    try {
-      const { data: cached } = await supabase.from('lesson_visuals').select('svgs').eq('lesson_id', lesson.id).maybeSingle();
-      if (cached?.svgs && Array.isArray(cached.svgs) && cached.svgs.length > 0) {
-        setLessonVisuals(cached.svgs as string[]); setVisualsLoading(false); return;
-      }
-    } catch {}
-    try {
-      const resp = await supabase.functions.invoke('generate-visuals', {
-        body: { lessonTitle: lesson.title || '', lessonDescription: lesson.description || '', courseTitle }
-      });
-      if (resp.data?.svgs && Array.isArray(resp.data.svgs) && resp.data.svgs.length > 0) {
-        setLessonVisuals(resp.data.svgs);
-        supabase.from('lesson_visuals').upsert({ lesson_id: lesson.id, svgs: resp.data.svgs }).then(() => {});
-      }
-    } catch(e) { console.warn('Visual gen failed:', e); }
-    setVisualsLoading(false);
-  };
 
 
 
-  useEffect(() => {
-    if (currentLesson && course) { generateLessonVisuals(currentLesson, course.title); }
-  }, [currentLesson?.id]); // eslint-disable-line
 
 
   return (
@@ -78,9 +52,6 @@ export default function ChapterView() {
 
   const [course, setCourse] = useState<Course | null>(null);
   const [showStudyGuide, setShowStudyGuide] = useState(false);
-  const [lessonVisuals, setLessonVisuals] = useState<string[]>([]);
-  const [visualsLoading, setVisualsLoading] = useState(false);
-  const [visualsLessonId, setVisualsLessonId] = useState<string>('');
   const getStudyGuidePdf = (t: string): string | null => {
     const m: Record<string,string> = {'AI Cloud Engineer':'ai-cloud-engineer-study-guide.pdf','AI Agent Engineer':'ai-agent-engineer-study-guide.pdf','AI Data Engineer':'ai-data-engineer-study-guide.pdf','AI DevOps Engineer':'ai-devops-engineer-study-guide.pdf','AI Security Engineer':'ai-security-engineer-study-guide.pdf','AI MLOps Engineer':'ai-mlops-engineer-study-guide.pdf','AI Solutions Architect':'ai-solutions-architect-study-guide.pdf','AI Platform Engineer':'ai-platform-engineer-study-guide.pdf','AI Solutions Consultant':'ai-solutions-consultant-study-guide.pdf','AI Product Manager':'ai-product-manager-study-guide.pdf','AI Business Operations':'ai-business-operations-study-guide.pdf','AI Sales Engineer':'ai-sales-engineer-study-guide.pdf','AI Business Analyst':'ai-business-analyst-study-guide.pdf','AI Transformation Manager':'ai-transformation-mgr-study-guide.pdf','AI Program Manager':'ai-program-manager-study-guide.pdf','AI Enterprise Architect':'ai-enterprise-architect-study-guide.pdf','AI Governance Professional':'ai-governance-pro-study-guide.pdf','Responsible AI Specialist':'responsible-ai-study-guide.pdf','AI Compliance Officer':'ai-compliance-officer-study-guide.pdf','AI Risk Manager':'ai-risk-manager-study-guide.pdf','AI Auditor':'ai-auditor-study-guide.pdf','AI Policy Designer':'ai-policy-designer-study-guide.pdf','AI Ethics Specialist':'ai-ethics-specialist-study-guide.pdf','AI UX Designer':'ai-ux-designer-study-guide.pdf','Conversation Designer':'conversation-designer-study-guide.pdf','Human-AI Interaction Specialist':'human-ai-interaction-study-guide.pdf','AI Workflow Designer':'ai-workflow-designer-study-guide.pdf','AI Experience Architect':'ai-experience-architect-study-guide.pdf'};
     const f = m[t]; return f ? 'https://vgujnkxylipfwmkpwzvb.supabase.co/storage/v1/object/public/study-guides/'+f : null;
@@ -575,32 +546,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               </div>
             )}
           </motion.div>
-          {/* Visual Breakdown */}
-          <div style={{ marginBottom: 32 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-              <div style={{ width: 3, height: 18, borderRadius: 2, background: 'linear-gradient(135deg,#1d4ed8,#7c3aed)' }} />
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Visual Breakdown</span>
-            </div>
-            {visualsLoading && (
-              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(96,165,250,0.12)', borderRadius: 14, padding: '32px 24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-                <div style={{ width: 20, height: 20, border: '2px solid #1e40af', borderTop: '2px solid #60a5fa', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-                <span style={{ fontSize: 13, color: '#475569' }}>Generating visual diagrams...</span>
-              </div>
-            )}
-            {!visualsLoading && lessonVisuals.length === 0 && (
-              <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(96,165,250,0.08)', borderRadius: 14, padding: '20px', textAlign: 'center' }}>
-                <span style={{ fontSize: 13, color: '#334155' }}>Visual diagrams will appear here.</span>
-              </div>
-            )}
-            {lessonVisuals.map((svg, i) => (
-              <div key={i} style={{ marginBottom: 20, borderRadius: 14, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 4px 24px rgba(0,0,0,0.18)' }}>
-                <div style={{ background: '#f8fafc', padding: '8px 16px', borderBottom: '1px solid #e2e8f0' }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '.06em' }}>Diagram {i + 1}</span>
-                </div>
-                <div style={{ background: '#ffffff', padding: '16px', display: 'flex', justifyContent: 'center' }} dangerouslySetInnerHTML={{ __html: svg }} />
-              </div>
-            ))}
-          </div>
+          
 
                     {/* ── Prof. Didier Embedded Panel ── */}
           <div style={{ background: 'linear-gradient(160deg,#0f172a,#0d1b3e)', border: '1px solid rgba(96,165,250,0.2)', borderRadius: 20, overflow: 'hidden', marginBottom: 32 }}>
