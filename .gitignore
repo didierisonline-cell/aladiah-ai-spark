@@ -1,6 +1,5 @@
 node_modules/
 .env
-dist/
 *.backup
 ._*
 seed_*.cjs
