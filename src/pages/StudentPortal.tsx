@@ -338,13 +338,14 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
       <nav style={{ position: 'relative', zIndex: 10, height: 56, flexShrink: 0, background: 'rgba(2,8,23,.9)', borderBottom: '1px solid rgba(255,255,255,.07)', backdropFilter: 'blur(24px)', display: 'grid', gridTemplateColumns: '200px 1fr auto', alignItems: 'center', padding: '0 22px' }}>
         <img src={aladiahLogo} alt="Aladiah Academy" style={{ height: 34, objectFit: 'contain', objectPosition: 'left' }} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-          {[T('nav_my_portal'), T('nav_courses'), T('nav_talent_score'), T('nav_career'), T('nav_community'), T('nav_resources')].map((item, i) => (
+          {[T('nav_my_portal'), T('nav_courses'), 'Simulations', T('nav_talent_score'), T('nav_career'), T('nav_community'), T('nav_resources')].map((item, i) => (
             <button key={item} onClick={() => {
               if (i === 0) navigate('/portal');
               else if (i === 1) navigate('/portal/courses');
-              else if (i === 2) navigate('/portal/talent-score');
-              else if (i === 3) navigate('/portal/career');
-              else if (i === 4) navigate('/community');
+              else if (i === 2) navigate('/portal/simulations');
+              else if (i === 3) navigate('/portal/talent-score');
+              else if (i === 4) navigate('/portal/career');
+              else if (i === 5) navigate('/community');
               else navigate('/portal');
             }} style={{ background: 'none', border: 'none', borderBottom: i === 0 ? '2.5px solid #3b82f6' : '2.5px solid transparent', color: i === 0 ? '#fff' : '#5a6a8a', fontSize: 14, fontWeight: i === 0 ? 700 : 500, padding: '0 16px', height: 56, cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap', transition: 'color .15s' }}>
               {item}
@@ -418,6 +419,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               { icon: '🏠', lbl: T('overview'), path: '/portal', exact: true },
               { icon: '📚', lbl: T('my_academy'), path: '/portal/courses', badge: courses.length || undefined },
               { icon: '🎯', lbl: T('my_career'), path: '/portal/my-career-path' },
+              { icon: '🌐', lbl: 'Simulations', path: '/portal/simulations' },
               { icon: '⭐', lbl: T('talent'), path: '/portal/talent-score' },
               { icon: '🏅', lbl: T('certs'), path: '/portal/courses' },
               { icon: '💼', lbl: T('career_tools'), path: '/portal/career' },
