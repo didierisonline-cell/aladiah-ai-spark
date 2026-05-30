@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { overviewT } from '@/contexts/overviewStrings';
 import { useProgress } from '@/hooks/useProgress';
 import { useSubscription } from '@/hooks/useSubscription';
 import { CreedAcknowledgmentGate, shouldShowCreedGate } from '@/components/CreedAcknowledgmentGate';
@@ -13,105 +14,6 @@ import profCardBg from '@/assets/professor-didier-card.png';
 import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
 
 // ── TRANSLATIONS ──────────────────────────────────────────────────────────────
-const STR: Record<string, Record<string, string>> = {
-  en: {
-    welcome: 'Welcome back', subtitle: '"You\'re building the future. Stay consistent, stay focused, and the world is yours."',
-    your_next_action: 'Your Next Action', fastest_path: 'The fastest path to your next milestone',
-    continue: 'Continue', ai_mentor: 'AI Mentor', ai_mentor_sub: 'Get personalized guidance from your AI Mentor',
-    chat_now: 'Chat Now', daily_challenge: 'Daily Challenge', daily_challenge_sub: 'Complete today\'s challenge and earn 50 points',
-    start_challenge: 'Start Challenge', live_session: 'Live Session', live_session_sub: 'Join live Q&A with industry experts',
-    join_now: 'Join Now', overall_progress: 'Overall Progress', keep_going: 'Keep going!',
-    day_streak: 'Day Streak', amazing: 'Amazing consistency!', points_earned: 'Points Earned',
-    this_week: '+350 this week', labs_completed: 'Labs Completed', labs_week: '+3 this week',
-    certifications: 'Certifications', in_progress: 'In Progress', ai_workforce: 'AI Workforce Programs',
-    programs_schools: 'programs across 4 schools', view_all: 'View All Programs →',
-    prof_greeting: 'Good morning', prof_analyzed: "I've analyzed your progress and prepared a custom plan to get you to the next level.",
-    talk_prof: 'Talk to Prof. Didier', talent_score_label: 'Talent Score™', rising_star: 'Rising Star',
-    view_breakdown: 'View Full Breakdown →', top_skills: 'Top Skills Strength',
-    career_momentum: 'Career Momentum', live_feed: 'Live Feed', future_ready: 'You are future-ready',
-    future_sub: 'Keep building. The world needs your talent.', done_day: 'Done for the Day',
-    hours_employable: 'Hours to Employable', lessons: 'Lessons', start: 'Start →',
-    pro_member: 'Pro Member', all_access: 'All-Access Pass™', overview: 'Overview',
-    my_academy: 'My Academy', my_career: 'My Career Path', talent: 'Talent Score™',
-    certs: 'Certifications', career_tools: 'Career Tools', portfolio: 'My Portfolio',
-    labs: 'Labs', community: 'Community', leaderboard: 'Leaderboard', events: 'Events',
-    settings: 'Settings', management: 'Aladiah Management', refer: 'Refer & Earn',
-    refer_sub: 'Invite friends and earn premium rewards', account: 'ACCOUNT',
-    got_hired: 'just got hired as', completed: 'completed', earned: 'earned', at: 'at',
-    year: '/year', ago: 'ago', min: 'min', new: 'New',
-    ai_interview: 'AI Interview', practice_now: 'Practice Now', resume_builder: 'Resume Builder',
-    optimize_cv: 'Optimize CV', job_matches: 'Job Matches', new_jobs: 'New Jobs',
-    portfolio_analyzer: 'Portfolio Analyzer', get_feedback: 'Get AI Feedback',
-    salary_insights: 'Salary Insights', know_worth: 'Know Your Worth',
-    countries_community: 'Countries in Community', top_learners: 'of Learners',
-  },
-  es: {
-    welcome: 'Bienvenido de vuelta', subtitle: '"Estás construyendo el futuro."',
-    your_next_action: 'Tu Próxima Acción', fastest_path: 'El camino más rápido',
-    continue: 'Continuar', ai_mentor: 'Mentor IA', ai_mentor_sub: 'Orientación personalizada de tu Mentor IA',
-    chat_now: 'Chatear', daily_challenge: 'Desafío Diario', daily_challenge_sub: 'Completa el desafío y gana 50 puntos',
-    start_challenge: 'Comenzar', live_session: 'Sesión en Vivo', live_session_sub: 'Q&A en vivo con expertos',
-    join_now: 'Unirse', overall_progress: 'Progreso General', keep_going: '¡Sigue adelante!',
-    day_streak: 'Días Seguidos', amazing: '¡Consistencia increíble!', points_earned: 'Puntos Ganados',
-    this_week: '+350 esta semana', labs_completed: 'Labs Completados', labs_week: '+3 esta semana',
-    certifications: 'Certificaciones', in_progress: 'En Progreso', ai_workforce: 'Programas IA',
-    programs_schools: 'programas en 4 escuelas', view_all: 'Ver Todos →',
-    prof_greeting: 'Buenos días', prof_analyzed: 'He analizado tu progreso y preparado un plan personalizado.',
-    talk_prof: 'Hablar con Prof. Didier', talent_score_label: 'Talent Score™', rising_star: 'Estrella en Ascenso',
-    view_breakdown: 'Ver Desglose →', top_skills: 'Habilidades Principales',
-    career_momentum: 'Impulso Profesional', live_feed: 'En Vivo', future_ready: 'Estás listo para el futuro',
-    future_sub: 'Sigue construyendo. El mundo necesita tu talento.', done_day: 'Listo por Hoy',
-    hours_employable: 'Horas para Empleabilidad', lessons: 'Lecciones', start: 'Empezar →',
-    pro_member: 'Miembro Pro', all_access: 'Pase Todo Acceso™', overview: 'Resumen',
-    my_academy: 'Mi Academia', my_career: 'Mi Carrera', talent: 'Talent Score™',
-    certs: 'Certificaciones', career_tools: 'Herramientas', portfolio: 'Mi Portfolio',
-    labs: 'Labs', community: 'Comunidad', leaderboard: 'Clasificación', events: 'Eventos',
-    settings: 'Configuración', management: 'Aladiah Management', refer: 'Referir y Ganar',
-    refer_sub: 'Invita amigos y gana recompensas', account: 'CUENTA',
-    got_hired: 'fue contratado como', completed: 'completó', earned: 'ganó', at: 'en',
-    year: '/año', ago: 'hace', min: 'min', new: 'Nuevo',
-    ai_interview: 'Entrevista IA', practice_now: 'Practicar', resume_builder: 'Constructor CV',
-    optimize_cv: 'Optimizar CV', job_matches: 'Empleos', new_jobs: 'Nuevos Empleos',
-    portfolio_analyzer: 'Analizador', get_feedback: 'Obtener Feedback',
-    salary_insights: 'Salarios', know_worth: 'Tu Valor',
-    countries_community: 'Países en Comunidad', top_learners: 'de Estudiantes',
-  },
-  fr: {
-    welcome: 'Bon retour', subtitle: '"Vous construisez l\'avenir."',
-    your_next_action: 'Votre Prochaine Action', fastest_path: 'Le chemin le plus rapide',
-    continue: 'Continuer', ai_mentor: 'Mentor IA', ai_mentor_sub: 'Conseils personnalisés de votre Mentor IA',
-    chat_now: 'Discuter', daily_challenge: 'Défi du Jour', daily_challenge_sub: 'Complétez le défi et gagnez 50 points',
-    start_challenge: 'Commencer', live_session: 'Session en Direct', live_session_sub: 'Q&R en direct avec des experts',
-    join_now: 'Rejoindre', overall_progress: 'Progression Générale', keep_going: 'Continuez!',
-    day_streak: 'Jours Consécutifs', amazing: 'Constance incroyable!', points_earned: 'Points Gagnés',
-    this_week: '+350 cette semaine', labs_completed: 'Labs Complétés', labs_week: '+3 cette semaine',
-    certifications: 'Certifications', in_progress: 'En Cours', ai_workforce: 'Programmes IA',
-    programs_schools: 'programmes dans 4 écoles', view_all: 'Voir Tous →',
-    prof_greeting: 'Bonjour', prof_analyzed: "J'ai analysé votre progression et préparé un plan personnalisé.",
-    talk_prof: 'Parler à Prof. Didier', talent_score_label: 'Talent Score™', rising_star: 'Étoile Montante',
-    view_breakdown: 'Voir le Détail →', top_skills: 'Compétences Principales',
-    career_momentum: 'Élan Professionnel', live_feed: 'En Direct', future_ready: 'Vous êtes prêt pour l\'avenir',
-    future_sub: 'Continuez à construire. Le monde a besoin de votre talent.', done_day: 'Terminé pour Aujourd\'hui',
-    hours_employable: 'Heures vers l\'Employabilité', lessons: 'Leçons', start: 'Commencer →',
-    pro_member: 'Membre Pro', all_access: 'Pass Tout Accès™', overview: 'Aperçu',
-    my_academy: 'Mon Académie', my_career: 'Ma Carrière', talent: 'Talent Score™',
-    certs: 'Certifications', career_tools: 'Outils', portfolio: 'Mon Portfolio',
-    labs: 'Labs', community: 'Communauté', leaderboard: 'Classement', events: 'Événements',
-    settings: 'Paramètres', management: 'Aladiah Management', refer: 'Référer et Gagner',
-    refer_sub: 'Invitez des amis et gagnez des récompenses', account: 'COMPTE',
-    got_hired: 'vient d\'être embauché comme', completed: 'a complété', earned: 'a gagné', at: 'chez',
-    year: '/an', ago: 'il y a', min: 'min', new: 'Nouveau',
-    ai_interview: 'Entretien IA', practice_now: 'Pratiquer', resume_builder: 'CV Builder',
-    optimize_cv: 'Optimiser CV', job_matches: 'Emplois', new_jobs: 'Nouveaux Emplois',
-    portfolio_analyzer: 'Analyseur', get_feedback: 'Obtenir Feedback',
-    salary_insights: 'Salaires', know_worth: 'Votre Valeur',
-    countries_community: 'Pays dans la Communauté', top_learners: 'des Apprenants',
-  },
-};
-function t(lang: string, key: string): string {
-  return (STR[lang] || STR.en)[key] || STR.en[key] || key;
-}
-
 const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 function getDateStr() {
@@ -203,11 +105,21 @@ function sbFetch<T>(query: Promise<{data:T|null;error:any}>, fallback:T, ms=5000
 
 const LANGS = ['EN','ES','FR','DE','ZH','AR','JA'];
 
+const OVERVIEW_LANGS = [
+  {code:'en',label:'English'},{code:'es',label:'Español'},{code:'zh',label:'中文'},
+  {code:'ar',label:'العربية'},{code:'fr',label:'Français'},{code:'de',label:'Deutsch'},
+  {code:'ja',label:'日本語'},{code:'pt',label:'Português'},{code:'hi',label:'हिन्दी'},
+  {code:'ko',label:'한국어'},{code:'it',label:'Italiano'},{code:'ru',label:'Русский'},
+  {code:'nl',label:'Nederlands'},{code:'pl',label:'Polski'},{code:'tr',label:'Türkçe'},
+  {code:'sw',label:'Kiswahili'},{code:'yo',label:'Yorùbá'},{code:'ha',label:'Hausa'},
+  {code:'ig',label:'Igbo'},{code:'vi',label:'Tiếng Việt'},{code:'th',label:'ภาษาไทย'},
+];
+
 export default function StudentPortal() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const { language } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const { progress: overallProgress } = useProgress(user?.id);
   const { tier } = useSubscription();
 
@@ -227,12 +139,10 @@ export default function StudentPortal() {
   const [profChat, setProfChat] = useState(false);
   const [profGreeting, setProfGreeting] = useState<string>('');
   const [profLoading, setProfLoading] = useState(false);
-  const [lang, setLang] = useState(language || 'en');
   const [talentScore] = useState(612);
   const [hoursLeft] = useState(412);
 
-  const T = (key: string) => t(lang, key);
-  useEffect(() => { setLang(language || 'en'); }, [language]);
+  const T = (key: string) => overviewT(language || 'en', key);
 
   // Load all student data
   useEffect(() => {
@@ -422,13 +332,13 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
           {/* Language */}
           <div style={{position:'relative'}}>
             <button onClick={()=>setLangMenuOpen(!langMenuOpen)} style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.13)',color:'#cbd5e1',borderRadius:8,padding:'6px 12px',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:'inherit'}}>
-              {lang.toUpperCase()} <span style={{fontSize:10}}>▾</span>
+              {(language||'en').toUpperCase()} <span style={{fontSize:10}}>▾</span>
             </button>
             {langMenuOpen&&(
-              <div style={{position:'absolute',top:'110%',right:0,background:'#0d1829',border:'1px solid rgba(255,255,255,.1)',borderRadius:10,padding:6,zIndex:200,minWidth:80}}>
-                {LANGS.map(l=>(
-                  <button key={l} onClick={()=>{setLang(l.toLowerCase());setLangMenuOpen(false);}} style={{display:'block',width:'100%',textAlign:'left',padding:'6px 12px',background:lang.toUpperCase()===l?'rgba(59,130,246,.2)':'none',border:'none',color:'#e2e8f8',fontSize:12,fontWeight:600,cursor:'pointer',borderRadius:6,fontFamily:'inherit'}}>
-                    {l}
+              <div style={{position:'absolute',top:'110%',right:0,background:'#0d1829',border:'1px solid rgba(255,255,255,.1)',borderRadius:10,padding:6,zIndex:200,minWidth:140,maxHeight:320,overflowY:'auto'}}>
+                {OVERVIEW_LANGS.map(l=>(
+                  <button key={l.code} onClick={()=>{setLanguage(l.code as any);setLangMenuOpen(false);}} style={{display:'flex',alignItems:'center',gap:8,width:'100%',textAlign:'left',padding:'7px 12px',background:language===l.code?'rgba(59,130,246,.2)':'none',border:'none',color:'#e2e8f8',fontSize:12.5,fontWeight:600,cursor:'pointer',borderRadius:6,fontFamily:'inherit'}}>
+                    <span style={{opacity:.55,fontSize:11,minWidth:20}}>{l.code.toUpperCase()}</span>{l.label}
                   </button>
                 ))}
               </div>
