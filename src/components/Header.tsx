@@ -66,7 +66,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
     }}>
       {/* Logo */}
       <a href="/" onClick={e => { e.preventDefault(); navigate('/'); }} style={{ display: 'flex', alignItems: 'center' }}>
-        <Logo variant="full" style={{ height: 44, width: "auto" }} />
+        <div onClick={() => navigate("/")} style={{ cursor: "pointer" }}><Logo variant="full" style={{ height: 44, width: "auto" }} /></div>
       </a>
 
       {/* Desktop Nav */}
