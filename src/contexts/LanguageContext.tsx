@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 type Language = 'en' | 'es' | 'zh' | 'ar' | 'fr' | 'de' | 'ja' | 'pt' | 'hi' | 'ko' | 'it' | 'ru' | 'nl' | 'pl' | 'tr' | 'sw' | 'yo' | 'ha' | 'ig' | 'vi' | 'th';
 
@@ -409,7 +410,7 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.scene3': 'She enrolls, studies late into the night, and earns her Scrum Master certification.',
     'hero.scene4': '6 months later — she leads a professional team, earning $60,000 a year.',
     'hero.scene5': 'She moves to a beautiful apartment. Her life is forever changed.',
-    
+
     // Programs
     'programs.badge': 'Our Programs',
     'programs.title': 'World-Class Training Programs',
@@ -447,7 +448,7 @@ const translations: Record<Language, Record<string, string>> = {
     'programs.rogersProject.prereq': 'Requires completion of specific courses to unlock',
     'programs.rogersProject.duration': '2-month project (4 sprints)',
     'programs.rogersProject.teams': '3 Scrum Teams',
-    
+
     // About
     'about.badge': 'About Us',
     'about.title': 'Founded on Excellence',
@@ -456,7 +457,7 @@ const translations: Record<Language, Record<string, string>> = {
     'about.p3': 'Operating under Aladiah Management, we maintain the highest standards of professional training while embracing innovation and the transformative power of AI in education.',
     'about.founder': 'Founder & CEO',
     'about.company': 'Aladiah Management',
-    
+
     // Founder
     'founder.bio.title': 'Visionary Leader in Agile & AI Education',
     'founder.bio.p1': 'Didier is a seasoned IT executive and Agile transformation leader with years of experience driving large-scale technology initiatives across the cruise, hospitality, and enterprise sectors. Currently an IT Agile Technical Project Manager at Royal Caribbean International, he orchestrates multi-million-dollar digital transformation programs spanning global operations.',
@@ -475,12 +476,12 @@ const translations: Record<Language, Record<string, string>> = {
     'features.expert.desc': 'Learn from professionals with real-world experience',
     'features.network.title': 'Professional Network',
     'features.network.desc': 'Connect with industry leaders and peers',
-    
+
     // CTA
     'cta.title': 'Ready to Transform Your Career?',
     'cta.subtitle': 'Join hundreds of professionals who have advanced their careers through our programs. Start your journey today.',
     'cta.button': 'Get Started Now',
-    
+
     // Footer
     'footer.description': 'Professional Training Institute for Scrum Masters and Project Managers, powered by AI innovation.',
     'footer.quickLinks': 'Quick Links',
@@ -963,7 +964,7 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.scene3': 'Se inscribe, estudia hasta altas horas de la noche y obtiene su certificación de Scrum Master.',
     'hero.scene4': '6 meses después — lidera un equipo profesional, ganando $60,000 al año.',
     'hero.scene5': 'Se muda a un hermoso apartamento. Su vida cambió para siempre.',
-    
+
     // Programs
 
     'programs.badge': 'Nuestros Programas',
@@ -1011,7 +1012,7 @@ const translations: Record<Language, Record<string, string>> = {
     'about.p3': 'Operando bajo Aladiah Management, mantenemos los más altos estándares de formación profesional mientras abrazamos la innovación y el poder transformador de la IA en la educación.',
     'about.founder': 'Fundador y CEO',
     'about.company': 'Aladiah Management',
-    
+
     // Founder
     'founder.bio.title': 'Líder Visionario en Educación Agile e IA',
     'founder.bio.p1': 'Didier es un ejecutivo de TI experimentado y líder en transformación Agile con años de experiencia impulsando iniciativas tecnológicas a gran escala en los sectores de cruceros, hospitalidad y empresarial. Actualmente IT Agile Technical Project Manager en Royal Caribbean International, orquesta programas de transformación digital multimillonarios a nivel global.',
@@ -1030,12 +1031,12 @@ const translations: Record<Language, Record<string, string>> = {
     'features.expert.desc': 'Aprende de profesionales con experiencia real',
     'features.network.title': 'Red Profesional',
     'features.network.desc': 'Conecta con líderes de la industria y colegas',
-    
+
     // CTA
     'cta.title': '¿Listo para Transformar tu Carrera?',
     'cta.subtitle': 'Únete a cientos de profesionales que han avanzado en sus carreras a través de nuestros programas. Comienza tu viaje hoy.',
     'cta.button': 'Comenzar Ahora',
-    
+
     // Footer
     'footer.description': 'Instituto de Formación Profesional para Scrum Masters y Gestores de Proyectos, impulsado por innovación en IA.',
     'footer.quickLinks': 'Enlaces Rápidos',
@@ -1518,7 +1519,7 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.scene3': '她报名了，深夜学习，并获得了Scrum Master认证。',
     'hero.scene4': '6个月后——她领导一个专业团队，年收入60,000美元。',
     'hero.scene5': '她搬进了一套漂亮的公寓。她的生活从此改变。',
-    
+
     // Programs
 
     'programs.badge': '我们的课程',
@@ -1566,7 +1567,7 @@ const translations: Record<Language, Record<string, string>> = {
     'about.p3': '在Aladiah Management旗下运营，我们保持最高的专业培训标准，同时拥抱创新和AI在教育中的变革力量。',
     'about.founder': '创始人兼CEO',
     'about.company': 'Aladiah Management',
-    
+
     // Founder
     'founder.bio.title': '敏捷与AI教育的远见领导者',
     'founder.bio.p1': 'Didier是一位经验丰富的IT高管和敏捷转型领导者，拥有多年推动邮轮、酒店和企业领域大规模技术计划的经验。目前担任皇家加勒比国际公司IT敏捷技术项目经理，他策划跨全球运营的数百万美元数字化转型项目。',
@@ -1585,12 +1586,12 @@ const translations: Record<Language, Record<string, string>> = {
     'features.expert.desc': '向具有实战经验的专业人士学习',
     'features.network.title': '专业网络',
     'features.network.desc': '与行业领袖和同行建立联系',
-    
+
     // CTA
     'cta.title': '准备好转变您的职业生涯了吗？',
     'cta.subtitle': '加入数百位通过我们的课程推进职业发展的专业人士。今天就开始您的旅程。',
     'cta.button': '立即开始',
-    
+
     // Footer
     'footer.description': 'Scrum Master和项目经理专业培训机构，由AI创新驱动。',
     'footer.quickLinks': '快速链接',
@@ -2073,7 +2074,7 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.scene3': 'تسجل، تدرس حتى وقت متأخر من الليل، وتحصل على شهادة Scrum Master.',
     'hero.scene4': 'بعد 6 أشهر — تقود فريقًا محترفًا، وتكسب 60,000 دولار سنويًا.',
     'hero.scene5': 'تنتقل إلى شقة جميلة. حياتها تغيرت إلى الأبد.',
-    
+
     // Programs
 
     'programs.badge': 'برامجنا',
@@ -2121,7 +2122,7 @@ const translations: Record<Language, Record<string, string>> = {
     'about.p3': 'نعمل تحت إدارة علاديا، ونحافظ على أعلى معايير التدريب المهني مع تبني الابتكار والقوة التحويلية للذكاء الاصطناعي في التعليم.',
     'about.founder': 'المؤسس والرئيس التنفيذي',
     'about.company': 'إدارة علاديا',
-    
+
     // Founder
     'founder.bio.title': 'قائد صاحب رؤية في تعليم Agile والذكاء الاصطناعي',
     'founder.bio.p1': 'ديدييه هو مدير تنفيذي متمرس في تقنية المعلومات وقائد في التحول الرشيق مع سنوات من الخبرة في قيادة مبادرات التكنولوجيا واسعة النطاق في قطاعات الرحلات البحرية والضيافة والمؤسسات. يعمل حاليًا كمدير مشاريع تقني IT Agile في Royal Caribbean International، وينظم برامج تحول رقمي بملايين الدولارات عبر العمليات العالمية.',
@@ -2140,12 +2141,12 @@ const translations: Record<Language, Record<string, string>> = {
     'features.expert.desc': 'تعلم من محترفين ذوي خبرة حقيقية',
     'features.network.title': 'شبكة مهنية',
     'features.network.desc': 'تواصل مع قادة الصناعة والأقران',
-    
+
     // CTA
     'cta.title': 'هل أنت مستعد لتحويل مسيرتك المهنية؟',
     'cta.subtitle': 'انضم إلى مئات المحترفين الذين تقدموا في حياتهم المهنية من خلال برامجنا. ابدأ رحلتك اليوم.',
     'cta.button': 'ابدأ الآن',
-    
+
     // Footer
     'footer.description': 'معهد تدريب مهني لـ Scrum Masters ومديري المشاريع، مدعوم بابتكار الذكاء الاصطناعي.',
     'footer.quickLinks': 'روابط سريعة',
@@ -2628,7 +2629,7 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.scene3': 'Elle s\'inscrit, étudie tard dans la nuit et obtient sa certification Scrum Master.',
     'hero.scene4': '6 mois plus tard — elle dirige une équipe professionnelle, gagnant 60 000 $ par an.',
     'hero.scene5': 'Elle emménage dans un bel appartement. Sa vie est changée à jamais.',
-    
+
     // Programs
 
     'programs.badge': 'Nos Programmes',
@@ -2676,7 +2677,7 @@ const translations: Record<Language, Record<string, string>> = {
     'about.p3': 'Opérant sous Aladiah Management, nous maintenons les plus hauts standards de formation professionnelle tout en embrassant l\'innovation et le pouvoir transformateur de l\'IA dans l\'éducation.',
     'about.founder': 'Fondateur et PDG',
     'about.company': 'Aladiah Management',
-    
+
     // Founder
     'founder.bio.title': 'Leader Visionnaire en Éducation Agile et IA',
     'founder.bio.p1': 'Didier est un cadre IT chevronné et leader de la transformation Agile avec des années d\'expérience dans la conduite d\'initiatives technologiques à grande échelle dans les secteurs des croisières, de l\'hôtellerie et de l\'entreprise. Actuellement IT Agile Technical Project Manager chez Royal Caribbean International, il orchestre des programmes de transformation numérique de plusieurs millions de dollars à travers les opérations mondiales.',
@@ -2695,12 +2696,12 @@ const translations: Record<Language, Record<string, string>> = {
     'features.expert.desc': 'Apprenez de professionnels avec une expérience réelle',
     'features.network.title': 'Réseau Professionnel',
     'features.network.desc': 'Connectez-vous avec les leaders de l\'industrie et vos pairs',
-    
+
     // CTA
     'cta.title': 'Prêt à Transformer Votre Carrière ?',
     'cta.subtitle': 'Rejoignez des centaines de professionnels qui ont fait avancer leur carrière grâce à nos programmes. Commencez votre voyage aujourd\'hui.',
     'cta.button': 'Commencer Maintenant',
-    
+
     // Footer
     'footer.description': 'Institut de Formation Professionnelle pour Scrum Masters et Gestionnaires de Projet, alimenté par l\'innovation IA.',
     'footer.quickLinks': 'Liens Rapides',
@@ -3183,7 +3184,7 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.scene3': 'Sie schreibt sich ein, lernt bis spät in die Nacht und erhält ihre Scrum Master-Zertifizierung.',
     'hero.scene4': '6 Monate später — sie leitet ein professionelles Team und verdient 60.000 $ pro Jahr.',
     'hero.scene5': 'Sie zieht in eine schöne Wohnung. Ihr Leben hat sich für immer verändert.',
-    
+
     // Programs
 
     'programs.badge': 'Unsere Programme',
@@ -3231,7 +3232,7 @@ const translations: Record<Language, Record<string, string>> = {
     'about.p3': 'Unter Aladiah Management halten wir die höchsten Standards der Berufsausbildung aufrecht und nutzen gleichzeitig Innovation und die transformative Kraft der KI in der Bildung.',
     'about.founder': 'Gründer & CEO',
     'about.company': 'Aladiah Management',
-    
+
     // Founder
     'founder.bio.title': 'Visionärer Führer in Agile & KI-Bildung',
     'founder.bio.p1': 'Didier ist ein erfahrener IT-Führungskraft und Agile-Transformationsleiter mit jahrelanger Erfahrung in der Leitung großer Technologieinitiativen in der Kreuzfahrt-, Gastgewerbe- und Unternehmensbranche. Derzeit IT Agile Technical Project Manager bei Royal Caribbean International, orchestriert er millionenschwere digitale Transformationsprogramme über globale Operationen hinweg.',
@@ -3250,12 +3251,12 @@ const translations: Record<Language, Record<string, string>> = {
     'features.expert.desc': 'Lerne von Profis mit praktischer Erfahrung',
     'features.network.title': 'Professionelles Netzwerk',
     'features.network.desc': 'Vernetze dich mit Branchenführern und Kollegen',
-    
+
     // CTA
     'cta.title': 'Bereit, deine Karriere zu transformieren?',
     'cta.subtitle': 'Schließe dich Hunderten von Fachleuten an, die ihre Karriere durch unsere Programme vorangebracht haben. Beginne noch heute deine Reise.',
     'cta.button': 'Jetzt starten',
-    
+
     // Footer
     'footer.description': 'Professionelles Ausbildungsinstitut für Scrum Masters und Projektmanager, angetrieben durch KI-Innovation.',
     'footer.quickLinks': 'Schnelllinks',
@@ -3738,7 +3739,7 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.scene3': '入学し、夜遅くまで勉強し、スクラムマスター認定を取得します。',
     'hero.scene4': '6ヶ月後——プロフェッショナルチームをリードし、年収60,000ドルを稼いでいます。',
     'hero.scene5': '美しいアパートに引っ越します。彼女の人生は永遠に変わりました。',
-    
+
     // Programs
 
     'programs.badge': '私たちのプログラム',
@@ -3786,7 +3787,7 @@ const translations: Record<Language, Record<string, string>> = {
     'about.p3': 'Aladiah Managementの下で運営し、イノベーションと教育におけるAIの変革力を受け入れながら、プロフェッショナルトレーニングの最高基準を維持しています。',
     'about.founder': '創設者兼CEO',
     'about.company': 'Aladiah Management',
-    
+
     // Founder
     'founder.bio.title': 'アジャイル＆AI教育の先見的リーダー',
     'founder.bio.p1': 'Didierは、クルーズ、ホスピタリティ、エンタープライズセクターにおいて大規模なテクノロジーイニシアチブを推進してきた豊富な経験を持つ熟練したITエグゼクティブ兼アジャイル変革リーダーです。現在Royal Caribbean InternationalのIT Agile Technical Project Managerとして、グローバルオペレーション全体で数百万ドル規模のデジタルトランスフォーメーションプログラムを統括しています。',
@@ -3805,12 +3806,12 @@ const translations: Record<Language, Record<string, string>> = {
     'features.expert.desc': '実務経験を持つプロフェッショナルから学ぶ',
     'features.network.title': 'プロフェッショナルネットワーク',
     'features.network.desc': '業界リーダーや同僚とつながる',
-    
+
     // CTA
     'cta.title': 'キャリアを変革する準備はできましたか？',
     'cta.subtitle': '私たちのプログラムを通じてキャリアを前進させた数百人のプロフェッショナルに参加してください。今日から旅を始めましょう。',
     'cta.button': '今すぐ始める',
-    
+
     // Footer
     'footer.description': 'AIイノベーションによって駆動されるスクラムマスターとプロジェクトマネージャーのためのプロフェッショナルトレーニング機関。',
     'footer.quickLinks': 'クイックリンク',
@@ -8710,16 +8711,40 @@ const translations: Record<Language, Record<string, string>> = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en');
+  const stored = (typeof localStorage !== 'undefined' && localStorage.getItem('aladiah_lang')) as Language | null;
+  const [language, setLanguage] = useState<Language>(stored || 'en');
+
+  // Load from Supabase profile on auth
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) return;
+      supabase.from('profiles').select('preferred_language').eq('user_id', data.user.id).maybeSingle().then(({ data: prof }) => {
+        if (prof?.preferred_language) {
+          const lang = prof.preferred_language as Language;
+          setLanguage(lang);
+          localStorage.setItem('aladiah_lang', lang);
+        }
+      });
+    });
+  }, []);
+
+  const setLanguagePersisted = async (lang: Language) => {
+    setLanguage(lang);
+    localStorage.setItem('aladiah_lang', lang);
+    const { data } = await supabase.auth.getUser();
+    if (data.user) {
+      supabase.from('profiles').update({ preferred_language: lang }).eq('user_id', data.user.id).then(() => { });
+    }
+  };
 
   const t = (key: string): string => {
-    return (translations[language] && translations[language][key]) 
-      || (translations['en'] && translations['en'][key]) 
+    return (translations[language] && translations[language][key])
+      || (translations['en'] && translations['en'][key])
       || key;
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage: setLanguagePersisted, t }}>
       {children}
     </LanguageContext.Provider>
   );
