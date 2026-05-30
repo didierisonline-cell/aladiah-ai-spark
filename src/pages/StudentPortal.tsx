@@ -16,9 +16,18 @@ import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
 // ── TRANSLATIONS ──────────────────────────────────────────────────────────────
 const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-function getDateStr() {
-  const d = new Date();
-  return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+const LOCALE_MAP: Record<string,string> = {
+  en:'en-US', es:'es-ES', zh:'zh-CN', ar:'ar-SA', fr:'fr-FR', de:'de-DE', ja:'ja-JP',
+  pt:'pt-BR', hi:'hi-IN', ko:'ko-KR', it:'it-IT', ru:'ru-RU', nl:'nl-NL', pl:'pl-PL',
+  tr:'tr-TR', sw:'sw-KE', yo:'yo-NG', ha:'ha-NG', ig:'ig-NG', vi:'vi-VN', th:'th-TH',
+};
+function getDateStr(lang?: string) {
+  const locale = (lang && LOCALE_MAP[lang]) || 'en-US';
+  try {
+    return new Date().toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  } catch {
+    return new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  }
 }
 
 const MOMENTUM = [
@@ -440,7 +449,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
         <main style={{overflow:'hidden',background:'transparent',position:'relative',zIndex:5,display:'flex',flexDirection:'column'}}>
           {/* Hero */}
           <div style={{padding:'24px 24px 16px',flexShrink:0}}>
-            <div style={{fontSize:10,color:'#475569',fontWeight:600,textTransform:'uppercase',letterSpacing:'.8px',marginBottom:5}}>{getDateStr()}</div>
+            <div style={{fontSize:10,color:'#475569',fontWeight:600,textTransform:'uppercase',letterSpacing:'.8px',marginBottom:5}}>{getDateStr(language)}</div>
             <h1 style={{fontSize:28,fontWeight:800,margin:'0 0 6px',lineHeight:1.18}}>{T('welcome')}, {displayName}! 👋</h1>
             <p style={{fontSize:12.5,color:'#64748b',margin:'0 0 16px',fontStyle:'italic',maxWidth:440,lineHeight:1.65}}>{T('subtitle')}</p>
             <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
