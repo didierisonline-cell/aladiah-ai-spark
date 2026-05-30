@@ -35,21 +35,12 @@ function Bars({ active }: { active: boolean }) {
       }
     } catch {}
     try {
-      const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY || '';
-      const prompt = `Create 2 professional educational SVG diagrams. Course: ${courseTitle}. Lesson: ${lesson.title || ''}. Description: ${lesson.description || ''}. Return JSON array: ["<svg viewBox=\"0 0 700 380\" xmlns=\"http://www.w3.org/2000/svg\">...</svg>","<svg viewBox=\"0 0 700 380\" xmlns=\"http://www.w3.org/2000/svg\">...</svg>"]. White background, dark text #1e293b, blue #1d4ed8 accents, clear title, technically accurate, O-Reilly professional style.`;
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-        body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 4000, system: 'Return ONLY a valid JSON array of 2 SVG strings. No markdown, no explanation.', messages: [{ role: 'user', content: prompt }] })
+      const resp = await supabase.functions.invoke('generate-visuals', {
+        body: { lessonTitle: lesson.title || '', lessonDescription: lesson.description || '', courseTitle }
       });
-      if (resp.ok) {
-        const data = await resp.json();
-        let text = (data.content?.[0]?.text || '[]').trim().replace(/^```[\w]*\n?/, '').replace(/```$/, '');
-        const svgs: string[] = JSON.parse(text);
-        if (Array.isArray(svgs) && svgs.length > 0) {
-          setLessonVisuals(svgs);
-          supabase.from('lesson_visuals').upsert({ lesson_id: lesson.id, svgs }).then(() => {});
-        }
+      if (resp.data?.svgs && Array.isArray(resp.data.svgs) && resp.data.svgs.length > 0) {
+        setLessonVisuals(resp.data.svgs);
+        supabase.from('lesson_visuals').upsert({ lesson_id: lesson.id, svgs: resp.data.svgs }).then(() => {});
       }
     } catch(e) { console.warn('Visual gen failed:', e); }
     setVisualsLoading(false);
