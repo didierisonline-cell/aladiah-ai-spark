@@ -675,14 +675,14 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               </div>
             </div>
             {/* Message box */}
-            <div style={{position:'absolute',bottom:14,left:14,width:'56%',zIndex:10,background:'rgba(6,16,42,.88)',border:'1px solid rgba(59,130,246,.22)',borderRadius:12,padding:'12px 13px',backdropFilter:'blur(16px)',boxShadow:'0 8px 28px rgba(0,0,0,.5)'}}>
+            <div style={{position:'absolute',bottom:14,left:14,right:14,zIndex:10,background:'rgba(6,16,42,.92)',border:'1px solid rgba(59,130,246,.22)',borderRadius:12,padding:'12px 13px',backdropFilter:'blur(16px)',boxShadow:'0 8px 28px rgba(0,0,0,.5)'}}>
               <div style={{fontSize:12.5,fontWeight:700,color:'#fff',marginBottom:4}}>
                 {T('prof_greeting')}, {displayName}! <span style={{color:'#f59e0b'}}>🌟</span>
               </div>
               <p style={{fontSize:11,color:'#94a3b8',lineHeight:1.55,marginBottom:10}}>{T('prof_analyzed')}</p>
-              <button onClick={generateProfGreeting} style={{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',height:38,padding:'0 12px',background:'linear-gradient(90deg,#1d4ed8,#2563eb)',border:'none',borderRadius:9,color:'#fff',fontSize:12,fontWeight:700,cursor:'pointer',fontFamily:'inherit',boxShadow:'0 0 20px rgba(37,99,235,.38)'}}>
-                <span>🎙️ {T('talk_prof')}</span>
-                <div style={{display:'flex',alignItems:'center',gap:2}}>
+              <button onClick={generateProfGreeting} style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:8,width:'100%',minHeight:38,padding:'8px 12px',background:'linear-gradient(90deg,#1d4ed8,#2563eb)',border:'none',borderRadius:9,color:'#fff',fontSize:12,fontWeight:700,cursor:'pointer',fontFamily:'inherit',boxShadow:'0 0 20px rgba(37,99,235,.38)'}}>
+                <span style={{textAlign:'left',lineHeight:1.2}}>🎙️ {T('talk_prof')}</span>
+                <div style={{display:'flex',alignItems:'center',gap:2,flexShrink:0}}>
                   {[5,9,13,9,6,4].map((h,i)=>(
                     <span key={i} style={{display:'inline-block',width:3,height:h,borderRadius:99,background:'#67e8f9',opacity:.85}} />
                   ))}
