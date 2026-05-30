@@ -4,6 +4,7 @@ import PortalSidebar from '@/components/PortalSidebar';
 import { useAuth } from '@/hooks/useAuth';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', border:'#1E2D47', fg:'#EDF2F7', fm:'#8596AD',
@@ -50,6 +51,7 @@ const COURSE_ICONS: Record<string, string> = {
 };
 
 export default function PortalCourses() {
+  const { language } = useLanguage();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [courses, setCourses] = useState<any[]>([]);
@@ -59,7 +61,7 @@ export default function PortalCourses() {
     if (!user) return;
     supabase
       .from('courses')
-      .select('id, title, description')
+      .select('id, title, description, translations')
       .eq('is_published', true)
       .order('title')
       .then(({ data }) => {
@@ -103,7 +105,7 @@ export default function PortalCourses() {
                     onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = DS.border; (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
                   >
                     <div style={{ fontSize: 32, marginBottom: '.75rem' }}>{icon}</div>
-                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: '.4rem', lineHeight: 1.3 }}>{c.title}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: '.4rem', lineHeight: 1.3 }}>{c.translations?.[language]?.title || c.title}</div>
                     <div style={{ fontSize: 12, color: DS.fm, lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>
                       {c.description}
                     </div>

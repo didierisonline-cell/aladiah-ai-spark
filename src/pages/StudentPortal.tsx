@@ -193,7 +193,7 @@ export default function StudentPortal() {
           );
           school = key ? COURSE_SCHOOL[key] : null;
         }
-        return { id:course.id, title:course.title, total, done:doneCount, pct, school, isCert };
+        return { id:course.id, title:(course.translations?.[language]?.title || course.title), total, done:doneCount, pct, school, isCert };
       }));
 
       // Include ALL courses (even unseeded ones) so school counts are correct
