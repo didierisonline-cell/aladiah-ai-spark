@@ -242,7 +242,7 @@ export default function StudentPortal() {
         sbFetch(supabase.from('student_points').select('points').eq('user_id',user!.id), []),
         sbFetch(supabase.from('student_labs').select('*').eq('user_id',user!.id), []),
         sbFetch(supabase.from('courses').select('id,title,translations').eq('is_published',true), []),
-        sbFetch(supabase.from('user_progress').select('id').eq('user_id',user!.id).eq('completed',true), []),
+        sbFetch(supabase.from('user_progress').select('id').eq('user_id',user!.id).not('completed_at','is',null), []),
       ]);
       setTotalPoints((pointsData as any[]).reduce((s:number,p:any)=>s+(p.points||0),0));
       setLabs(labsData as any[]);
@@ -255,7 +255,7 @@ export default function StudentPortal() {
         const [chapData,vidData,progRows] = await Promise.all([
           sbFetch(supabase.from('chapters').select('id').eq('course_id',course.id),[]),
           sbFetch(supabase.from('videos').select('id,chapter_id'),[]),
-          sbFetch(supabase.from('user_progress').select('video_id').eq('user_id',user!.id).eq('completed',true),[]),
+          sbFetch(supabase.from('user_progress').select('video_id').eq('user_id',user!.id).not('completed_at','is',null),[]),
         ]);
         const chapIds = new Set((chapData as any[]).map((c:any)=>c.id));
         const vids = (vidData as any[]).filter((v:any)=>chapIds.has(v.chapter_id));
@@ -283,11 +283,11 @@ export default function StudentPortal() {
 
       // Streak
       const quizDates = await sbFetch(
-        supabase.from('user_progress').select('created_at').eq('user_id',user!.id).eq('completed',true).order('created_at',{ascending:false}),[]
+        supabase.from('user_progress').select('completed_at').eq('user_id',user!.id).not('completed_at','is',null).order('completed_at',{ascending:false}),[]
       );
       let s=0; const today=new Date(); today.setHours(0,0,0,0); const seen=new Set<string>();
       for (const q of (quizDates as any[])) {
-        const d=new Date(q.created_at); d.setHours(0,0,0,0);
+        const d=new Date(q.completed_at); d.setHours(0,0,0,0);
         const key=d.toISOString().slice(0,10);
         if(!seen.has(key)){
           seen.add(key);
@@ -298,7 +298,7 @@ export default function StudentPortal() {
       setStreak(s);
     }
     load();
-  }, [user]);
+  }, [user?.id]);
 
   // Generate personalized AI greeting from Prof. Didier
   const generateProfGreeting = async () => {

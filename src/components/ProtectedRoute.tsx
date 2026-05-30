@@ -22,29 +22,43 @@ function getStoredSession(): boolean {
 
 export default function ProtectedRoute({ children }: Props) {
   const hasStored = getStoredSession();
-  // If localStorage says we're in → start authed immediately, no spinner ever
-  const [status, setStatus] = useState<"authed" | "no-auth">(
-    hasStored ? "authed" : "no-auth"
+  // If localStorage says we're in → start authed immediately, no spinner.
+  // If not, start in "checking" (NOT "no-auth") so we never redirect before
+  // the real auth check resolves — this prevents the redirect loop.
+  const [status, setStatus] = useState<"authed" | "no-auth" | "checking">(
+    hasStored ? "authed" : "checking"
   );
   const location = useLocation();
 
   useEffect(() => {
+    let active = true;
+
     // Listen for live auth events (sign-in / sign-out)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setStatus(session?.user ? "authed" : "no-auth");
+      if (active) setStatus(session?.user ? "authed" : "no-auth");
     });
 
-    // Background verify — update status when it resolves, but never block the UI
+    // Background verify — resolve the real status once.
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setStatus(session?.user ? "authed" : "no-auth");
+      if (active) setStatus(session?.user ? "authed" : "no-auth");
     }).catch(() => {
-      // getSession() failed — keep whatever localStorage told us
+      // getSession() failed (network/RLS). Fall back to what localStorage said,
+      // so a transient failure does not log the user out / cause a redirect loop.
+      if (active) setStatus(hasStored ? "authed" : "no-auth");
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, [hasStored]);
 
-  if (status === "no-auth") return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
+  // While we don't yet have a definite answer, render nothing (no redirect).
+  if (status === "checking") return null;
+
+  if (status === "no-auth") {
+    return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
+  }
 
   return <>{children}</>;
 }

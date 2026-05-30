@@ -16,18 +16,23 @@ function getUserFromStorage(): User | null {
 }
 
 export const useAuth = () => {
-  const storedUser = getUserFromStorage();
-  const [user, setUser] = useState<User | null>(storedUser);
-  const [loading, setLoading] = useState(!storedUser); // skip loading if we already have user
+  // Lazy initial state: getUserFromStorage runs ONCE on mount, not every render.
+  // (Passing a function to useState defers it to first render only.)
+  const [user, setUser] = useState<User | null>(() => getUserFromStorage());
+  const [loading, setLoading] = useState<boolean>(() => !getUserFromStorage());
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const next = session?.user ?? null;
+      // Only update state if the user id actually changed — avoids handing out
+      // a new object reference (and re-render storms) on every auth event.
+      setUser(prev => (prev?.id === next?.id ? prev : next));
       setLoading(false);
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      const next = session?.user ?? null;
+      setUser(prev => (prev?.id === next?.id ? prev : next));
       setLoading(false);
     }).catch(() => {
       setLoading(false);
