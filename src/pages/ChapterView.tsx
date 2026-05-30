@@ -52,9 +52,12 @@ export default function ChapterView() {
 
   const [course, setCourse] = useState<Course | null>(null);
   const [showStudyGuide, setShowStudyGuide] = useState(false);
+  const [lessonVisuals, setLessonVisuals] = useState<string[]>([]);
+  const [visualsLoading, setVisualsLoading] = useState(false);
+  const [visualsKey, setVisualsKey] = useState('');
   const getStudyGuidePdf = (t: string): string | null => {
-    const m: Record<string,string> = {'AI Cloud Engineer':'ai-cloud-engineer-study-guide.pdf','AI Agent Engineer':'ai-agent-engineer-study-guide.pdf','AI Data Engineer':'ai-data-engineer-study-guide.pdf','AI DevOps Engineer':'ai-devops-engineer-study-guide.pdf','AI Security Engineer':'ai-security-engineer-study-guide.pdf','AI MLOps Engineer':'ai-mlops-engineer-study-guide.pdf','AI Solutions Architect':'ai-solutions-architect-study-guide.pdf','AI Platform Engineer':'ai-platform-engineer-study-guide.pdf','AI Solutions Consultant':'ai-solutions-consultant-study-guide.pdf','AI Product Manager':'ai-product-manager-study-guide.pdf','AI Business Operations':'ai-business-operations-study-guide.pdf','AI Sales Engineer':'ai-sales-engineer-study-guide.pdf','AI Business Analyst':'ai-business-analyst-study-guide.pdf','AI Transformation Manager':'ai-transformation-mgr-study-guide.pdf','AI Program Manager':'ai-program-manager-study-guide.pdf','AI Enterprise Architect':'ai-enterprise-architect-study-guide.pdf','AI Governance Professional':'ai-governance-pro-study-guide.pdf','Responsible AI Specialist':'responsible-ai-study-guide.pdf','AI Compliance Officer':'ai-compliance-officer-study-guide.pdf','AI Risk Manager':'ai-risk-manager-study-guide.pdf','AI Auditor':'ai-auditor-study-guide.pdf','AI Policy Designer':'ai-policy-designer-study-guide.pdf','AI Ethics Specialist':'ai-ethics-specialist-study-guide.pdf','AI UX Designer':'ai-ux-designer-study-guide.pdf','Conversation Designer':'conversation-designer-study-guide.pdf','Human-AI Interaction Specialist':'human-ai-interaction-study-guide.pdf','AI Workflow Designer':'ai-workflow-designer-study-guide.pdf','AI Experience Architect':'ai-experience-architect-study-guide.pdf'};
-    const f = m[t]; return f ? 'https://vgujnkxylipfwmkpwzvb.supabase.co/storage/v1/object/public/study-guides/'+f : null;
+    const m: Record<string, string> = { 'AI Cloud Engineer': 'ai-cloud-engineer-study-guide.pdf', 'AI Agent Engineer': 'ai-agent-engineer-study-guide.pdf', 'AI Data Engineer': 'ai-data-engineer-study-guide.pdf', 'AI DevOps Engineer': 'ai-devops-engineer-study-guide.pdf', 'AI Security Engineer': 'ai-security-engineer-study-guide.pdf', 'AI MLOps Engineer': 'ai-mlops-engineer-study-guide.pdf', 'AI Solutions Architect': 'ai-solutions-architect-study-guide.pdf', 'AI Platform Engineer': 'ai-platform-engineer-study-guide.pdf', 'AI Solutions Consultant': 'ai-solutions-consultant-study-guide.pdf', 'AI Product Manager': 'ai-product-manager-study-guide.pdf', 'AI Business Operations': 'ai-business-operations-study-guide.pdf', 'AI Sales Engineer': 'ai-sales-engineer-study-guide.pdf', 'AI Business Analyst': 'ai-business-analyst-study-guide.pdf', 'AI Transformation Manager': 'ai-transformation-mgr-study-guide.pdf', 'AI Program Manager': 'ai-program-manager-study-guide.pdf', 'AI Enterprise Architect': 'ai-enterprise-architect-study-guide.pdf', 'AI Governance Professional': 'ai-governance-pro-study-guide.pdf', 'Responsible AI Specialist': 'responsible-ai-study-guide.pdf', 'AI Compliance Officer': 'ai-compliance-officer-study-guide.pdf', 'AI Risk Manager': 'ai-risk-manager-study-guide.pdf', 'AI Auditor': 'ai-auditor-study-guide.pdf', 'AI Policy Designer': 'ai-policy-designer-study-guide.pdf', 'AI Ethics Specialist': 'ai-ethics-specialist-study-guide.pdf', 'AI UX Designer': 'ai-ux-designer-study-guide.pdf', 'Conversation Designer': 'conversation-designer-study-guide.pdf', 'Human-AI Interaction Specialist': 'human-ai-interaction-study-guide.pdf', 'AI Workflow Designer': 'ai-workflow-designer-study-guide.pdf', 'AI Experience Architect': 'ai-experience-architect-study-guide.pdf' };
+    const f = m[t]; return f ? 'https://vgujnkxylipfwmkpwzvb.supabase.co/storage/v1/object/public/study-guides/' + f : null;
   };
   const [chapter, setChapter] = useState<Chapter | null>(null);
   const [videos, setVideos] = useState<Video[]>([]);
@@ -85,7 +88,7 @@ export default function ChapterView() {
       timerRef.current = setInterval(() => setDuration(d => d + 1), 1000);
       // Keep-alive: send silent ping every 8 seconds to prevent timeout
       keepAliveRef.current = setInterval(() => {
-        try { conversation.sendUserAudio && conversation.sendUserAudio(new Float32Array(480)); } catch {}
+        try { conversation.sendUserAudio && conversation.sendUserAudio(new Float32Array(480)); } catch { }
       }, 8000);
     },
     onDisconnect: () => {
@@ -114,7 +117,7 @@ export default function ChapterView() {
       const isComplete = completionPhrases.some(phrase => cleaned.toLowerCase().includes(phrase));
       if (source === 'ai' && isComplete) {
         setTimeout(async () => {
-          conversation.endSession().catch(() => {});
+          conversation.endSession().catch(() => { });
           if (timerRef.current) clearInterval(timerRef.current);
           // Check tier
           const { data: { user: u } } = await supabase.auth.getUser();
@@ -123,7 +126,7 @@ export default function ChapterView() {
           const isStarter = profile?.tier === 'starter';
           if (isStarter) {
             localStorage.setItem(`starter-course-done-${u.id}`, 'true');
-            supabase.from('profiles').update({ free_course_completed: true }).eq('user_id', u.id).then(() => {});
+            supabase.from('profiles').update({ free_course_completed: true }).eq('user_id', u.id).then(() => { });
             supabase.from('profiles').select('preferred_language, full_name').eq('user_id', u.id).maybeSingle().then(({ data: prof }) => {
               fetch('https://vgujnkxylipfwmkpwzvb.supabase.co/functions/v1/send-email', {
                 method: 'POST',
@@ -132,7 +135,7 @@ export default function ChapterView() {
                   type: 'free_course_completed',
                   student: { name: prof?.full_name || 'Student', email: u.email, course: course?.title, language: prof?.preferred_language || 'en' },
                 }),
-              }).catch(() => {});
+              }).catch(() => { });
             });
             setPaywallReason('module_locked');
           } else {
@@ -148,7 +151,7 @@ export default function ChapterView() {
       }
       // Also auto-end on goodbye without triggering paywall
       if (source === 'ai' && cleaned.toLowerCase().includes('goodbye') && !isComplete) {
-        setTimeout(() => conversation.endSession().catch(() => {}), 1500);
+        setTimeout(() => conversation.endSession().catch(() => { }), 1500);
       }
     },
     onError: () => setConvStatus('error'),
@@ -174,7 +177,7 @@ export default function ChapterView() {
           const ctx = new AudioContext();
           await ctx.resume();
         }
-      } catch {}
+      } catch { }
       setConvStatus('connecting');
       const lessonTranscript = getTranscript(currentLesson);
       const lessonTitle = getTitle(currentLesson);
@@ -231,6 +234,37 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
   useEffect(() => { loadData(); }, [chapterId]);
 
 
+
+  const loadVisuals = async (lesson: any, courseTitle: string) => {
+    const key = lesson?.id || '';
+    if (!key || key === visualsKey) return;
+    setVisualsKey(key);
+    setVisualsLoading(true);
+    setLessonVisuals([]);
+    try {
+      const { data: cached } = await supabase.from('lesson_visuals').select('svgs').eq('lesson_id', key).maybeSingle();
+      if (cached?.svgs && Array.isArray(cached.svgs) && cached.svgs.length > 0) {
+        setLessonVisuals(cached.svgs as string[]);
+        setVisualsLoading(false);
+        return;
+      }
+    } catch { }
+    try {
+      const res = await supabase.functions.invoke('generate-visuals', {
+        body: { lessonTitle: lesson?.title || '', lessonDescription: lesson?.description || '', courseTitle }
+      });
+      if (res.data?.svgs?.length > 0) {
+        setLessonVisuals(res.data.svgs);
+        supabase.from('lesson_visuals').upsert({ lesson_id: key, svgs: res.data.svgs }).then(() => { });
+      }
+    } catch (e) { console.warn('visuals failed', e); }
+    setVisualsLoading(false);
+  };
+
+  useEffect(() => {
+    if (currentLesson && course) loadVisuals(currentLesson, course.title);
+  }, [currentLesson?.id, course?.id]);
+
   // Auto-reset Prof. Didier when student clicks a different lesson
   const activeLessonIdRef = useRef<string>('');
   useEffect(() => {
@@ -239,7 +273,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
     if (!newId) return;
     if (activeLessonIdRef.current && activeLessonIdRef.current !== newId) {
       // Lesson changed — end any active session silently
-      conversation.endSession().catch(() => {});
+      conversation.endSession().catch(() => { });
       if (timerRef.current) clearInterval(timerRef.current);
       setConvStatus('idle');
       setTranscript([]);
@@ -285,22 +319,23 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
           setIsStarter(false);
           // skip all tier checks
         } else {
-        const { data: profile } = await supabase.from('profiles').select('tier, free_course_id').eq('user_id', user.id).maybeSingle();
-        if (profile?.tier === 'starter') { setIsStarter(true);
-          const freeCourseId = profile.free_course_id;
-          if (freeCourseId && courseId !== freeCourseId) {
-            const { data: fc } = await supabase.from('courses').select('title').eq('id', freeCourseId).maybeSingle();
-            setFreeCourseName(fc?.title || '');
-            setPaywallReason('wrong_course');
-            setLoading(false);
-            return;
+          const { data: profile } = await supabase.from('profiles').select('tier, free_course_id').eq('user_id', user.id).maybeSingle();
+          if (profile?.tier === 'starter') {
+            setIsStarter(true);
+            const freeCourseId = profile.free_course_id;
+            if (freeCourseId && courseId !== freeCourseId) {
+              const { data: fc } = await supabase.from('courses').select('title').eq('id', freeCourseId).maybeSingle();
+              setFreeCourseName(fc?.title || '');
+              setPaywallReason('wrong_course');
+              setLoading(false);
+              return;
+            }
+            if (chapterData && chapterData.order_index > 0) {
+              setPaywallReason('module_locked');
+              setLoading(false);
+              return;
+            }
           }
-          if (chapterData && chapterData.order_index > 0) {
-            setPaywallReason('module_locked');
-            setLoading(false);
-            return;
-          }
-        }
         } // end non-admin block
       }
       setCourse(courseData);
@@ -358,7 +393,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
             <div style={{ fontSize: '52px', marginBottom: '12px' }}>🎓</div>
             <h2 style={{ fontSize: '26px', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>You Completed Module 1!</h2>
             <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '24px', lineHeight: 1.6 }}>
-              Solo Excelencia. You proved you belong here.<br/>Unlock all courses and continue your journey.
+              Solo Excelencia. You proved you belong here.<br />Unlock all courses and continue your journey.
             </p>
             <div style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '14px', padding: '20px', marginBottom: '20px' }}>
               <p style={{ fontSize: '34px', fontWeight: 800, color: '#fff', margin: '0 0 4px 0' }}>$59.99<span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>/month</span></p>
@@ -370,11 +405,15 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
                 if (!u) return;
                 localStorage.setItem(`starter-course-done-${u.id}`, 'true');
                 await supabase.from('profiles').update({ free_course_completed: true }).eq('user_id', u.id);
-                const res = await fetch('/api/create-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMWZP0Ctflq2xPfNXr5r24d',
+                const res = await fetch('/api/create-checkout', {
+                  method: 'POST', headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMWZP0Ctflq2xPfNXr5r24d',
                     email: u.email, tier: 't2', userId: u.id,
                     successUrl: `${window.location.origin}/portal?payment=success`,
-                    cancelUrl: `${window.location.origin}/portal` }) });
+                    cancelUrl: `${window.location.origin}/portal`
+                  })
+                });
                 const d = await res.json();
                 if (d.url) window.location.href = d.url;
                 else navigate('/portal');
@@ -546,9 +585,31 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               </div>
             )}
           </motion.div>
-          
 
-                    {/* ── Prof. Didier Embedded Panel ── */}
+
+          {/* Visual Breakdown */}
+          <div style={{ marginBottom: 32 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+              <div style={{ width: 3, height: 18, borderRadius: 2, background: 'linear-gradient(135deg,#1d4ed8,#7c3aed)' }} />
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>Visual Breakdown</span>
+            </div>
+            {visualsLoading && (
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(96,165,250,0.12)', borderRadius: 14, padding: '28px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+                <div style={{ width: 18, height: 18, border: '2px solid #1e40af', borderTop: '2px solid #60a5fa', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                <span style={{ fontSize: 13, color: '#475569' }}>Generating visual diagrams...</span>
+              </div>
+            )}
+            {lessonVisuals.map((svg, i) => (
+              <div key={i} style={{ marginBottom: 16, borderRadius: 12, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 2px 16px rgba(0,0,0,0.15)' }}>
+                <div style={{ background: '#f8fafc', padding: '6px 14px', borderBottom: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase' as const, letterSpacing: '.06em' }}>Diagram {i + 1}</span>
+                </div>
+                <div style={{ background: '#fff', padding: '12px', display: 'flex', justifyContent: 'center' }} dangerouslySetInnerHTML={{ __html: svg }} />
+              </div>
+            ))}
+          </div>
+
+          {/* ── Prof. Didier Embedded Panel ── */}
           <div style={{ background: 'linear-gradient(160deg,#0f172a,#0d1b3e)', border: '1px solid rgba(96,165,250,0.2)', borderRadius: 20, overflow: 'hidden', marginBottom: 32 }}>
 
             {/* Header */}
@@ -575,8 +636,8 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               <span style={{ fontSize: 12, color: '#64748b' }}>
                 {isLive ? (isSpeaking ? '🎙 Prof. Didier is speaking...' : '👂 Listening to you...') :
                   convStatus === 'connecting' ? t('chapter.connecting') :
-                  convStatus === 'error' ? 'Connection failed — try again' :
-                  t('chapter.ready') + ' ' + getTitle(currentLesson)}
+                    convStatus === 'error' ? 'Connection failed — try again' :
+                      t('chapter.ready') + ' ' + getTitle(currentLesson)}
               </span>
             </div>
 
@@ -614,19 +675,19 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
             </div>
 
             {course && getStudyGuidePdf(course.title) && (
-              <div style={{borderTop:'1px solid rgba(96,165,250,0.08)',padding:'16px 24px'}}>
-                <button onClick={()=>setShowStudyGuide(v=>!v)} style={{width:'100%',padding:'12px 0',borderRadius:12,border:'1px solid rgba(212,175,55,0.3)',background:showStudyGuide?'rgba(212,175,55,0.12)':'rgba(212,175,55,0.06)',color:'#d4af37',fontSize:14,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
-                  📖 {showStudyGuide?'Close Study Guide':'Course Study Guide'}
+              <div style={{ borderTop: '1px solid rgba(96,165,250,0.08)', padding: '16px 24px' }}>
+                <button onClick={() => setShowStudyGuide(v => !v)} style={{ width: '100%', padding: '12px 0', borderRadius: 12, border: '1px solid rgba(212,175,55,0.3)', background: showStudyGuide ? 'rgba(212,175,55,0.12)' : 'rgba(212,175,55,0.06)', color: '#d4af37', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  📖 {showStudyGuide ? 'Close Study Guide' : 'Course Study Guide'}
                 </button>
                 {showStudyGuide && (
-                  <div style={{marginTop:12,borderRadius:12,overflow:'hidden',border:'1px solid rgba(212,175,55,0.2)'}}>
-                    <div style={{padding:'8px 14px',borderBottom:'1px solid rgba(212,175,55,0.15)',background:'rgba(212,175,55,0.08)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                      <span style={{fontSize:12,fontWeight:700,color:'#d4af37'}}>📚 {course.title} — Study Guide</span>
-                      <span style={{fontSize:11,color:'#64748b'}}>Read-only</span>
+                  <div style={{ marginTop: 12, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(212,175,55,0.2)' }}>
+                    <div style={{ padding: '8px 14px', borderBottom: '1px solid rgba(212,175,55,0.15)', background: 'rgba(212,175,55,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#d4af37' }}>📚 {course.title} — Study Guide</span>
+                      <span style={{ fontSize: 11, color: '#64748b' }}>Read-only</span>
                     </div>
-                    <iframe src={getStudyGuidePdf(course.title)+'#toolbar=0&navpanes=0&scrollbar=1'} style={{width:'100%',height:520,border:'none',background:'#0a0f1e'}} title="Study Guide" />
-                    <div style={{padding:'6px 14px',borderTop:'1px solid rgba(212,175,55,0.1)',textAlign:'center'}}>
-                      <span style={{fontSize:11,color:'#475569'}}>Aladiah Academy · Solo Excelencia™</span>
+                    <iframe src={getStudyGuidePdf(course.title) + '#toolbar=0&navpanes=0&scrollbar=1'} style={{ width: '100%', height: 520, border: 'none', background: '#0a0f1e' }} title="Study Guide" />
+                    <div style={{ padding: '6px 14px', borderTop: '1px solid rgba(212,175,55,0.1)', textAlign: 'center' }}>
+                      <span style={{ fontSize: 11, color: '#475569' }}>Aladiah Academy · Solo Excelencia™</span>
                     </div>
                   </div>
                 )}
