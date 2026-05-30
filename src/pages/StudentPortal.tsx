@@ -282,16 +282,21 @@ Your greeting must:
 
 Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No bullet points — flowing conversational text.`;
 
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 400,
-          system: systemPrompt,
-          messages: [{ role: 'user', content: `Generate my personalized greeting based on this data:\n\n${studentContext}` }]
-        })
-      });
+      const response = await fetch(
+        'https://vgujnkxylipfwmkpwzvb.supabase.co/functions/v1/ai-proxy',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZndWpua3h5bGlwZndta3B3enZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMzYyMTUsImV4cCI6MjA4OTcxMjIxNX0.wpP8ZK0dtEegUu3r1f--sIkNHN1GnHTzvIstVAi1k20',
+          },
+          body: JSON.stringify({
+            system: systemPrompt,
+            messages: [{ role: 'user', content: `Generate my personalized greeting based on this data:\n\n${studentContext}` }],
+            max_tokens: 400,
+          })
+        }
+      );
 
       const data = await response.json();
       const text = data?.content?.[0]?.text || '';

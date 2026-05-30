@@ -134,22 +134,23 @@ SIMULATION RULES:
 
 When student types START_SIMULATION: Open with the most dramatic, vivid, urgent scene-setting you can. Drop them into the middle of the action. No preamble.`;
 
-  // ── Call Claude ───────────────────────────────────────────────
+  // ── Call Claude via Supabase proxy ───────────────────────────
   const callClaude = async (
     system: string,
     conversation: { role: 'user' | 'assistant'; content: string }[]
   ): Promise<string> => {
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 600,
-          system,
-          messages: conversation,
-        }),
-      });
+      const res = await fetch(
+        'https://vgujnkxylipfwmkpwzvb.supabase.co/functions/v1/ai-proxy',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZndWpua3h5bGlwZndta3B3enZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMzYyMTUsImV4cCI6MjA4OTcxMjIxNX0.wpP8ZK0dtEegUu3r1f--sIkNHN1GnHTzvIstVAi1k20',
+          },
+          body: JSON.stringify({ system, messages: conversation, max_tokens: 600 }),
+        }
+      );
       const data = await res.json();
       return data?.content?.[0]?.text || '[No response]';
     } catch {
