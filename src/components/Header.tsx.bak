@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import Logo from '@/components/Logo';
+import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
 import { supabase } from '@/integrations/supabase/client';
 
 function getStoredUser(): any | null {
@@ -66,7 +66,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
     }}>
       {/* Logo */}
       <a href="/" onClick={e => { e.preventDefault(); navigate('/'); }} style={{ display: 'flex', alignItems: 'center' }}>
-        <Logo variant="full" style={{ height: 44, width: "auto" }} />
+        <img src={aladiahLogo} alt="Aladiah Academy" style={{ height: 44, width: 'auto', objectFit: 'contain' }} />
       </a>
 
       {/* Desktop Nav */}
@@ -218,7 +218,9 @@ function AuthNavButton({ navigate, isPortal }: { navigate: (p: string) => void; 
     }
     if (isPortal) {
       return (
-        <button onClick={handleLogout} style={btnStyle('transparent', '#F0622A', '1px solid rgba(240,98,42,.4)')}>{t('portal.header.done')}</button>
+        <button onClick={handleLogout} style={btnStyle('transparent', '#F0622A', '1px solid rgba(240,98,42,.4)')}>
+          Done for the Day
+        </button>
       );
     }
     return (

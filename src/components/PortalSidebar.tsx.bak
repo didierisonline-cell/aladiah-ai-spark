@@ -1,6 +1,3 @@
-import { useLanguage } from '@/contexts/LanguageContext';
-import { overviewT } from '@/contexts/overviewStrings';
-import Logo from '@/components/Logo';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -10,8 +7,6 @@ interface PortalSidebarProps {
 }
 
 export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalSidebarProps) {
-  const { language } = useLanguage();
-  const T = (key: string) => overviewT(language || 'en', key);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -23,19 +18,19 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
   ).toUpperCase();
 
   const LINKS: { icon: string; lbl: string; path: string; exact?: boolean; badge?: number }[] = [
-    { icon: '🏠', lbl: T('overview'), path: '/portal', exact: true },
-    { icon: '📚', lbl: T('my_academy'), path: '/portal/courses', badge: coursesCount || undefined },
-    { icon: '🎯', lbl: T('my_career'), path: '/portal/my-career-path' },
+    { icon: '🏠', lbl: 'Overview', path: '/portal', exact: true },
+    { icon: '📚', lbl: 'My Academy', path: '/portal/courses', badge: coursesCount || undefined },
+    { icon: '🎯', lbl: 'My Career Path', path: '/portal/my-career-path' },
     { icon: '🌐', lbl: 'Simulations', path: '/portal/simulations' },
-    { icon: '⭐', lbl: T('talent'), path: '/portal/talent-score' },
-    { icon: '🏅', lbl: T('certs'), path: '/portal/certifications' },
-    { icon: '💼', lbl: T('career_tools'), path: '/portal/career' },
-    { icon: '🗂️', lbl: T('portfolio'), path: '/portal/portfolio' },
-    { icon: '🧪', lbl: T('labs'), path: '/portal' },
+    { icon: '⭐', lbl: 'Talent Score™', path: '/portal/talent-score' },
+    { icon: '🏅', lbl: 'Certifications', path: '/portal/certifications' },
+    { icon: '💼', lbl: 'Career Tools', path: '/portal/career' },
+    { icon: '🗂️', lbl: 'My Portfolio', path: '/portal/portfolio' },
+    { icon: '🧪', lbl: 'Labs', path: '/portal' },
     { icon: '🤖', lbl: 'AI Mentor', path: '/portal' },
-    { icon: '👥', lbl: T('community'), path: '/community' },
-    { icon: '🏆', lbl: T('leaderboard'), path: '/portal/talent-score' },
-    { icon: '📅', lbl: T('events'), path: '/community' },
+    { icon: '👥', lbl: 'Community', path: '/community' },
+    { icon: '🏆', lbl: 'Leaderboard', path: '/portal/talent-score' },
+    { icon: '📅', lbl: 'Events', path: '/community' },
   ];
 
   return (
@@ -50,13 +45,13 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
         </div>
         <div style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 7 }}>{displayName}</div>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(10,20,55,.75)', border: '1px solid rgba(255,255,255,.11)', color: '#c7d2fe', padding: '5px 10px', borderRadius: 8, fontSize: 12, fontWeight: 500, marginBottom: 5 }}>
-          {T('pro_member')} <span style={{ color: '#818cf8' }}>◆</span>
+          Pro Member <span style={{ color: '#818cf8' }}>◆</span>
         </div>
-        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 13 }}>Plan: <b style={{ color: '#e2e8f8' }}>{T('all_access')}</b></div>
+        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 13 }}>Plan: <b style={{ color: '#e2e8f8' }}>All-Access Pass™</b></div>
         <div style={{ background: 'rgba(5,15,40,.65)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 10, padding: '10px 12px' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 7, marginBottom: 7 }}>
             <span style={{ fontSize: 24, fontWeight: 900, color: '#f97316', textShadow: '0 0 18px rgba(249,115,22,.5)' }}>{hoursLeft}</span>
-            <span style={{ fontSize: 11.5, color: '#94a3b8' }}>{T('hours_employable')}</span>
+            <span style={{ fontSize: 11.5, color: '#94a3b8' }}>Hours to Employable</span>
           </div>
           <div style={{ height: 5, background: 'rgba(255,255,255,.08)', borderRadius: 99, overflow: 'hidden' }}>
             <div style={{ height: '100%', width: `${(hoursLeft / 600) * 100}%`, background: 'linear-gradient(90deg,#f97316,#fb923c)', borderRadius: 99, boxShadow: '0 0 10px rgba(249,115,22,.5)' }} />
@@ -76,12 +71,12 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
             </button>
           );
         })}
-        <div style={{ padding: '12px 15px 4px', fontSize: 9, fontWeight: 700, letterSpacing: '.18em', textTransform: 'uppercase', color: '#2a3a55' }}>{T('account')}</div>
+        <div style={{ padding: '12px 15px 4px', fontSize: 9, fontWeight: 700, letterSpacing: '.18em', textTransform: 'uppercase', color: '#2a3a55' }}>Account</div>
         <button onClick={() => navigate('/portal/settings')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
-          <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>⚙️</span>{T('settings')}
+          <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>⚙️</span>Settings
         </button>
         <a href="https://www.aladiahmanagement.com" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, textDecoration: 'none' }}>
-          <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>🏢</span>{T('management')}
+          <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>🏢</span>Aladiah Management
         </a>
         <button onClick={() => navigate('/portal')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
           <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>❓</span>Help &amp; Support
