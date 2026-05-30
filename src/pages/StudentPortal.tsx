@@ -324,7 +324,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
       <nav style={{position:'relative',zIndex:10,height:56,flexShrink:0,background:'rgba(2,8,23,.9)',borderBottom:'1px solid rgba(255,255,255,.07)',backdropFilter:'blur(24px)',display:'grid',gridTemplateColumns:'200px 1fr auto',alignItems:'center',padding:'0 22px'}}>
         <img src={aladiahLogo} alt="Aladiah Academy" style={{height:34,objectFit:'contain',objectPosition:'left'}} />
         <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:2}}>
-          {['My Portal','Courses','Talent Score™','Career','Community','Resources'].map((item,i)=>(
+          {[T('nav_my_portal'),T('nav_courses'),T('nav_talent_score'),T('nav_career'),T('nav_community'),T('nav_resources')].map((item,i)=>(
             <button key={item} onClick={()=>{
               if(i===0) navigate('/portal');
               else if(i===1) navigate('/portal/courses');
@@ -362,10 +362,10 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
         <div style={{display:'flex',alignItems:'center',gap:10,background:'rgba(180,130,20,.14)',border:'1px solid rgba(180,130,20,.3)',borderRadius:10,padding:'6px 16px'}}>
           <span style={{fontSize:11.5,color:'#94a3b8',fontWeight:600}}>{T('talent_score_label')}</span>
           <span style={{fontSize:17,fontWeight:800,color:'#f59e0b'}}>{talentScore}</span>
-          <span style={{fontSize:10.5,color:'#34d399',fontWeight:700}}>Rising</span>
+          <span style={{fontSize:10.5,color:'#34d399',fontWeight:700}}>{T('rising')}</span>
         </div>
         <button onClick={()=>navigate('/portal/courses')} style={{marginLeft:'auto',background:'linear-gradient(90deg,#4f8ef7,#6366f1)',border:'none',borderRadius:10,color:'#fff',fontSize:13,fontWeight:700,padding:'9px 20px',cursor:'pointer',fontFamily:'inherit',boxShadow:'0 0 20px rgba(79,142,247,.4)'}}>
-          {T('continue')} Learning →
+          {T('continue_learning')}
         </button>
       </div>
 
