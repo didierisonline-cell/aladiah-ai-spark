@@ -23,7 +23,7 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
     { icon: '🎯', lbl: 'My Career Path', path: '/portal/my-career-path' },
     { icon: '🌐', lbl: 'Simulations', path: '/portal/simulations' },
     { icon: '⭐', lbl: 'Talent Score™', path: '/portal/talent-score' },
-    { icon: '🏅', lbl: 'Certifications', path: '/portal/courses' },
+    { icon: '🏅', lbl: 'Certifications', path: '/portal/certifications' },
     { icon: '💼', lbl: 'Career Tools', path: '/portal/career' },
     { icon: '🗂️', lbl: 'My Portfolio', path: '/portal/portfolio' },
     { icon: '🧪', lbl: 'Labs', path: '/portal' },

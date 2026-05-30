@@ -426,7 +426,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               { icon: '🎯', lbl: T('my_career'), path: '/portal/my-career-path' },
               { icon: '🌐', lbl: 'Simulations', path: '/portal/simulations' },
               { icon: '⭐', lbl: T('talent'), path: '/portal/talent-score' },
-              { icon: '🏅', lbl: T('certs'), path: '/portal/courses' },
+              { icon: '🏅', lbl: T('certs'), path: '/portal/certifications' },
               { icon: '💼', lbl: T('career_tools'), path: '/portal/career' },
               { icon: '🗂️', lbl: T('portfolio'), path: '/portal/portfolio' },
               { icon: '🧪', lbl: T('labs'), path: '/portal' },

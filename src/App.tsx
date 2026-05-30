@@ -39,6 +39,7 @@ import PortalCourses from "./pages/PortalCourses";
 import PortalCourseDetail from "./pages/PortalCourseDetail";
 import MyCareerPath from "./pages/MyCareerPath";
 import PortalSimulations from "./pages/PortalSimulations";
+import PortalCertifications from "./pages/PortalCertifications";
 
 const queryClient = new QueryClient();
 
@@ -83,6 +84,7 @@ const AppContent = () => {
         <Route path="/portal/career" element={<ProtectedRoute><ResumeStudio /></ProtectedRoute>} />
         <Route path="/portal/my-career-path" element={<ProtectedRoute><MyCareerPath /></ProtectedRoute>} />
         <Route path="/portal/simulations" element={<ProtectedRoute><PortalSimulations /></ProtectedRoute>} />
+        <Route path="/portal/certifications" element={<ProtectedRoute><PortalCertifications /></ProtectedRoute>} />
         {/* Tools */}
         <Route path="/resume-studio" element={<ProtectedRoute><ResumeStudio /></ProtectedRoute>} />
         <Route path="/interview" element={<ProtectedRoute><InterviewSimulator /></ProtectedRoute>} />
