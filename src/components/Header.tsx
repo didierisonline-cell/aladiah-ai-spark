@@ -37,19 +37,19 @@ const Header = ({ onProfileClick }: HeaderProps) => {
   const isPortal = pathname.startsWith('/portal') || pathname.startsWith('/resume-studio') || pathname.startsWith('/interview') || pathname.startsWith('/admin') || pathname.startsWith('/course') || pathname.startsWith('/chapter');
 
   const publicNavItems = [
-    { label: 'Home', href: '/' },
-    { label: 'Schools', href: '/schools' },
-    { label: 'Certifications', href: '/certifications' },
-    { label: 'Talent Network', href: '/talent-network' },
-    { label: 'Pricing', href: '/pricing' },
-    { label: 'My Portal', href: '/portal' },
+    { labelKey: 'nav.home', href: '/' },
+    { labelKey: 'nav.schools', href: '/schools' },
+    { labelKey: 'nav.certifications', href: '/certifications' },
+    { labelKey: 'nav.talent_network', href: '/talent-network' },
+    { labelKey: 'nav.pricing', href: '/pricing' },
+    { labelKey: 'nav.portal', href: '/portal' },
   ];
 
   const portalNavItems = [
-    { label: 'My Portal', href: '/portal' },
-    { label: 'Courses', href: '/portal/courses' },
-    { label: 'Talent Score™', href: '/portal/talent-score' },
-    { label: 'Career', href: '/portal/career' },
+    { labelKey: 'nav.portal', href: '/portal' },
+    { labelKey: 'nav.courses', href: '/portal/courses' },
+    { labelKey: 'nav.talent_score', href: '/portal/talent-score' },
+    { labelKey: 'nav.career', href: '/portal/career' },
   ];
 
   const navItems = isPortal ? portalNavItems : publicNavItems;
@@ -84,7 +84,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
               textDecoration: 'none',
             }}
           >
-            {item.label}
+            {t(item.labelKey)}
           </a>
         ))}
       </nav>
@@ -163,7 +163,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
                 borderBottom: '1px solid rgba(30,45,71,.3)', textDecoration: 'none',
               }}
             >
-              {item.label}
+              {t(item.labelKey)}
             </a>
           ))}
           <MobileAuthButtons navigate={navigate} isPortal={isPortal} onClose={() => setIsMenuOpen(false)} />
