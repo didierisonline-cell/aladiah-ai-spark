@@ -11,7 +11,7 @@ import CourseSelectionGate from '@/components/CourseSelectionGate';
 import { StreakDetailModal, PointsDetailModal, LabsDetailModal } from '@/components/portal/StatDetailModals';
 import globeBg from '@/assets/global-network-bg.png';
 import profCardBg from '@/assets/professor-didier-card.png';
-import Logo from '@/components/Logo';
+import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
 
 // ── TRANSLATIONS ──────────────────────────────────────────────────────────────
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -126,7 +126,6 @@ const OVERVIEW_LANGS = [
 
 export default function StudentPortal() {
   const navigate = useNavigate();
-  const handleLogout = async () => { await supabase.auth.signOut(); window.location.href = '/'; };
   const location = useLocation();
   const { user } = useAuth();
   const { language, setLanguage } = useLanguage();
@@ -342,7 +341,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
 
       {/* ── TOP NAV ── */}
       <nav style={{ position: 'relative', zIndex: 10, height: 56, flexShrink: 0, background: 'rgba(2,8,23,.9)', borderBottom: '1px solid rgba(255,255,255,.07)', backdropFilter: 'blur(24px)', display: 'grid', gridTemplateColumns: '200px 1fr auto', alignItems: 'center', padding: '0 22px' }}>
-        <div onClick={() => navigate('/portal')} style={{ cursor: 'pointer' }}><Logo variant="full" style={{ height: 34 }} /></div>
+        <img src={aladiahLogo} alt="Aladiah Academy" style={{ height: 34, objectFit: 'contain', objectPosition: 'left' }} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
           {[T('nav_my_portal'), T('nav_courses'), 'Simulations', T('nav_talent_score'), T('nav_career'), T('nav_community'), T('nav_resources')].map((item, i) => (
             <button key={item} onClick={() => {
@@ -374,7 +373,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               </div>
             )}
           </div>
-          <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: '#f97316', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>{T('done_day')}</button>
+          <button style={{ background: 'none', border: 'none', color: '#f97316', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>{T('done_day')}</button>
         </div>
       </nav>
 
