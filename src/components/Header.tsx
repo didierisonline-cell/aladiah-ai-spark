@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
+import Logo from '@/components/Logo';
 import { supabase } from '@/integrations/supabase/client';
 
 function getStoredUser(): any | null {
@@ -69,7 +69,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
     }}>
       {/* Logo */}
       <a href="/" onClick={e => { e.preventDefault(); navigate('/'); }} style={{ display: 'flex', alignItems: 'center' }}>
-        <img src={aladiahLogo} alt="Aladiah Academy" style={{ height: 44, width: 'auto', objectFit: 'contain' }} />
+        <Logo variant="full" style={{ height: 44, width: 'auto' }} />
       </a>
 
       {/* Desktop Nav */}
