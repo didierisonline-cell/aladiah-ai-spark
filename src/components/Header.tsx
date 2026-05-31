@@ -48,8 +48,11 @@ const Header = ({ onProfileClick }: HeaderProps) => {
   const portalNavItems = [
     { labelKey: 'nav.portal', href: '/portal' },
     { labelKey: 'nav.courses', href: '/portal/courses' },
+    { label: 'Simulations', href: '/portal/simulations' },
     { labelKey: 'nav.talent_score', href: '/portal/talent-score' },
     { labelKey: 'nav.career', href: '/portal/career' },
+    { labelKey: 'nav.community', href: '/community' },
+    { labelKey: 'nav.resources', href: '/portal' },
   ];
 
   const navItems = isPortal ? portalNavItems : publicNavItems;
@@ -84,7 +87,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
               textDecoration: 'none',
             }}
           >
-            {t(item.labelKey)}
+            {(item as any).label || t(item.labelKey)}
           </a>
         ))}
       </nav>
@@ -163,7 +166,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
                 borderBottom: '1px solid rgba(30,45,71,.3)', textDecoration: 'none',
               }}
             >
-              {t(item.labelKey)}
+              {(item as any).label || t(item.labelKey)}
             </a>
           ))}
           <MobileAuthButtons navigate={navigate} isPortal={isPortal} onClose={() => setIsMenuOpen(false)} />
