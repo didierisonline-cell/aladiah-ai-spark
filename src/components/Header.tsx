@@ -52,7 +52,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
     { labelKey: 'nav.talent_score', href: '/portal/talent-score' },
     { labelKey: 'nav.career', href: '/portal/career' },
     { labelKey: 'nav.community', href: '/community' },
-    { labelKey: 'nav.resources', href: '/portal' },
+    { labelKey: 'nav.resources', href: '/portal/resources' },
   ];
 
   const navItems = isPortal ? portalNavItems : publicNavItems;
