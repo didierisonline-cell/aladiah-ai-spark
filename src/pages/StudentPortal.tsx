@@ -341,8 +341,8 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1, pointerEvents: 'none', background: 'linear-gradient(to right,rgba(2,8,23,.97) 0%,rgba(2,8,23,.9) 14%,rgba(2,8,23,.58) 36%,rgba(2,8,23,.1) 62%,rgba(2,8,23,0) 100%)' }} />
 
       {/* ── TOP NAV ── */}
-      <nav style={{ position: 'relative', zIndex: 10, height: 56, flexShrink: 0, background: 'rgba(2,8,23,.9)', borderBottom: '1px solid rgba(255,255,255,.07)', backdropFilter: 'blur(24px)', display: 'grid', gridTemplateColumns: '200px 1fr auto', alignItems: 'center', padding: '0 22px' }}>
-        <div onClick={() => navigate('/portal')} style={{ cursor: 'pointer' }}><Logo variant="full" style={{ height: 34 }} /></div>
+      <nav style={{ position: 'relative', zIndex: 10, height: 70, flexShrink: 0, background: 'rgba(2,8,23,.9)', borderBottom: '1px solid rgba(255,255,255,.07)', backdropFilter: 'blur(24px)', display: 'grid', gridTemplateColumns: '200px 1fr auto', alignItems: 'center', padding: '0 22px' }}>
+        <div onClick={() => navigate('/portal')} style={{ cursor: 'pointer' }}><Logo variant="full" style={{ height: 44 }} /></div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
           {[T('nav_my_portal'), T('nav_courses'), 'Simulations', T('nav_talent_score'), T('nav_career'), T('nav_community'), T('nav_resources')].map((item, i) => (
             <button key={item} onClick={() => {
@@ -374,7 +374,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               </div>
             )}
           </div>
-          <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: '#f97316', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>{T('done_day')}</button>
+          <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: '#f97316', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Done for the Day</button>
         </div>
       </nav>
 
