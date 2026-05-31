@@ -352,6 +352,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               else if (i === 3) navigate('/portal/talent-score');
               else if (i === 4) navigate('/portal/career');
               else if (i === 5) navigate('/community');
+              else if (i === 6) navigate('/portal/resources');
               else navigate('/portal');
             }} style={{ background: 'none', border: 'none', borderBottom: i === 0 ? '2.5px solid #3b82f6' : '2.5px solid transparent', color: i === 0 ? '#fff' : '#5a6a8a', fontSize: 14, fontWeight: i === 0 ? 700 : 500, padding: '0 16px', height: 56, cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap', transition: 'color .15s' }}>
               {item}
