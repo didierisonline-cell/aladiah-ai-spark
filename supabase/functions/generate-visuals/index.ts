@@ -7,7 +7,22 @@ serve(async (req) => {
   try {
     const { lessonTitle, lessonDescription, courseTitle } = await req.json();
     const key = Deno.env.get("ANTHROPIC_API_KEY")||"";
-    const prompt = `Create 2 professional educational SVG diagrams. Course: ${courseTitle}. Lesson: ${lessonTitle}. Description: ${lessonDescription||''}. Return JSON array: ["<svg viewBox='0 0 700 380' xmlns='http://www.w3.org/2000/svg'>...</svg>","<svg viewBox='0 0 700 380' xmlns='http://www.w3.org/2000/svg'>...</svg>"]. White bg, dark text #1e293b, blue #1d4ed8, professional O-Reilly style, technically accurate, clear title and labels.`;
+    const prompt = `Create 2 professional educational SVG diagrams. Course: ${courseTitle}. Lesson: ${lessonTitle}. Description: ${lessonDescription||''}.
+
+CRITICAL ACCURACY RULES (this is a paid certification course — fabricated facts cause real harm):
+- Use ONLY concepts, terms, and facts that appear in the Description above, plus widely-established, non-controversial Scrum framework facts (the 3 accountabilities, 5 events, 3 artifacts, event timeboxes from the Scrum Guide).
+- Do NOT invent or include any specific statistics, percentages, salary figures, dollar amounts, dates, company names, or "X% of time" claims unless that exact figure appears verbatim in the Description.
+- If the Description has no numbers, the diagrams must have no numbers. Conceptual labels only.
+- When in doubt, omit the specific and keep the label conceptual. A clean diagram with no numbers is far better than one with an invented number.
+
+LAYOUT & RENDERING RULES (diagrams must look clean, not broken):
+- Keep ALL text fully INSIDE its container shape. Every <text> must sit at least 12px inside the left, right, top, and bottom edges of its box. Never let a label start at or outside a box's left edge.
+- Use a viewBox of '0 0 700 500' and keep all content within a 20px margin of every edge — nothing clipped at the frame.
+- For text inside boxes, set x to the box's left coordinate PLUS padding (e.g. box at x=60 -> text x=76), and prefer text-anchor='start' with that inset, or text-anchor='middle' centered on the box's center x.
+- Keep labels short enough to fit; if a label is long, reduce font-size rather than overflow.
+- Leave clear spacing between boxes so nothing overlaps.
+
+Return JSON array: ["<svg viewBox='0 0 700 380' xmlns='http://www.w3.org/2000/svg'>...</svg>","<svg viewBox='0 0 700 380' xmlns='http://www.w3.org/2000/svg'>...</svg>"]. White bg, dark text #1e293b, blue #1d4ed8, professional O-Reilly style, clear title and labels.`;
     const r = await fetch("https://api.anthropic.com/v1/messages",{
       method:"POST",
       headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01"},
