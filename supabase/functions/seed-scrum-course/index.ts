@@ -33,39 +33,44 @@ const courseData = {
           },
           questions: [
             {
-              question_text: "What is the primary goal of this Scrum Master Profession course?",
-              scenario_context: "You're explaining to a colleague why you enrolled in this course.",
-              options: ["To learn basic project management", "To equip learners with knowledge and tools to excel as a Scrum Master", "To become a software developer", "To learn traditional waterfall methods"],
+              question_text: "What framework does this course primarily teach?",
+              scenario_context: "A friend asks what methodology you are studying.",
+              options: ["Waterfall", "Scrum", "PRINCE2", "Kanban"],
               correct_answer_index: 1,
-              explanation: "The course is designed to equip learners with the knowledge and tools needed to excel as a Scrum Master."
+              explanation: "This course is centered on the Scrum framework.",
+              competency: "scrum:framework"
             },
             {
-              question_text: "Is prior project management experience required for this course?",
-              scenario_context: "A friend without PM experience asks if they can take this course.",
-              options: ["Yes, you need 5+ years of PM experience", "Yes, PMP certification is required", "No, it's beneficial but not essential", "No, but you need coding experience"],
+              question_text: "What is the Scrum Master's primary value to an organization?",
+              scenario_context: "An executive asks you to justify the Scrum Master role.",
+              options: ["Writing code faster", "Managing budgets", "Enabling teams to deliver value continuously through Agile practices", "Creating detailed project plans"],
               correct_answer_index: 2,
-              explanation: "Although this course is beneficial for those already in project management, prior experience is not essential."
+              explanation: "A Scrum Master enables continuous value delivery by coaching teams and removing obstacles.",
+              competency: "scrum:roles"
             },
             {
-              question_text: "What type of learning experience does this course provide?",
-              scenario_context: "You're reviewing what makes this course effective.",
-              options: ["Text-only reading materials", "Engaging video content and interactive exercises", "Audio podcasts only", "In-person classroom sessions only"],
+              question_text: "What does 'servant leadership' mean in the Scrum context?",
+              scenario_context: "A hiring manager asks you to define servant leadership.",
+              options: ["The SM serves coffee to the team", "The SM prioritizes the needs of the team over personal authority", "The SM reports to every team member", "The SM avoids making any decisions"],
               correct_answer_index: 1,
-              explanation: "The course provides engaging video content and interactive exercises to immerse learners in the world of Scrum."
+              explanation: "Servant leadership means prioritizing enabling and supporting the team rather than exercising authority.",
+              competency: "scrum:team-dynamics"
             },
             {
-              question_text: "What will you be prepared for after completing this course?",
-              scenario_context: "You're planning your certification path.",
-              options: ["Only entry-level positions", "Final exams designed to simulate certification exams", "Teaching Scrum to others immediately", "Managing large enterprise transformations"],
-              correct_answer_index: 1,
-              explanation: "The course prepares you for final exams designed to simulate the certification exams you may encounter."
+              question_text: "Which Scrum value is demonstrated when team members share progress openly?",
+              scenario_context: "During a Daily Scrum, each member updates the team on blockers and progress.",
+              options: ["Courage", "Commitment", "Transparency", "Focus"],
+              correct_answer_index: 2,
+              explanation: "Transparency is reflected when team members openly share their work and impediments.",
+              competency: "scrum:empiricism"
             },
             {
-              question_text: "How does this course approach teaching Scrum?",
-              scenario_context: "You're comparing different Scrum courses.",
-              options: ["Purely theoretical concepts", "Hands-on practice and real-life scenarios", "Memorization of definitions only", "Reading the Scrum Guide once"],
+              question_text: "How does the Scrum Master support the Product Owner?",
+              scenario_context: "A Product Owner struggles to communicate priorities to the team.",
+              options: ["By writing user stories for them", "By helping them understand and apply effective Product Backlog management", "By approving the product vision", "By presenting the backlog to stakeholders instead"],
               correct_answer_index: 1,
-              explanation: "The course uses hands-on practice and real-life scenarios to develop practical abilities."
+              explanation: "The SM supports the PO by helping them manage the Product Backlog effectively.",
+              competency: "scrum:stakeholders"
             }
           ]
         },
@@ -85,39 +90,44 @@ const courseData = {
           },
           questions: [
             {
-              question_text: "What is the primary leadership style of a Scrum Master?",
-              scenario_context: "A traditional manager asks you to explain how Scrum Masters lead.",
-              options: ["Command and control", "Servant leadership", "Autocratic leadership", "Laissez-faire leadership"],
-              correct_answer_index: 1,
-              explanation: "The Scrum Master is a servant-leader, focusing on serving the team's needs rather than commanding them."
+              question_text: "Which of the following is NOT a responsibility of a Scrum Master?",
+              scenario_context: "An interviewer asks you to describe what a Scrum Master does not do.",
+              options: ["Facilitating Scrum events", "Coaching the team on Agile practices", "Assigning tasks to developers", "Removing impediments"],
+              correct_answer_index: 2,
+              explanation: "Scrum Masters do not assign tasks — teams self-organize.",
+              competency: "scrum:roles"
             },
             {
-              question_text: "How does the Scrum Master benefit the organization?",
-              scenario_context: "You need to justify the Scrum Master role to leadership.",
-              options: ["By managing individual team members", "By improving team productivity and product quality", "By creating detailed project plans", "By approving all technical decisions"],
+              question_text: "How does a Scrum Master benefit the organization beyond the team?",
+              scenario_context: "A VP asks what value the Scrum Master brings to the broader company.",
+              options: ["By managing project budgets", "By coaching the organization in Agile adoption and removing systemic impediments", "By writing technical documentation", "By replacing the HR function"],
               correct_answer_index: 1,
-              explanation: "Organizations benefit through improved team productivity, better product quality, and faster delivery."
+              explanation: "Scrum Masters benefit the organization by coaching Agile adoption and removing systemic barriers.",
+              competency: "scrum:stakeholders"
             },
             {
-              question_text: "What is one key difference between a Scrum Master and a traditional project manager?",
-              scenario_context: "You're explaining the role to someone new to Agile.",
-              options: ["Scrum Masters have more authority", "Scrum Masters facilitate processes rather than manage people", "Scrum Masters create Gantt charts", "There is no difference"],
-              correct_answer_index: 1,
-              explanation: "Unlike traditional project managers, Scrum Masters facilitate processes and remove impediments rather than managing people directly."
+              question_text: "How does a Scrum Master handle a team conflict?",
+              scenario_context: "Two developers disagree on the technical approach for a user story.",
+              options: ["Decides for the team which approach to use", "Ignores it and hopes it resolves itself", "Facilitates a conversation to help the team reach their own resolution", "Escalates immediately to HR"],
+              correct_answer_index: 2,
+              explanation: "A Scrum Master facilitates conflict resolution by guiding the team to resolve it themselves.",
+              competency: "scrum:team-dynamics"
             },
             {
-              question_text: "How does a Scrum Master protect the team?",
-              scenario_context: "Your team keeps getting interrupted by stakeholder requests mid-Sprint.",
-              options: ["By saying no to all requests", "By shielding them from external distractions", "By hiding the team from management", "By doing all the work themselves"],
+              question_text: "What is the primary benefit of daily Scrums for a development team?",
+              scenario_context: "A stakeholder questions why the team needs to meet every day.",
+              options: ["To report status to management", "To synchronize work and identify impediments quickly", "To update the Product Backlog", "To review completed user stories"],
               correct_answer_index: 1,
-              explanation: "The Scrum Master shields the team from external distractions so they can focus on the Sprint Goal."
+              explanation: "Daily Scrums help the team synchronize and surface impediments early.",
+              competency: "scrum:events"
             },
             {
-              question_text: "What broader impact does a Scrum Master have on an organization?",
-              scenario_context: "Leadership wants to understand the strategic value of Scrum Masters.",
-              options: ["Only impacts their immediate team", "Helps the organization understand and adopt Scrum practices", "Manages the budget", "Writes all requirements"],
+              question_text: "What does continuous improvement mean in a Scrum context?",
+              scenario_context: "Your team completed a Retrospective and identified three process improvements.",
+              options: ["Releasing features faster without quality checks", "Regularly inspecting and adapting processes to become more effective", "Replacing team members who underperform", "Adding more tools and ceremonies"],
               correct_answer_index: 1,
-              explanation: "The Scrum Master helps the broader organization understand and adopt Scrum practices, creating lasting change."
+              explanation: "Continuous improvement means regularly inspecting how the team works and adapting to improve.",
+              competency: "scrum:empiricism"
             }
           ]
         },
@@ -137,39 +147,44 @@ const courseData = {
           },
           questions: [
             {
-              question_text: "What do experienced Scrum Masters identify as their primary focus?",
-              scenario_context: "You're learning from veteran Scrum Masters.",
-              options: ["Writing code", "Coaching the team and facilitating Scrum events", "Approving time sheets", "Creating project documentation"],
-              correct_answer_index: 1,
-              explanation: "Experienced Scrum Masters focus primarily on coaching the team and facilitating Scrum events."
+              question_text: "How do expert Scrum Masters approach stakeholder management?",
+              scenario_context: "A senior executive keeps bypassing the Scrum process.",
+              options: ["Always comply with executive requests immediately", "Ignore stakeholders outside the team", "Educate stakeholders on Scrum and find ways to engage them constructively", "Escalate to HR every time"],
+              correct_answer_index: 2,
+              explanation: "Expert SMs educate stakeholders on Scrum and find constructive ways to engage them.",
+              competency: "scrum:stakeholders"
             },
             {
-              question_text: "What is a typical daily activity for a Scrum Master?",
-              scenario_context: "You want to understand the day-to-day of the role.",
-              options: ["Attending all technical meetings", "Removing blockers and preparing for ceremonies", "Coding features", "Approving all user stories"],
-              correct_answer_index: 1,
-              explanation: "A typical day involves checking in with team members, removing blockers, and preparing for upcoming ceremonies."
+              question_text: "How should a SM respond when asked to be the team's project manager?",
+              scenario_context: "Your manager tells you to start managing the team's tasks and reporting deadlines.",
+              options: ["Accept the role immediately", "Refuse all communication with management", "Clarify the SM's role and coach the organization on the difference", "Start using Gantt charts alongside Scrum"],
+              correct_answer_index: 2,
+              explanation: "A SM should clarify their distinct role and use it as an opportunity to educate the organization.",
+              competency: "scrum:roles"
             },
             {
-              question_text: "What does a Scrum Master coach team members on?",
-              scenario_context: "A team member asks what kind of coaching they can expect.",
-              options: ["Technical programming skills", "Scrum values and self-organization", "Sales techniques", "Financial management"],
+              question_text: "What do experts say about SMs who also code or do technical work?",
+              scenario_context: "You are a developer who just became a SM on the same team.",
+              options: ["It is always a best practice to do both", "It creates a conflict of interest and splits focus — the SM role should be primary", "Technical SMs are always more effective", "Only non-technical people should be SMs"],
               correct_answer_index: 1,
-              explanation: "Scrum Masters spend significant time coaching team members on Scrum values and self-organization."
+              explanation: "Combining SM and developer roles splits focus and can compromise the SM's neutrality.",
+              competency: "scrum:roles"
             },
             {
-              question_text: "How do Scrum Masters work with Product Owners?",
-              scenario_context: "You need to understand the SM-PO relationship.",
-              options: ["They replace the Product Owner", "They ensure the Product Backlog is well-refined", "They write all user stories", "They approve the Product Owner's decisions"],
+              question_text: "What is the significance of asking powerful questions?",
+              scenario_context: "A team member comes to you with a problem and expects you to solve it.",
+              options: ["It wastes time when direct answers are more efficient", "Powerful questions help team members discover solutions themselves", "It is a technique used only in coaching sessions", "It shows the SM does not know the answer"],
               correct_answer_index: 1,
-              explanation: "Scrum Masters work with Product Owners to ensure the Product Backlog is well-refined and ready for Sprint Planning."
+              explanation: "Powerful questions build team problem-solving capability rather than creating dependency.",
+              competency: "scrum:team-dynamics"
             },
             {
-              question_text: "What work do Scrum Masters do beyond their immediate team?",
-              scenario_context: "Leadership asks about the Scrum Master's organizational impact.",
-              options: ["Nothing, they only focus on their team", "Work on organizational impediments and help other teams", "Manage multiple teams directly", "Focus solely on reporting"],
+              question_text: "What is the difference between coaching and mentoring?",
+              scenario_context: "A junior developer asks you to teach them everything about Scrum.",
+              options: ["There is no difference", "Coaching draws out the person's own answers; mentoring shares the SM's experience", "Mentoring is for personal issues; coaching is for technical issues", "Coaching is only for managers"],
               correct_answer_index: 1,
-              explanation: "Beyond the team, Scrum Masters often work on organizational impediments and help other teams improve."
+              explanation: "Coaching asks questions to help someone discover their own answers; mentoring shares knowledge.",
+              competency: "scrum:team-dynamics"
             }
           ]
         },
@@ -189,39 +204,44 @@ const courseData = {
           },
           questions: [
             {
-              question_text: "Why is facilitation considered a critical Scrum Master skill?",
-              scenario_context: "You're preparing for a Sprint Retrospective.",
-              options: ["To make all decisions for the team", "To guide discussions and help teams reach decisions", "To take meeting notes", "To assign tasks to team members"],
+              question_text: "What is the value of understanding business context for a SM?",
+              scenario_context: "The PO mentions revenue goals when discussing backlog priorities.",
+              options: ["Business context is irrelevant to the SM role", "Understanding business goals helps the SM facilitate better prioritization and stakeholder alignment", "Only the PO needs to understand business context", "It helps the SM become a PO eventually"],
               correct_answer_index: 1,
-              explanation: "Facilitation allows Scrum Masters to guide discussions and help teams reach decisions effectively."
+              explanation: "Business context helps the SM facilitate more meaningful conversations about value and priority.",
+              competency: "scrum:stakeholders"
             },
             {
-              question_text: "How do coaching skills benefit a Scrum Master?",
-              scenario_context: "A team member is struggling with self-organization.",
-              options: ["They can tell people exactly what to do", "They can develop individuals and teams to reach their full potential", "They can avoid difficult conversations", "They can delegate all their work"],
-              correct_answer_index: 1,
-              explanation: "Coaching skills help Scrum Masters develop individuals and teams to reach their full potential."
+              question_text: "Which demonstrates a SM's conflict resolution skill?",
+              scenario_context: "Two senior developers are in a heated debate over architecture during Sprint Planning.",
+              options: ["Taking sides with the more senior developer", "Ending Sprint Planning early", "Creating space for both views and guiding the team to a shared decision", "Reporting the conflict to HR immediately"],
+              correct_answer_index: 2,
+              explanation: "Conflict resolution involves creating a safe space for all views and helping the team decide.",
+              competency: "scrum:team-dynamics"
             },
             {
-              question_text: "Why is conflict resolution important for Scrum Masters?",
-              scenario_context: "Two team members have a disagreement about a technical approach.",
-              options: ["To avoid all conflicts", "To help navigate disagreements constructively", "To take sides in disputes", "To escalate all issues to management"],
-              correct_answer_index: 1,
-              explanation: "Conflict resolution is essential as Scrum Masters help navigate disagreements constructively."
+              question_text: "What does 'holding the space' mean in facilitation?",
+              scenario_context: "The team goes silent after a difficult question during a Retrospective.",
+              options: ["Filling silence with your own answers immediately", "Booking the conference room in advance", "Maintaining a safe environment that allows the team to reflect at their own pace", "Scheduling the next meeting"],
+              correct_answer_index: 2,
+              explanation: "Holding the space means maintaining a safe environment and allowing silence and reflection.",
+              competency: "scrum:team-dynamics"
             },
             {
-              question_text: "What teaching abilities should a Scrum Master possess?",
-              scenario_context: "A new department wants to adopt Scrum.",
-              options: ["College-level teaching certification", "Ability to help organizations understand and adopt Scrum", "Experience teaching programming", "Formal education credentials"],
+              question_text: "What is the role of transparency in a SM's skill set?",
+              scenario_context: "The team is behind on Sprint goals but the SM has not communicated this to the PO.",
+              options: ["Transparency is optional when information may cause concern", "Transparency is a core skill — ensure all relevant information is visible to those who need it", "Only the PO should be transparent", "Transparency applies only during reviews"],
               correct_answer_index: 1,
-              explanation: "Teaching abilities allow Scrum Masters to help organizations understand and adopt Scrum practices."
+              explanation: "Transparency is a foundational SM skill — ensuring relevant information is visible.",
+              competency: "scrum:empiricism"
             },
             {
-              question_text: "How does emotional intelligence help a Scrum Master?",
-              scenario_context: "You notice the team seems demotivated during a Sprint.",
-              options: ["It doesn't matter for this role", "It enables reading the room and responding to team dynamics", "It helps avoid all emotions", "It's only useful for therapy"],
+              question_text: "How does a SM use retrospective techniques effectively?",
+              scenario_context: "Your team says the Retrospective always feels the same.",
+              options: ["Cancel retrospectives to save time", "Vary techniques like Start/Stop/Continue, 4Ls, and Sailboat to keep engagement high", "Let the team run it with no structure", "Use only one technique forever for consistency"],
               correct_answer_index: 1,
-              explanation: "Emotional intelligence enables Scrum Masters to read the room and respond appropriately to team dynamics."
+              explanation: "Rotating facilitation techniques keeps Retrospectives fresh and increases engagement.",
+              competency: "scrum:events"
             }
           ]
         },
@@ -241,39 +261,44 @@ const courseData = {
           },
           questions: [
             {
-              question_text: "What type of skills do experts consider most important for Scrum Masters?",
-              scenario_context: "You're deciding what skills to develop first.",
-              options: ["Technical programming skills", "Soft skills over technical knowledge", "Financial management skills", "Marketing expertise"],
-              correct_answer_index: 1,
-              explanation: "Experts agree that soft skills are often more important than technical knowledge for Scrum Masters."
+              question_text: "How do experienced SMs approach a team that resists Agile?",
+              scenario_context: "Your new team says Scrum is just overhead.",
+              options: ["Force compliance by enforcing all ceremonies strictly", "Ignore their concerns and proceed as planned", "Meet them where they are, understand frustrations, and build trust through small wins", "Replace resistant team members"],
+              correct_answer_index: 2,
+              explanation: "Expert SMs build trust by meeting teams where they are and demonstrating value gradually.",
+              competency: "scrum:team-dynamics"
             },
             {
-              question_text: "Why is active listening crucial for a Scrum Master?",
-              scenario_context: "A team member seems to be saying one thing but meaning another.",
-              options: ["To take better notes", "To understand what team members are really saying", "To interrupt with solutions", "To report to management"],
+              question_text: "What skill helps a SM lead organizational change beyond their team?",
+              scenario_context: "Your company wants to scale Agile across all departments.",
+              options: ["Project management certification", "Change management skills and stakeholder influence", "Database administration", "Knowledge of accounting principles"],
               correct_answer_index: 1,
-              explanation: "Active listening is highlighted as crucial for understanding what team members are really saying."
+              explanation: "Change management skills allow SMs to guide organizational Agile transformations.",
+              competency: "scrum:stakeholders"
             },
             {
-              question_text: "Why is patience considered an essential Scrum Master quality?",
-              scenario_context: "Your team is struggling to adopt new practices.",
-              options: ["To wait for others to fix problems", "Because change takes time and teams need room to grow", "To avoid taking action", "To delay difficult conversations"],
-              correct_answer_index: 1,
-              explanation: "Patience is essential because change takes time and teams need room to grow."
+              question_text: "How should a SM handle a technically superior team member who dismisses Scrum?",
+              scenario_context: "Your best developer openly says Scrum is a waste of time.",
+              options: ["Remove them from the team", "Agree with them publicly to avoid conflict", "Acknowledge their expertise, explore concerns, and connect Scrum's value to what they care about", "Report them to the PO"],
+              correct_answer_index: 2,
+              explanation: "Effective SMs acknowledge expertise and make Scrum's value relevant to individual goals.",
+              competency: "scrum:team-dynamics"
             },
             {
-              question_text: "How does systems thinking benefit a Scrum Master?",
-              scenario_context: "The same problems keep recurring in your team.",
-              options: ["It helps with IT systems", "It helps see the bigger picture and identify root causes", "It's only for architects", "It slows down decision-making"],
+              question_text: "What do experts say about SMs with both Agile and business skills?",
+              scenario_context: "A recruiter tells you the most in-demand SMs have a business background.",
+              options: ["Business skills are irrelevant to coaching", "Combined Agile and business skills make SMs more credible organizational partners", "Business skills make SMs too focused on profit", "Only POs need business skills"],
               correct_answer_index: 1,
-              explanation: "Systems thinking helps Scrum Masters see the bigger picture and identify root causes."
+              explanation: "Business literacy combined with Agile expertise makes SMs more effective organizational partners.",
+              competency: "scrum:stakeholders"
             },
             {
-              question_text: "Why is continuous learning vital for Scrum Masters?",
-              scenario_context: "You've been a Scrum Master for 5 years.",
-              options: ["It's not necessary after gaining experience", "The Agile landscape evolves constantly", "Only new Scrum Masters need to learn", "Certifications never expire"],
+              question_text: "What does 'holding a mirror' mean as a SM technique?",
+              scenario_context: "Your team is not aware their estimation habits cause Sprint overload.",
+              options: ["Bringing a physical whiteboard to retros", "Reflecting observations back to the team to help them see their own patterns", "Criticizing team members in public", "Recording the team without their consent"],
               correct_answer_index: 1,
-              explanation: "Continuous learning is vital as the Agile landscape evolves constantly."
+              explanation: "Holding a mirror means neutrally reflecting the team's patterns back to prompt self-awareness.",
+              competency: "scrum:team-dynamics"
             }
           ]
         },
@@ -293,39 +318,44 @@ const courseData = {
           },
           questions: [
             {
-              question_text: "How does a typical Scrum Master day begin?",
-              scenario_context: "You're establishing your morning routine.",
-              options: ["Writing code", "Reviewing the Sprint board and checking for blockers", "Having a two-hour planning session", "Reading emails for three hours"],
+              question_text: "What is typically the first thing a SM does at the start of their workday?",
+              scenario_context: "You are preparing for your first day as a SM.",
+              options: ["Checks and assigns tasks to team members", "Reviews the team's progress, checks for blockers, and prepares for the Daily Scrum", "Writes the Sprint report", "Attends a management briefing"],
               correct_answer_index: 1,
-              explanation: "A typical day starts with reviewing the Sprint board and checking for any blockers that emerged."
+              explanation: "A SM begins the day by reviewing team status and preparing to facilitate the Daily Scrum.",
+              competency: "scrum:roles"
             },
             {
-              question_text: "How long is the Daily Scrum event?",
-              scenario_context: "You're explaining Daily Scrum to the team.",
-              options: ["30 minutes to 1 hour", "15 minutes", "As long as needed", "5 minutes maximum"],
+              question_text: "Why does a SM invest time in 1:1 conversations with team members?",
+              scenario_context: "You schedule a weekly 1:1 with each team member.",
+              options: ["To evaluate their performance for HR purposes", "To build trust and surface concerns that might not emerge in group settings", "To assign personal targets and KPIs", "To replace the Daily Scrum"],
               correct_answer_index: 1,
-              explanation: "The Daily Scrum is a 15-minute sync where the team shares progress and plans."
+              explanation: "1:1s build individual trust and surface concerns that people may not share in group settings.",
+              competency: "scrum:team-dynamics"
             },
             {
-              question_text: "What activities might a Scrum Master do during the day?",
-              scenario_context: "You're planning your daily schedule.",
-              options: ["Only attend meetings", "One-on-ones, coaching sessions, and removing impediments", "Write all the user stories", "Manage the team's vacation requests"],
-              correct_answer_index: 1,
-              explanation: "Throughout the day, Scrum Masters have one-on-ones, coaching sessions, and work on removing impediments."
+              question_text: "What should a SM do when the Daily Scrum consistently runs over 15 minutes?",
+              scenario_context: "Your Daily Scrum has been running 30-40 minutes for three weeks.",
+              options: ["Extend the time-box permanently", "Accept it since longer meetings mean more collaboration", "Coach the team on the purpose of the Daily Scrum and introduce techniques to stay focused", "Cancel the Daily Scrum"],
+              correct_answer_index: 2,
+              explanation: "Chronic over-runs signal a facilitation opportunity — coach the team to keep to time-box.",
+              competency: "scrum:events"
             },
             {
-              question_text: "What might a Scrum Master's afternoon include?",
-              scenario_context: "You're looking at typical afternoon activities.",
-              options: ["Mandatory coding time", "Stakeholder meetings, backlog refinement, or ceremony preparation", "Taking the afternoon off", "Detailed status reporting"],
-              correct_answer_index: 1,
-              explanation: "Afternoons might include stakeholder meetings, backlog refinement sessions, or preparing for upcoming ceremonies."
+              question_text: "How does the SM handle a stakeholder who demands daily status updates?",
+              scenario_context: "A VP emails you every morning asking for a team status report.",
+              options: ["Writes a daily report to keep them happy", "Ignores the emails", "Engages the stakeholder and provides appropriate visibility through Scrum artifacts", "Adds the VP to the Daily Scrum"],
+              correct_answer_index: 2,
+              explanation: "The SM connects the stakeholder to appropriate Scrum artifacts and review events.",
+              competency: "scrum:stakeholders"
             },
             {
-              question_text: "How should a Scrum Master end their day?",
-              scenario_context: "You want to improve your daily practice.",
-              options: ["Rush out immediately", "Reflection on accomplishments and potential improvements", "Send a lengthy status report", "Schedule more meetings"],
+              question_text: "What does a SM model through their own behavior?",
+              scenario_context: "A new team member watches how you respond to a tense situation in Sprint Planning.",
+              options: ["Authority and control", "The Scrum values: commitment, focus, openness, respect, and courage", "Speed and efficiency above all else", "Deference to the most senior person in the room"],
               correct_answer_index: 1,
-              explanation: "The day ends with reflection on what was accomplished and what improvements can be made tomorrow."
+              explanation: "Scrum Masters embody Scrum values — their behavior models commitment, openness, respect, focus, and courage.",
+              competency: "scrum:empiricism"
             }
           ]
         }
@@ -1215,6 +1245,7 @@ serve(async (req) => {
               options: q.options,
               correct_answer_index: q.correct_answer_index,
               explanation: q.explanation,
+              competency: q.competency,
               order_index: i,
             });
 
