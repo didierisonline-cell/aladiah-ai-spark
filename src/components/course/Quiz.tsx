@@ -20,6 +20,7 @@ interface Question {
   correct_answer_index: number;
   explanation: string | null;
   order_index: number;
+  competency: string | null;
 }
 
 interface QuizResult {
@@ -129,21 +130,48 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
 
       const correctCount = results.filter(r => r.isCorrect).length;
       const score = Math.round((correctCount / questions.length) * 100);
-      const passed = score >= 100;
 
-      // Save progress if logged in
+      // Fetch quiz metadata once: passing threshold + chapter/course for progress
+      const { data: quizData } = await supabase
+        .from('quizzes')
+        .select('chapter_id, passing_score, chapters(course_id)')
+        .eq('id', quizId)
+        .single();
+
+      const passingScore = quizData?.passing_score ?? 100;
+      const passed = score >= passingScore; // was hardcoded >= 100
+      const chapter_id = quizData?.chapter_id || null;
+      const course_id = (quizData?.chapters as any)?.course_id || null;
+
+      // Persist attempt + per-question detail + progress (best-effort; never blocks results UI)
       if (session) {
+        // 1) Intelligence-layer capture: attempt header + per-question rows
         try {
-          // Get quiz details to find chapter_id and course_id
-          const { data: quizData } = await supabase
-            .from('quizzes')
-            .select('chapter_id, chapters(course_id)')
-            .eq('id', quizId)
+          const { data: attempt, error: attemptError } = await supabase
+            .from('quiz_attempts')
+            .insert({ user_id: session.user.id, quiz_id: quizId, answers, score, passed })
+            .select('id')
             .single();
+          if (attemptError) throw attemptError;
 
-          const chapter_id = quizData?.chapter_id || null;
-          const course_id = (quizData?.chapters as any)?.course_id || null;
+          const answerRows = results.map((r, idx) => ({
+            attempt_id: attempt.id,
+            question_id: r.questionId,
+            selected_index: r.selectedAnswer,
+            correct_index: r.correctAnswer,
+            is_correct: r.isCorrect, // reuse the already-graded value
+            competency: questions[idx].competency ?? null, // snapshot; aligned index
+          }));
+          const { error: answersError } = await (supabase as any)
+            .from('quiz_attempt_answers')
+            .insert(answerRows);
+          if (answersError) console.error('Attempt answers save error:', answersError);
+        } catch (e) {
+          console.error('Attempt save exception:', e);
+        }
 
+        // 2) Progress (unchanged behavior): upsert score/passed for this quiz
+        try {
           // Check if already saved to avoid duplicates
           const { data: existing } = await supabase
             .from('user_progress')
@@ -188,7 +216,7 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
       } else {
         toast({
           title: 'Not quite there yet',
-          description: `You scored ${score}%. You need 100% to pass. Try again!`,
+          description: `You scored ${score}%. You need ${passingScore}% to pass. Try again!`,
           variant: 'destructive',
         });
       }
