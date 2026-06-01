@@ -326,6 +326,91 @@ This makes Phase-2 testable today, deterministically, without depending on real 
 
 ---
 
+## Step-3 implementation spec — `recompute-learning-profiles` (LOCKED, design-only)
+
+Single-user recompute (the sweep/trigger of step 4 calls it per `user_id`). Verified against the live
+schema; **four decisions locked** (see ✅ tags). Still design-only — no code until approved.
+
+**Schema facts pinned (with surprises):**
+- `quiz_attempt_answers` cols (authoritative = migration `20260531201551`, **not** in `types.ts`):
+  `id, attempt_id, question_id, selected_index, correct_index, is_correct, competency, created_at`. No `user_id`.
+- `quiz_attempts`: `id, user_id, quiz_id, score, passed, answers, created_at`. **No `course_id`.**
+- `course_id` needs a 3-hop join: `quiz_attempt_answers.attempt_id → quiz_attempts.quiz_id →
+  quizzes.chapter_id → chapters.course_id` (`quizzes` has only `chapter_id`).
+- `student_learning_profiles`: `UNIQUE(user_id, course_id)` (plain — NULLs distinct), `course_id` nullable
+  FK→`courses`, target cols `weak_areas`/`strong_areas`/`quiz_accuracy_trend` are `JSONB DEFAULT '[]'`,
+  `updated_at` auto via `BEFORE UPDATE` trigger `handle_updated_at`. RLS owner+admin-SELECT → function runs
+  **service-role** (bypass), mirroring `admin-analytics`.
+
+**1. Read query** (one `user_id`, `WHERE competency IS NOT NULL`):
+```sql
+SELECT qaa.id AS answer_id, qaa.competency, qaa.is_correct,
+       qa.id AS attempt_id, qa.created_at AS attempted_at, qa.quiz_id, qa.score AS attempt_score,
+       ch.course_id
+FROM public.quiz_attempt_answers qaa
+JOIN public.quiz_attempts qa ON qa.id = qaa.attempt_id
+JOIN public.quizzes        q  ON q.id  = qa.quiz_id
+JOIN public.chapters       ch ON ch.id = q.chapter_id
+WHERE qa.user_id = $1 AND qaa.competency IS NOT NULL
+ORDER BY qaa.competency, qa.created_at DESC, qaa.id DESC;
+```
+A NULL `course_id` answer (mis-seeded chapter) contributes to the cross-program roll only; log it.
+
+**2. Aggregate + window.** Grain = one answered question (one answer row). `attempts` = count of answer
+rows; `correct` = count where `is_correct`; `accuracy = correct/attempts`; `lastTested = max(attempted_at)`.
+✅ **Decision 3 — window = last N=50 answer rows per competency, ordered `created_at DESC, id DESC`
+(tiebreak).** N is **answers, not attempts**. **The 90-day secondary bound is dropped for now** (kept as a
+future tunable `WINDOW_DAYS`). Rationale: the profile should reflect *recent* mastery (a career-readiness
+signal), not all-time history. Per-program and cross-program rolls each apply their own independent N=50.
+
+**3. Thresholds (tunable constants):** `WEAK_MAX_ACCURACY=0.70`, `STRONG_MIN_ACCURACY=0.90`,
+`MIN_SAMPLE=3`, `WINDOW_N=50`, `TREND_CAP=30` (`WINDOW_DAYS` reserved, unused). Weak = `accuracy<0.70 AND
+attempts>=3`; strong = `accuracy>=0.90 AND attempts>=3`; neutral otherwise / `attempts<3`. Mutually
+exclusive (bands disjoint; builder asserts at-most-one-list). Not derived from quiz `passing_score`.
+
+**4. Axis-2 resolution.** ✅ **Decision 4 context / Axis-2 source:** reads the **canon §3 map**, mirrored as a
+`const AXIS2: Record<string,string>` in the function with a header comment naming `COMPETENCY_TAXONOMY.md §3`
+as source-of-truth; any tagged slug missing from the map → **log a warning and skip** (no invented bucket).
+Map (confirmed; fixtures match — `scrum:roles→roles-accountabilities`, `scrum:events→process-execution`):
+`scrum:framework`/`scrum:empiricism`→`foundations`, `scrum:roles`→`roles-accountabilities`,
+`scrum:events`→`process-execution`, `scrum:artifacts`→`artifacts-tooling`,
+`scrum:team-dynamics`→`people-leadership`, `scrum:stakeholders`→`stakeholder-engagement`,
+`scrum:delivery-metrics`→`measurement-outcomes`. (§3's "PROPOSED" flag is being flipped to confirmed in a
+**separate** `COMPETENCY_TAXONOMY.md` commit.)
+
+**5. Write — exactly 3 columns** (`weak_areas`, `strong_areas`, `quiz_accuracy_trend`; `updated_at` auto).
+Never touches `struggle_events`/`consecutive_failures`/`needs_intervention`/`review_queue`/
+`engagement_score`/`learning_style`/etc.
+- **Per-program rows** (one per `course_id` with tagged answers), entries keyed by Axis-1 slug:
+  `INSERT … ON CONFLICT (user_id, course_id) DO UPDATE SET weak_areas, strong_areas, quiz_accuracy_trend`
+  (the three only; other cols keep DEFAULTs on insert, untouched on update).
+- **Cross-program row (`course_id IS NULL`)**, entries keyed by Axis-2 `metaCategory`.
+  ✅ **Decision 1 — `ON CONFLICT` does NOT fire for NULL `course_id` (Postgres treats NULLs as distinct,
+  and the constraint is a plain `UNIQUE`, no partial index). So the function does an explicit
+  read-then-write** (`SELECT … WHERE user_id=$1 AND course_id IS NULL` → `UPDATE` by `id` if found, else
+  `INSERT`), **guarded by an advisory lock `pg_advisory_xact_lock(hashtext($user_id))`** so a
+  submit-trigger run can't race the nightly sweep into duplicate NULL rows. **No schema change / no partial
+  index in step 3** (the partial-unique-index alternative is deferred).
+- Entry shape per "Profile shape" above (`competency, topic, metaCategory, accuracy, score=round(acc*100),
+  attempts, lastTested, trend[]`).
+
+**6. Idempotency.** Full deterministic recompute (rebuild + overwrite arrays, never append). Deterministic
+ordering: `weak_areas` by `accuracy ASC, competency ASC`; `strong_areas` by `accuracy DESC, competency ASC`;
+trend by `date ASC`. Caps: per-entry `trend` and top-level `quiz_accuracy_trend` at `TREND_CAP=30`
+(most-recent); weak/strong naturally bounded by slug count (defensive cap 50). Re-running on unchanged data
+→ byte-identical JSONB and no duplicate rows (the advisory-locked read-then-write guarantees the NULL row
+stays singular). The plan's run-twice harness is the acceptance test.
+
+✅ **Decision 4 — types:** `quiz_attempt_answers` is absent from `src/integrations/supabase/types.ts`, so
+the function **hand-declares the row type locally** and logs a **TODO: regenerate Supabase types** later.
+No types regen in step 3.
+
+> **Pre-code check (read-only, when build starts):** per the "committed migration ≠ live DB" caution,
+> verify the live `quiz_attempt_answers` columns + the `student_learning_profiles` unique constraint via
+> `information_schema` before writing the function.
+
+---
+
 ## Risks / watch items
 
 - **Empty-until-tagged.** With `competency` null (Phase-1 default), the rollup yields nothing. Don't
