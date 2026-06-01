@@ -45,7 +45,7 @@ This file is the model every future program extends — append a new Axis-1 sect
 
 ---
 
-## 3. Axis-2 cross-program meta-category map (PROPOSED — confirm before Phase-2 build)
+## 3. Axis-2 cross-program meta-category map (CONFIRMED — locked for Phase-2 build)
 
 Phase-2 analytics resolves each Axis-1 slug to a cross-program meta-category at rollup
 time (per `PHASE2_ANALYTICS_PLAN.md`). Keeping that map here keeps it single-source.
