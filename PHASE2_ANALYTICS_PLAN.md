@@ -232,7 +232,9 @@ you're weak in Y" from `topic` + `trend` direction. No further reshape needed fo
    NOT a client-submit hook.** Capture is currently **client-side** (`Quiz.tsx` writes the grain directly;
    the server `submit-quiz` function is dormant/uninvoked — see SECOND FINDING). A DB-side trigger that
    enqueues the affected `user_id` therefore fires regardless of *which* client or path wrote the rows,
-   keeps the profile fresh within seconds, and keeps rollup logic out of the client entirely. A
+   keeps the profile fresh **within minutes** (the locked Step-4 design debounces via a queue drained on a
+   ~3-min schedule — see the Step-4 spec; the earlier "within seconds" wording was superseded), and keeps
+   rollup logic out of the client entirely. A
    "fire-and-forget from the submit path" would mean editing client code and re-exposes the "client
    writes profile" smell — avoid it unless/until submit is moved server-side (e.g. by reviving
    `submit-quiz`).
@@ -408,6 +410,177 @@ No types regen in step 3.
 > **Pre-code check (read-only, when build starts):** per the "committed migration ≠ live DB" caution,
 > verify the live `quiz_attempt_answers` columns + the `student_learning_profiles` unique constraint via
 > `information_schema` before writing the function.
+
+---
+
+## Step-4 implementation spec — trigger + scheduler (LOCKED, design-only)
+
+Wires the Step-3 `recompute-learning-profiles` function to fire automatically: a DB trigger **enqueues**
+affected users, an in-process drainer **recomputes** them on a short schedule, and a nightly sweep
+self-heals. Verified read-only against the live repo (investigation in this session). Still design-only —
+no code, no DB, no Dashboard change until approved.
+
+**Decisions locked (this step):**
+1. Drainer cadence: **~3-minute drain + nightly full sweep.**
+2. Drainer reaches the rollup **in-process via `SUPABASE_DB_URL`** (calls `recompute()` directly) — **no
+   `pg_net`, no `supabase_functions.http_request`, no HTTP from the trigger.**
+3. Scheduler: **Supabase scheduled edge function** for both drain and sweep. The cron entry is a
+   **Dashboard action at deploy time** (the repo isn't CLI-linked, so a `config.toml` `schedule=` would not
+   auto-apply) — specified here as a deploy step, not code we generate.
+
+### Why a queue + drainer (not a trigger that calls the function)
+
+Three facts found in the live repo force this shape:
+- **One multi-row INSERT per submit.** `Quiz.tsx:165-167` inserts all answer rows in a single
+  `.insert(answerRows)` array → PostgREST emits **one** `INSERT … VALUES (…),(…),…` statement. A
+  **statement-level** trigger therefore fires **exactly once per submit**, not once per question. (A
+  row-level trigger would fire 5+ times and, with a per-row HTTP call, storm the function.)
+- **`quiz_attempt_answers` has no `user_id`.** The trigger must resolve the user via
+  `attempt_id → quiz_attempts.user_id` (a join), so it reads the affected user(s) from the statement's
+  transition table, not from `NEW` directly.
+- **No HTTP-from-DB primitive is provisioned.** No `pg_net`, `supabase_functions`, or `pg_cron` exists in
+  any migration; every committed trigger is plain in-DB plpgsql (`handle_new_user`, `auto_assign_admin`,
+  `handle_updated_at`). A pure-SQL **enqueue** matches that precedent exactly and adds **zero** extension
+  dependency. Because Step-3 connects with a **raw `SUPABASE_DB_URL` Postgres client** (not PostgREST), the
+  drainer calls `recompute()` in-process — the trigger never needs to reach the function over the network.
+
+### 1. Queue table — `profile_recompute_queue`
+
+A tiny debounce table. Delivered as reviewable SQL (file + paste-ready block); the human applies it in
+Supabase per CLAUDE.md — Claude Code does not auto-apply.
+
+```sql
+CREATE TABLE IF NOT EXISTS public.profile_recompute_queue (
+  user_id     uuid PRIMARY KEY REFERENCES auth.users (id) ON DELETE CASCADE,
+  enqueued_at timestamptz NOT NULL DEFAULT now()
+);
+-- Service-role only: the trigger (SECURITY DEFINER) and the drainer (service role) are the sole
+-- writers/readers. Enable RLS with no policies so no client role can touch it.
+ALTER TABLE public.profile_recompute_queue ENABLE ROW LEVEL SECURITY;
+```
+`user_id` as PRIMARY KEY is the dedup mechanism: many answer rows (and even repeated submits before a
+drain) collapse to **one** queue row per user.
+
+> **FK to `auth.users(id)` is intentional** — the queue is deliberately *stricter* than
+> `student_learning_profiles` (which has no such FK) because the foreign key gives `ON DELETE CASCADE`
+> cleanup: if a user is deleted, their queued row is removed automatically rather than left as an orphan
+> the drainer would fail to recompute.
+
+### 2. Statement-level enqueue trigger on `quiz_attempt_answers`
+
+```sql
+CREATE OR REPLACE FUNCTION public.enqueue_profile_recompute()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO public.profile_recompute_queue (user_id)
+  SELECT DISTINCT qa.user_id
+  FROM new_answers na
+  JOIN public.quiz_attempts qa ON qa.id = na.attempt_id
+  WHERE qa.user_id IS NOT NULL
+  ON CONFLICT (user_id) DO UPDATE SET enqueued_at = now();
+  RETURN NULL;  -- AFTER trigger; return value ignored
+END;
+$$;
+
+CREATE TRIGGER trg_enqueue_profile_recompute
+  AFTER INSERT ON public.quiz_attempt_answers
+  REFERENCING NEW TABLE AS new_answers
+  FOR EACH STATEMENT
+  EXECUTE FUNCTION public.enqueue_profile_recompute();
+```
+- `FOR EACH STATEMENT` + `REFERENCING NEW TABLE` → fires once per submit, one join for the whole batch.
+- `SELECT DISTINCT … user_id` → robust even if the client is ever refactored to insert row-by-row (the
+  PK + `ON CONFLICT` still collapse to one queue row per user; statement-level just makes the common case
+  cheap).
+- The parent `quiz_attempts` header is inserted first in the same submit txn (`Quiz.tsx:150-155` before
+  `165-167`), so the join resolves. Rows whose `user_id` is NULL are filtered out (defensive).
+- **Pure SQL, no network, no extension.** A trigger bug can at worst fail the INSERT; keep the body
+  minimal (one upsert) and consider it advisory — the nightly sweep self-heals any miss.
+
+### 3. Drainer — in-process, `SUPABASE_DB_URL`, no HTTP
+
+A scheduled entrypoint on the **same** `recompute-learning-profiles` deployment (mode-flagged by request
+body, e.g. `{ "mode": "drain" }`), so it reuses the existing pg `Client` and `recompute()` with zero new
+network surface:
+1. Connect via `SUPABASE_DB_URL` (as Step-3 already does).
+2. `SELECT DISTINCT user_id FROM public.profile_recompute_queue` (optionally `ORDER BY enqueued_at` and
+   `LIMIT` a batch to bound a single run).
+3. For each user: call `recompute(client, userId)` — already advisory-locked + idempotent (Step-3 §6).
+4. **`DELETE FROM public.profile_recompute_queue WHERE user_id = $1` only on success** for that user. A
+   failed user stays queued and is retried next drain. (Optional refinement: delete by
+   `user_id AND enqueued_at = <value read in step 2>` so a re-enqueue that lands *during* the recompute
+   isn't lost — leave-it-queued is safe either way since recompute is a full overwrite.)
+5. Per-user failures are logged and isolated; one bad user does not abort the batch.
+
+No `pg_net`, no `supabase_functions`, no outbound HTTP — the trigger enqueues, the drainer pulls.
+
+### 4. Nightly full sweep — same function, "all active users" mode
+
+Same deployment, `{ "mode": "sweep" }`: instead of reading the queue, select the active-user set (e.g.
+distinct `user_id` from `quiz_attempts`, optionally bounded to recent activity) and `recompute()` each.
+Purpose: **self-heal missed triggers**, apply threshold/vocabulary changes retroactively, and perform the
+one-time historical re-roll. (Per the Testing section there's almost no live grain today, so the "historical
+backfill" is near-empty until tagging + real traffic exist — the sweep still matters as the self-heal path.)
+Run off-peak; the `(competency, is_correct)` index from Phase-1 supports the grouping.
+
+### 5. Scheduler — Supabase scheduled edge function (Dashboard step at deploy)
+
+Both invocations are Supabase **scheduled functions**, configured in the Dashboard at deploy time (not in
+this repo — the repo isn't CLI-linked, so `config.toml schedule=` would not auto-apply; the existing
+`send-*` reminders are likewise scheduled out-of-repo, confirmed in Decision-3 investigation):
+- **Drain:** every ~3 minutes (`*/3 * * * *`), body `{ "mode": "drain" }`.
+- **Sweep:** nightly off-peak (e.g. `0 3 * * *`), body `{ "mode": "sweep" }`.
+The spec records these as **deploy steps**; no schedule artifact is generated in-repo.
+
+### 6. Auth — Step-4 deliverable (must be decided here)
+
+The Step-3 function header explicitly defers invocation auth to Step-4, and there is **no
+`[functions.recompute-learning-profiles]` block** in `config.toml`, so the platform default
+`verify_jwt = true` would apply. Decision for this step:
+- **Keep `verify_jwt = true`** (do not expose an unauthenticated recompute endpoint), and have the
+  **scheduled invocation authenticate with the service-role bearer** (`Authorization: Bearer
+  <service_role key>`). Supabase injects `SUPABASE_DB_URL` into the function's own env; the **only** thing
+  the caller supplies is the mode/body + the bearer.
+- **OPTIONAL future hardening (not required for Step-4):** the function *may* additionally **reject any
+  caller that is not service-role** (defense in depth) so a leaked anon JWT can't trigger cross-user
+  recompute. This is **intentionally deferred** — Step-3 was tested by invoking with the anon/publishable
+  key as bearer (service-role is not in local `.env`), and strict service-role-only enforcement would break
+  that test path. Keep the test path usable for now; revisit strict enforcement once a service-role bearer
+  is available to the caller. The Step-3 body contract (`{ userId }`, uuid-checked) stays for any direct
+  single-user call; `drain`/`sweep` modes derive their user set server-side.
+- Net Step-4 auth artifacts: an explicit `[functions.recompute-learning-profiles]` config block recording
+  the `verify_jwt` posture, and the service-role-bearer expectation documented for the Dashboard cron.
+
+### Net-new build artifacts (each independently shippable)
+
+| # | Artifact | Kind | Ships independently? |
+|---|---|---|---|
+| 1 | `profile_recompute_queue` table + RLS | SQL file (human-applied) | Yes — inert until the trigger writes to it |
+| 2 | `enqueue_profile_recompute()` + statement-level trigger | SQL file (human-applied) | Yes — starts populating the queue; harmless if drainer not yet live |
+| 3 | Drainer + sweep entrypoint (mode flag on the Step-3 function) | Edge-function code | Yes — no-op against an empty queue; testable with the synthetic harness |
+| 4 | Supabase scheduled-function entries (drain ~3-min, sweep nightly) | Dashboard config at deploy | Yes — pure activation; nothing to recompute changes if queue empty |
+| 5 | Auth decision: `verify_jwt` block + service-role-bearer for cron | config.toml block + Dashboard secret | Yes — gates only *who* may invoke |
+
+Suggested order: 1 → 2 (queue fills) → 3 (drainer empties it on manual invoke; verify with the run-twice
+harness) → 4 (automate) → 5 can land alongside 3/4. Each step is verifiable in isolation per CLAUDE.md
+("one discrete change at a time, verified").
+
+### Watch items specific to Step-4
+
+- **Trigger is advisory, sweep is the safety net.** Treat a missed/failed enqueue as acceptable — the
+  nightly sweep reconciles. Don't make the trigger do heavy work or block the submit.
+- **Re-enqueue during drain.** If a user submits again *while* their recompute is running, a naive
+  unconditional delete could drop the new request. Mitigate with the `enqueued_at`-guarded delete (§3,
+  step 4) or simply re-run next cycle — safe because `recompute()` is a full overwrite, not incremental.
+- **Drain batch bound.** Cap users-per-drain so a backlog (e.g. after the nightly sweep enqueues many)
+  can't make one 3-min run unbounded; the leftover drains next cycle.
+- **Staleness is minutes, by design.** Reconciled the plan's earlier "within seconds" wording (see "Where
+  the rollup runs") — the debounce makes freshness a function of drain cadence (~3 min), which the plan
+  already accepts (strengths/weaknesses tolerate minutes/hours).
 
 ---
 
