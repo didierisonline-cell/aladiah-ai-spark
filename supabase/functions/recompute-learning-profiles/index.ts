@@ -372,7 +372,20 @@ async function recompute(client: Client, userId: string) {
 // it stays queued for the next drain and never aborts the batch. recompute() is reused
 // unchanged; this only adds a loop + queue read/delete around it.
 // -----------------------------------------------------------------------------
-const DRAIN_BATCH_CAP = 100; // max users per drain run; any leftover drains next ~3-min cycle
+// Max users per drain run. Sized to stay safely under the Supabase cron's 5000ms (max)
+// timeout: one recompute measured up to ~1.5s, so 2 users ≈ ~3s, leaving ~2s headroom (3
+// would leave only ~0.5s if recomputes run slow). Throughput loss is negligible — the
+// ~3-min schedule + nightly sweep backstop it, and unprocessed users stay queued
+// (delete-on-success) and drain next cycle.
+//
+// SCALING-TUNE ORDER — revisit IF profile_recompute_queue depth stops returning to ~0
+// between runs (i.e. drains can't keep up). Apply in order; do NOT redesign preemptively,
+// do NOT add pg_net to the trigger:
+//   1. drain schedule 3min -> 1min
+//   2. check/improve indexing on quiz_attempt_answers
+//   3. add bounded parallelism to the drain loop
+//   4. window the nightly sweep (recent-active users only)
+const DRAIN_BATCH_CAP = 2;
 
 async function drainQueue(client: Client) {
   // user_id is the PRIMARY KEY of profile_recompute_queue (one row per user), so DISTINCT
