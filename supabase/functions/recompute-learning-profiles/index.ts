@@ -419,9 +419,55 @@ async function drainQueue(client: Client) {
 }
 
 // -----------------------------------------------------------------------------
-// HTTP entry. Two modes:
+// Step-4 artifact #3b — "sweep" mode (nightly self-heal). Re-rolls EVERY active user,
+// independent of the queue: picks up any enqueue the trigger missed and applies
+// threshold/vocabulary changes retroactively. Does NOT read or delete the queue.
+//
+// "Active users" = DISTINCT quiz_attempts.user_id — the exact input domain of recompute()
+// (its read query starts FROM quiz_attempt_answers JOIN quiz_attempts), so a user with no
+// attempts has no grain and sweeping them would only write empty arrays. No better activity
+// signal exists for this rollup. Taking ALL users for now (table is tiny); when volume
+// grows, bound by quiz_attempts.created_at, e.g. WHERE created_at > now() - interval '90 days'.
+//
+// Mirrors drain's per-user try/catch isolation (one bad user never aborts the sweep) but is
+// a PARALLEL function — the proven, deployed drain path is left untouched.
+// -----------------------------------------------------------------------------
+async function sweepAll(client: Client) {
+  const { rows: active } = await client.queryObject<{ user_id: string }>({
+    text: `SELECT DISTINCT user_id FROM public.quiz_attempts WHERE user_id IS NOT NULL`,
+  });
+
+  const results: Array<{ userId: string; ok: boolean; error?: string }> = [];
+  const usersFailed: string[] = [];
+  let usersSwept = 0;
+
+  for (const { user_id } of active) {
+    try {
+      await recompute(client, user_id); // proven path; own advisory-locked txn. No queue touch.
+      results.push({ userId: user_id, ok: true });
+      usersSwept++;
+    } catch (e) {
+      const error = e instanceof Error ? e.message : "Unknown error";
+      console.error(`sweep: recompute failed for ${user_id} (skipped):`, error);
+      results.push({ userId: user_id, ok: false, error });
+      usersFailed.push(user_id);
+    }
+  }
+
+  return {
+    mode: "sweep" as const,
+    activeUsers: active.length,
+    usersSwept,
+    usersFailed, // ids that errored this run; next nightly sweep retries
+    results, // per-user { userId, ok, error? }
+  };
+}
+
+// -----------------------------------------------------------------------------
+// HTTP entry. Three modes:
 //   • POST { userId }        — single-user recompute (UNCHANGED from step 3).
 //   • POST { mode: "drain" } — batch-drain the recompute queue (step-4 artifact #3).
+//   • POST { mode: "sweep" } — nightly self-heal over all active users (artifact #3b).
 // Invocation auth (locked step-4): verify_jwt=true, cron sends a service-role bearer; no
 // strict service-role-only rejection yet (preserves the anon-key test path).
 // -----------------------------------------------------------------------------
@@ -450,6 +496,22 @@ serve(async (req) => {
       await client.connect();
       try {
         const summary = await drainQueue(client);
+        return json({ ok: true, ...summary });
+      } finally {
+        await client.end();
+      }
+    }
+
+    // ---- "sweep" mode (step-4 artifact #3b) — additive; nightly self-heal over all active
+    //      users; does not touch the queue. Same Client(dbUrl) setup; recompute() reused.
+    //      The single-user path below is unchanged. ----
+    if (body?.mode === "sweep") {
+      const dbUrl = Deno.env.get("SUPABASE_DB_URL");
+      if (!dbUrl) return json({ error: "SUPABASE_DB_URL not configured" }, 500);
+      const client = new Client(dbUrl);
+      await client.connect();
+      try {
+        const summary = await sweepAll(client);
         return json({ ok: true, ...summary });
       } finally {
         await client.end();
