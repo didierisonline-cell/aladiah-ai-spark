@@ -366,8 +366,64 @@ async function recompute(client: Client, userId: string) {
 }
 
 // -----------------------------------------------------------------------------
-// HTTP entry. POST { userId }. Invocation auth is finalized in step 4 (trigger/cron);
-// this draft trusts its caller (internal/service-role context).
+// Step-4 artifact #3 — "drain" mode. Batch-process the profile_recompute_queue: for each
+// queued user run the PROVEN single-user recompute() (its own advisory-locked txn), then
+// DELETE that user's queue row on success. A single user's failure is logged and skipped —
+// it stays queued for the next drain and never aborts the batch. recompute() is reused
+// unchanged; this only adds a loop + queue read/delete around it.
+// -----------------------------------------------------------------------------
+const DRAIN_BATCH_CAP = 100; // max users per drain run; any leftover drains next ~3-min cycle
+
+async function drainQueue(client: Client) {
+  // user_id is the PRIMARY KEY of profile_recompute_queue (one row per user), so DISTINCT
+  // is implicit. Oldest-first + LIMIT keeps a single run bounded.
+  const { rows: queued } = await client.queryObject<{ user_id: string }>({
+    text: `SELECT user_id FROM public.profile_recompute_queue
+           ORDER BY enqueued_at ASC
+           LIMIT $1`,
+    args: [DRAIN_BATCH_CAP],
+  });
+
+  const results: Array<{ userId: string; ok: boolean; error?: string }> = [];
+  const usersFailed: string[] = [];
+  let usersDrained = 0;
+
+  for (const { user_id } of queued) {
+    try {
+      await recompute(client, user_id); // proven path; manages its own BEGIN/COMMIT + lock
+      // Plain delete on success (spec §3 step-4). A submit that RE-enqueues during this
+      // recompute is safe to lose here — recompute is a full overwrite and the nightly
+      // sweep reconciles; the optional enqueued_at-guarded delete is deferred.
+      await client.queryArray({
+        text: `DELETE FROM public.profile_recompute_queue WHERE user_id = $1`,
+        args: [user_id],
+      });
+      results.push({ userId: user_id, ok: true });
+      usersDrained++;
+    } catch (e) {
+      const error = e instanceof Error ? e.message : "Unknown error";
+      console.error(`drain: recompute failed for ${user_id} (left queued):`, error);
+      results.push({ userId: user_id, ok: false, error });
+      usersFailed.push(user_id);
+    }
+  }
+
+  return {
+    mode: "drain" as const,
+    batchCap: DRAIN_BATCH_CAP,
+    queued: queued.length,
+    usersDrained,
+    usersFailed, // ids left queued for retry
+    results, // per-user { userId, ok, error? }
+  };
+}
+
+// -----------------------------------------------------------------------------
+// HTTP entry. Two modes:
+//   • POST { userId }        — single-user recompute (UNCHANGED from step 3).
+//   • POST { mode: "drain" } — batch-drain the recompute queue (step-4 artifact #3).
+// Invocation auth (locked step-4): verify_jwt=true, cron sends a service-role bearer; no
+// strict service-role-only rejection yet (preserves the anon-key test path).
 // -----------------------------------------------------------------------------
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -383,6 +439,24 @@ serve(async (req) => {
     if (req.method !== "POST") return json({ error: "POST only" }, 405);
 
     const body = await req.json().catch(() => ({}));
+
+    // ---- "drain" mode (step-4 artifact #3) — additive; no userId required. Reuses the
+    //      same Client(dbUrl) setup and the proven recompute(). The single-user path below
+    //      this block is unchanged. ----
+    if (body?.mode === "drain") {
+      const dbUrl = Deno.env.get("SUPABASE_DB_URL");
+      if (!dbUrl) return json({ error: "SUPABASE_DB_URL not configured" }, 500);
+      const client = new Client(dbUrl);
+      await client.connect();
+      try {
+        const summary = await drainQueue(client);
+        return json({ ok: true, ...summary });
+      } finally {
+        await client.end();
+      }
+    }
+
+    // ---- single-user mode (UNCHANGED): POST { userId } ----
     const userId: unknown = body?.userId;
     const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (typeof userId !== "string" || !uuidRe.test(userId)) {
