@@ -17,3 +17,9 @@ entrypoint = "./functions/send-email/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/send-email/*.html" ]
+
+# recompute-learning-profiles: verify_jwt=true. Cron (drain/sweep) authenticates with the
+# publishable/anon JWT bearer; the function's DB privilege comes from SUPABASE_DB_URL, not
+# the caller. Strict service-role-only rejection deferred (see PHASE2_ANALYTICS_PLAN.md S4 auth).
+[functions.recompute-learning-profiles]
+verify_jwt = true
