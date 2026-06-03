@@ -283,7 +283,14 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
           if (profile?.tier === 'starter') {
             setIsStarter(true);
             const freeCourseId = profile.free_course_id;
-            if (freeCourseId && courseId !== freeCourseId) {
+            if (!freeCourseId) {
+              // Fail-closed: a starter who hasn't chosen their free program must pick one.
+              // Redirect to /portal, where the course-selection gate now fires. (Previously
+              // a NULL free_course_id fell through and opened every program's Module 1.)
+              navigate('/portal');
+              return;
+            }
+            if (courseId !== freeCourseId) {
               const { data: fc } = await supabase.from('courses').select('title').eq('id', freeCourseId).maybeSingle();
               setFreeCourseName(fc?.title || '');
               setPaywallReason('wrong_course');

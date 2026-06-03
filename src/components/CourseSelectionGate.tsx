@@ -40,6 +40,7 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
   const [loading, setLoading] = useState(false);
   const [switchUsed, setSwitchUsed] = useState(false);
   const [currentSelection, setCurrentSelection] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     loadCourses();
@@ -72,12 +73,24 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
   const handleConfirm = async () => {
     if (!selectedCourse) return;
     setLoading(true);
+    setSaveError(null);
     try {
       const updateData: any = { user_id: userId, free_course_id: selectedCourse, tier: 'starter' };
       if (currentSelection) updateData.free_switch_used = true;
-      await supabase.from('profiles').upsert(updateData, { onConflict: 'user_id' });
+      // supabase-js returns DB/RLS errors in `error` (it does NOT throw) — check it, and
+      // only close the gate on success. Closing on a failed write caused the redirect loop.
+      const { error } = await supabase.from('profiles').upsert(updateData, { onConflict: 'user_id' });
+      if (error) {
+        console.error('Course selection save failed:', error);
+        setSaveError('Could not save your course selection. Please try again.');
+        setLoading(false);
+        return;
+      }
     } catch (e) {
-      console.error(e);
+      console.error('Course selection save exception:', e);
+      setSaveError('Could not save your course selection. Please try again.');
+      setLoading(false);
+      return;
     }
     onCourseSelected();
   };
@@ -182,6 +195,9 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '10px' }}>
             Want all 8 courses? Upgrade to All-Access Pass for $59.99/month
           </p>
+          {saveError && (
+            <p style={{ fontSize: '12px', color: '#f87171', marginTop: '10px' }}>{saveError}</p>
+          )}
         </div>
       </motion.div>
     </div>

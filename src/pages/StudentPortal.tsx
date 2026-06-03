@@ -136,6 +136,7 @@ export default function StudentPortal() {
   const [needsCreed, setNeedsCreed] = useState(shouldShowCreedGate());
   const [needsCourseSelection, setNeedsCourseSelection] = useState(false);
   const [creedLoaded, setCreedLoaded] = useState(true);
+  const [courseSelectionLoaded, setCourseSelectionLoaded] = useState(false);
   const [totalPoints, setTotalPoints] = useState(0);
   const [streak, setStreak] = useState(0);
   const [labs, setLabs] = useState<any[]>([]);
@@ -153,6 +154,28 @@ export default function StudentPortal() {
   const [hoursLeft] = useState(412);
 
   const T = (key: string) => overviewT(language || 'en', key);
+
+  // Course-selection gate trigger: a starter who has not yet chosen their free program
+  // must pick one before using the portal. Keyed on profiles.tier === 'starter' (the
+  // string the gate + ChapterView use), NOT useSubscription's t1/t2/t3. courseSelectionLoaded
+  // holds rendering until this resolves so the dashboard never flashes before the gate.
+  useEffect(() => {
+    if (!user) { setCourseSelectionLoaded(true); return; }
+    let cancelled = false;
+    (async () => {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('tier, free_course_id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      if (profile?.tier === 'starter' && !profile?.free_course_id) {
+        setNeedsCourseSelection(true);
+      }
+      setCourseSelectionLoaded(true);
+    })();
+    return () => { cancelled = true; };
+  }, [user]);
 
   // Load all student data
   useEffect(() => {
@@ -324,12 +347,12 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
   const schoolCourses = courses.filter(c => c.school === activeSchool);
   const certCourses = courses.filter(c => c.isCert);
 
-  if (!creedLoaded) return <div style={{ background: '#020817', minHeight: '100vh' }} />;
+  if (!creedLoaded || !courseSelectionLoaded) return <div style={{ background: '#020817', minHeight: '100vh' }} />;
   if (needsCreed) return (
     <CreedAcknowledgmentGate onAcknowledge={() => setNeedsCreed(false)} />
   );
   if (needsCourseSelection) return (
-    <CourseSelectionGate onCourseSelected={() => setNeedsCourseSelection(false)} />
+    <CourseSelectionGate userId={user.id} onCourseSelected={() => setNeedsCourseSelection(false)} />
   );
 
   return (
