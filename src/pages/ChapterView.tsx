@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,6 +16,11 @@ interface Course { id: string; title: string; translations: any; }
 interface Chapter { id: string; title: string; description: string; order_index: number; course_id: string; translations: any; }
 interface Video { id: string; title: string; description: string; chapter_id: string; order_index: number; video_url: string; translations: any; }
 interface Quiz { id: string; chapter_id: string; quiz_type: string; }
+// Spec A: ordered, typed step list for a module. Lessons first, then the chapter_end
+// quiz. New step kinds (simulation/project/etc.) can be appended later without rework.
+type LessonStep = { type: 'lesson'; video: Video };
+type QuizStep = { type: 'quiz'; quizId: string };
+type Step = LessonStep | QuizStep;
 
 function Bars({ active }: { active: boolean }) {
   const h = [0.5, 0.9, 0.65, 1.1, 0.75, 1.0, 0.6];
@@ -101,45 +106,11 @@ export default function ChapterView() {
       // Strip ElevenLabs persona XML tags e.g. <LaSean Pickens (EN/ES)>...</LaSean Pickens (EN/ES)>
       const cleaned = message.replace(/<[^>]+>/g, '').trim();
       if (cleaned) setTranscript(p => [...p, { role: source === 'ai' ? 'agent' : 'user', message: cleaned }]);
-      // Detect oral assessment completion — trigger paywall or advance
-      const COMPLETION_SENTINEL = 'aladiah-module-complete-confirmed';
-      const isComplete = source === 'ai' && cleaned.toLowerCase().includes(COMPLETION_SENTINEL);
-      if (source === 'ai' && isComplete) {
-        setTimeout(async () => {
-          conversation.endSession().catch(() => { });
-          if (timerRef.current) clearInterval(timerRef.current);
-          // Check tier
-          const { data: { user: u } } = await supabase.auth.getUser();
-          if (!u) return;
-          const { data: profile } = await supabase.from('profiles').select('tier').eq('user_id', u.id).maybeSingle();
-          const isStarter = profile?.tier === 'starter';
-          if (isStarter) {
-            localStorage.setItem(`starter-course-done-${u.id}`, 'true');
-            supabase.from('profiles').update({ free_course_completed: true }).eq('user_id', u.id).then(() => { });
-            supabase.from('profiles').select('preferred_language, full_name').eq('user_id', u.id).maybeSingle().then(({ data: prof }) => {
-              fetch('https://vgujnkxylipfwmkpwzvb.supabase.co/functions/v1/send-email', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  type: 'free_course_completed',
-                  student: { name: prof?.full_name || 'Student', email: u.email, course: course?.title, language: prof?.preferred_language || 'en' },
-                }),
-              }).catch(() => { });
-            });
-            setPaywallReason('module_locked');
-          } else {
-            const currentIdx = allChapters.findIndex(c => c.id === chapterId);
-            const nextChapter = allChapters[currentIdx + 1];
-            if (nextChapter) {
-              navigate(`/course/${courseId}/chapter/${nextChapter.id}`);
-            } else {
-              navigate('/portal');
-            }
-          }
-        }, 2000);
-      }
-      // Also auto-end on goodbye without triggering paywall
-      if (source === 'ai' && cleaned.toLowerCase().includes('goodbye') && !isComplete) {
+      // Spec A: the voice agent TEACHES ONLY. It must not navigate, unlock the next
+      // module, or trigger module completion. Module completion now happens solely via
+      // the chapter_end quiz pass (see <Quiz onComplete>). Auto-end only on an explicit
+      // goodbye — this closes the mic session and never navigates.
+      if (source === 'ai' && cleaned.toLowerCase().includes('goodbye')) {
         setTimeout(() => conversation.endSession().catch(() => { }), 1500);
       }
     },
@@ -361,6 +332,35 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
     : 0;
 
   const mainPoints: string[] = [];
+
+  // ── Spec A: app-owned ordered step list for this module ──────────────────────
+  // Lesson steps come from videos (ordered by order_index); the single chapter_end
+  // quiz is appended as the final step. mini_video quizzes are ignored for launch;
+  // the chapter_end is matched once (any duplicate quiz rows de-dupe to the first).
+  const steps = useMemo<Step[]>(() => {
+    const lessonSteps: Step[] = [...videos]
+      .sort((a, b) => a.order_index - b.order_index)
+      .map(v => ({ type: 'lesson', video: v }));
+    const chapterEndQuiz = quizzes.find(q => q.quiz_type === 'chapter_end');
+    return chapterEndQuiz ? [...lessonSteps, { type: 'quiz', quizId: chapterEndQuiz.id }] : lessonSteps;
+  }, [videos, quizzes]);
+
+  const currentStepIndex = useMemo(() => {
+    if (activeQuizId) return steps.findIndex(s => s.type === 'quiz' && s.quizId === activeQuizId);
+    if (currentLesson) return steps.findIndex(s => s.type === 'lesson' && s.video.id === currentLesson.id);
+    return -1;
+  }, [steps, currentLesson, activeQuizId]);
+
+  const nextStep = currentStepIndex >= 0 ? steps[currentStepIndex + 1] : undefined;
+  const continueIsToQuiz = nextStep?.type === 'quiz';
+
+  // Always-enabled Continue: advance to the next lesson in the module, or open the
+  // chapter_end quiz after the last lesson. Independent of the voice agent.
+  const handleContinue = () => {
+    if (!nextStep) return;
+    if (nextStep.type === 'lesson') setCurrentLesson(nextStep.video);
+    else setActiveQuizId(nextStep.quizId);
+  };
 
   if (loading) return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg,#0a0f1e,#0d1b3e)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -684,6 +684,17 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
             )}
 
           </div>
+
+          {/* Spec A: app-owned lesson progression — independent of the voice agent.
+              Lesson → Continue → next lesson; after the last lesson → chapter_end quiz. */}
+          {currentLesson && (
+            <div style={{ marginBottom: 32 }}>
+              <button onClick={handleContinue} style={{ width: '100%', padding: '16px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#f59e0b,#d97706)', color: '#0a0f1e', fontSize: 15, fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                {continueIsToQuiz ? 'Continue to Module Quiz' : 'Continue to Next Lesson'}
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* RIGHT — Lesson List Sidebar */}
@@ -713,7 +724,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               return (
                 <button
                   key={video.id}
-                  onClick={() => { if (isStarter && video.order_index > 0) { setPaywallReason('module_locked'); return; } setCurrentLesson(video); }}
+                  onClick={() => setCurrentLesson(video)}
                   style={{ width: '100%', textAlign: 'left', background: isCurrent ? 'rgba(30,64,175,0.2)' : 'transparent', border: `1px solid ${isCurrent ? 'rgba(96,165,250,0.3)' : 'transparent'}`, borderRadius: 10, padding: '12px 14px', cursor: 'pointer', transition: 'all 0.15s ease', display: 'flex', alignItems: 'center', gap: 10 }}
                   onMouseEnter={e => { if (!isCurrent) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.04)'; }}
                   onMouseLeave={e => { if (!isCurrent) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
@@ -767,7 +778,21 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               const { data: profile } = await supabase.from('profiles').select('tier').eq('user_id', u.id).maybeSingle();
               const isStarter = profile?.tier === 'starter';
               if (isStarter) {
-                // Free tier — hit the paywall
+                // Free tier — Module 1 completes HERE (passing the chapter_end quiz),
+                // not via the voice agent. Migrated from the old voice-completion block:
+                // completion flag, profiles.free_course_completed, and completion email.
+                localStorage.setItem(`starter-course-done-${u.id}`, 'true');
+                supabase.from('profiles').update({ free_course_completed: true }).eq('user_id', u.id).then(() => { });
+                supabase.from('profiles').select('preferred_language, full_name').eq('user_id', u.id).maybeSingle().then(({ data: prof }) => {
+                  fetch('https://vgujnkxylipfwmkpwzvb.supabase.co/functions/v1/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      type: 'free_course_completed',
+                      student: { name: prof?.full_name || 'Student', email: u.email, course: course?.title, language: prof?.preferred_language || 'en' },
+                    }),
+                  }).catch(() => { });
+                });
                 setPaywallReason('module_locked');
               } else {
                 // Paid tier — advance to next module
