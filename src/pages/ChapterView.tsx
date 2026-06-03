@@ -102,19 +102,8 @@ export default function ChapterView() {
       const cleaned = message.replace(/<[^>]+>/g, '').trim();
       if (cleaned) setTranscript(p => [...p, { role: source === 'ai' ? 'agent' : 'user', message: cleaned }]);
       // Detect oral assessment completion — trigger paywall or advance
-      const completionPhrases = [
-        'solo excelencia — module complete',
-        'module complete. you are ready',
-        'you are ready for the next level',
-        'congratulations, you have completed',
-        'congratulations, you have completed',
-        'well done, you have passed',
-        'well done, you have passed',
-        'excellent work, module complete',
-        'you have successfully completed this module',
-        'you have successfully completed this module',
-      ];
-      const isComplete = completionPhrases.some(phrase => cleaned.toLowerCase().includes(phrase));
+      const COMPLETION_SENTINEL = 'aladiah-module-complete-confirmed';
+      const isComplete = source === 'ai' && cleaned.toLowerCase().includes(COMPLETION_SENTINEL);
       if (source === 'ai' && isComplete) {
         setTimeout(async () => {
           conversation.endSession().catch(() => { });
@@ -200,9 +189,9 @@ Lesson: "${lessonTitle}" | Module: "${chapterTitle}".
 Lesson outline: ${transcriptSnippet}
 Teach using Socratic method: ask questions, guide discovery, section by section.
 If student asks questions, answer fully then resume. Say "continue" to proceed.
-After teaching all sections, conduct an ORAL RECAP ASSESSMENT: ask exactly 5 recap questions one by one, wait for each answer, give brief feedback.
-After the 5th question is answered and you have given final feedback, you MUST say exactly: "Solo Excelencia — module complete. You are ready for the next level."
-This exact phrase signals the end of the session. Do not say it before all 5 questions are done.
+After teaching all sections, conduct an ORAL RECAP ASSESSMENT: ask exactly 5 recap questions one by one, waiting for the student's answer to each before asking the next, giving brief feedback. Do not skip ahead. While asking these questions, never say "module complete", "ready for the next level", "congratulations", or "Solo Excelencia" — keep all closing language for the very end.
+Only after the student has answered the 5th question and you have given final feedback, say one warm closing sentence to the student in ${lang}, then end your message with this exact tag on its own, in English, verbatim: aladiah-module-complete-confirmed
+Say that tag exactly once, only at this point, and never earlier. If the student has not answered all 5 questions, do not say the tag under any circumstances.
 Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       const langCodeMap: Record<string, string> = {
         en: 'en', fr: 'fr', es: 'es', de: 'de',
