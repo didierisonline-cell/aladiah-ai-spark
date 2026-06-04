@@ -160,22 +160,31 @@ export default function StudentPortal() {
   // string the gate + ChapterView use), NOT useSubscription's t1/t2/t3. courseSelectionLoaded
   // holds rendering until this resolves so the dashboard never flashes before the gate.
   useEffect(() => {
-    if (!user) { setCourseSelectionLoaded(true); return; }
+    // While auth is still resolving (user null), keep the flash guard BLOCKING — do not mark
+    // loaded yet, so the portal can't render before the profiles fetch. (Previously this branch
+    // set courseSelectionLoaded(true), letting the dashboard render on cold loads and stranding
+    // starters past the gate.) courseSelectionLoaded is resolved only after the fetch below.
+    if (!user) return;
     let cancelled = false;
     (async () => {
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('tier, free_course_id')
         .eq('user_id', user.id)
         .maybeSingle();
       if (cancelled) return;
-      if (profile?.tier === 'starter' && !profile?.free_course_id) {
+      if (error) {
+        // Don't swallow — surface it. Still resolve loaded so the portal isn't stuck blank.
+        console.error('Course-selection trigger: profiles fetch failed:', error);
+      } else if (profile?.tier === 'starter' && !profile?.free_course_id) {
         setNeedsCourseSelection(true);
       }
       setCourseSelectionLoaded(true);
     })();
     return () => { cancelled = true; };
-  }, [user]);
+    // Key on user?.id (stable) rather than the user object, so identity churn across renders
+    // doesn't re-run the effect and cancel the in-flight fetch before it sets the gate.
+  }, [user?.id]);
 
   // Load all student data
   useEffect(() => {
