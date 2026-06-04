@@ -70,7 +70,7 @@ export const ProgramExplorer = ({ program, onClose }: Props) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMWZP0Ctflq2xPfNXr5r24d',
+          priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TW7U21wgazWak4Atj7TblB3',
           email: user.email,
           tier: 't2',
           userId: user.id,
