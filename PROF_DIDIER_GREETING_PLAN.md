@@ -106,3 +106,5 @@ Rules: never auto-start on every refresh; max once/session unless student asks; 
 - Competency data exists now → `weak_areas` is real, not deferred.
 - Autoplay settled: gesture-chained where a click exists; attempt-then-fallback on returning login; text always visible.
 - Open decisions: (1) contract Option A vs B; (2) mute UX — defaulting to persistent `prof_didier_voice_muted` flag + in-card toggle.
+- Mentor-card layout/avatar polish: the longer recap first_message displaces the Prof. Didier avatar / "Your AI Mentor" header in the card. Adjust card layout to accommodate richer text. (Found during Step 2A live test.)
+- Recap i18n alignment: get-student-recap returns English on a Spanish UI (preferred_language path falls back to en; only en/es/fr templated). Align recap language with UI language. This is Build-order step 9.
