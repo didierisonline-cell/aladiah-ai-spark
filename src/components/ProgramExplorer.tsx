@@ -250,14 +250,6 @@ export const ProgramExplorer = ({ program, onClose }: Props) => {
                   </div>
                 </div>
 
-                {/* Intro offer strip */}
-                <div style={{ background: DS.gd, border: `1px solid ${DS.gb}`, borderRadius: '.45rem', padding: '.65rem 1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '.6rem' }}>
-                  <span style={{ fontSize: 14 }}>⚡</span>
-                  <span style={{ fontSize: 12, color: DS.fg }}>
-                    <strong style={{ color: DS.gold }}>First 3 months at $59.99/mo</strong> — save $120. No contracts.
-                  </span>
-                </div>
-
                 <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '.6rem' }}>
                   <button
                     onClick={handleSubscribe}
