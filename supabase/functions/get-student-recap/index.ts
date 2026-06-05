@@ -195,15 +195,22 @@ serve(async (req) => {
       return s;
     })();
 
-    // ---- Competency: cross-program learning-profile row (course_id IS NULL) ----
-    const { data: learning } = await supabase
-      .from("student_learning_profiles")
-      .select("weak_areas, strong_areas")
-      .eq("user_id", userId)
-      .is("course_id", null)
-      .maybeSingle();
-    const weakAreas = (learning?.weak_areas as unknown[]) ?? [];
-    const strongAreas = (learning?.strong_areas as unknown[]) ?? [];
+    // ---- Competency: PER-PROGRAM learning-profile row (course_id = free_course_id).
+    //      Per-program entries carry human-readable `topic` labels (SLUG_LABELS); the
+    //      cross-program (course_id IS NULL) row only has raw Axis-2 keys. Skip the
+    //      query entirely if the student has no free_course_id (return empty areas). ----
+    let weakAreas: unknown[] = [];
+    let strongAreas: unknown[] = [];
+    if (profile?.free_course_id) {
+      const { data: learning } = await supabase
+        .from("student_learning_profiles")
+        .select("weak_areas, strong_areas")
+        .eq("user_id", userId)
+        .eq("course_id", profile.free_course_id)
+        .maybeSingle();
+      weakAreas = (learning?.weak_areas as unknown[]) ?? [];
+      strongAreas = (learning?.strong_areas as unknown[]) ?? [];
+    }
 
     // ---- Points (graceful if RLS hides them) ----
     const { data: pointsRows } = await supabase
