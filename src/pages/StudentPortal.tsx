@@ -390,6 +390,20 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
   const userName = user?.email?.split('@')[0] || 'Student';
   const displayName = userName.length > 12 ? userName.slice(0, 12) : userName;
   const initials = (userName[0] || 'A').toUpperCase() + (userName[1] || '').toUpperCase();
+
+  // Step 3 (text-only): mode-aware mentor-card copy. Falls back to displayName + the
+  // generic greeting while the recap is still loading (recap === null). No voice.
+  const recapName = recap?.student_name || displayName;
+  const modeGreeting =
+    recap?.mode === 'onboarding' ? T('prof_greet_onboarding') :
+    recap?.mode === 'daily_briefing' ? T('prof_greet_daily') :
+    recap?.mode === 'upgrade_coach' ? T('prof_greet_upgrade') :
+    T('prof_greeting');
+  const modeRecLabel =
+    recap?.mode === 'onboarding' ? T('prof_rec_onboarding') :
+    recap?.mode === 'daily_briefing' ? T('prof_rec_daily') :
+    recap?.mode === 'upgrade_coach' ? T('prof_rec_upgrade') :
+    null;
   const topCourse = courses.find(c => c.pct > 0 && c.pct < 100) || courses[0];
   const overallPct = courses.length > 0 ? Math.round(courses.reduce((s, c) => s + c.pct, 0) / courses.length) : 0;
   const ALL_SCHOOLS = ['AI Engineering', 'AI Business', 'Governance & Risk', 'Human-AI Experience'];
@@ -775,7 +789,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
             {/* Message box */}
             <div style={{ position: 'absolute', bottom: 14, left: 14, right: 14, zIndex: 10, background: 'rgba(6,16,42,.92)', border: '1px solid rgba(59,130,246,.22)', borderRadius: 12, padding: '12px 13px', backdropFilter: 'blur(16px)', boxShadow: '0 8px 28px rgba(0,0,0,.5)' }}>
               <div style={{ fontSize: 12.5, fontWeight: 700, color: '#fff', marginBottom: 4 }}>
-                {T('prof_greeting')}, {displayName}! <span style={{ color: '#f59e0b' }}>🌟</span>
+                {modeGreeting}, {recapName}! <span style={{ color: '#f59e0b' }}>🌟</span>
               </div>
               {/* Step 2: data-driven recap (first_message) with static fallback — never blank */}
               <p style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.55, marginBottom: recap?.recommendation ? 5 : 10 }}>
@@ -783,7 +797,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               </p>
               {recap?.recommendation && (
                 <p style={{ fontSize: 11, color: '#67e8f9', fontWeight: 600, lineHeight: 1.5, marginBottom: 10 }}>
-                  → {recap.recommendation}
+                  {modeRecLabel ? `${modeRecLabel}: ` : '→ '}{recap.recommendation}
                 </p>
               )}
               <button onClick={generateProfGreeting} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, width: '100%', minHeight: 38, padding: '8px 12px', background: 'linear-gradient(90deg,#1d4ed8,#2563eb)', border: 'none', borderRadius: 9, color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 0 20px rgba(37,99,235,.38)' }}>
