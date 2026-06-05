@@ -405,6 +405,16 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
     recap?.mode === 'upgrade_coach' ? T('prof_rec_upgrade') :
     null;
   const topCourse = courses.find(c => c.pct > 0 && c.pct < 100) || courses[0];
+  // "Your Next Action" source: prefer the student's actually-selected program
+  // (recap.current_course) over topCourse's courses[0] fallback. No new fetch —
+  // if the selected program matches a loaded `courses` entry, reuse its real
+  // progress (done/total/pct); otherwise render title-only (no fabricated numbers).
+  const recapCourse = recap?.current_course;
+  const recapCourseProg = recapCourse?.id ? courses.find((c: any) => c.id === recapCourse.id) : null;
+  const nextActionCourse = recapCourse?.id
+    ? { id: recapCourse.id, title: recapCourse.title || recapCourseProg?.title || '', prog: recapCourseProg }
+    : (topCourse ? { id: topCourse.id, title: topCourse.title, prog: topCourse } : null);
+  const nextActionHasProgress = !!(nextActionCourse?.prog && (nextActionCourse.prog.total ?? 0) > 0);
   const overallPct = courses.length > 0 ? Math.round(courses.reduce((s, c) => s + c.pct, 0) / courses.length) : 0;
   const ALL_SCHOOLS = ['AI Engineering', 'AI Business', 'Governance & Risk', 'Human-AI Experience'];
   const schoolCourses = courses.filter(c => c.school === activeSchool);
@@ -584,18 +594,22 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                 <span style={{ fontSize: 14, fontWeight: 800 }}>{T('your_next_action')}</span>
                 <span style={{ fontSize: 11, color: '#475569' }}>{T('fastest_path')}</span>
               </div>
-              {topCourse ? (
+              {nextActionCourse ? (
                 <div style={{ display: 'grid', gridTemplateColumns: '50px 1fr 56px 115px', gap: 14, alignItems: 'center', padding: '16px 18px', background: 'linear-gradient(90deg,rgba(49,68,150,.38),rgba(10,20,60,.55))', border: '1px solid rgba(99,102,241,.18)', borderRadius: 13 }}>
                   <div style={{ width: 48, height: 48, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'radial-gradient(#7c3aed,#1d2472)', boxShadow: '0 0 22px rgba(124,58,237,.55)', fontSize: 22 }}>☁️</div>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 3 }}>{T('continue')}: {topCourse.title}</div>
-                    <div style={{ fontSize: 11, color: '#64748b', marginBottom: 9 }}>{topCourse.done}/{topCourse.total} {T('lessons')}</div>
-                    <div style={{ height: 5, background: 'rgba(255,255,255,.08)', borderRadius: 99, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${topCourse.pct}%`, background: 'linear-gradient(90deg,#6366f1,#818cf8)', borderRadius: 99 }} />
-                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 3 }}>{T('continue')}: {nextActionCourse.title}</div>
+                    {nextActionHasProgress && (
+                      <>
+                        <div style={{ fontSize: 11, color: '#64748b', marginBottom: 9 }}>{nextActionCourse.prog.done}/{nextActionCourse.prog.total} {T('lessons')}</div>
+                        <div style={{ height: 5, background: 'rgba(255,255,255,.08)', borderRadius: 99, overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: `${nextActionCourse.prog.pct}%`, background: 'linear-gradient(90deg,#6366f1,#818cf8)', borderRadius: 99 }} />
+                        </div>
+                      </>
+                    )}
                   </div>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: '#818cf8', textAlign: 'center' }}>{topCourse.pct}%</div>
-                  <button onClick={() => navigate(`/portal/course/${topCourse.id}`)} style={{ background: 'linear-gradient(90deg,#4f8ef7,#6366f1)', border: 'none', borderRadius: 10, color: '#fff', fontSize: 13, fontWeight: 700, padding: 12, cursor: 'pointer', fontFamily: 'inherit', width: '100%', boxShadow: '0 0 20px rgba(79,142,247,.4)' }}>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: '#818cf8', textAlign: 'center' }}>{nextActionHasProgress ? `${nextActionCourse.prog.pct}%` : ''}</div>
+                  <button onClick={() => navigate(`/portal/course/${nextActionCourse.id}`)} style={{ background: 'linear-gradient(90deg,#4f8ef7,#6366f1)', border: 'none', borderRadius: 10, color: '#fff', fontSize: 13, fontWeight: 700, padding: 12, cursor: 'pointer', fontFamily: 'inherit', width: '100%', boxShadow: '0 0 20px rgba(79,142,247,.4)' }}>
                     {T('continue')} →
                   </button>
                 </div>
