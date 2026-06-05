@@ -52,7 +52,7 @@ const CREED_STANZAS: string[][] = [
 const STORAGE_KEY = 'aladiah_creed_ack_date';
 
 /** Returns today's LOCAL date as YYYY-MM-DD (uses student's timezone). */
-const getLocalDateString = (): string => {
+export const getLocalDateString = (): string => {
   return new Date().toLocaleDateString('en-CA'); // en-CA always gives ISO YYYY-MM-DD
 };
 

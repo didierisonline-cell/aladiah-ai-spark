@@ -6,7 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { useProgress } from '@/hooks/useProgress';
 import { useSubscription } from '@/hooks/useSubscription';
-import { CreedAcknowledgmentGate, shouldShowCreedGate } from '@/components/CreedAcknowledgmentGate';
+import { CreedAcknowledgmentGate, shouldShowCreedGate, getLocalDateString } from '@/components/CreedAcknowledgmentGate';
 import CourseSelectionGate from '@/components/CourseSelectionGate';
 import { StreakDetailModal, PointsDetailModal, LabsDetailModal } from '@/components/portal/StatDetailModals';
 import globeBg from '@/assets/global-network-bg.png';
@@ -210,15 +210,23 @@ export default function StudentPortal() {
           return;
         }
         setRecap(data ?? null);
-        // Once-per-day client gate (mirrors CreedAcknowledgmentGate's local date-string idiom).
-        // Text always renders; this only marks "shown today" for a future auto-speak step.
-        // Fail-open if storage is blocked. Does NOT write last_prof_didier_briefing_at (no DB writer this step).
+        // Login/briefing-state WRITER (client-side, text-only). The recap above was computed
+        // server-side from the PREVIOUS last_login_at, so it is now safe to advance the
+        // timestamps. Gate to ONCE PER CALENDAR DAY via the existing prof_briefing_shown_<uid>
+        // key (now an actual guard) so recap re-fetches never erase the "since last login" gap.
+        // Order matters: this runs AFTER setRecap. Non-blocking + fail-open — never blocks render.
         try {
-          const d = new Date();
-          const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          const today = getLocalDateString();
           const key = `prof_briefing_shown_${user.id}`;
-          if (localStorage.getItem(key) !== today) localStorage.setItem(key, today);
-        } catch { /* storage blocked — fail open */ }
+          if (localStorage.getItem(key) !== today) {
+            const nowIso = new Date().toISOString();
+            supabase.from('profiles')
+              .update({ last_login_at: nowIso, last_prof_didier_briefing_at: nowIso })
+              .eq('user_id', user.id)
+              .then(({ error }) => { if (error) console.error('briefing-state write failed:', error); });
+            localStorage.setItem(key, today);
+          }
+        } catch (e) { console.error('briefing-state gate error:', e); }
       } catch (e) {
         if (!cancelled) { console.error('get-student-recap exception:', e); setRecap(null); }
       }
