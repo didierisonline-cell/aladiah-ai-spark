@@ -80,6 +80,7 @@ export default function ChapterView() {
   const [convStatus, setConvStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState<{ role: 'user' | 'agent'; message: string }[]>([]);
+  const [recapComplete, setRecapComplete] = useState(false); // UI-only: agent finished the oral recap (sentinel). Never navigates.
   const [duration, setDuration] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const keepAliveRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -104,12 +105,24 @@ export default function ChapterView() {
     },
     onMessage: ({ message, source }: { message: string; source: string }) => {
       // Strip ElevenLabs persona XML tags e.g. <LaSean Pickens (EN/ES)>...</LaSean Pickens (EN/ES)>
-      const cleaned = message.replace(/<[^>]+>/g, '').trim();
+      let cleaned = message.replace(/<[^>]+>/g, '').trim();
+      // Recap-complete sentinel: the prompt has the agent emit 'aladiah-module-complete-confirmed'
+      // after the 5th recap question. STRIP it so the student never sees the raw tag (the warm
+      // closing sentence in the same message still shows).
+      const SENTINEL = 'aladiah-module-complete-confirmed';
+      const sawSentinel = source === 'ai' && cleaned.toLowerCase().includes(SENTINEL);
+      if (sawSentinel) cleaned = cleaned.replace(new RegExp(SENTINEL, 'ig'), '').trim();
       if (cleaned) setTranscript(p => [...p, { role: source === 'ai' ? 'agent' : 'user', message: cleaned }]);
-      // Spec A: the voice agent TEACHES ONLY. It must not navigate, unlock the next
-      // module, or trigger module completion. Module completion now happens solely via
-      // the chapter_end quiz pass (see <Quiz onComplete>). Auto-end only on an explicit
-      // goodbye — this closes the mic session and never navigates.
+      // Spec A boundary: the voice agent TEACHES ONLY. It must NOT navigate, unlock the next
+      // module, or trigger module completion (that stays the chapter_end quiz pass). The sentinel
+      // only (a) flags recap-complete for a UI cue and (b) ends the mic session gracefully —
+      // it NEVER calls navigate().
+      if (sawSentinel) {
+        setRecapComplete(true);
+        // End AFTER the spoken closing finishes (~3.5s) so we don't clip the goodbye.
+        setTimeout(() => conversation.endSession().catch(() => { }), 3500);
+      }
+      // Existing fallback: also end on an explicit spoken goodbye.
       if (source === 'ai' && cleaned.toLowerCase().includes('goodbye')) {
         setTimeout(() => conversation.endSession().catch(() => { }), 1500);
       }
@@ -126,6 +139,7 @@ export default function ChapterView() {
     if (isStartingRef.current || convStatus !== 'idle') return;
     isStartingRef.current = true;
     setTranscript([]);
+    setRecapComplete(false);
     setDuration(0);
     try {
       // Request mic BEFORE setting connecting state to avoid Safari blank screen
@@ -237,6 +251,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       if (timerRef.current) clearInterval(timerRef.current);
       setConvStatus('idle');
       setTranscript([]);
+      setRecapComplete(false);
       setDuration(0);
     }
     activeLessonIdRef.current = newId;
@@ -696,6 +711,11 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               Lesson → Continue → next lesson; after the last lesson → chapter_end quiz. */}
           {currentLesson && (
             <div style={{ marginBottom: 32 }}>
+              {recapComplete && (
+                <div style={{ textAlign: 'center', marginBottom: 10, fontSize: 13, fontWeight: 700, color: '#22c55e', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                  <CheckCircle size={15} /> {t('chapter.recap_complete')}
+                </div>
+              )}
               <button onClick={handleContinue} style={{ width: '100%', padding: '16px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#f59e0b,#d97706)', color: '#0a0f1e', fontSize: 15, fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                 {continueIsToQuiz ? 'Continue to Module Quiz' : 'Continue to Next Lesson'}
                 <ChevronRight size={18} />
