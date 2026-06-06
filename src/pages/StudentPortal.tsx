@@ -6,7 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { useProgress } from '@/hooks/useProgress';
 import { useSubscription } from '@/hooks/useSubscription';
-import { CreedAcknowledgmentGate, shouldShowCreedGate } from '@/components/CreedAcknowledgmentGate';
+import { CreedAcknowledgmentGate, shouldShowCreedGate, getLocalDateString } from '@/components/CreedAcknowledgmentGate';
 import CourseSelectionGate from '@/components/CourseSelectionGate';
 import { StreakDetailModal, PointsDetailModal, LabsDetailModal } from '@/components/portal/StatDetailModals';
 import globeBg from '@/assets/global-network-bg.png';
@@ -150,6 +150,8 @@ export default function StudentPortal() {
   const [profChat, setProfChat] = useState(false);
   const [profGreeting, setProfGreeting] = useState<string>('');
   const [profLoading, setProfLoading] = useState(false);
+  const [profileRow, setProfileRow] = useState<any | null>(null); // extended profiles row (recap-state cols); consumers (mute/DB day-gate) land in a follow-up
+  const [recap, setRecap] = useState<any | null>(null);           // get-student-recap response (Option-A contract); text-only this step
   const [talentScore] = useState(612);
   const [hoursLeft] = useState(412);
 
@@ -160,22 +162,77 @@ export default function StudentPortal() {
   // string the gate + ChapterView use), NOT useSubscription's t1/t2/t3. courseSelectionLoaded
   // holds rendering until this resolves so the dashboard never flashes before the gate.
   useEffect(() => {
-    if (!user) { setCourseSelectionLoaded(true); return; }
+    // While auth is still resolving (user null), keep the flash guard BLOCKING — do not mark
+    // loaded yet, so the portal can't render before the profiles fetch. (Previously this branch
+    // set courseSelectionLoaded(true), letting the dashboard render on cold loads and stranding
+    // starters past the gate.) courseSelectionLoaded is resolved only after the fetch below.
+    if (!user) return;
     let cancelled = false;
     (async () => {
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
-        .select('tier, free_course_id')
+        .select('tier, free_course_id, onboarding_completed, last_login_at, last_prof_didier_briefing_at, prof_didier_voice_muted, free_course_completed')
         .eq('user_id', user.id)
         .maybeSingle();
       if (cancelled) return;
-      if (profile?.tier === 'starter' && !profile?.free_course_id) {
-        setNeedsCourseSelection(true);
+      if (error) {
+        // Don't swallow — surface it. Still resolve loaded so the portal isn't stuck blank.
+        console.error('Course-selection trigger: profiles fetch failed:', error);
+      } else {
+        // Store the extended row so the recap-state columns are available client-side
+        // (mute short-circuit + DB day-gate writer are follow-ups). Reuses this single
+        // profiles read — no second/parallel fetch.
+        setProfileRow(profile);
+        if (profile?.tier === 'starter' && !profile?.free_course_id) {
+          setNeedsCourseSelection(true);
+        }
       }
       setCourseSelectionLoaded(true);
     })();
     return () => { cancelled = true; };
-  }, [user]);
+    // Key on user?.id (stable) rather than the user object, so identity churn across renders
+    // doesn't re-run the effect and cancel the in-flight fetch before it sets the gate.
+  }, [user?.id]);
+
+  // Prof. Didier recap (Step 2, TEXT-ONLY): fetch the Option-A briefing via the JWT-scoped
+  // edge function (auto-attaches the session token) and render it in the mentor card. On
+  // error, the card falls back to its static text — never blank. No voice here.
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('get-student-recap', { body: {} });
+        if (cancelled) return;
+        if (error) {
+          console.error('get-student-recap failed:', error);
+          setRecap(null); // fall back to the static card text
+          return;
+        }
+        setRecap(data ?? null);
+        // Login/briefing-state WRITER (client-side, text-only). The recap above was computed
+        // server-side from the PREVIOUS last_login_at, so it is now safe to advance the
+        // timestamps. Gate to ONCE PER CALENDAR DAY via the existing prof_briefing_shown_<uid>
+        // key (now an actual guard) so recap re-fetches never erase the "since last login" gap.
+        // Order matters: this runs AFTER setRecap. Non-blocking + fail-open — never blocks render.
+        try {
+          const today = getLocalDateString();
+          const key = `prof_briefing_shown_${user.id}`;
+          if (localStorage.getItem(key) !== today) {
+            const nowIso = new Date().toISOString();
+            supabase.from('profiles')
+              .update({ last_login_at: nowIso, last_prof_didier_briefing_at: nowIso })
+              .eq('user_id', user.id)
+              .then(({ error }) => { if (error) console.error('briefing-state write failed:', error); });
+            localStorage.setItem(key, today);
+          }
+        } catch (e) { console.error('briefing-state gate error:', e); }
+      } catch (e) {
+        if (!cancelled) { console.error('get-student-recap exception:', e); setRecap(null); }
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [user?.id]);
 
   // Load all student data
   useEffect(() => {
@@ -341,7 +398,31 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
   const userName = user?.email?.split('@')[0] || 'Student';
   const displayName = userName.length > 12 ? userName.slice(0, 12) : userName;
   const initials = (userName[0] || 'A').toUpperCase() + (userName[1] || '').toUpperCase();
+
+  // Step 3 (text-only): mode-aware mentor-card copy. Falls back to displayName + the
+  // generic greeting while the recap is still loading (recap === null). No voice.
+  const recapName = recap?.student_name || displayName;
+  const modeGreeting =
+    recap?.mode === 'onboarding' ? T('prof_greet_onboarding') :
+    recap?.mode === 'daily_briefing' ? T('prof_greet_daily') :
+    recap?.mode === 'upgrade_coach' ? T('prof_greet_upgrade') :
+    T('prof_greeting');
+  const modeRecLabel =
+    recap?.mode === 'onboarding' ? T('prof_rec_onboarding') :
+    recap?.mode === 'daily_briefing' ? T('prof_rec_daily') :
+    recap?.mode === 'upgrade_coach' ? T('prof_rec_upgrade') :
+    null;
   const topCourse = courses.find(c => c.pct > 0 && c.pct < 100) || courses[0];
+  // "Your Next Action" source: prefer the student's actually-selected program
+  // (recap.current_course) over topCourse's courses[0] fallback. No new fetch —
+  // if the selected program matches a loaded `courses` entry, reuse its real
+  // progress (done/total/pct); otherwise render title-only (no fabricated numbers).
+  const recapCourse = recap?.current_course;
+  const recapCourseProg = recapCourse?.id ? courses.find((c: any) => c.id === recapCourse.id) : null;
+  const nextActionCourse = recapCourse?.id
+    ? { id: recapCourse.id, title: recapCourse.title || recapCourseProg?.title || '', prog: recapCourseProg }
+    : (topCourse ? { id: topCourse.id, title: topCourse.title, prog: topCourse } : null);
+  const nextActionHasProgress = !!(nextActionCourse?.prog && (nextActionCourse.prog.total ?? 0) > 0);
   const overallPct = courses.length > 0 ? Math.round(courses.reduce((s, c) => s + c.pct, 0) / courses.length) : 0;
   const ALL_SCHOOLS = ['AI Engineering', 'AI Business', 'Governance & Risk', 'Human-AI Experience'];
   const schoolCourses = courses.filter(c => c.school === activeSchool);
@@ -521,18 +602,22 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                 <span style={{ fontSize: 14, fontWeight: 800 }}>{T('your_next_action')}</span>
                 <span style={{ fontSize: 11, color: '#475569' }}>{T('fastest_path')}</span>
               </div>
-              {topCourse ? (
+              {nextActionCourse ? (
                 <div style={{ display: 'grid', gridTemplateColumns: '50px 1fr 56px 115px', gap: 14, alignItems: 'center', padding: '16px 18px', background: 'linear-gradient(90deg,rgba(49,68,150,.38),rgba(10,20,60,.55))', border: '1px solid rgba(99,102,241,.18)', borderRadius: 13 }}>
                   <div style={{ width: 48, height: 48, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'radial-gradient(#7c3aed,#1d2472)', boxShadow: '0 0 22px rgba(124,58,237,.55)', fontSize: 22 }}>☁️</div>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 3 }}>{T('continue')}: {topCourse.title}</div>
-                    <div style={{ fontSize: 11, color: '#64748b', marginBottom: 9 }}>{topCourse.done}/{topCourse.total} {T('lessons')}</div>
-                    <div style={{ height: 5, background: 'rgba(255,255,255,.08)', borderRadius: 99, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${topCourse.pct}%`, background: 'linear-gradient(90deg,#6366f1,#818cf8)', borderRadius: 99 }} />
-                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 3 }}>{T('continue')}: {nextActionCourse.title}</div>
+                    {nextActionHasProgress && (
+                      <>
+                        <div style={{ fontSize: 11, color: '#64748b', marginBottom: 9 }}>{nextActionCourse.prog.done}/{nextActionCourse.prog.total} {T('lessons')}</div>
+                        <div style={{ height: 5, background: 'rgba(255,255,255,.08)', borderRadius: 99, overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: `${nextActionCourse.prog.pct}%`, background: 'linear-gradient(90deg,#6366f1,#818cf8)', borderRadius: 99 }} />
+                        </div>
+                      </>
+                    )}
                   </div>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: '#818cf8', textAlign: 'center' }}>{topCourse.pct}%</div>
-                  <button onClick={() => navigate(`/portal/course/${topCourse.id}`)} style={{ background: 'linear-gradient(90deg,#4f8ef7,#6366f1)', border: 'none', borderRadius: 10, color: '#fff', fontSize: 13, fontWeight: 700, padding: 12, cursor: 'pointer', fontFamily: 'inherit', width: '100%', boxShadow: '0 0 20px rgba(79,142,247,.4)' }}>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: '#818cf8', textAlign: 'center' }}>{nextActionHasProgress ? `${nextActionCourse.prog.pct}%` : ''}</div>
+                  <button onClick={() => navigate(`/portal/course/${nextActionCourse.id}`)} style={{ background: 'linear-gradient(90deg,#4f8ef7,#6366f1)', border: 'none', borderRadius: 10, color: '#fff', fontSize: 13, fontWeight: 700, padding: 12, cursor: 'pointer', fontFamily: 'inherit', width: '100%', boxShadow: '0 0 20px rgba(79,142,247,.4)' }}>
                     {T('continue')} →
                   </button>
                 </div>
@@ -726,9 +811,17 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
             {/* Message box */}
             <div style={{ position: 'absolute', bottom: 14, left: 14, right: 14, zIndex: 10, background: 'rgba(6,16,42,.92)', border: '1px solid rgba(59,130,246,.22)', borderRadius: 12, padding: '12px 13px', backdropFilter: 'blur(16px)', boxShadow: '0 8px 28px rgba(0,0,0,.5)' }}>
               <div style={{ fontSize: 12.5, fontWeight: 700, color: '#fff', marginBottom: 4 }}>
-                {T('prof_greeting')}, {displayName}! <span style={{ color: '#f59e0b' }}>🌟</span>
+                {modeGreeting}, {recapName}! <span style={{ color: '#f59e0b' }}>🌟</span>
               </div>
-              <p style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.55, marginBottom: 10 }}>{T('prof_analyzed')}</p>
+              {/* Step 2: data-driven recap (first_message) with static fallback — never blank */}
+              <p style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.55, marginBottom: recap?.recommendation ? 5 : 10 }}>
+                {recap?.first_message || T('prof_analyzed')}
+              </p>
+              {recap?.recommendation && (
+                <p style={{ fontSize: 11, color: '#67e8f9', fontWeight: 600, lineHeight: 1.5, marginBottom: 10 }}>
+                  {modeRecLabel ? `${modeRecLabel}: ` : '→ '}{recap.recommendation}
+                </p>
+              )}
               <button onClick={generateProfGreeting} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, width: '100%', minHeight: 38, padding: '8px 12px', background: 'linear-gradient(90deg,#1d4ed8,#2563eb)', border: 'none', borderRadius: 9, color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 0 20px rgba(37,99,235,.38)' }}>
                 <span style={{ textAlign: 'left', lineHeight: 1.2 }}>🎙️ {T('talk_prof')}</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
