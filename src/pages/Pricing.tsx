@@ -13,8 +13,7 @@ const DS = {
 const INCLUDES = ['All 4 Schools','30+ AI Programs','Prof. Didier AI','Talent Score™','Aladiah Certified™','Placement Network','Enterprise Simulation','20+ Languages'];
 
 const FAQ = [
-  { q:'Can I cancel anytime?', a:'Yes. Month-to-month subscribers can cancel at any time with no penalty. Upfront plans (3-month and annual) are non-refundable after the first 7 days, but you retain access for the full paid period.' },
-  { q:'What happens after the 3-month intro pricing?', a:'After your first 3 months at $59.99/month, your subscription automatically continues at the standard $99.99/month rate. You\'ll receive an email reminder 7 days before the rate changes.' },
+  { q:'Can I cancel anytime?', a:'Yes. Your membership is month-to-month and can be canceled at any time.' },
   { q:'Is everything really included?', a:'Yes. All 4 Schools, all 30+ programs, Prof. Didier AI (unlimited sessions), Talent Score™, all Aladiah Certified™ levels, Enterprise Simulation, Career Tools, Portfolio builder, Resources library, and the Placement Network. One price.' },
   { q:'Do you offer scholarships?', a:'Yes. Aladiah Management enterprise contracts fund a scholarship pool for Global South students. Government and NGO bulk licensing also available.' },
   { q:'What languages is the platform available in?', a:'Currently 21 languages: English, Spanish, French, German, Chinese, Arabic, Japanese, Portuguese, Hindi, Korean, Italian, Russian, Dutch, Polish, Turkish, Kiswahili, Yorùbá, Hausa, Igbo, Vietnamese, and Thai — with more coming.' },
@@ -34,7 +33,7 @@ export default function Pricing() {
         <section style={{ padding: '5rem 0 3rem', background: 'linear-gradient(160deg,#0a1628 0%,#0d1f3c 60%,#0a1220 100%)', borderBottom: `1px solid ${DS.border}` }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem' }}>
             <div style={{ display: 'inline-flex', fontSize: 11, fontWeight: 600, padding: '.28rem .75rem', borderRadius: 999, background: DS.gd, border: `1px solid ${DS.gb}`, color: DS.gold, marginBottom: '1rem' }}>💳 Simple Pricing</div>
-            <h1 style={{ fontSize: 'clamp(2.2rem,4vw,3.2rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.5px', marginBottom: '1rem' }}>One Program.<br /><span style={{ color: DS.gold }}>Three Ways to Pay.</span></h1>
+            <h1 style={{ fontSize: 'clamp(2.2rem,4vw,3.2rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.5px', marginBottom: '1rem' }}>One Platform.<br />One Price.<br /><span style={{ color: DS.gold }}>Unlimited Growth.</span></h1>
             <p style={{ fontSize: '1rem', color: DS.fm, maxWidth: 560, lineHeight: 1.72 }}>Full access to all 4 schools, 30+ programs, Prof. Didier AI, Talent Score™, Aladiah Certified™, and the global placement network. No tiers. No hidden fees.</p>
           </div>
         </section>
@@ -57,45 +56,9 @@ export default function Pricing() {
               </div>
             </div>
 
-            {/* 3 Plans */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 0, border: `1px solid ${DS.border}`, borderRadius: '.75rem', overflow: 'hidden', marginBottom: '1.25rem' }}>
-              {/* Monthly */}
-              <div style={{ background: DS.card, padding: '2.1rem 1.75rem', borderRight: `1px solid ${DS.border}` }}>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase' as const, color: DS.fm, marginBottom: '.6rem' }}>Month-to-Month</div>
-                <div style={{ fontSize: '2.2rem', fontWeight: 800, color: DS.fg, lineHeight: 1, marginBottom: '.2rem' }}>$99<span style={{ fontSize: '1rem', color: DS.fm, fontWeight: 400 }}>.99</span></div>
-                <div style={{ fontSize: 11, color: DS.fm, marginBottom: '.4rem' }}>per month · billed monthly</div>
-                <div style={{ fontSize: 12, color: DS.fm, marginBottom: '1.1rem' }}>Maximum flexibility. Start today, cancel anytime.</div>
-                <div style={{ background: 'rgba(255,255,255,.03)', border: `1px solid rgba(30,45,71,.6)`, borderRadius: '.45rem', padding: '.7rem', marginBottom: '1.1rem', fontSize: 12, color: DS.fm }}>No commitment. No penalty. Full access from day one.</div>
-                <button onClick={() => navigate('/auth')} style={{ width: '100%', padding: '.68rem', fontSize: 13, fontWeight: 700, borderRadius: '.75rem', background: 'transparent', color: DS.fg, border: `1px solid ${DS.border}`, cursor: 'pointer' }}>Start Monthly →</button>
-              </div>
-              {/* 3-Month Best Start */}
-              <div style={{ background: '#121F38', borderTop: `2px solid ${DS.gold}`, padding: '2.1rem 1.75rem', borderRight: `1px solid ${DS.border}`, position: 'relative' as const }}>
-                <div style={{ position: 'absolute' as const, top: 0, right: '1.4rem', background: DS.gold, color: '#0B111E', fontSize: 9, fontWeight: 800, letterSpacing: 1, textTransform: 'uppercase' as const, padding: '3px 10px', borderRadius: '0 0 6px 6px' }}>Best Start</div>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase' as const, color: DS.gold, marginBottom: '.6rem' }}>3-Month Upfront</div>
-                <div style={{ fontSize: '2.2rem', fontWeight: 800, color: DS.gold, lineHeight: 1, marginBottom: '.1rem' }}>$59<span style={{ fontSize: '1rem', color: DS.fm, fontWeight: 400 }}>.99</span></div>
-                <div style={{ fontSize: 11, color: DS.fm, marginBottom: '.4rem' }}>per month · first 3 months only</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '.45rem', marginBottom: '1.1rem' }}>
-                  <span style={{ fontSize: 12, color: DS.fm, textDecoration: 'line-through' }}>$299.97</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: DS.fg }}>$179.97 total</span>
-                  <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 999, background: DS.grd, color: DS.green, border: '1px solid rgba(34,201,138,.28)' }}>Save $120</span>
-                </div>
-                <div style={{ background: 'rgba(245,184,26,.06)', border: `1px solid ${DS.gb}`, borderRadius: '.45rem', padding: '.7rem', marginBottom: '1.1rem', fontSize: 12, color: DS.fm }}>Pay 3 months upfront at <strong style={{ color: DS.gold }}>$59.99/month</strong>. After month 3, continues at $99.99/month.</div>
-                <button onClick={() => navigate('/auth')} style={{ width: '100%', padding: '.68rem', fontSize: 13, fontWeight: 700, borderRadius: '.75rem', background: DS.gold, color: '#0B111E', border: 'none', cursor: 'pointer' }}>Start for $179.97 →</button>
-                <div style={{ fontSize: 10, textAlign: 'center' as const, color: DS.fm, marginTop: '.55rem' }}>Cancel anytime · No contracts</div>
-              </div>
-              {/* Annual */}
-              <div style={{ background: DS.card, padding: '2.1rem 1.75rem' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase' as const, color: DS.fm, marginBottom: '.6rem' }}>Annual Upfront</div>
-                <div style={{ fontSize: '2.2rem', fontWeight: 800, color: DS.fg, lineHeight: 1, marginBottom: '.1rem' }}>$79<span style={{ fontSize: '1rem', color: DS.fm, fontWeight: 400 }}>.99</span></div>
-                <div style={{ fontSize: 11, color: DS.fm, marginBottom: '.4rem' }}>per month · billed $959.90/year</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '.45rem', marginBottom: '1.1rem' }}>
-                  <span style={{ fontSize: 12, color: DS.fm, textDecoration: 'line-through' }}>$1,199.88</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: DS.fg }}>$959.90 total</span>
-                  <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 999, background: DS.bd, color: DS.blue, border: `1px solid ${DS.bb}` }}>20% off</span>
-                </div>
-                <div style={{ background: 'rgba(255,255,255,.03)', border: `1px solid rgba(30,45,71,.6)`, borderRadius: '.45rem', padding: '.7rem', marginBottom: '1.1rem', fontSize: 12, color: DS.fm }}>Pay full year upfront. Save <strong style={{ color: DS.fg }}>$239.98</strong>. Best for committed learners on the certification path.</div>
-                <button onClick={() => navigate('/auth')} style={{ width: '100%', padding: '.68rem', fontSize: 13, fontWeight: 700, borderRadius: '.75rem', background: 'transparent', color: DS.fg, border: `1px solid ${DS.border}`, cursor: 'pointer' }}>Save 20% Annually →</button>
-              </div>
+            {/* Primary CTA — single flat $99.99/mo plan (price + includes render in the All-Access badge above) */}
+            <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+              <button onClick={() => navigate('/auth')} style={{ padding: '.85rem 2.2rem', fontSize: 14, fontWeight: 700, borderRadius: '.75rem', background: DS.gold, color: '#0B111E', border: 'none', cursor: 'pointer' }}>Start Your Transformation →</button>
             </div>
 
             {/* Free & Enterprise notes */}

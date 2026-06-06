@@ -13,7 +13,7 @@ import Header from '@/components/Header';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const TIERS = [
-  { id: 'accelerator', key: 't2', price: 59.99, priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || "price_1TMsDL0Ctflq2xPfzJsrXzy1", name: 'All-Access Pass' },
+  { id: 'accelerator', key: 't2', price: 99.99, priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || "price_1TW7U21wgazWak4Atj7TblB3", name: 'All-Access Pass' },
 ];
 
 const Auth = () => {
@@ -282,7 +282,7 @@ const Auth = () => {
                             <Crown style={{ width: '16px', height: '16px', color: '#f59e0b' }} />
                             <span style={{ fontWeight: 700, fontSize: '14px', color: '#fff' }}>All-Access Pass</span>
                           </div>
-                          <p style={{ fontSize: '22px', fontWeight: 800, color: '#fff', margin: '0 0 2px 0' }}>$59.99</p>
+                          <p style={{ fontSize: '22px', fontWeight: 800, color: '#fff', margin: '0 0 2px 0' }}>$99.99</p>
                           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: '0 0 8px 0' }}>/month</p>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                             {['All 8 courses', 'All modules unlocked', 'Prof. Didier AI voice', 'Tools & resources', 'Certificates', 'Priority support'].map(f => (

@@ -193,7 +193,7 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
             )}
           </Button>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '10px' }}>
-            Want all 8 courses? Upgrade to All-Access Pass for $59.99/month
+            Want all 8 courses? Upgrade to All-Access Pass for $99.99/month
           </p>
           {saveError && (
             <p style={{ fontSize: '12px', color: '#f87171', marginTop: '10px' }}>{saveError}</p>

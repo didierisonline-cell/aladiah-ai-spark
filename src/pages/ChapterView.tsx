@@ -407,7 +407,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               Solo Excelencia. You proved you belong here.<br />Unlock all courses and continue your journey.
             </p>
             <div style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '14px', padding: '20px', marginBottom: '20px' }}>
-              <p style={{ fontSize: '34px', fontWeight: 800, color: '#fff', margin: '0 0 4px 0' }}>$59.99<span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>/month</span></p>
+              <p style={{ fontSize: '34px', fontWeight: 800, color: '#fff', margin: '0 0 4px 0' }}>$99.99<span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>/month</span></p>
               <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>All courses · Cancel anytime · Certificates</p>
             </div>
             <button
@@ -419,7 +419,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
                 const res = await fetch('/api/create-checkout', {
                   method: 'POST', headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
-                    priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMWZP0Ctflq2xPfNXr5r24d',
+                    priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TW7U21wgazWak4Atj7TblB3',
                     email: u.email, tier: 't2', userId: u.id,
                     successUrl: `${window.location.origin}/portal?payment=success`,
                     cancelUrl: `${window.location.origin}/portal`
@@ -431,7 +431,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               }}
               style={{ width: '100%', padding: '16px', borderRadius: '12px', background: 'linear-gradient(135deg,#f59e0b,#d97706)', border: 'none', color: '#000', fontSize: '16px', fontWeight: 800, cursor: 'pointer', marginBottom: '12px' }}
             >
-              Unlock Full Access — $59.99/month →
+              Unlock Full Access — $99.99/month →
             </button>
             <button onClick={() => navigate('/portal')} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: '12px', cursor: 'pointer' }}>
               Go back to portal

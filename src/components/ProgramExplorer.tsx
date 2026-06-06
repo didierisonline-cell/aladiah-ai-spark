@@ -70,7 +70,7 @@ export const ProgramExplorer = ({ program, onClose }: Props) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TMWZP0Ctflq2xPfNXr5r24d',
+          priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TW7U21wgazWak4Atj7TblB3',
           email: user.email,
           tier: 't2',
           userId: user.id,
@@ -248,14 +248,6 @@ export const ProgramExplorer = ({ program, onClose }: Props) => {
                     <div>All 4 schools · 30+ programs</div>
                     <div>Cancel anytime</div>
                   </div>
-                </div>
-
-                {/* Intro offer strip */}
-                <div style={{ background: DS.gd, border: `1px solid ${DS.gb}`, borderRadius: '.45rem', padding: '.65rem 1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '.6rem' }}>
-                  <span style={{ fontSize: 14 }}>⚡</span>
-                  <span style={{ fontSize: 12, color: DS.fg }}>
-                    <strong style={{ color: DS.gold }}>First 3 months at $59.99/mo</strong> — save $120. No contracts.
-                  </span>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '.6rem' }}>
