@@ -349,6 +349,15 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
     return tFunc?.title || item.title || '';
   };
 
+  // Translated lesson body: prefer translations[lang].description, fall back to
+  // the English description. Mirrors getTranscript's fallback chain so the lesson
+  // reading renders in the selected language once the translations JSONB is populated.
+  const getDescription = (item: any) => {
+    if (!item) return '';
+    const tr = item.translations?.[language];
+    return tr?.description || item.translations?.['en']?.description || item.description || '';
+  };
+
   const progress = videos.length > 0
     ? Math.round((passedQuizzes.filter(id => quizzes.some(q => q.id === id)).length / videos.length) * 100)
     : 0;
@@ -402,13 +411,13 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
         <div style={{ position: 'fixed', inset: 0, zIndex: 9999, backdropFilter: 'blur(8px)', background: 'rgba(10,15,30,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
           <div style={{ background: 'linear-gradient(135deg,#0d1b3e,#0a0f1e)', border: '2px solid rgba(245,158,11,0.5)', borderRadius: '24px', padding: '40px', maxWidth: '480px', width: '100%', textAlign: 'center', boxShadow: '0 25px 80px rgba(0,0,0,0.6)' }}>
             <div style={{ fontSize: '52px', marginBottom: '12px' }}>🎓</div>
-            <h2 style={{ fontSize: '26px', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>You Completed Module 1!</h2>
+            <h2 style={{ fontSize: '26px', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>{t('paywall.completed_title')}</h2>
             <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '24px', lineHeight: 1.6 }}>
-              Solo Excelencia. You proved you belong here.<br />Unlock all courses and continue your journey.
+              Solo Excelencia. {t('paywall.completed_l1')}<br />{t('paywall.completed_l2')}
             </p>
             <div style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '14px', padding: '20px', marginBottom: '20px' }}>
-              <p style={{ fontSize: '34px', fontWeight: 800, color: '#fff', margin: '0 0 4px 0' }}>$99.99<span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>/month</span></p>
-              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>All courses · Cancel anytime · Certificates</p>
+              <p style={{ fontSize: '34px', fontWeight: 800, color: '#fff', margin: '0 0 4px 0' }}>$99.99<span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>{t('paywall.per_month')}</span></p>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>{t('paywall.features')}</p>
             </div>
             <button
               onClick={async () => {
@@ -431,12 +440,12 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               }}
               style={{ width: '100%', padding: '16px', borderRadius: '12px', background: 'linear-gradient(135deg,#f59e0b,#d97706)', border: 'none', color: '#000', fontSize: '16px', fontWeight: 800, cursor: 'pointer', marginBottom: '12px' }}
             >
-              Unlock Full Access — $99.99/month →
+              {t('paywall.unlock_cta')}
             </button>
             <button onClick={() => navigate('/portal')} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: '12px', cursor: 'pointer' }}>
-              Go back to portal
+              {t('paywall.go_back')}
             </button>
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '12px' }}>🔒 Secure payment via Stripe</p>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '12px' }}>🔒 {t('paywall.secure')}</p>
           </div>
         </div>
       )}
@@ -515,9 +524,9 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               </div>
             )}
 
-            {/* Description */}
-            {currentLesson?.description && (
-              <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.7, marginBottom: 24 }}>{currentLesson.description}</p>
+            {/* Description (translated body) */}
+            {getDescription(currentLesson) && (
+              <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.7, marginBottom: 24 }}>{getDescription(currentLesson)}</p>
             )}
 
             {/* ── LESSON TRANSCRIPT ── */}
@@ -591,7 +600,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
                   }
                 </div>
                 <p style={{ margin: '8px 0 0', fontSize: 11, color: '#475569', textAlign: 'right' }}>
-                  Prof. Didier will teach this content — you can also read along
+                  {t('chapter.read_along')}
                 </p>
               </div>
             )}
@@ -602,18 +611,18 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
           <div style={{ marginBottom: 32 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
               <div style={{ width: 3, height: 18, borderRadius: 2, background: 'linear-gradient(135deg,#1d4ed8,#7c3aed)' }} />
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>Visual Breakdown</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>{t('chapter.visual_breakdown')}</span>
             </div>
             {visualsLoading && (
               <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(96,165,250,0.12)', borderRadius: 14, padding: '28px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
                 <div style={{ width: 18, height: 18, border: '2px solid #1e40af', borderTop: '2px solid #60a5fa', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-                <span style={{ fontSize: 13, color: '#475569' }}>Generating visual diagrams...</span>
+                <span style={{ fontSize: 13, color: '#475569' }}>{t('chapter.generating_visuals')}</span>
               </div>
             )}
             {lessonVisuals.map((svg, i) => (
               <div key={i} style={{ marginBottom: 16, borderRadius: 12, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 2px 16px rgba(0,0,0,0.15)' }}>
                 <div style={{ background: '#f8fafc', padding: '6px 14px', borderBottom: '1px solid #e2e8f0' }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase' as const, letterSpacing: '.06em' }}>Diagram {i + 1}</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase' as const, letterSpacing: '.06em' }}>{t('chapter.diagram')} {i + 1}</span>
                 </div>
                 <div style={{ background: '#fff', padding: '12px', display: 'flex', justifyContent: 'center' }} dangerouslySetInnerHTML={{ __html: svg }} />
               </div>
@@ -631,7 +640,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9' }}>Prof. Didier</div>
-                <div style={{ fontSize: 12, color: '#475569' }}>Your AI Instructor — Aladiah Academy</div>
+                <div style={{ fontSize: 12, color: '#475569' }}>{t('chapter.instructor_subtitle')}</div>
               </div>
               {isLive && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -645,9 +654,9 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
             <div style={{ padding: '12px 24px', background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(96,165,250,0.07)', display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: isLive ? '#22c55e' : convStatus === 'connecting' ? '#f59e0b' : '#334155', flexShrink: 0 }} />
               <span style={{ fontSize: 12, color: '#64748b' }}>
-                {isLive ? (isSpeaking ? '🎙 Prof. Didier is speaking...' : '👂 Listening to you...') :
+                {isLive ? (isSpeaking ? '🎙 ' + t('chapter.speaking') : '👂 ' + t('chapter.listening')) :
                   convStatus === 'connecting' ? t('chapter.connecting') :
-                    convStatus === 'error' ? 'Connection failed — try again' :
+                    convStatus === 'error' ? t('chapter.connection_failed') :
                       t('chapter.ready') + ' ' + getTitle(currentLesson)}
               </span>
             </div>
@@ -658,7 +667,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
                 {transcript.map((e, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: e.role === 'agent' ? 'flex-start' : 'flex-end' }}>
                     <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: e.role === 'agent' ? '#60a5fa' : '#64748b', marginBottom: 4 }}>
-                      {e.role === 'agent' ? 'Prof. Didier' : 'You'}
+                      {e.role === 'agent' ? 'Prof. Didier' : t('chapter.you')}
                     </span>
                     <div style={{ background: e.role === 'agent' ? 'rgba(30,64,175,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${e.role === 'agent' ? 'rgba(96,165,250,0.2)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 12, padding: '10px 14px', maxWidth: '85%' }}>
                       <span style={{ fontSize: 13, color: '#cbd5e1', lineHeight: 1.55 }}>{e.message}</span>
@@ -676,11 +685,11 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
                 </button>
               ) : convStatus === 'connecting' ? (
                 <button disabled style={{ width: '100%', padding: '14px 0', borderRadius: 12, border: 'none', background: 'rgba(96,165,250,0.1)', color: '#60a5fa', fontSize: 15, fontWeight: 600, cursor: 'not-allowed' }}>
-                  Connecting...
+                  {t('chapter.connecting')}
                 </button>
               ) : (
                 <button onClick={endSession} style={{ width: '100%', padding: '14px 0', borderRadius: 12, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.08)', color: '#f87171', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
-                  End Session
+                  {t('chapter.end_session')}
                 </button>
               )}
             </div>
@@ -688,13 +697,13 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
             {course && getStudyGuidePdf(course.title) && (
               <div style={{ borderTop: '1px solid rgba(96,165,250,0.08)', padding: '16px 24px' }}>
                 <button onClick={() => setShowStudyGuide(v => !v)} style={{ width: '100%', padding: '12px 0', borderRadius: 12, border: '1px solid rgba(212,175,55,0.3)', background: showStudyGuide ? 'rgba(212,175,55,0.12)' : 'rgba(212,175,55,0.06)', color: '#d4af37', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                  📖 {showStudyGuide ? 'Close Study Guide' : 'Course Study Guide'}
+                  📖 {showStudyGuide ? t('chapter.close_study_guide') : t('chapter.course_study_guide')}
                 </button>
                 {showStudyGuide && (
                   <div style={{ marginTop: 12, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(212,175,55,0.2)' }}>
                     <div style={{ padding: '8px 14px', borderBottom: '1px solid rgba(212,175,55,0.15)', background: 'rgba(212,175,55,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#d4af37' }}>📚 {course.title} — Study Guide</span>
-                      <span style={{ fontSize: 11, color: '#64748b' }}>Read-only</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#d4af37' }}>📚 {course.title} — {t('chapter.study_guide')}</span>
+                      <span style={{ fontSize: 11, color: '#64748b' }}>{t('chapter.read_only')}</span>
                     </div>
                     <iframe src={getStudyGuidePdf(course.title) + '#toolbar=0&navpanes=0&scrollbar=1'} style={{ width: '100%', height: 520, border: 'none', background: '#0a0f1e' }} title="Study Guide" />
                     <div style={{ padding: '6px 14px', borderTop: '1px solid rgba(212,175,55,0.1)', textAlign: 'center' }}>
@@ -717,7 +726,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
                 </div>
               )}
               <button onClick={handleContinue} style={{ width: '100%', padding: '16px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#f59e0b,#d97706)', color: '#0a0f1e', fontSize: 15, fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                {continueIsToQuiz ? 'Continue to Module Quiz' : 'Continue to Next Lesson'}
+                {continueIsToQuiz ? t('chapter.continue_quiz') : t('chapter.continue_lesson')}
                 <ChevronRight size={18} />
               </button>
             </div>
