@@ -98,7 +98,7 @@ const CERT_TITLES = [
   'DevOps & Cloud Engineering Professional',
   'DevOps & Cloud Engineering Professional Certification',
   'AI Mastery for Scrum Masters & Project Managers',
-  'Scrum Master Profession',
+  'AI-Powered Scrum Master Professional Certification',
   'Project Management Professional Certification',
   'Business Analysis Professional Certification',
   'Cybersecurity Professional Certification',

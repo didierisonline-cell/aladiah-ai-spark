@@ -8,7 +8,7 @@ const corsHeaders = {
 
 // Complete 4-Module Scrum Master Course based on the curriculum
 const courseData = {
-  title: "Scrum Master Profession",
+  title: "AI-Powered Scrum Master Professional Certification",
   description: "Unleash your career potential with our course on the fundamentals of the Scrum Master role. Whether you're new to Agile methodologies or seek to enhance your project management skills, this course will equip you with the knowledge and tools needed to excel as a Scrum Master.",
   chapters: [
     // MODULE 1: The Role of the Scrum Master
@@ -18,13 +18,13 @@ const courseData = {
       order_index: 0,
       videos: [
         {
-          title: "1.1 Course Introduction: Scrum Master Profession",
-          description: "Welcome to the Scrum Master Profession course. Let's explore what you'll learn and how to succeed.",
+          title: "1.1 Course Introduction",
+          description: "Welcome to the AI-Powered Scrum Master Professional Certification. Let's explore what you'll learn and how to succeed.",
           order_index: 0,
           professorIndex: 0, // Professor Miguel
           lessonScript: {
             mainPoints: [
-              "Welcome to the Scrum Master Profession course! This course will transform your career and give you the skills to lead agile teams.",
+              "Welcome to the AI-Powered Scrum Master Professional Certification! This course will transform your career and give you the skills to lead agile teams.",
               "Throughout this course, you'll learn the essential aspects of being a Scrum Master by contrasting Scrum with traditional project management methods.",
               "You'll understand why Scrum is a game-changer in today's dynamic business landscape.",
               "We'll dive into practical skills required to become a highly effective Scrum Master through hands-on practice and real-life scenarios.",
@@ -915,7 +915,7 @@ const courseData = {
 function generateModule1EndQuiz(): any[] {
   return [
     {
-      question_text: "What is the primary goal of the Scrum Master Profession course?",
+      question_text: "What is the primary goal of this course?",
       scenario_context: "You're recommending this course to a colleague.",
       options: ["To learn coding", "To equip learners with knowledge to excel as Scrum Masters", "To become a project manager", "To learn waterfall methodology"],
       correct_answer_index: 1,

@@ -31,31 +31,31 @@ export function getTranslatedContent(
 // Course translations
 export const courseTranslations: Record<SupportedLanguage, TranslatedContent> = {
   en: {
-    title: "Scrum Master Profession",
+    title: "AI-Powered Scrum Master Professional Certification",
     description: "Unleash your career potential with our course on the fundamentals of the Scrum Master role. Whether you're new to Agile methodologies or seek to enhance your project management skills, this course will equip you with the knowledge and tools needed to excel as a Scrum Master."
   },
   es: {
-    title: "Profesión de Scrum Master",
+    title: "Certificación Profesional de Scrum Master con IA",
     description: "Libera tu potencial profesional con nuestro curso sobre los fundamentos del rol de Scrum Master. Ya sea que seas nuevo en las metodologías Ágiles o busques mejorar tus habilidades de gestión de proyectos, este curso te equipará con el conocimiento y las herramientas necesarias para destacar como Scrum Master."
   },
   zh: {
-    title: "Scrum Master 职业",
+    title: "AI 驱动的 Scrum Master 专业认证",
     description: "通过我们关于Scrum Master角色基础知识的课程释放您的职业潜力。无论您是敏捷方法论的新手还是希望提升项目管理技能，本课程都将为您提供成为出色Scrum Master所需的知识和工具。"
   },
   ar: {
-    title: "مهنة Scrum Master",
+    title: "شهادة سكرَم ماستر الاحترافية المدعومة بالذكاء الاصطناعي",
     description: "أطلق العنان لإمكانياتك المهنية من خلال دورتنا حول أساسيات دور Scrum Master. سواء كنت جديدًا على منهجيات Agile أو تسعى لتعزيز مهاراتك في إدارة المشاريع، ستزودك هذه الدورة بالمعرفة والأدوات اللازمة للتفوق كـ Scrum Master."
   },
   fr: {
-    title: "Profession Scrum Master",
+    title: "Certification Professionnelle Scrum Master avec IA",
     description: "Libérez votre potentiel de carrière avec notre cours sur les fondamentaux du rôle de Scrum Master. Que vous soyez nouveau dans les méthodologies Agile ou que vous cherchiez à améliorer vos compétences en gestion de projet, ce cours vous fournira les connaissances et les outils nécessaires pour exceller en tant que Scrum Master."
   },
   de: {
-    title: "Scrum Master Beruf",
+    title: "KI-gestützte Scrum Master Professional-Zertifizierung",
     description: "Entfesseln Sie Ihr Karrierepotenzial mit unserem Kurs über die Grundlagen der Scrum Master Rolle. Ob Sie neu in agilen Methoden sind oder Ihre Projektmanagement-Fähigkeiten verbessern möchten, dieser Kurs vermittelt Ihnen das Wissen und die Werkzeuge, um als Scrum Master erfolgreich zu sein."
   },
   ja: {
-    title: "スクラムマスター職",
+    title: "AI 駆動型スクラムマスター プロフェッショナル認定",
     description: "スクラムマスターの役割の基礎に関するコースで、キャリアの可能性を解き放ちましょう。アジャイル方法論が初めての方も、プロジェクト管理スキルを向上させたい方も、このコースはスクラムマスターとして優れた成果を上げるために必要な知識とツールを提供します。"
   }
 };
@@ -186,34 +186,34 @@ export const chapterTranslations: Record<string, Record<SupportedLanguage, Trans
 
 // Video title translations (sample for first module)
 export const videoTranslations: Record<string, Record<SupportedLanguage, TranslatedContent>> = {
-  "1.1 Course Introduction: Scrum Master Profession": {
+  "1.1 Course Introduction": {
     en: {
-      title: "1.1 Course Introduction: Scrum Master Profession",
-      description: "Welcome to the Scrum Master Profession course. Let's explore what you'll learn and how to succeed."
+      title: "1.1 Course Introduction",
+      description: "Welcome to the AI-Powered Scrum Master Professional Certification. Let's explore what you'll learn and how to succeed."
     },
     es: {
-      title: "1.1 Introducción al Curso: Profesión de Scrum Master",
-      description: "Bienvenido al curso de Profesión de Scrum Master. Exploremos qué aprenderás y cómo tener éxito."
+      title: "1.1 Introducción al Curso",
+      description: "Bienvenido a la Certificación Profesional de Scrum Master con IA. Exploremos qué aprenderás y cómo tener éxito."
     },
     zh: {
-      title: "1.1 课程介绍：Scrum Master职业",
-      description: "欢迎来到Scrum Master职业课程。让我们探索您将学到什么以及如何成功。"
+      title: "1.1 课程介绍",
+      description: "欢迎来到 AI 驱动的 Scrum Master 专业认证。让我们探索您将学到什么以及如何成功。"
     },
     ar: {
-      title: "1.1 مقدمة الدورة: مهنة Scrum Master",
-      description: "مرحبًا بك في دورة مهنة Scrum Master. دعنا نستكشف ما ستتعلمه وكيف تنجح."
+      title: "1.1 مقدمة الدورة",
+      description: "مرحبًا بك في شهادة سكرَم ماستر الاحترافية المدعومة بالذكاء الاصطناعي. دعنا نستكشف ما ستتعلمه وكيف تنجح."
     },
     fr: {
-      title: "1.1 Introduction au Cours : Profession Scrum Master",
-      description: "Bienvenue dans le cours Profession Scrum Master. Explorons ce que vous apprendrez et comment réussir."
+      title: "1.1 Introduction au Cours",
+      description: "Bienvenue dans la Certification Professionnelle Scrum Master avec IA. Explorons ce que vous apprendrez et comment réussir."
     },
     de: {
-      title: "1.1 Kurseinführung: Scrum Master Beruf",
-      description: "Willkommen zum Kurs Scrum Master Beruf. Lassen Sie uns erkunden, was Sie lernen werden und wie Sie erfolgreich sein können."
+      title: "1.1 Kurseinführung",
+      description: "Willkommen zur KI-gestützten Scrum Master Professional-Zertifizierung. Lassen Sie uns erkunden, was Sie lernen werden und wie Sie erfolgreich sein können."
     },
     ja: {
-      title: "1.1 コース紹介：スクラムマスター職",
-      description: "スクラムマスター職コースへようこそ。何を学び、どのように成功するかを探りましょう。"
+      title: "1.1 コース紹介",
+      description: "AI 駆動型スクラムマスター プロフェッショナル認定へようこそ。何を学び、どのように成功するかを探りましょう。"
     }
   },
   "1.2 Scrum Master Role and Benefits": {
