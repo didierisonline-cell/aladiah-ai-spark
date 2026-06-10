@@ -65,6 +65,11 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
       </div>
 
       <div style={{ flex: 1, overflow: 'auto' }}>
+        {isAdmin && (
+          <button onClick={() => navigate('/founder')} style={{ display: 'flex', alignItems: 'center', gap: 9, margin: '12px 10px', padding: '11px 13px', width: 'calc(100% - 20px)', color: '#fff', fontSize: 13, fontWeight: 800, cursor: 'pointer', border: '1px solid rgba(124,58,237,.5)', borderRadius: 10, background: 'linear-gradient(135deg,#7c3aed,#4A90F5)', boxShadow: '0 0 16px rgba(124,58,237,.45)', textAlign: 'left', fontFamily: 'inherit' }}>
+            <span style={{ fontSize: 16 }}>👑</span>Founder Command Center
+          </button>
+        )}
         {LINKS.map(link => {
           const isOn = link.exact ? location.pathname === '/portal' : location.pathname === link.path;
           return (
@@ -75,14 +80,6 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
             </button>
           );
         })}
-        {isAdmin && (
-          <>
-            <div style={{ padding: '12px 15px 4px', fontSize: 9, fontWeight: 700, letterSpacing: '.18em', textTransform: 'uppercase', color: '#2a3a55' }}>Founder</div>
-            <button onClick={() => navigate('/founder')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#818cf8', fontSize: 13, fontWeight: 600, cursor: 'pointer', border: 'none', background: 'none', borderLeft: '3px solid transparent', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
-              <span style={{ fontSize: 15, width: 18, textAlign: 'center', flexShrink: 0 }}>👑</span>Founder Portal
-            </button>
-          </>
-        )}
         <div style={{ padding: '12px 15px 4px', fontSize: 9, fontWeight: 700, letterSpacing: '.18em', textTransform: 'uppercase', color: '#2a3a55' }}>{T('account')}</div>
         <button onClick={() => navigate('/portal/settings')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
           <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>⚙️</span>{T('settings')}

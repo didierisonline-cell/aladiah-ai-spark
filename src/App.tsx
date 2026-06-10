@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import FounderRoute, { FounderRedirect } from "@/components/FounderRoute";
+import FounderRoute from "@/components/FounderRoute";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { useCartSync } from "@/hooks/useCartSync";
 import Index from "./pages/Index";
@@ -93,7 +93,7 @@ const AppContent = () => {
         <Route path="/refer/:code" element={<ReferralProfile />} />
         <Route path="/dashboard" element={<Dashboard />} />
         {/* Portal */}
-        <Route path="/portal" element={<ProtectedRoute><FounderRedirect><StudentPortal /></FounderRedirect></ProtectedRoute>} />
+        <Route path="/portal" element={<ProtectedRoute><StudentPortal /></ProtectedRoute>} />
         <Route path="/portal/courses" element={<ProtectedRoute><PortalCourses /></ProtectedRoute>} />
         <Route path="/portal/course/:courseId" element={<ProtectedRoute><PortalCourseDetail /></ProtectedRoute>} />
         <Route path="/portal/talent-score" element={<ProtectedRoute><PortalTalentScore /></ProtectedRoute>} />

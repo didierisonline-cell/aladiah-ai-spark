@@ -153,6 +153,25 @@ const Header = ({ onProfileClick }: HeaderProps) => {
 
         <AuthNavButton navigate={navigate} isPortal={isPortal} />
 
+        {/* Founder-only: always-visible Command Center entry (until routing is confirmed) */}
+        {isFounder && (
+          <a
+            href="/founder"
+            onClick={e => { e.preventDefault(); navigate('/founder'); }}
+            style={{
+              fontSize: 12, fontWeight: 800, color: '#fff',
+              background: 'linear-gradient(135deg,#7c3aed,#4A90F5)',
+              border: '1px solid rgba(124,58,237,.5)',
+              padding: '6px 12px', borderRadius: '0.5rem', cursor: 'pointer',
+              textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 5,
+              boxShadow: '0 0 14px rgba(124,58,237,.45)',
+            }}
+            title="Founder Command Center"
+          >
+            👑 Founder
+          </a>
+        )}
+
         {/* Mobile toggle */}
         <button
           style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8596AD', padding: 4 }}
