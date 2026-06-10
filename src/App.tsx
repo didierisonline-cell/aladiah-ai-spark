@@ -24,6 +24,7 @@ import StudentPortal from "./pages/StudentPortal";
 import AdminDashboard from "./pages/AdminDashboard";
 import CommandCenter from "./pages/admin/CommandCenter";
 import AgentOS from "./pages/admin/AgentOS";
+import MarketingAgent from "./pages/admin/MarketingAgent";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
@@ -95,6 +96,7 @@ const AppContent = () => {
         <Route path="/admin" element={<ProtectedRoute requireSubscription={false}><AdminDashboard /></ProtectedRoute>} />
         <Route path="/admin/command-center" element={<ProtectedRoute requireSubscription={false}><CommandCenter /></ProtectedRoute>} />
         <Route path="/admin/agent-os" element={<ProtectedRoute requireSubscription={false}><AgentOS /></ProtectedRoute>} />
+        <Route path="/admin/marketing-agent" element={<ProtectedRoute requireSubscription={false}><MarketingAgent /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <RouterAwareFloat />
