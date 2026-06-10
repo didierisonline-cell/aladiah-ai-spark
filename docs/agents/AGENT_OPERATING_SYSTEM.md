@@ -1,153 +1,170 @@
-# Aladiah AI Workforce — Agent Operating System (AOS)
+# Aladiah Agent Operating System (AOS)
 
-Status: **Design canon for the AI Workforce layer.** Read the platform canon in
-`/docs/standards` first (NORTH_STAR · ARCHITECTURE_PRINCIPLE · COMPETENCY_TAXONOMY).
-This document governs how autonomous agents are built, run, and scaled on Aladiah.
+Status: **Permanent infrastructure canon for the AI Workforce.** Read the platform
+canon in `/docs/standards` first. **Every future agent plugs into this framework
+— it does not build its own registry, scheduling, memory, logging, permissions,
+health, or messaging.**
 
-> **Architecture note (read before extending).** The five Core Systems in
-> `ARCHITECTURE_PRINCIPLE.md` (Competency Measurement, Personalization, Simulation
-> Readiness, AI Coaching, Employer Visibility) define the *product* surface. The AI
-> Workforce is a **platform-operations layer beside them**: it does not replace a
-> Core System and must **block none**. It qualifies under the Architecture Test the
-> way observability/tooling does — by *serving* the Core Systems (giving the
-> operator the picture needed to allocate effort toward employability outcomes)
-> while **only reading** their data, never gating their write paths. Every agent
-> added here keeps that contract: read-only on Core System tables, isolated in the
-> `agent_*` tables, and justified by which Core System(s) its output advances.
+> **Architecture note.** The five Core Systems in `ARCHITECTURE_PRINCIPLE.md` are
+> the *product* surface. The AOS is a **platform-operations layer beside them**: it
+> only *reads* product data and writes solely to its own `aos_*` tables, so it
+> serves the Core Systems (it is how the workforce that advances them is run and
+> observed) and **blocks none**.
 
 ---
 
-## 1. Why an operating system, not a script
+## 1. The eight subsystems
 
-We are building a **workforce of agents** that will grow (CEO Chief of Staff, Head
-of Growth, Head of Curriculum, Placement Officer, Risk & Compliance, …). If each
-agent invents its own storage, scheduling, auth, and output shape, the system
-becomes unmaintainable by agent #3. The AOS fixes the *shared* concerns once so
-adding an agent is small and predictable.
-
-| Concern | Solved once by the AOS | Per-agent responsibility |
-|---|---|---|
-| Report storage | `agent_reports` (JSONB sections) | Define a JSON schema |
-| Task spin-off | `agent_tasks` | Map actions → tasks |
-| Recommendations | `agent_recommendations` (founder-approval gate) | Map actions → recommendations |
-| KPI snapshot | `business_metrics_daily` | Read it |
-| Auth & RLS | admin-scoped via `user_roles` | Reuse it |
-| UI surfacing | Command-Center component pattern | One React component set |
-
----
-
-## 2. The shared tables
-
-All agent state lives in four tables (migration
-`supabase/migrations/20260610120000_ceo_chief_of_staff_agent.sql`), isolated from
-Core System tables and **admin-scoped via `user_roles`** (RLS grants admins
-SELECT/INSERT/UPDATE — never DELETE; service-role bypasses RLS for future cron).
-
-```
-business_metrics_daily ──read──> agent (service)
-                                    │ writes
-                 ┌──────────────────┼─────────────────────┐
-                 ▼                   ▼                     ▼
-          agent_reports      agent_tasks         agent_recommendations
-          (daily report)     (tracked tasks)     (founder-approval gate)
-```
-
-- **`agent_reports`** — one canonical report per `(agent_name, report_date)`; the
-  eight report sections live in JSONB columns, with `summary` + `urgency_level`
-  denormalized for fast list views.
-- **`agent_tasks`** — internal tasks the agent spins up from a report's actions.
-- **`agent_recommendations`** — CEO recommendations carrying `approved_by_founder`
-  (starts `false`); the autonomy boundary is structural, not just prose.
-- **`business_metrics_daily`** — daily KPI snapshot the agent reads (and that an
-  ingestion job can populate).
-
-Why JSONB for report sections: each agent's report shape differs and evolves;
-JSONB + a per-agent JSON Schema gives schema discipline without a migration per
-prompt tweak.
-
----
-
-## 3. Execution model
-
-```
-   trigger (manual button now | scheduled cron next)
-                     │
-                     ▼
-   service: src/services/agents/<agent>.ts   (runs under the admin session)
-     1. gather metrics   → defensive read-only queries across product tables
-     2. build report     → assemble the report object (Phase 2: Claude synthesis)
-     3. persist          → upsert agent_reports (one per agent per day)
-     4. spin off work    → agent_tasks + agent_recommendations
-     5. return report
-                     │
-                     ▼
-   Command Center UI renders the latest report
-```
-
-Key rules:
-
-- **Read-only on product data.** Agents read to build a report; they never write
-  Core System tables. Guarantees they block 0 Core Systems.
-- **Never fabricate.** Missing inputs are reported as 0 with a `notes` gap — never
-  invented. Mirrors the canon rule that competency is never `null`-faked.
-- **Structured output.** Each agent's report conforms to its JSON schema, so the
-  stored payload is always valid and renderable.
-- **Autonomy is structural.** v1 runs client-side under the admin session; it can
-  only read product data and write the `agent_*` tables. Outbound actions (email,
-  DMs, pricing, refunds, deploys) require explicit founder approval — see each
-  agent spec's approval rules.
-
-> **Server-side synthesis (Phase 2).** When agents use Claude for narrative
-> synthesis, that call moves to a Supabase edge function so `ANTHROPIC_API_KEY`
-> stays server-side. Default generation settings: `claude-opus-4-8`, adaptive
-> thinking, `effort: high`, structured output = the agent's JSON schema.
-
----
-
-## 4. Agent #1 — CEO Chief of Staff
-
-The first agent of the workforce. Full spec:
-`docs/agents/ceo-chief-of-staff/AGENT_SPEC.md`. Surface: `/admin/command-center`.
-
-| Piece | Location |
-|---|---|
-| Service | `src/services/agents/ceoChiefOfStaffAgent.ts` |
-| Types | `src/types/agentReports.ts` |
-| Report schema | `docs/agents/ceo-chief-of-staff/daily_report.schema.json` |
-| Page | `src/pages/admin/CommandCenter.tsx` |
-| Components | `CommandCenterDashboard` · `MetricCard` · `RiskRadar` · `CEOActionQueue` · `DailyReportCard` |
-
----
-
-## 5. The roadmap (workforce, not one agent)
-
-Each future agent must pass the Architecture Test.
-
-| # | Agent | Cadence | Serves (Core Systems) |
+| # | Subsystem | Table(s) | Service module |
 |---|---|---|---|
-| 1 | **CEO Chief of Staff** | daily | All — operating picture for resource allocation |
-| 2 | Head of Curriculum | weekly | Competency Measurement, Personalization |
-| 3 | Head of Growth / Admissions | daily | platform ops; feeds enrollment → all |
-| 4 | Placement Officer | weekly | Employer Visibility |
-| 5 | Risk & Compliance Officer | daily | platform ops; guards all |
-| 6 | Simulation Designer | on-demand | Simulation Readiness |
+| 1 | **Agent Registry** | `aos_agents` | `services/aos/registry.ts` |
+| 2 | **Agent Memory** | `aos_agent_memory` | `services/aos/memory.ts` |
+| 3 | **Task Manager** | `aos_tasks` | `services/aos/tasks.ts` |
+| 4 | **Orchestrator** | `aos_runs` (+ runner registry) | `services/aos/orchestrator.ts` |
+| 5 | **Execution Logs** | `aos_execution_logs` | `services/aos/logs.ts` |
+| 6 | **Permissions** | `aos_agents.permissions` (jsonb) | `services/aos/permissions.ts` |
+| 7 | **Health Monitoring** | `aos_agents` health columns | `services/aos/health.ts` |
+| 8 | **Communication** | `aos_messages` | `services/aos/communication.ts` |
 
-Future agents may **consume each other's reports** (the CEO agent reads the
-Curriculum/Placement reports rather than recomputing). Because reports are stored
-uniformly in `agent_reports`, agent-to-agent consumption needs no new plumbing.
+Schema: `supabase/migrations/20260610130000_agent_operating_system.sql`.
+Types: `src/types/aos.ts`. Facade: `import { aos } from '@/services/aos'`.
+
+> **`aos_*` vs `agent_*`.** The `aos_*` tables are shared **infrastructure**. The
+> CEO agent's `agent_reports` / `agent_recommendations` / `business_metrics_daily`
+> (migration `…120000`) remain its **domain output** store. Infra is shared; an
+> agent's specialized output can stay in its own domain tables.
 
 ---
 
-## 6. How to add the next agent (checklist)
+## 2. Subsystem detail
 
-1. **Schema** — write `docs/agents/<slug>/<report>.schema.json` + add types to
-   `src/types/agentReports.ts`.
-2. **Prompt** — write the master system prompt in `docs/agents/<slug>/AGENT_SPEC.md`.
-3. **Service** — copy `src/services/agents/ceoChiefOfStaffAgent.ts` → adapt the
-   metric gathering, report build, and task/recommendation spin-off. Reuse the
-   `agent_*` tables (no new tables unless the agent truly needs them).
-4. **UI** — copy the Command-Center component set → render the new sections.
-5. **Schedule** — wire a cron trigger once the manual path is verified.
+**1. Agent Registry** — one row per agent: `name`, `role`, `status`
+(active/paused/disabled/error), `priority`, `cadence`, `last_run_at`,
+`next_run_at`, `system_prompt`, `permissions`, plus health rollups. The single
+source of truth for who is in the workforce.
 
-One discrete agent at a time, verified before the next — per the platform working
-rules.
+**2. Agent Memory** — `short_term` / `long_term` / `episodic` memories with an
+`importance` score (0–1, auto-scored via `scoreImportance` or caller-supplied),
+`tags`, and full-text **search** via `recall()`. `consolidate()` promotes durable
+short-term memories to long-term and ages out expired ones. Phase-2 swaps the
+`embedding` column to pgvector for semantic recall (see §5).
+
+**3. Task Manager** — `createTask` / `assignTask` / `setTaskStatus`, **priority**
+levels (low→critical) and **dependencies** (`depends_on`). A task with unmet
+dependencies starts `blocked`; completing a dependency calls `resolveDependents`
+to unblock it. `listReadyTasks(agent)` returns what an agent can pick up now.
+
+**4. Orchestrator** — agents register a **runner** (their executable body) via
+`registerRunner(slug, fn)`. `runAgent(slug, trigger)` wraps execution in a run
+record, retries with backoff (`config.maxAttempts`), updates health, and logs
+every step. `tick()` runs all **due** agents (`next_run_at <= now`, active,
+non-manual) in priority order — wire it to a scheduled trigger in Phase 2.
+
+**5. Execution Logs** — `aos_runs` = one row per invocation (outcome/retries);
+`aos_execution_logs` = every action within a run (timestamp, agent, level,
+result, error). Full audit trail for the whole workforce.
+
+**6. Permissions Framework** — capabilities `read` · `write` · `publish` ·
+`admin` · `human_approval_required` (jsonb on the registry). `guard(slug, cap)`
+throws `PermissionError` when missing and `ApprovalRequiredError` for gated
+write/publish actions unless `{ approved: true }`. Enforced in the service layer
+and structurally by RLS (an agent never exceeds the admin session it runs under).
+
+**7. Health Monitoring** — `getFleetHealth()` classifies each agent
+(healthy/degraded/down/idle) from registry rollups: uptime (success rate),
+last success, error count, consecutive failures, performance score, avg duration.
+`recordRunOutcome()` updates these after every run.
+
+**8. Communication Layer** — `sendMessage` / `inbox` between agents.
+`delegateTask(toAgent, task)` lets the **CEO agent create tasks for other agents**
+(task + `task_request` message). `reportToCeo(fromAgent, report)` lets agents
+**return reports back to the CEO agent**.
+
+---
+
+## 3. Service architecture
+
+```
+import { aos } from '@/services/aos';
+
+await aos.ensure();                         // bootstrap: register runners + registry rows
+await aos.orchestrator.runAgent(slug);      // run one agent (retries + logs + health)
+await aos.orchestrator.tick();              // run all due agents
+await aos.memory.remember({ ... });         // store memory
+await aos.memory.recall(slug, 'query');     // search memory
+await aos.tasks.createTask({ ... });        // task with deps + priority
+await aos.comms.delegateTask(to, { ... });  // CEO -> agent
+await aos.health.getFleetHealth();          // dashboard health
+await aos.permissions.guard(slug, 'write'); // permission/approval gate
+```
+
+- **`bootstrap.ts`** wires existing agents into the OS (runner + registry row).
+  The CEO agent is registered there; a new agent adds one block.
+- All services run client-side under the **admin session**; RLS scopes every
+  `aos_*` table to admins (SELECT/INSERT/UPDATE — never DELETE).
+- The aos_* tables aren't in the generated Supabase types yet, so services use a
+  loosely-typed handle (`_internal.ts`); the esbuild build is unaffected.
+
+---
+
+## 4. Dashboard
+
+`/admin/agent-os` (`src/pages/admin/AgentOS.tsx`) — the control plane:
+
+- **Registry** tab — agents with status/priority/last+next run/permissions; per-agent
+  **Run** and **Pause/Resume**.
+- **Health** tab — fleet health cards (perf score, success rate, errors).
+- **Tasks** tab — task board grouped by status with priority + dependencies.
+- **Logs** tab — recent runs + the execution-log stream.
+- **Comms** tab — agent-to-agent message feed.
+- Toolbar — **Run Orchestrator Tick** (runs all due agents) + Refresh.
+
+Components in `src/components/admin/aos/`.
+
+---
+
+## 5. Future AI integration architecture
+
+The AOS is built so intelligence slots in without re-plumbing:
+
+1. **Server-side reasoning.** Agent runners that call Claude do so via a Supabase
+   **edge function** (keeps `ANTHROPIC_API_KEY` server-side). Defaults:
+   `claude-opus-4-8`, adaptive thinking, `effort: high`, structured output =
+   the agent's JSON schema. The orchestrator already wraps the call in
+   run/logs/health, so an AI runner is a drop-in replacement for a deterministic one.
+
+2. **Memory as context.** Before a run, an AI agent calls `recall()` to load
+   relevant long-term memories into the prompt; after a run it `remember()`s new
+   findings. Phase 2 upgrades `aos_agent_memory.embedding` to **pgvector** for
+   semantic recall (enable the extension, swap the column to `vector`, add an
+   embedding step in `remember`, switch `recall` to a vector match — the service
+   API is unchanged).
+
+3. **Tools = subsystems.** When agents call Claude with tool use, the tools map
+   onto AOS services (`createTask`, `delegateTask`, `recall`, `sendMessage`),
+   with `permissions.guard()` enforced before any write/publish tool executes and
+   `human_approval_required` gating sensitive actions.
+
+4. **Scheduled autonomy.** A cron/edge trigger calls `orchestrator.tick()` on an
+   interval; due agents run unattended, with all outcomes captured in `aos_runs`
+   and health auto-updated.
+
+5. **Multi-agent workflows.** Agents coordinate purely through the Communication
+   Layer + Task Manager: the CEO agent delegates via `delegateTask`, directors
+   `reportToCeo`, dependencies sequence multi-step work. No new plumbing needed.
+
+---
+
+## 6. How to add the next agent
+
+1. **Register** — add a `registerAgent({...})` block + a runner in `bootstrap.ts`
+   (or seed a row in the migration). Set its `permissions` and `cadence`.
+2. **Runner** — implement `(ctx) => Promise<AgentRunOutput>`; use `ctx.log(...)`
+   for actions and the `aos` services for tasks/memory/messages.
+3. **Domain output (optional)** — if the agent produces a specialized artifact,
+   it may keep its own domain table (like the CEO agent's `agent_reports`); it
+   still uses the AOS for everything cross-cutting.
+4. **UI (optional)** — add a dedicated surface, or rely on `/admin/agent-os`.
+
+The agent inherits scheduling, retries, logging, health, permissions, memory, and
+messaging for free. **Do not build parallel systems.**
