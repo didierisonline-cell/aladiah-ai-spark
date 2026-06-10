@@ -4,13 +4,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Activity, AlertTriangle, BookOpen, Cpu, CreditCard, FlaskConical, Play, RefreshCw, Server, ShieldCheck, Siren,
+  Activity, AlertTriangle, BookOpen, ClipboardList, Cpu, CreditCard, FlaskConical, Play, RefreshCw, Server, ShieldCheck, Siren,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { aos, AgentHealth } from '@/services/aos';
 import { OPERATIONS_AGENT_SLUG, OpsFinding, OpsReport, OpsStats, OpsStatus, Severity } from '@/types/operations';
 import { OPS_ENGINES } from '@/services/agents/operations/engines';
-import { getLatestReport, getStats, listFindings, listStatus, setFindingStatus } from '@/services/agents/operationsAgent';
+import { getAuditSurface, getLatestReport, getStats, listFindings, listStatus, setFindingStatus } from '@/services/agents/operationsAgent';
+
+const AUDIT_SURFACE = getAuditSurface();
 
 const STATUS_COLOR: Record<string, string> = {
   operational: 'bg-green-100 text-green-700 border-green-200',
@@ -41,7 +43,7 @@ const FindingsList = ({ items, onSet }: { items: OpsFinding[]; onSet: (id: strin
     {items.length === 0 ? <p className="text-sm text-muted-foreground py-4 text-center">No findings.</p> : items.map((f) => (
       <div key={f.id} className="rounded-lg border border-border/60 p-3 bg-muted/20">
         <div className="flex items-start justify-between gap-2">
-          <div><p className="text-xs font-medium text-foreground">{f.title}</p><p className="text-[10px] text-muted-foreground">{f.engine} · {f.area} · {f.status}</p></div>
+          <div><p className="text-xs font-medium text-foreground">{f.title}</p><p className="text-[10px] text-muted-foreground">{f.engine} · {f.area}{f.owner ? ` · owner: ${f.owner}` : ''} · {f.status}</p></div>
           <Badge className={`text-[9px] border shrink-0 ${SEV_COLOR[f.severity]}`}>{f.severity}</Badge>
         </div>
         {f.detail && <p className="text-[11px] text-muted-foreground mt-1">{f.detail}</p>}
@@ -123,6 +125,7 @@ const OperationsDashboard = () => {
           <TabsTrigger value="ai"><Cpu className="w-3.5 h-3.5 mr-1" />AI Services</TabsTrigger>
           <TabsTrigger value="pay"><CreditCard className="w-3.5 h-3.5 mr-1" />Payments</TabsTrigger>
           <TabsTrigger value="alerts"><Siren className="w-3.5 h-3.5 mr-1" />Alerts</TabsTrigger>
+          <TabsTrigger value="framework"><ClipboardList className="w-3.5 h-3.5 mr-1" />Audit Framework</TabsTrigger>
           <TabsTrigger value="audit"><ShieldCheck className="w-3.5 h-3.5 mr-1" />Audit Center</TabsTrigger>
           <TabsTrigger value="health"><Activity className="w-3.5 h-3.5 mr-1" />Health</TabsTrigger>
         </TabsList>
@@ -136,6 +139,24 @@ const OperationsDashboard = () => {
           <div className="space-y-4"><StatusList items={byCat('payment')} /><FindingsList items={byEngine('payment')} onSet={onSet} /></div>
         </TabsContent>
         <TabsContent value="alerts"><FindingsList items={findings} onSet={onSet} /></TabsContent>
+        <TabsContent value="framework" className="space-y-4">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Platform Audit Framework — pre-launch checklist</CardTitle>
+              <p className="text-xs text-muted-foreground">The complete surface to audit. Findings record Issue · Severity · Screenshot · Fix · Owner · Status.</p>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {AUDIT_SURFACE.map((s) => (
+                <div key={s.category} className="rounded-lg border border-border/60 p-3 bg-muted/20">
+                  <div className="flex items-center justify-between"><p className="text-sm font-medium text-foreground">{s.category}</p><Badge variant="secondary" className="text-[9px]">{s.owner}</Badge></div>
+                  <div className="flex flex-wrap gap-1 mt-1">{s.items.map((it) => <Badge key={it} variant="outline" className="text-[9px]">{it}</Badge>)}</div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+          <FindingsList items={findings} onSet={onSet} />
+        </TabsContent>
+
         <TabsContent value="audit">
           <Card>
             <CardHeader className="pb-3"><CardTitle className="text-base">Daily Operations Report</CardTitle></CardHeader>

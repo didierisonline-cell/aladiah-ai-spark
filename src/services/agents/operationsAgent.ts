@@ -20,7 +20,9 @@ import {
   OpsStatus,
   Severity,
 } from '@/types/operations';
-import { SEVERITY_ORDER } from './operations/engines';
+import { AUDIT_SURFACE, SEVERITY_ORDER, ownerForEngine } from './operations/engines';
+
+export const getAuditSurface = () => AUDIT_SURFACE;
 
 const SLUG = OPERATIONS_AGENT_SLUG;
 const STATUS = 'ops_status';
@@ -36,7 +38,8 @@ async function upsertStatus(component: string, category: string, status: string,
 async function addFinding(engine: string, severity: Severity, area: string, title: string, detail: string, recommendation: string) {
   const { data: existing } = await db.from(FINDINGS).select('id').eq('title', title).eq('status', 'open').limit(1);
   if (existing && existing.length > 0) return false;
-  await db.from(FINDINGS).insert({ engine, severity, area, title, detail, recommendation, status: 'open' });
+  // Owner is assigned per engine; screenshot is attached during a live audit (Phase 2).
+  await db.from(FINDINGS).insert({ engine, severity, area, title, detail, recommendation, owner: ownerForEngine(engine), screenshot: null, status: 'open' });
   return true;
 }
 

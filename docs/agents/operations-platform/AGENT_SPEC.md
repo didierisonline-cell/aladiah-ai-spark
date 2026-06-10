@@ -49,7 +49,18 @@ KPIs (platform status, components OK, open findings, critical, high, payment
 risks) and tabs: Platform · Infrastructure · Courses · Simulations · AI Services ·
 Payments · Alerts · Audit Center · Health.
 
-## 8. Future
+## 8. Platform Audit Framework (Site Audit Authority)
+
+The audit surface (`AUDIT_SURFACE`) is the **pre-launch checklist**: navigation
+(menus, buttons, routes, badges), routes & pages (homepage, portal, courses,
+dashboard, profile), learning (simulations, labs, quizzes, certifications), user
+journeys, localization (languages), commerce (payment flows, checkout,
+subscription), and credentials (certificate flows, talent score, Aladiah Profile).
+Each finding carries the structured output **Issue · Severity · Screenshot · Fix ·
+Owner · Status** (`ops_findings` + `owner`/`screenshot`). The dashboard's **Audit
+Framework** tab renders the checklist + the owner-assigned findings.
+
+## 9. Future
 Live route crawling (broken links / 404 / missing assets), real infra/API health
 probes (server-side), AI-service latency/quality checks, and synthetic functional
 tests of buttons/forms/flows.

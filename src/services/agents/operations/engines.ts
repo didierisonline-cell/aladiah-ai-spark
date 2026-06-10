@@ -1,7 +1,7 @@
 // =============================================================================
 // Operations & Platform Authority — the 8 monitoring engines (code mirror).
 // =============================================================================
-import { OpsEngineDef, Severity } from '@/types/operations';
+import { AuditSurfaceArea, OpsEngineDef, Severity } from '@/types/operations';
 
 export const OPS_ENGINES: OpsEngineDef[] = [
   { id: 'platform_monitoring', name: 'Platform Monitoring', purpose: 'Homepage, portal, courses, checkout, login, dashboard — broken links/pages, missing assets, 404s, UI/nav errors.' },
@@ -15,3 +15,23 @@ export const OPS_ENGINES: OpsEngineDef[] = [
 ];
 
 export const SEVERITY_ORDER: Record<Severity, number> = { critical: 0, high: 1, medium: 2, low: 3 };
+
+// ---- Platform Audit Framework (Site Audit Authority) -----------------------
+// The complete surface that must be audited before launch. Each finding carries
+// Issue · Severity · Screenshot · Fix · Owner · Status.
+export const AUDIT_SURFACE: AuditSurfaceArea[] = [
+  { category: 'Navigation', items: ['Every menu', 'Every button', 'Every route', 'Every badge'], owner: 'Operations' },
+  { category: 'Routes & Pages', items: ['Homepage', 'Portal pages', 'Courses', 'Dashboard', 'Profile pages'], owner: 'Operations' },
+  { category: 'Learning', items: ['Every simulation', 'Every lab', 'Every quiz', 'Certifications'], owner: 'Product Builder Agent' },
+  { category: 'User Journeys', items: ['Signup → activation', 'Course → completion', 'Placement journey'], owner: 'Student Success' },
+  { category: 'Localization', items: ['Every language'], owner: 'Operations' },
+  { category: 'Commerce', items: ['Every payment flow', 'Checkout', 'Subscription'], owner: 'Finance / Payments' },
+  { category: 'Credentials', items: ['Every certificate flow', 'Talent Score', 'Aladiah Profile'], owner: 'Product Builder Agent' },
+];
+
+export function ownerForEngine(engine: string): string {
+  if (engine === 'course_integrity' || engine === 'simulation_integrity') return 'Product Builder Agent';
+  if (engine === 'payment') return 'Finance / Payments';
+  if (engine === 'infrastructure') return 'Operations / DevOps';
+  return 'Operations';
+}

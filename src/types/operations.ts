@@ -41,13 +41,22 @@ export interface OpsFinding {
   engine: string;
   severity: Severity;
   area: string | null;
-  title: string;
+  title: string;        // Issue
   detail: string | null;
-  recommendation: string | null;
-  status: FindingStatus;
+  recommendation: string | null; // Fix Recommendation
+  owner: string | null;          // Owner
+  screenshot: string | null;     // Screenshot (URL / reference)
+  status: FindingStatus;         // Status
   metadata: Record<string, unknown>;
   created_at: string;
   updated_at: string;
+}
+
+/** A surface area that must be audited before launch. */
+export interface AuditSurfaceArea {
+  category: string;
+  items: string[];
+  owner: string;
 }
 
 export interface OpsReport {
