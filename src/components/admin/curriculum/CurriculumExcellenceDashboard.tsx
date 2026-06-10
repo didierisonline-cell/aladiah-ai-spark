@@ -12,6 +12,8 @@ import { SCRUM_18_BLUEPRINT, SCRUM_18_TITLE } from '@/services/agents/curriculum
 import { delegateModule, delegateRedesign, getLatestAudit } from '@/services/agents/curriculumExcellenceAgent';
 import { PROGRAM_ARCHITECTURES, WORLD_CLASS_CES, scoreBlueprint } from '@/services/standards/programStandard';
 import { CANONICAL_MODULE_STRUCTURE, FUTURE_SPECS, REFERENCE_SPEC } from '@/services/standards/programFactory';
+import ProgramScorecard from './ProgramScorecard';
+import FlagshipArchitecturePanel from './FlagshipArchitecturePanel';
 
 const STANDARD_EVAL = scoreBlueprint(SCRUM_18_BLUEPRINT, 'scrum');
 
@@ -72,7 +74,8 @@ const CurriculumExcellenceDashboard = () => {
 
       <Tabs defaultValue="audit" className="space-y-4">
         <TabsList className="flex flex-wrap h-auto justify-start">
-          <TabsTrigger value="standard"><Award className="w-3.5 h-3.5 mr-1" />Program Standard</TabsTrigger>
+          <TabsTrigger value="scorecard"><Award className="w-3.5 h-3.5 mr-1" />Scorecard</TabsTrigger>
+          <TabsTrigger value="standard"><ShieldCheck className="w-3.5 h-3.5 mr-1" />Program Standard</TabsTrigger>
           <TabsTrigger value="audit"><Target className="w-3.5 h-3.5 mr-1" />Audit &amp; Gaps</TabsTrigger>
           <TabsTrigger value="standards"><ShieldCheck className="w-3.5 h-3.5 mr-1" />Framework</TabsTrigger>
           <TabsTrigger value="blueprint"><Layers className="w-3.5 h-3.5 mr-1" />18-Module Blueprint</TabsTrigger>
@@ -80,6 +83,8 @@ const CurriculumExcellenceDashboard = () => {
           <TabsTrigger value="integration"><GitBranch className="w-3.5 h-3.5 mr-1" />Integration</TabsTrigger>
           <TabsTrigger value="health"><Award className="w-3.5 h-3.5 mr-1" />Health</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="scorecard"><ProgramScorecard /></TabsContent>
 
         <TabsContent value="standard" className="space-y-4">
           <Card className="border-primary/30">
@@ -162,23 +167,7 @@ const CurriculumExcellenceDashboard = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="blueprint">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-            {SCRUM_18_BLUEPRINT.map((m) => (
-              <Card key={m.no}>
-                <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center justify-between"><span>M{m.no}. {m.title}</span><Button size="sm" variant="outline" className="h-6 px-2 text-[10px]" onClick={() => delegate(m.no)}><Send className="w-3 h-3 mr-1" />Delegate</Button></CardTitle></CardHeader>
-                <CardContent className="text-[11px] space-y-1">
-                  <p><span className="font-medium">Competencies:</span> {m.competencies.join(', ')}</p>
-                  <p><span className="font-medium">AI mentor:</span> {m.aiMentorFocus}</p>
-                  <p><span className="font-medium">Lab ({m.lab.tool}):</span> {m.lab.task}</p>
-                  <p><span className="font-medium">Simulation:</span> {m.simulation.company} — {m.simulation.scenario}</p>
-                  <p><span className="font-medium">Portfolio:</span> {m.portfolioArtifact}</p>
-                  <p><span className="font-medium">Quizzes:</span> {m.quizTiers.join(' · ')}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
+        <TabsContent value="blueprint"><FlagshipArchitecturePanel onDelegate={delegate} /></TabsContent>
 
         <TabsContent value="career">
           <Card>

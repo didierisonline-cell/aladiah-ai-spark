@@ -5,8 +5,9 @@
 // Product Builder → QA → Founder Approval → Student Success / Placement.
 // =============================================================================
 import { ModuleBlueprint } from '@/types/curriculum';
-import { ProgramFactorySpec } from '@/types/programStandard';
+import { ProgramFactorySpec, StandardEvaluation } from '@/types/programStandard';
 import { SCRUM_18_BLUEPRINT } from '@/services/agents/curriculum/blueprint18';
+import { scoreBlueprint, tierFor, Tier } from './programStandard';
 
 /** Reference implementation of the standard. */
 export const REFERENCE_SPEC: ProgramFactorySpec = {
@@ -55,6 +56,32 @@ export function generateFactoryBlueprint(spec: ProgramFactorySpec): ModuleBluepr
       careerOutcome: isCapstone ? 'Employment + placement readiness' : `Capability in ${competency}`,
     } as ModuleBlueprint;
   });
+}
+
+// ---- Curriculum Excellence scorecard (per program) -------------------------
+export interface ScorecardRow {
+  key: string;
+  name: string;
+  evaluation: StandardEvaluation;
+  employability: number; // career_transformation dimension
+  ai: number;            // AI integration (AI woven through every module)
+  tier: Tier;
+  tierColor: string;
+  tierBadge: string;
+}
+
+function scorecardRow(spec: ProgramFactorySpec): ScorecardRow {
+  const modules = generateFactoryBlueprint(spec);
+  const evaluation = scoreBlueprint(modules, spec.programKey);
+  const employability = evaluation.dimensions.find((d) => d.id === 'career_transformation')?.score ?? 0;
+  const ai = modules.length ? Math.round((modules.filter((m) => Boolean(m.aiMentorFocus)).length / modules.length) * 100) : 0;
+  const t = tierFor(evaluation.ces);
+  return { key: spec.key, name: spec.name, evaluation, employability, ai, tier: t.tier, tierColor: t.color, tierBadge: t.badge };
+}
+
+/** Build the Curriculum Excellence scorecard for every known program. */
+export function buildScorecard(): ScorecardRow[] {
+  return [REFERENCE_SPEC, ...FUTURE_SPECS].map(scorecardRow);
 }
 
 /** The canonical per-module structure the standard requires (the module template). */

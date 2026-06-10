@@ -16,6 +16,16 @@ import {
 /** Minimum overall CES to be certified world-class. */
 export const WORLD_CLASS_CES = 85;
 
+export type Tier = 'Elite' | 'World Class' | 'Good' | 'Needs Improvement';
+
+/** Color-coded tier from a Curriculum Excellence Score. */
+export function tierFor(ces: number): { tier: Tier; color: string; badge: string } {
+  if (ces >= 95) return { tier: 'Elite', color: 'text-emerald-600', badge: 'bg-emerald-100 text-emerald-700 border-emerald-200' };
+  if (ces >= 90) return { tier: 'World Class', color: 'text-green-600', badge: 'bg-green-100 text-green-700 border-green-200' };
+  if (ces >= 80) return { tier: 'Good', color: 'text-amber-600', badge: 'bg-amber-100 text-amber-700 border-amber-200' };
+  return { tier: 'Needs Improvement', color: 'text-red-600', badge: 'bg-red-100 text-red-700 border-red-200' };
+}
+
 /** The 10 architectures every Aladiah program must follow (weights sum to 100). */
 export const PROGRAM_ARCHITECTURES: ArchitectureDef[] = [
   { id: 'module', name: 'Module Architecture', components: ['Lesson', 'AI Coach', 'Practice', 'Scenario', 'Knowledge Check', 'Reflection', 'Competency Mapping'], weight: 12, threshold: 80, critical: true },
