@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { BookOpen, Cpu, LayoutGrid, Megaphone, Search, ServerCog, ShieldCheck, Sparkles } from 'lucide-react';
+import { BookOpen, Cpu, GraduationCap, LayoutGrid, Megaphone, Search, ServerCog, ShieldCheck, Sparkles } from 'lucide-react';
 
 const LINKS = [
   { to: '/admin/ai-workforce', label: 'Control Center', icon: LayoutGrid },
@@ -9,6 +9,7 @@ const LINKS = [
   { to: '/admin/seo-agent', label: 'SEO', icon: Search },
   { to: '/admin/product-agent', label: 'Product', icon: BookOpen },
   { to: '/admin/qa-agent', label: 'QA', icon: ShieldCheck },
+  { to: '/admin/admissions-agent', label: 'Admissions', icon: GraduationCap },
   { to: '/admin', label: 'Admin', icon: ServerCog },
 ];
 

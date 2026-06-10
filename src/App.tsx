@@ -29,6 +29,7 @@ import SeoAgent from "./pages/admin/SeoAgent";
 import AIWorkforce from "./pages/admin/AIWorkforce";
 import ProductAgent from "./pages/admin/ProductAgent";
 import QAAgent from "./pages/admin/QAAgent";
+import AdmissionsAgent from "./pages/admin/AdmissionsAgent";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
@@ -105,6 +106,7 @@ const AppContent = () => {
         <Route path="/admin/seo-agent" element={<ProtectedRoute requireSubscription={false}><SeoAgent /></ProtectedRoute>} />
         <Route path="/admin/product-agent" element={<ProtectedRoute requireSubscription={false}><ProductAgent /></ProtectedRoute>} />
         <Route path="/admin/qa-agent" element={<ProtectedRoute requireSubscription={false}><QAAgent /></ProtectedRoute>} />
+        <Route path="/admin/admissions-agent" element={<ProtectedRoute requireSubscription={false}><AdmissionsAgent /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <RouterAwareFloat />
