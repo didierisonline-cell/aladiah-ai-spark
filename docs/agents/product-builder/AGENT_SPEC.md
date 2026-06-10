@@ -9,6 +9,13 @@ Competency Engine, so canon compliance is mandatory.
 
 - **Slug:** `product-builder` · **Name:** Product Builder Agent · **Cadence:** weekly (overnight-capable).
 - **Mission:** Continuously improve Aladiah Academy.
+- **Architecture:** This agent is a **Career Transformation Factory** of **ten engines**
+  that optimize for six outcomes — employment, promotion, salary growth, leadership
+  readiness, AI readiness, competency mastery — **not course completion.** The full
+  engine spec (Purpose · Inputs · Outputs · Quality Standards · KPIs · Data Model ·
+  Dashboard · Approval) is in **`CAREER_TRANSFORMATION_ARCHITECTURE.md`** (code mirror:
+  `src/services/agents/product/engines.ts`). Outcomes are tracked in `product_outcomes`;
+  each artifact records its `engine` and `target_outcomes`.
 
 A first-class AOS citizen (no parallel infrastructure):
 

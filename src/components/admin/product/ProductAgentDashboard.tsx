@@ -6,6 +6,7 @@ import {
   AlertTriangle,
   BookOpen,
   CheckSquare,
+  Cpu,
   FlaskConical,
   Library,
   Moon,
@@ -13,6 +14,7 @@ import {
   RefreshCw,
   ScanSearch,
   ShieldCheck,
+  TrendingUp,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { aos, AgentHealth } from '@/services/aos';
@@ -34,13 +36,15 @@ import ProductApprovalQueue from './ProductApprovalQueue';
 import ArtifactLibrary from './ArtifactLibrary';
 import CoverageGapsPanel from './CoverageGapsPanel';
 import QualityStandardCard from './QualityStandardCard';
+import EnginesPanel from './EnginesPanel';
+import OutcomesPanel from './OutcomesPanel';
 import AgentHealthPanel from '@/components/admin/aos/AgentHealthPanel';
 
 const PRODUCT_SLUG = 'product-builder';
 
 const EMPTY_STATS: ProductStats = {
   totalArtifacts: 0, pendingApproval: 0, approved: 0, openGaps: 0,
-  criticalGaps: 0, recommendations: 0, byType: [], coverage: [],
+  criticalGaps: 0, recommendations: 0, byType: [], byEngine: [], coverage: [], outcomes: [],
 };
 
 const ProductAgentDashboard = () => {
@@ -112,7 +116,7 @@ const ProductAgentDashboard = () => {
             Product Builder Agent
           </h1>
           <p className="text-sm text-muted-foreground">
-            Continuously improves Aladiah · overnight-capable · never publishes directly
+            Career Transformation Factory · 10 engines · optimizes for outcomes, not completion · overnight-capable · never publishes directly
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -148,13 +152,22 @@ const ProductAgentDashboard = () => {
             )}
           </TabsTrigger>
           <TabsTrigger value="artifacts"><Library className="w-3.5 h-3.5 mr-1" />Artifacts</TabsTrigger>
+          <TabsTrigger value="engines"><Cpu className="w-3.5 h-3.5 mr-1" />Engines</TabsTrigger>
+          <TabsTrigger value="outcomes"><TrendingUp className="w-3.5 h-3.5 mr-1" />Outcomes</TabsTrigger>
           <TabsTrigger value="gaps"><AlertTriangle className="w-3.5 h-3.5 mr-1" />Gaps & Recs</TabsTrigger>
           <TabsTrigger value="standard"><ShieldCheck className="w-3.5 h-3.5 mr-1" />Standard</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
+          <OutcomesPanel outcomes={stats.outcomes} />
           <CoverageGapsPanel coverage={stats.coverage} gaps={gaps} recommendations={recs} />
           <AgentHealthPanel health={health ? [health] : []} />
+        </TabsContent>
+        <TabsContent value="engines">
+          <EnginesPanel byEngine={stats.byEngine} />
+        </TabsContent>
+        <TabsContent value="outcomes">
+          <OutcomesPanel outcomes={stats.outcomes} />
         </TabsContent>
         <TabsContent value="approvals">
           <ProductApprovalQueue items={pending} onChange={refresh} />

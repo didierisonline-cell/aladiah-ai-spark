@@ -299,6 +299,131 @@ export function generateProject(input: GenerateProjectInput): DraftArtifact {
   };
 }
 
+// --- Career Transformation engine generators -------------------------------
+
+export function generateAssessment(program: string): DraftArtifact {
+  const comps = competenciesFor(program);
+  const questions = comps.map((c, i) => buildQuestion(c.slug, i));
+  return {
+    artifact_type: 'assessment',
+    title: `Diagnostic Assessment: ${program} competency baseline`,
+    summary: `A competency-spanning diagnostic that measures mastery across all ${comps.length} ${program} competencies to personalize the career path.`,
+    program,
+    competencies: comps.map((c) => c.slug),
+    payload: { questions, pass_threshold: 70, kind: 'diagnostic' } as unknown as Record<string, unknown>,
+    quality_score: 82,
+  };
+}
+
+export function generateInterviewPrep(program: string): DraftArtifact {
+  const comps = competenciesFor(program);
+  const focus = ['scrum:roles', 'scrum:team-dynamics', 'scrum:stakeholders', 'scrum:events'].filter((s) =>
+    comps.some((c) => c.slug === s),
+  );
+  const questions = [
+    { question: 'Tell me about a time you removed a major impediment for your team.', star_guidance: 'Situation, Task, Action (your facilitation), Result (flow improvement).', competency: 'scrum:team-dynamics' },
+    { question: 'How do you handle a stakeholder who bypasses the Product Owner?', star_guidance: 'Show coaching + protecting the Sprint Goal.', competency: 'scrum:stakeholders' },
+    { question: 'How do you coach a team toward self-management?', star_guidance: 'Servant leadership, not directing.', competency: 'scrum:roles' },
+  ];
+  return {
+    artifact_type: 'interview_prep',
+    title: `Interview Prep: ${program} role readiness`,
+    summary: `Role-specific interview pack — competency-aligned questions, STAR guidance, and a scored mock-interview rubric to maximize offers.`,
+    program,
+    competencies: focus.length ? focus : comps.slice(0, 3).map((c) => c.slug),
+    payload: {
+      role: 'Scrum Master',
+      questions,
+      mock_rubric: questions.map((q) => ({ competency: q.competency, criteria: `Strong, structured answer demonstrating ${q.competency}.` })),
+    } as unknown as Record<string, unknown>,
+    quality_score: 84,
+  };
+}
+
+export function generateCareerPlan(program: string, outcome = 'Land a Scrum Master role and grow into Agile leadership'): DraftArtifact {
+  const comps = competenciesFor(program);
+  return {
+    artifact_type: 'career_plan',
+    title: `Career Transformation Plan: ${program} → employment & growth`,
+    summary: `An outcome-driven plan (Learn → Practice → Simulate → Validate → Interview → Place → Grow) targeting employment, salary growth, and promotion — career transformation, not course completion.`,
+    program,
+    competencies: comps.map((c) => c.slug),
+    payload: {
+      goal: outcome,
+      target_role: 'Scrum Master',
+      milestones: [
+        { phase: 'Learn', activities: ['Complete competency modules'], outcome: 'competency_mastery' },
+        { phase: 'Practice', activities: ['Labs + assessments'], outcome: 'competency_mastery' },
+        { phase: 'Simulate', activities: ['Stakeholder + leadership simulations'], outcome: 'leadership_readiness' },
+        { phase: 'Validate', activities: ['Capstone project + Aladiah Profile'], outcome: 'employment' },
+        { phase: 'Interview', activities: ['Interview prep + mocks'], outcome: 'employment' },
+        { phase: 'Place', activities: ['Employer alignment + matching'], outcome: 'employment' },
+        { phase: 'Grow', activities: ['Leadership track'], outcome: 'promotion' },
+      ],
+    } as unknown as Record<string, unknown>,
+    quality_score: 86,
+  };
+}
+
+export function generateEmployerAlignment(program: string): DraftArtifact {
+  const comps = competenciesFor(program);
+  return {
+    artifact_type: 'employer_alignment',
+    title: `Employer Alignment: ${program} role requirements map`,
+    summary: `Maps real Scrum Master job requirements to Aladiah competencies and an employer-readiness rubric, so capability is visible and trusted by employers.`,
+    program,
+    competencies: comps.map((c) => c.slug),
+    payload: {
+      role: 'Scrum Master',
+      requirements: [
+        { requirement: 'Facilitates all Scrum events effectively', competency: 'scrum:events' },
+        { requirement: 'Coaches the team toward self-management', competency: 'scrum:team-dynamics' },
+        { requirement: 'Manages stakeholders and removes impediments', competency: 'scrum:stakeholders' },
+        { requirement: 'Uses flow metrics for improvement', competency: 'scrum:delivery-metrics' },
+      ],
+      readiness_rubric: comps.map((c) => ({ competency: c.slug, criteria: `Employer-ready evidence of ${c.label}.` })),
+    } as unknown as Record<string, unknown>,
+    quality_score: 83,
+  };
+}
+
+export function generateAIReadiness(program: string): DraftArtifact {
+  const comps = competenciesFor(program);
+  return {
+    artifact_type: 'ai_readiness',
+    title: `AI Readiness: AI-augmented ${program} practitioner`,
+    summary: `Builds AI-readiness atop ${program} competency — using AI tools to facilitate, analyze flow, and accelerate delivery, with measurable AI-fluency outcomes.`,
+    program,
+    competencies: comps.slice(0, 4).map((c) => c.slug),
+    payload: {
+      ai_skills: ['Prompting for facilitation', 'AI-assisted backlog refinement', 'AI flow-metric analysis', 'AI retrospective synthesis'],
+      practices: ['Use an AI coach during simulations', 'AI feedback on interview answers'],
+      assessment: 'Scored AI-readiness checkpoint mapped to competency application.',
+    } as unknown as Record<string, unknown>,
+    quality_score: 81,
+  };
+}
+
+export function generateOutcomePlan(program: string): DraftArtifact {
+  const comps = competenciesFor(program);
+  return {
+    artifact_type: 'outcome_plan',
+    title: `Outcome Improvement Plan: ${program}`,
+    summary: `Targets the six transformation outcomes (employment, promotion, salary growth, leadership readiness, AI readiness, competency mastery) and prioritizes the work that moves them.`,
+    program,
+    competencies: comps.map((c) => c.slug),
+    payload: {
+      outcomes: [
+        { metric: 'employment', actions: ['Ship interview-prep + employer-alignment artifacts'] },
+        { metric: 'leadership_readiness', actions: ['Add leadership simulations'] },
+        { metric: 'ai_readiness', actions: ['Embed AI-readiness module'] },
+        { metric: 'competency_mastery', actions: ['Close weak competency coverage'] },
+      ],
+    } as unknown as Record<string, unknown>,
+    quality_score: 80,
+  };
+}
+
 export function generateLearningPath(input: GenerateLearningPathInput): DraftArtifact {
   const comps = competenciesFor(input.program);
   const steps: LearningPathPayload['steps'] = comps.map((c, i) => ({

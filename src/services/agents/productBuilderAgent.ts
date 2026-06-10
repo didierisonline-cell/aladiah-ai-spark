@@ -35,14 +35,22 @@ import {
 import { competenciesFor, labelFor, SCRUM_COMPETENCIES } from './product/taxonomy';
 import {
   DraftArtifact,
+  generateAIReadiness,
+  generateAssessment,
+  generateCareerPlan,
+  generateEmployerAlignment,
+  generateInterviewPrep,
   generateLab,
   generateLearningPath,
   generateModule,
+  generateOutcomePlan,
   generateProject,
   generateQuiz,
   generateSimulation,
 } from './product/generators';
+import { engineForType, outcomesForType } from './product/engines';
 import { runQualityChecks } from './product/quality';
+import { ProductOutcome, TransformationOutcome } from '@/types/product';
 
 const SLUG = 'product-builder';
 const ARTIFACTS = 'product_artifacts';
@@ -108,6 +116,8 @@ async function persistArtifact(
       summary: draft.summary,
       program: draft.program,
       competencies: draft.competencies,
+      engine: engineForType(draft.artifact_type),
+      target_outcomes: outcomesForType(draft.artifact_type),
       payload: draft.payload,
       quality_score: report.score,
       status,
@@ -151,6 +161,46 @@ export const buildProject = (program: string, runId?: string | null) =>
   persistArtifact(generateProject({ program }), { runId });
 export const buildLearningPath = (program: string, runId?: string | null) =>
   persistArtifact(generateLearningPath({ program }), { runId });
+
+// Career Transformation engines
+export const buildAssessment = (program: string, runId?: string | null) =>
+  persistArtifact(generateAssessment(program), { runId });
+export const buildInterviewPrep = (program: string, runId?: string | null) =>
+  persistArtifact(generateInterviewPrep(program), { runId });
+export const buildCareerPlan = (program: string, runId?: string | null) =>
+  persistArtifact(generateCareerPlan(program), { runId });
+export const buildEmployerAlignment = (program: string, runId?: string | null) =>
+  persistArtifact(generateEmployerAlignment(program), { runId });
+export const buildAIReadiness = (program: string, runId?: string | null) =>
+  persistArtifact(generateAIReadiness(program), { runId });
+export const buildOutcomePlan = (program: string, runId?: string | null) =>
+  persistArtifact(generateOutcomePlan(program), { runId });
+
+// ---------------------------------------------------------------------------
+// Student Outcome Engine — the six transformation KPIs (honest data only)
+// ---------------------------------------------------------------------------
+export async function listOutcomes(program = 'scrum'): Promise<ProductOutcome[]> {
+  const { data } = await db.from('product_outcomes').select('*').eq('program', program).order('metric');
+  return (data as ProductOutcome[]) ?? [];
+}
+
+export async function recordOutcome(
+  metric: TransformationOutcome,
+  value: number,
+  opts: { program?: string; period?: string; target?: number; source?: string } = {},
+): Promise<boolean> {
+  const row = {
+    metric,
+    program: opts.program ?? 'scrum',
+    period: opts.period ?? 'all_time',
+    value,
+    target: opts.target,
+    source: opts.source ?? 'product-builder',
+    updated_at: nowISO(),
+  };
+  const { error } = await db.from('product_outcomes').upsert(row, { onConflict: 'metric,program,period' });
+  return !error;
+}
 
 // ---------------------------------------------------------------------------
 // Curriculum gap analysis (reads live quiz_questions READ-ONLY)
@@ -297,8 +347,16 @@ export async function runOvernightImprovement(
     record(await buildQuiz(program, area.competency, 4, runId));
     record(await buildLab(program, 'Sprint Retrospective', runId));
   }
-  // One simulation + one learning path per overnight run.
+  // Per-run transformation artifacts — this is a Career Transformation Factory,
+  // not a course factory: it ships assessment → simulation → interview prep →
+  // employer alignment → AI readiness → career plan, all optimizing for the six
+  // transformation outcomes.
+  record(await buildAssessment(program, runId));
   record(await buildSimulation(program, runId));
+  record(await buildInterviewPrep(program, runId));
+  record(await buildEmployerAlignment(program, runId));
+  record(await buildAIReadiness(program, runId));
+  record(await buildCareerPlan(program, runId));
   record(await buildLearningPath(program, runId));
 
   // 7. (statuses already set by the quality gate during persist)
@@ -401,14 +459,19 @@ export async function listRecommendations(): Promise<ProductRecommendation[]> {
 }
 
 export async function getStats(program = 'scrum'): Promise<ProductStats> {
-  const [artifacts, gaps, recs, coverage] = await Promise.all([
+  const [artifacts, gaps, recs, coverage, outcomes] = await Promise.all([
     listArtifacts({ limit: 1000 }),
     listGaps(),
     listRecommendations(),
     computeCoverage(program),
+    listOutcomes(program),
   ]);
   const byTypeMap = new Map<ArtifactType, number>();
-  for (const a of artifacts) byTypeMap.set(a.artifact_type, (byTypeMap.get(a.artifact_type) ?? 0) + 1);
+  const byEngineMap = new Map<string, number>();
+  for (const a of artifacts) {
+    byTypeMap.set(a.artifact_type, (byTypeMap.get(a.artifact_type) ?? 0) + 1);
+    if (a.engine) byEngineMap.set(a.engine, (byEngineMap.get(a.engine) ?? 0) + 1);
+  }
   return {
     totalArtifacts: artifacts.length,
     pendingApproval: artifacts.filter((a) => a.status === 'pending_approval').length,
@@ -417,7 +480,9 @@ export async function getStats(program = 'scrum'): Promise<ProductStats> {
     criticalGaps: gaps.filter((g) => g.status === 'open' && (g.severity === 'high' || g.severity === 'critical')).length,
     recommendations: recs.filter((r) => r.status === 'pending').length,
     byType: [...byTypeMap.entries()].map(([type, count]) => ({ type, count })),
+    byEngine: [...byEngineMap.entries()].map(([engine, count]) => ({ engine, count })),
     coverage,
+    outcomes,
   };
 }
 

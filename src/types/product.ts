@@ -11,7 +11,65 @@ export type ArtifactType =
   | 'simulation'
   | 'lab'
   | 'project'
-  | 'learning_path';
+  | 'learning_path'
+  | 'assessment'
+  | 'interview_prep'
+  | 'career_plan'
+  | 'employer_alignment'
+  | 'ai_readiness'
+  | 'outcome_plan';
+
+// ---- Career Transformation engines + outcomes ------------------------------
+// The Product Builder is a Career Transformation Factory of ten engines.
+// See docs/agents/product-builder/CAREER_TRANSFORMATION_ARCHITECTURE.md.
+
+export type EngineId =
+  | 'competency'
+  | 'assessment'
+  | 'simulation'
+  | 'lab'
+  | 'project'
+  | 'interview_prep'
+  | 'career_transformation'
+  | 'employer_alignment'
+  | 'ai_integration'
+  | 'student_outcome';
+
+/** The six transformation outcomes the factory optimizes for (not completion). */
+export type TransformationOutcome =
+  | 'employment'
+  | 'promotion'
+  | 'salary_growth'
+  | 'leadership_readiness'
+  | 'ai_readiness'
+  | 'competency_mastery';
+
+export interface EngineDef {
+  id: EngineId;
+  name: string;
+  purpose: string;
+  inputs: string[];
+  outputs: string[];
+  qualityStandards: string[];
+  kpis: string[];
+  approval: string;
+  artifactTypes: ArtifactType[];
+  targetOutcomes: TransformationOutcome[];
+}
+
+export interface ProductOutcome {
+  id: string;
+  metric: TransformationOutcome;
+  program: string | null;
+  period: string;
+  value: number;
+  target: number | null;
+  unit: string | null;
+  source: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 export type ArtifactStatus =
   | 'draft'
@@ -92,6 +150,9 @@ export interface ProductArtifact {
   course_ref: string | null;
   module_ref: string | null;
   competencies: string[];
+  engine: string | null;
+  target_outcomes: string[];
+  outcome_signals: Record<string, unknown>;
   payload: Record<string, unknown>;
   quality_score: number | null;
   status: ArtifactStatus;
@@ -151,7 +212,9 @@ export interface ProductStats {
   criticalGaps: number;
   recommendations: number;
   byType: { type: ArtifactType; count: number }[];
+  byEngine: { engine: string; count: number }[];
   coverage: { competency: string; label: string; questions: number; status: 'covered' | 'weak' | 'missing' }[];
+  outcomes: ProductOutcome[];
 }
 
 export type ProductTaskKind =
