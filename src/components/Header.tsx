@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Logo from '@/components/Logo';
 import { supabase } from '@/integrations/supabase/client';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 
 function getStoredUser(): any | null {
   try {
@@ -33,6 +34,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
   const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { isAdmin } = useIsAdmin();
 
   const isPortal = pathname.startsWith('/portal') || pathname.startsWith('/resume-studio') || pathname.startsWith('/interview') || pathname.startsWith('/admin') || pathname.startsWith('/course') || pathname.startsWith('/chapter');
 
@@ -53,6 +55,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
     { labelKey: 'nav.career', href: '/portal/career' },
     { labelKey: 'nav.community', href: '/community' },
     { labelKey: 'nav.resources', href: '/portal/resources' },
+    ...(isAdmin ? [{ label: 'AI Workforce', href: '/admin/ai-workforce' }] : []),
   ];
 
   const navItems = isPortal ? portalNavItems : publicNavItems;

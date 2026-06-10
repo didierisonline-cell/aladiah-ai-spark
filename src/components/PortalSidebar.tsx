@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 
@@ -12,6 +13,7 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const { language } = useLanguage();
   const T = (key: string) => overviewT(language || 'en', key);
 
@@ -73,6 +75,14 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
             </button>
           );
         })}
+        {isAdmin && (
+          <>
+            <div style={{ padding: '12px 15px 4px', fontSize: 9, fontWeight: 700, letterSpacing: '.18em', textTransform: 'uppercase', color: '#2a3a55' }}>AI Workforce</div>
+            <button onClick={() => navigate('/admin/ai-workforce')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: location.pathname.startsWith('/admin') ? '#fff' : '#818cf8', fontSize: 13, fontWeight: location.pathname.startsWith('/admin') ? 700 : 600, cursor: 'pointer', border: 'none', background: location.pathname.startsWith('/admin') ? 'linear-gradient(90deg,rgba(124,58,237,.22),rgba(99,102,241,.05))' : 'none', borderLeft: `3px solid ${location.pathname.startsWith('/admin') ? '#7c3aed' : 'transparent'}`, width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
+              <span style={{ fontSize: 15, width: 18, textAlign: 'center', flexShrink: 0 }}>🛰️</span>Command Center
+            </button>
+          </>
+        )}
         <div style={{ padding: '12px 15px 4px', fontSize: 9, fontWeight: 700, letterSpacing: '.18em', textTransform: 'uppercase', color: '#2a3a55' }}>{T('account')}</div>
         <button onClick={() => navigate('/portal/settings')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
           <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>⚙️</span>{T('settings')}

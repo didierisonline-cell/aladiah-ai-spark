@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import AdminRoute from "@/components/AdminRoute";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { useCartSync } from "@/hooks/useCartSync";
 import Index from "./pages/Index";
@@ -35,6 +36,7 @@ import PlacementAgent from "./pages/admin/PlacementAgent";
 import AnalyticsAgent from "./pages/admin/AnalyticsAgent";
 import OperationsAgent from "./pages/admin/OperationsAgent";
 import CurriculumExcellence from "./pages/admin/CurriculumExcellence";
+import Approvals from "./pages/admin/Approvals";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
@@ -103,20 +105,21 @@ const AppContent = () => {
         {/* Tools */}
         <Route path="/resume-studio" element={<ProtectedRoute><ResumeStudio /></ProtectedRoute>} />
         <Route path="/interview" element={<ProtectedRoute><InterviewSimulator /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute requireSubscription={false}><AdminDashboard /></ProtectedRoute>} />
-        <Route path="/admin/ai-workforce" element={<ProtectedRoute requireSubscription={false}><AIWorkforce /></ProtectedRoute>} />
-        <Route path="/admin/command-center" element={<ProtectedRoute requireSubscription={false}><CommandCenter /></ProtectedRoute>} />
-        <Route path="/admin/agent-os" element={<ProtectedRoute requireSubscription={false}><AgentOS /></ProtectedRoute>} />
-        <Route path="/admin/marketing-agent" element={<ProtectedRoute requireSubscription={false}><MarketingAgent /></ProtectedRoute>} />
-        <Route path="/admin/seo-agent" element={<ProtectedRoute requireSubscription={false}><SeoAgent /></ProtectedRoute>} />
-        <Route path="/admin/product-agent" element={<ProtectedRoute requireSubscription={false}><ProductAgent /></ProtectedRoute>} />
-        <Route path="/admin/qa-agent" element={<ProtectedRoute requireSubscription={false}><QAAgent /></ProtectedRoute>} />
-        <Route path="/admin/admissions-agent" element={<ProtectedRoute requireSubscription={false}><AdmissionsAgent /></ProtectedRoute>} />
-        <Route path="/admin/student-success" element={<ProtectedRoute requireSubscription={false}><StudentSuccessAgent /></ProtectedRoute>} />
-        <Route path="/admin/placement-agent" element={<ProtectedRoute requireSubscription={false}><PlacementAgent /></ProtectedRoute>} />
-        <Route path="/admin/analytics" element={<ProtectedRoute requireSubscription={false}><AnalyticsAgent /></ProtectedRoute>} />
-        <Route path="/admin/operations" element={<ProtectedRoute requireSubscription={false}><OperationsAgent /></ProtectedRoute>} />
-        <Route path="/admin/curriculum-excellence" element={<ProtectedRoute requireSubscription={false}><CurriculumExcellence /></ProtectedRoute>} />
+        <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+        <Route path="/admin/ai-workforce" element={<AdminRoute><AIWorkforce /></AdminRoute>} />
+        <Route path="/admin/approvals" element={<AdminRoute><Approvals /></AdminRoute>} />
+        <Route path="/admin/command-center" element={<AdminRoute><CommandCenter /></AdminRoute>} />
+        <Route path="/admin/agent-os" element={<AdminRoute><AgentOS /></AdminRoute>} />
+        <Route path="/admin/marketing-agent" element={<AdminRoute><MarketingAgent /></AdminRoute>} />
+        <Route path="/admin/seo-agent" element={<AdminRoute><SeoAgent /></AdminRoute>} />
+        <Route path="/admin/product-agent" element={<AdminRoute><ProductAgent /></AdminRoute>} />
+        <Route path="/admin/qa-agent" element={<AdminRoute><QAAgent /></AdminRoute>} />
+        <Route path="/admin/admissions-agent" element={<AdminRoute><AdmissionsAgent /></AdminRoute>} />
+        <Route path="/admin/student-success" element={<AdminRoute><StudentSuccessAgent /></AdminRoute>} />
+        <Route path="/admin/placement-agent" element={<AdminRoute><PlacementAgent /></AdminRoute>} />
+        <Route path="/admin/analytics" element={<AdminRoute><AnalyticsAgent /></AdminRoute>} />
+        <Route path="/admin/operations" element={<AdminRoute><OperationsAgent /></AdminRoute>} />
+        <Route path="/admin/curriculum-excellence" element={<AdminRoute><CurriculumExcellence /></AdminRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <RouterAwareFloat />
