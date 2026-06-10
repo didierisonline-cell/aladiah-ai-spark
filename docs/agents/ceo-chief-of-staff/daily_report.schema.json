@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aladiah.academy/schemas/agents/ceo-chief-of-staff/daily_report.json",
+  "title": "Aladiah CEO Chief of Staff — Daily Command Report",
+  "description": "Structured contract for the daily CEO command report (blueprint v1, §6). Mirrors src/types/agentReports.ts and the agent_reports JSONB columns.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "report_date",
+    "agent_name",
+    "urgency_level",
+    "executive_summary",
+    "revenue",
+    "students",
+    "product",
+    "platform",
+    "marketing",
+    "sales",
+    "risks",
+    "recommended_ceo_actions"
+  ],
+  "properties": {
+    "report_date": { "type": "string", "format": "date" },
+    "agent_name": { "type": "string" },
+    "urgency_level": {
+      "type": "string",
+      "enum": ["normal", "elevated", "high", "critical"]
+    },
+    "executive_summary": { "type": "string" },
+    "revenue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["new_paid_students", "mrr", "revenue_today", "failed_payments", "cancellations", "notes"],
+      "properties": {
+        "new_paid_students": { "type": "integer" },
+        "mrr": { "type": "number" },
+        "revenue_today": { "type": "number" },
+        "failed_payments": { "type": "integer" },
+        "cancellations": { "type": "integer" },
+        "notes": { "type": "string" }
+      }
+    },
+    "students": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["new_signups", "active_students", "inactive_students", "quiz_failures", "students_needing_help", "notes"],
+      "properties": {
+        "new_signups": { "type": "integer" },
+        "active_students": { "type": "integer" },
+        "inactive_students": { "type": "integer" },
+        "quiz_failures": { "type": "integer" },
+        "students_needing_help": { "type": "integer" },
+        "notes": { "type": "string" }
+      }
+    },
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["new_lessons_created", "new_modules_completed", "new_simulations_created", "content_gaps", "notes"],
+      "properties": {
+        "new_lessons_created": { "type": "integer" },
+        "new_modules_completed": { "type": "integer" },
+        "new_simulations_created": { "type": "integer" },
+        "content_gaps": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "string" }
+      }
+    },
+    "platform": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["website_status", "signup_flow_status", "payment_flow_status", "broken_links", "errors_detected", "notes"],
+      "properties": {
+        "website_status": { "type": "string" },
+        "signup_flow_status": { "type": "string" },
+        "payment_flow_status": { "type": "string" },
+        "broken_links": { "type": "array", "items": { "type": "string" } },
+        "errors_detected": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "string" }
+      }
+    },
+    "marketing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["posts_published", "top_content", "website_visitors", "leads_generated", "notes"],
+      "properties": {
+        "posts_published": { "type": "integer" },
+        "top_content": { "type": "string" },
+        "website_visitors": { "type": "integer" },
+        "leads_generated": { "type": "integer" },
+        "notes": { "type": "string" }
+      }
+    },
+    "sales": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["new_inquiries", "hot_leads", "unanswered_messages", "webinar_signups", "notes"],
+      "properties": {
+        "new_inquiries": { "type": "integer" },
+        "hot_leads": { "type": "integer" },
+        "unanswered_messages": { "type": "integer" },
+        "webinar_signups": { "type": "integer" },
+        "notes": { "type": "string" }
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["risk", "category", "severity", "recommended_response"],
+        "properties": {
+          "risk": { "type": "string" },
+          "category": { "type": "string" },
+          "severity": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+          "recommended_response": { "type": "string" }
+        }
+      }
+    },
+    "recommended_ceo_actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["action", "reason", "priority", "estimated_impact"],
+        "properties": {
+          "action": { "type": "string" },
+          "reason": { "type": "string" },
+          "priority": { "type": "string", "enum": ["low", "medium", "high"] },
+          "estimated_impact": { "type": "string" }
+        }
+      }
+    }
+  }
+}

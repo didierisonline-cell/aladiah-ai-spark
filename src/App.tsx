@@ -22,6 +22,7 @@ import MarketingKit from "./pages/MarketingKit";
 import ReferralProfile from "./pages/ReferralProfile";
 import StudentPortal from "./pages/StudentPortal";
 import AdminDashboard from "./pages/AdminDashboard";
+import CommandCenter from "./pages/admin/CommandCenter";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
@@ -91,6 +92,7 @@ const AppContent = () => {
         <Route path="/resume-studio" element={<ProtectedRoute><ResumeStudio /></ProtectedRoute>} />
         <Route path="/interview" element={<ProtectedRoute><InterviewSimulator /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute requireSubscription={false}><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/command-center" element={<ProtectedRoute requireSubscription={false}><CommandCenter /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <RouterAwareFloat />
