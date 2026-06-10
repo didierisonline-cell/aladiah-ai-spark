@@ -10,10 +10,13 @@ import { remember } from './memory';
 import { AgentRunOutput, RunContext } from '@/types/aos';
 import { runCeoChiefOfStaffAgent } from '@/services/agents/ceoChiefOfStaffAgent';
 import { marketingRunner } from '@/services/agents/marketingContentAgent';
+import { seoRunner } from '@/services/agents/seoStrategyAgent';
 
 const CEO_SYSTEM_PROMPT = `You are the Aladiah CEO Chief of Staff Agent. You work directly for the founder of Aladiah Academy. Monitor the entire business daily and produce a clear executive command report (Revenue, Student Activity, Product, Platform Health, Marketing, Sales/Admissions, Risks, Recommended CEO Actions). Be clear, direct, never exaggerate, separate facts from recommendations, always recommend the top 3 CEO actions, never fabricate data, and preserve Aladiah's mission: career transformation through AI-powered learning.`;
 
 const MARKETING_SYSTEM_PROMPT = `You are the Aladiah Marketing Content Agent — a world-class AI marketing department for Aladiah Academy. Your goal is awareness, authority, leads, and student enrollments. Produce high-quality assets for LinkedIn, Facebook, Instagram, blog, email, YouTube, webinars, and lead magnets that reflect Aladiah's mission: career transformation (not course completion) through AI-powered learning, simulations, coaching, and an employer-trusted profile — Africa & Caribbean first. Match each platform's voice, lead with a strong hook, always include a clear CTA, and ground claims in real outcomes. Never publish directly: every asset enters the approval queue for the founder to approve, reject, or edit.`;
+
+const SEO_SYSTEM_PROMPT = `You are the Aladiah SEO Strategy Agent — a world-class SEO department for Aladiah Academy. You own organic discovery: keyword research, topic clusters (pillar + supporting + internal links), competitor analysis (Coursera, Udemy, Simplilearn, Scrum.org, PMI, Google Career Certificates), and on-page audits. You decide what content/keywords/landing pages/clusters/links Aladiah needs. You do NOT write marketing content yourself — you generate SEO strategy and delegate content requests to the Marketing Content Agent through the Task Manager. Prioritize keywords by opportunity (volume vs difficulty vs intent) and always tie strategy back to enrollments and Aladiah's career-transformation mission.`;
 
 // ---- CEO Chief of Staff runner --------------------------------------------
 const ceoRunner = async (ctx: RunContext): Promise<AgentRunOutput> => {
@@ -48,6 +51,7 @@ export async function ensureAOS(): Promise<void> {
 
   registerRunner('ceo-chief-of-staff', ceoRunner);
   registerRunner('marketing-content', marketingRunner);
+  registerRunner('seo-strategy', seoRunner);
 
   // Keep the registry rows authoritative from code too (upsert on slug).
   await registerAgent({
@@ -75,6 +79,20 @@ export async function ensureAOS(): Promise<void> {
     cadence: 'daily',
     system_prompt: MARKETING_SYSTEM_PROMPT,
     // Note: publish=false + human_approval_required=true enforce the approval rule.
+    permissions: { read: true, write: true, publish: false, admin: false, human_approval_required: true },
+    config: { maxAttempts: 2 },
+  });
+
+  await registerAgent({
+    slug: 'seo-strategy',
+    name: 'SEO Strategy Agent',
+    role: 'Owns organic discovery — keywords, clusters, competitors, audits',
+    description:
+      'Determines what content/keywords/landing pages/clusters/links Aladiah needs and delegates content creation to the Marketing Content Agent via the Task Manager. Does not create content itself.',
+    status: 'active',
+    priority: 25,
+    cadence: 'daily',
+    system_prompt: SEO_SYSTEM_PROMPT,
     permissions: { read: true, write: true, publish: false, admin: false, human_approval_required: true },
     config: { maxAttempts: 2 },
   });
