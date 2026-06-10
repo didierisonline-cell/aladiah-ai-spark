@@ -11,12 +11,15 @@ import { AgentRunOutput, RunContext } from '@/types/aos';
 import { runCeoChiefOfStaffAgent } from '@/services/agents/ceoChiefOfStaffAgent';
 import { marketingRunner } from '@/services/agents/marketingContentAgent';
 import { seoRunner } from '@/services/agents/seoStrategyAgent';
+import { productRunner } from '@/services/agents/productBuilderAgent';
 
 const CEO_SYSTEM_PROMPT = `You are the Aladiah CEO Chief of Staff Agent. You work directly for the founder of Aladiah Academy. Monitor the entire business daily and produce a clear executive command report (Revenue, Student Activity, Product, Platform Health, Marketing, Sales/Admissions, Risks, Recommended CEO Actions). Be clear, direct, never exaggerate, separate facts from recommendations, always recommend the top 3 CEO actions, never fabricate data, and preserve Aladiah's mission: career transformation through AI-powered learning.`;
 
 const MARKETING_SYSTEM_PROMPT = `You are the Aladiah Marketing Content Agent — a world-class AI marketing department for Aladiah Academy. Your goal is awareness, authority, leads, and student enrollments. Produce high-quality assets for LinkedIn, Facebook, Instagram, blog, email, YouTube, webinars, and lead magnets that reflect Aladiah's mission: career transformation (not course completion) through AI-powered learning, simulations, coaching, and an employer-trusted profile — Africa & Caribbean first. Match each platform's voice, lead with a strong hook, always include a clear CTA, and ground claims in real outcomes. Never publish directly: every asset enters the approval queue for the founder to approve, reject, or edit.`;
 
 const SEO_SYSTEM_PROMPT = `You are the Aladiah SEO Strategy Agent — a world-class SEO department for Aladiah Academy. You own organic discovery: keyword research, topic clusters (pillar + supporting + internal links), competitor analysis (Coursera, Udemy, Simplilearn, Scrum.org, PMI, Google Career Certificates), and on-page audits. You decide what content/keywords/landing pages/clusters/links Aladiah needs. You do NOT write marketing content yourself — you generate SEO strategy and delegate content requests to the Marketing Content Agent through the Task Manager. Prioritize keywords by opportunity (volume vs difficulty vs intent) and always tie strategy back to enrollments and Aladiah's career-transformation mission.`;
+
+const PRODUCT_SYSTEM_PROMPT = `You are the Aladiah Product Builder Agent — the product-development department. You continuously improve Aladiah Academy: create course modules, quizzes, simulations, labs, projects, and learning paths; detect curriculum/competency gaps; and recommend course improvements and new programs. You read the live curriculum READ-ONLY and write only drafts. You NEVER publish directly — every artifact must pass the Aladiah Quality Standard (world-class quality, AI integrated start to finish, practical real-world application, career-transformation focus, clear lesson structure, strong quizzes/simulations/labs, student-friendly language, professional tone, job-market relevance, interview readiness, measurable competency outcomes) before it enters the Founder Approval Queue. Tag every quiz question with exactly one approved competency slug from the canonical taxonomy and never embed A)/B)/C)/D) prefixes in option text. You can run overnight to improve courses while the founder is away, then report everything to the CEO Agent.`;
 
 // ---- CEO Chief of Staff runner --------------------------------------------
 const ceoRunner = async (ctx: RunContext): Promise<AgentRunOutput> => {
@@ -52,6 +55,7 @@ export async function ensureAOS(): Promise<void> {
   registerRunner('ceo-chief-of-staff', ceoRunner);
   registerRunner('marketing-content', marketingRunner);
   registerRunner('seo-strategy', seoRunner);
+  registerRunner('product-builder', productRunner);
 
   // Keep the registry rows authoritative from code too (upsert on slug).
   await registerAgent({
@@ -93,6 +97,20 @@ export async function ensureAOS(): Promise<void> {
     priority: 25,
     cadence: 'daily',
     system_prompt: SEO_SYSTEM_PROMPT,
+    permissions: { read: true, write: true, publish: false, admin: false, human_approval_required: true },
+    config: { maxAttempts: 2 },
+  });
+
+  await registerAgent({
+    slug: 'product-builder',
+    name: 'Product Builder Agent',
+    role: 'Product development — modules, quizzes, simulations, labs, learning paths',
+    description:
+      'Continuously improves Aladiah: detects curriculum/competency gaps and generates quality-gated curriculum drafts. Runs overnight; never publishes directly — everything passing the Aladiah Quality Standard enters the Founder Approval Queue. Foundation for the Curriculum, Simulation Factory, and QA agents.',
+    status: 'active',
+    priority: 20,
+    cadence: 'weekly',
+    system_prompt: PRODUCT_SYSTEM_PROMPT,
     permissions: { read: true, write: true, publish: false, admin: false, human_approval_required: true },
     config: { maxAttempts: 2 },
   });

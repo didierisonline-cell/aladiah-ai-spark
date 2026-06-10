@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Cpu, LayoutGrid, Megaphone, Search, ServerCog, Sparkles } from 'lucide-react';
+import { BookOpen, Cpu, LayoutGrid, Megaphone, Search, ServerCog, Sparkles } from 'lucide-react';
 
 const LINKS = [
   { to: '/admin/ai-workforce', label: 'Control Center', icon: LayoutGrid },
@@ -7,6 +7,7 @@ const LINKS = [
   { to: '/admin/agent-os', label: 'Agent OS', icon: Cpu },
   { to: '/admin/marketing-agent', label: 'Marketing', icon: Megaphone },
   { to: '/admin/seo-agent', label: 'SEO', icon: Search },
+  { to: '/admin/product-agent', label: 'Product', icon: BookOpen },
   { to: '/admin', label: 'Admin', icon: ServerCog },
 ];
 
