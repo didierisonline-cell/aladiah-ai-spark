@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import Header from '@/components/Header';
+import WorkforceNav from '@/components/admin/WorkforceNav';
 import {
   BarChart3, Users, DollarSign, TrendingUp, Activity, Clock,
   Bot, BookOpen, FlaskConical, Globe, Award, Target,
@@ -188,6 +189,7 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 py-8 pt-24 max-w-7xl">
+        <WorkforceNav />
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">

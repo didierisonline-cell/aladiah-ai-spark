@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import CommandCenterDashboard from '@/components/admin/CommandCenterDashboard';
+import WorkforceNav from '@/components/admin/WorkforceNav';
 import {
   getLatestReport,
   runCeoChiefOfStaffAgent,
@@ -68,6 +69,7 @@ const CommandCenter = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="max-w-7xl mx-auto px-4 py-8">
+        <WorkforceNav />
         <CommandCenterDashboard
           report={report}
           loading={loading}

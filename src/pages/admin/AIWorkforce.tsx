@@ -2,14 +2,14 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import { useAuth } from '@/hooks/useAuth';
-import AgentOSDashboard from '@/components/admin/aos/AgentOSDashboard';
 import WorkforceNav from '@/components/admin/WorkforceNav';
+import AIWorkforceDashboard from '@/components/admin/workforce/AIWorkforceDashboard';
 
 /**
- * /admin/agent-os
- * Control plane for the Aladiah Agent Operating System (AOS).
+ * /admin/ai-workforce
+ * The unified master control center for the entire Aladiah AI Workforce.
  */
-const AgentOS = () => {
+const AIWorkforce = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -22,10 +22,10 @@ const AgentOS = () => {
       <Header />
       <main className="max-w-7xl mx-auto px-4 py-8">
         <WorkforceNav />
-        <AgentOSDashboard />
+        <AIWorkforceDashboard />
       </main>
     </div>
   );
 };
 
-export default AgentOS;
+export default AIWorkforce;
