@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import AdminRoute from "@/components/AdminRoute";
+import FounderRoute, { FounderRedirect } from "@/components/FounderRoute";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { useCartSync } from "@/hooks/useCartSync";
 import Index from "./pages/Index";
@@ -37,6 +37,8 @@ import AnalyticsAgent from "./pages/admin/AnalyticsAgent";
 import OperationsAgent from "./pages/admin/OperationsAgent";
 import CurriculumExcellence from "./pages/admin/CurriculumExcellence";
 import Approvals from "./pages/admin/Approvals";
+import FounderPortal from "./pages/founder/FounderPortal";
+import FounderControlCenter from "./pages/founder/FounderControlCenter";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
@@ -91,7 +93,7 @@ const AppContent = () => {
         <Route path="/refer/:code" element={<ReferralProfile />} />
         <Route path="/dashboard" element={<Dashboard />} />
         {/* Portal */}
-        <Route path="/portal" element={<ProtectedRoute><StudentPortal /></ProtectedRoute>} />
+        <Route path="/portal" element={<ProtectedRoute><FounderRedirect><StudentPortal /></FounderRedirect></ProtectedRoute>} />
         <Route path="/portal/courses" element={<ProtectedRoute><PortalCourses /></ProtectedRoute>} />
         <Route path="/portal/course/:courseId" element={<ProtectedRoute><PortalCourseDetail /></ProtectedRoute>} />
         <Route path="/portal/talent-score" element={<ProtectedRoute><PortalTalentScore /></ProtectedRoute>} />
@@ -105,21 +107,25 @@ const AppContent = () => {
         {/* Tools */}
         <Route path="/resume-studio" element={<ProtectedRoute><ResumeStudio /></ProtectedRoute>} />
         <Route path="/interview" element={<ProtectedRoute><InterviewSimulator /></ProtectedRoute>} />
-        <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-        <Route path="/admin/ai-workforce" element={<AdminRoute><AIWorkforce /></AdminRoute>} />
-        <Route path="/admin/approvals" element={<AdminRoute><Approvals /></AdminRoute>} />
-        <Route path="/admin/command-center" element={<AdminRoute><CommandCenter /></AdminRoute>} />
-        <Route path="/admin/agent-os" element={<AdminRoute><AgentOS /></AdminRoute>} />
-        <Route path="/admin/marketing-agent" element={<AdminRoute><MarketingAgent /></AdminRoute>} />
-        <Route path="/admin/seo-agent" element={<AdminRoute><SeoAgent /></AdminRoute>} />
-        <Route path="/admin/product-agent" element={<AdminRoute><ProductAgent /></AdminRoute>} />
-        <Route path="/admin/qa-agent" element={<AdminRoute><QAAgent /></AdminRoute>} />
-        <Route path="/admin/admissions-agent" element={<AdminRoute><AdmissionsAgent /></AdminRoute>} />
-        <Route path="/admin/student-success" element={<AdminRoute><StudentSuccessAgent /></AdminRoute>} />
-        <Route path="/admin/placement-agent" element={<AdminRoute><PlacementAgent /></AdminRoute>} />
-        <Route path="/admin/analytics" element={<AdminRoute><AnalyticsAgent /></AdminRoute>} />
-        <Route path="/admin/operations" element={<AdminRoute><OperationsAgent /></AdminRoute>} />
-        <Route path="/admin/curriculum-excellence" element={<AdminRoute><CurriculumExcellence /></AdminRoute>} />
+        {/* Founder Portal — founder-only; students are redirected to /portal */}
+        <Route path="/founder" element={<FounderRoute><FounderPortal /></FounderRoute>} />
+        <Route path="/founder/control-center" element={<FounderRoute><FounderControlCenter /></FounderRoute>} />
+        {/* Founder authorities (legacy /admin paths, founder-protected) */}
+        <Route path="/admin" element={<FounderRoute><AdminDashboard /></FounderRoute>} />
+        <Route path="/admin/ai-workforce" element={<FounderRoute><AIWorkforce /></FounderRoute>} />
+        <Route path="/admin/approvals" element={<FounderRoute><Approvals /></FounderRoute>} />
+        <Route path="/admin/command-center" element={<FounderRoute><CommandCenter /></FounderRoute>} />
+        <Route path="/admin/agent-os" element={<FounderRoute><AgentOS /></FounderRoute>} />
+        <Route path="/admin/marketing-agent" element={<FounderRoute><MarketingAgent /></FounderRoute>} />
+        <Route path="/admin/seo-agent" element={<FounderRoute><SeoAgent /></FounderRoute>} />
+        <Route path="/admin/product-agent" element={<FounderRoute><ProductAgent /></FounderRoute>} />
+        <Route path="/admin/qa-agent" element={<FounderRoute><QAAgent /></FounderRoute>} />
+        <Route path="/admin/admissions-agent" element={<FounderRoute><AdmissionsAgent /></FounderRoute>} />
+        <Route path="/admin/student-success" element={<FounderRoute><StudentSuccessAgent /></FounderRoute>} />
+        <Route path="/admin/placement-agent" element={<FounderRoute><PlacementAgent /></FounderRoute>} />
+        <Route path="/admin/analytics" element={<FounderRoute><AnalyticsAgent /></FounderRoute>} />
+        <Route path="/admin/operations" element={<FounderRoute><OperationsAgent /></FounderRoute>} />
+        <Route path="/admin/curriculum-excellence" element={<FounderRoute><CurriculumExcellence /></FounderRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <RouterAwareFloat />

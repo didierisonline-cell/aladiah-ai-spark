@@ -77,9 +77,9 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
         })}
         {isAdmin && (
           <>
-            <div style={{ padding: '12px 15px 4px', fontSize: 9, fontWeight: 700, letterSpacing: '.18em', textTransform: 'uppercase', color: '#2a3a55' }}>AI Workforce</div>
-            <button onClick={() => navigate('/admin/ai-workforce')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: location.pathname.startsWith('/admin') ? '#fff' : '#818cf8', fontSize: 13, fontWeight: location.pathname.startsWith('/admin') ? 700 : 600, cursor: 'pointer', border: 'none', background: location.pathname.startsWith('/admin') ? 'linear-gradient(90deg,rgba(124,58,237,.22),rgba(99,102,241,.05))' : 'none', borderLeft: `3px solid ${location.pathname.startsWith('/admin') ? '#7c3aed' : 'transparent'}`, width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
-              <span style={{ fontSize: 15, width: 18, textAlign: 'center', flexShrink: 0 }}>🛰️</span>Command Center
+            <div style={{ padding: '12px 15px 4px', fontSize: 9, fontWeight: 700, letterSpacing: '.18em', textTransform: 'uppercase', color: '#2a3a55' }}>Founder</div>
+            <button onClick={() => navigate('/founder')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#818cf8', fontSize: 13, fontWeight: 600, cursor: 'pointer', border: 'none', background: 'none', borderLeft: '3px solid transparent', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
+              <span style={{ fontSize: 15, width: 18, textAlign: 'center', flexShrink: 0 }}>👑</span>Founder Portal
             </button>
           </>
         )}

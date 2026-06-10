@@ -43,7 +43,7 @@ interface Surface {
 
 const SURFACES: Surface[] = [
   { key: 'ceo', title: 'CEO Command Center', blurb: 'Daily executive brief & recommendations', icon: Sparkles, to: '/admin/command-center', slug: 'ceo-chief-of-staff' },
-  { key: 'control', title: 'AI Workforce Control Center', blurb: 'Registry, tasks, memory & comms', icon: LayoutGrid, to: '/admin/ai-workforce#control-center' },
+  { key: 'control', title: 'AI Workforce Control Center', blurb: 'Registry, tasks, memory & comms', icon: LayoutGrid, to: '/founder/control-center' },
   { key: 'marketing', title: 'Marketing Content', blurb: '1 idea → 13 assets, approval-gated', icon: Megaphone, to: '/admin/marketing-agent', slug: 'marketing-content' },
   { key: 'seo', title: 'SEO Strategy', blurb: 'Keyword clusters, audits, competitors', icon: Search, to: '/admin/seo-agent', slug: 'seo-strategy' },
   { key: 'product', title: 'Product Builder', blurb: 'Career Transformation Factory', icon: BookOpen, to: '/admin/product-agent', slug: 'product-builder' },

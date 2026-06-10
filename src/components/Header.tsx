@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Logo from '@/components/Logo';
 import { supabase } from '@/integrations/supabase/client';
-import { useIsAdmin } from '@/hooks/useIsAdmin';
+import { useRole } from '@/hooks/useRole';
 
 function getStoredUser(): any | null {
   try {
@@ -34,9 +34,9 @@ const Header = ({ onProfileClick }: HeaderProps) => {
   const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { isAdmin } = useIsAdmin();
+  const { isFounder } = useRole();
 
-  const isPortal = pathname.startsWith('/portal') || pathname.startsWith('/resume-studio') || pathname.startsWith('/interview') || pathname.startsWith('/admin') || pathname.startsWith('/course') || pathname.startsWith('/chapter');
+  const isPortal = pathname.startsWith('/portal') || pathname.startsWith('/resume-studio') || pathname.startsWith('/interview') || pathname.startsWith('/admin') || pathname.startsWith('/founder') || pathname.startsWith('/course') || pathname.startsWith('/chapter');
 
   const publicNavItems = [
     { labelKey: 'nav.home', href: '/' },
@@ -55,10 +55,22 @@ const Header = ({ onProfileClick }: HeaderProps) => {
     { labelKey: 'nav.career', href: '/portal/career' },
     { labelKey: 'nav.community', href: '/community' },
     { labelKey: 'nav.resources', href: '/portal/resources' },
-    ...(isAdmin ? [{ label: 'AI Workforce', href: '/admin/ai-workforce' }] : []),
   ];
 
-  const navItems = isPortal ? portalNavItems : publicNavItems;
+  // Founders get their own nav — fully separated from student navigation.
+  const founderNavItems = [
+    { label: 'Founder Home', href: '/founder' },
+    { label: 'Control Center', href: '/founder/control-center' },
+    { label: 'CEO', href: '/admin/command-center' },
+    { label: 'Approvals', href: '/admin/approvals' },
+  ];
+
+  const isFounderArea = pathname.startsWith('/founder') || pathname.startsWith('/admin');
+  const navItems = isFounderArea && isFounder
+    ? founderNavItems
+    : isPortal
+      ? portalNavItems
+      : publicNavItems;
 
   return (
     <header style={{
