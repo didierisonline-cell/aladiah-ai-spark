@@ -34,6 +34,7 @@ import StudentSuccessAgent from "./pages/admin/StudentSuccessAgent";
 import PlacementAgent from "./pages/admin/PlacementAgent";
 import AnalyticsAgent from "./pages/admin/AnalyticsAgent";
 import OperationsAgent from "./pages/admin/OperationsAgent";
+import CurriculumExcellence from "./pages/admin/CurriculumExcellence";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
@@ -115,6 +116,7 @@ const AppContent = () => {
         <Route path="/admin/placement-agent" element={<ProtectedRoute requireSubscription={false}><PlacementAgent /></ProtectedRoute>} />
         <Route path="/admin/analytics" element={<ProtectedRoute requireSubscription={false}><AnalyticsAgent /></ProtectedRoute>} />
         <Route path="/admin/operations" element={<ProtectedRoute requireSubscription={false}><OperationsAgent /></ProtectedRoute>} />
+        <Route path="/admin/curriculum-excellence" element={<ProtectedRoute requireSubscription={false}><CurriculumExcellence /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <RouterAwareFloat />
