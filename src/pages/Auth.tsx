@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { GraduationCap, Mail, Lock, User, Linkedin, Phone, ShieldCheck, CheckCircle, Zap, Crown, MailCheck } from 'lucide-react';
 import Header from '@/components/Header';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { isFounderEmail, FOUNDER_HOME } from '@/lib/roles';
 
 const TIERS = [
   { id: 'accelerator', key: 't2', price: 99.99, priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || "price_1TW7U21wgazWak4Atj7TblB3", name: 'All-Access Pass' },
@@ -31,6 +32,9 @@ const Auth = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as any)?.from || '/portal';
+  // Founders land on their portal; honor an explicit deep-link otherwise.
+  const destFor = (email?: string | null) =>
+    isFounderEmail(email) && (from === '/portal' || from === FOUNDER_HOME) ? FOUNDER_HOME : from;
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -45,7 +49,7 @@ const Auth = () => {
         return;
       }
       if (isLogin) {
-        navigate(from);
+        navigate(destFor(user?.email));
       }
     }
   }, [user, authLoading, navigate, isLogin]);
@@ -58,7 +62,7 @@ const Auth = () => {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast({ title: t('auth.welcome'), description: t('auth.magiclink.verified.sub') });
-        navigate(from);
+        navigate(destFor(email));
       } else {
         registering.current = true;
 

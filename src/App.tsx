@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import FounderRoute from "@/components/FounderRoute";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { useCartSync } from "@/hooks/useCartSync";
 import Index from "./pages/Index";
@@ -22,6 +23,22 @@ import MarketingKit from "./pages/MarketingKit";
 import ReferralProfile from "./pages/ReferralProfile";
 import StudentPortal from "./pages/StudentPortal";
 import AdminDashboard from "./pages/AdminDashboard";
+import CommandCenter from "./pages/admin/CommandCenter";
+import AgentOS from "./pages/admin/AgentOS";
+import MarketingAgent from "./pages/admin/MarketingAgent";
+import SeoAgent from "./pages/admin/SeoAgent";
+import AIWorkforce from "./pages/admin/AIWorkforce";
+import ProductAgent from "./pages/admin/ProductAgent";
+import QAAgent from "./pages/admin/QAAgent";
+import AdmissionsAgent from "./pages/admin/AdmissionsAgent";
+import StudentSuccessAgent from "./pages/admin/StudentSuccessAgent";
+import PlacementAgent from "./pages/admin/PlacementAgent";
+import AnalyticsAgent from "./pages/admin/AnalyticsAgent";
+import OperationsAgent from "./pages/admin/OperationsAgent";
+import CurriculumExcellence from "./pages/admin/CurriculumExcellence";
+import Approvals from "./pages/admin/Approvals";
+import FounderPortal from "./pages/founder/FounderPortal";
+import FounderControlCenter from "./pages/founder/FounderControlCenter";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
@@ -90,7 +107,25 @@ const AppContent = () => {
         {/* Tools */}
         <Route path="/resume-studio" element={<ProtectedRoute><ResumeStudio /></ProtectedRoute>} />
         <Route path="/interview" element={<ProtectedRoute><InterviewSimulator /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute requireSubscription={false}><AdminDashboard /></ProtectedRoute>} />
+        {/* Founder Portal — founder-only; students are redirected to /portal */}
+        <Route path="/founder" element={<FounderRoute><FounderPortal /></FounderRoute>} />
+        <Route path="/founder/control-center" element={<FounderRoute><FounderControlCenter /></FounderRoute>} />
+        {/* Founder authorities (legacy /admin paths, founder-protected) */}
+        <Route path="/admin" element={<FounderRoute><AdminDashboard /></FounderRoute>} />
+        <Route path="/admin/ai-workforce" element={<FounderRoute><AIWorkforce /></FounderRoute>} />
+        <Route path="/admin/approvals" element={<FounderRoute><Approvals /></FounderRoute>} />
+        <Route path="/admin/command-center" element={<FounderRoute><CommandCenter /></FounderRoute>} />
+        <Route path="/admin/agent-os" element={<FounderRoute><AgentOS /></FounderRoute>} />
+        <Route path="/admin/marketing-agent" element={<FounderRoute><MarketingAgent /></FounderRoute>} />
+        <Route path="/admin/seo-agent" element={<FounderRoute><SeoAgent /></FounderRoute>} />
+        <Route path="/admin/product-agent" element={<FounderRoute><ProductAgent /></FounderRoute>} />
+        <Route path="/admin/qa-agent" element={<FounderRoute><QAAgent /></FounderRoute>} />
+        <Route path="/admin/admissions-agent" element={<FounderRoute><AdmissionsAgent /></FounderRoute>} />
+        <Route path="/admin/student-success" element={<FounderRoute><StudentSuccessAgent /></FounderRoute>} />
+        <Route path="/admin/placement-agent" element={<FounderRoute><PlacementAgent /></FounderRoute>} />
+        <Route path="/admin/analytics" element={<FounderRoute><AnalyticsAgent /></FounderRoute>} />
+        <Route path="/admin/operations" element={<FounderRoute><OperationsAgent /></FounderRoute>} />
+        <Route path="/admin/curriculum-excellence" element={<FounderRoute><CurriculumExcellence /></FounderRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <RouterAwareFloat />

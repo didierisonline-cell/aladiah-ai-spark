@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 
@@ -12,6 +13,7 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const { language } = useLanguage();
   const T = (key: string) => overviewT(language || 'en', key);
 
@@ -63,6 +65,11 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
       </div>
 
       <div style={{ flex: 1, overflow: 'auto' }}>
+        {isAdmin && (
+          <button onClick={() => navigate('/founder')} style={{ display: 'flex', alignItems: 'center', gap: 9, margin: '12px 10px', padding: '11px 13px', width: 'calc(100% - 20px)', color: '#fff', fontSize: 13, fontWeight: 800, cursor: 'pointer', border: '1px solid rgba(124,58,237,.5)', borderRadius: 10, background: 'linear-gradient(135deg,#7c3aed,#4A90F5)', boxShadow: '0 0 16px rgba(124,58,237,.45)', textAlign: 'left', fontFamily: 'inherit' }}>
+            <span style={{ fontSize: 16 }}>👑</span>Founder Command Center
+          </button>
+        )}
         {LINKS.map(link => {
           const isOn = link.exact ? location.pathname === '/portal' : location.pathname === link.path;
           return (

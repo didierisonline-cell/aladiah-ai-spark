@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Logo from '@/components/Logo';
 import { supabase } from '@/integrations/supabase/client';
+import { useRole } from '@/hooks/useRole';
 
 function getStoredUser(): any | null {
   try {
@@ -33,8 +34,9 @@ const Header = ({ onProfileClick }: HeaderProps) => {
   const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { isFounder } = useRole();
 
-  const isPortal = pathname.startsWith('/portal') || pathname.startsWith('/resume-studio') || pathname.startsWith('/interview') || pathname.startsWith('/admin') || pathname.startsWith('/course') || pathname.startsWith('/chapter');
+  const isPortal = pathname.startsWith('/portal') || pathname.startsWith('/resume-studio') || pathname.startsWith('/interview') || pathname.startsWith('/admin') || pathname.startsWith('/founder') || pathname.startsWith('/course') || pathname.startsWith('/chapter');
 
   const publicNavItems = [
     { labelKey: 'nav.home', href: '/' },
@@ -55,7 +57,20 @@ const Header = ({ onProfileClick }: HeaderProps) => {
     { labelKey: 'nav.resources', href: '/portal/resources' },
   ];
 
-  const navItems = isPortal ? portalNavItems : publicNavItems;
+  // Founders get their own nav — fully separated from student navigation.
+  const founderNavItems = [
+    { label: 'Founder Home', href: '/founder' },
+    { label: 'Control Center', href: '/founder/control-center' },
+    { label: 'CEO', href: '/admin/command-center' },
+    { label: 'Approvals', href: '/admin/approvals' },
+  ];
+
+  const isFounderArea = pathname.startsWith('/founder') || pathname.startsWith('/admin');
+  const navItems = isFounderArea && isFounder
+    ? founderNavItems
+    : isPortal
+      ? portalNavItems
+      : publicNavItems;
 
   return (
     <header style={{
@@ -137,6 +152,25 @@ const Header = ({ onProfileClick }: HeaderProps) => {
         </DropdownMenu>
 
         <AuthNavButton navigate={navigate} isPortal={isPortal} />
+
+        {/* Founder-only: always-visible Command Center entry (until routing is confirmed) */}
+        {isFounder && (
+          <a
+            href="/founder"
+            onClick={e => { e.preventDefault(); navigate('/founder'); }}
+            style={{
+              fontSize: 12, fontWeight: 800, color: '#fff',
+              background: 'linear-gradient(135deg,#7c3aed,#4A90F5)',
+              border: '1px solid rgba(124,58,237,.5)',
+              padding: '6px 12px', borderRadius: '0.5rem', cursor: 'pointer',
+              textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 5,
+              boxShadow: '0 0 14px rgba(124,58,237,.45)',
+            }}
+            title="Founder Command Center"
+          >
+            👑 Founder
+          </a>
+        )}
 
         {/* Mobile toggle */}
         <button
