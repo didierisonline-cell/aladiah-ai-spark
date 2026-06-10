@@ -10,6 +10,10 @@ import { CURRICULUM_AGENT_SLUG, CurriculumAudit } from '@/types/curriculum';
 import { CURRICULUM_STANDARDS } from '@/services/agents/curriculum/standards';
 import { SCRUM_18_BLUEPRINT, SCRUM_18_TITLE } from '@/services/agents/curriculum/blueprint18';
 import { delegateModule, delegateRedesign, getLatestAudit } from '@/services/agents/curriculumExcellenceAgent';
+import { PROGRAM_ARCHITECTURES, WORLD_CLASS_CES, scoreBlueprint } from '@/services/standards/programStandard';
+import { CANONICAL_MODULE_STRUCTURE, FUTURE_SPECS, REFERENCE_SPEC } from '@/services/standards/programFactory';
+
+const STANDARD_EVAL = scoreBlueprint(SCRUM_18_BLUEPRINT, 'scrum');
 
 const CurriculumExcellenceDashboard = () => {
   const { toast } = useToast();
@@ -58,8 +62,9 @@ const CurriculumExcellenceDashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Tile icon={Target} label="Excellence Score" value={`${audit?.excellence_score ?? 0}%`} accent={(audit?.excellence_score ?? 0) >= 70 ? 'text-green-600' : 'text-amber-600'} />
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <Tile icon={Award} label={`CES (Standard ${STANDARD_EVAL.version})`} value={`${audit?.ces ?? STANDARD_EVAL.ces}/100`} accent={(audit?.ces ?? STANDARD_EVAL.ces) >= WORLD_CLASS_CES ? 'text-green-600' : 'text-amber-600'} />
+        <Tile icon={Target} label="Build Progress" value={`${audit?.excellence_score ?? 0}%`} accent={(audit?.excellence_score ?? 0) >= 70 ? 'text-green-600' : 'text-amber-600'} />
         <Tile icon={Layers} label="Target Modules" value={SCRUM_18_BLUEPRINT.length} />
         <Tile icon={BookOpen} label="Elements Present" value={audit?.present_count ?? 0} accent="text-green-600" />
         <Tile icon={GitBranch} label="Gaps" value={audit?.gap_count ?? 0} accent={(audit?.gap_count ?? 0) > 0 ? 'text-amber-600' : 'text-green-600'} />
@@ -67,13 +72,64 @@ const CurriculumExcellenceDashboard = () => {
 
       <Tabs defaultValue="audit" className="space-y-4">
         <TabsList className="flex flex-wrap h-auto justify-start">
+          <TabsTrigger value="standard"><Award className="w-3.5 h-3.5 mr-1" />Program Standard</TabsTrigger>
           <TabsTrigger value="audit"><Target className="w-3.5 h-3.5 mr-1" />Audit &amp; Gaps</TabsTrigger>
-          <TabsTrigger value="standards"><ShieldCheck className="w-3.5 h-3.5 mr-1" />Standards</TabsTrigger>
+          <TabsTrigger value="standards"><ShieldCheck className="w-3.5 h-3.5 mr-1" />Framework</TabsTrigger>
           <TabsTrigger value="blueprint"><Layers className="w-3.5 h-3.5 mr-1" />18-Module Blueprint</TabsTrigger>
           <TabsTrigger value="career"><GraduationCap className="w-3.5 h-3.5 mr-1" />Career Map</TabsTrigger>
           <TabsTrigger value="integration"><GitBranch className="w-3.5 h-3.5 mr-1" />Integration</TabsTrigger>
           <TabsTrigger value="health"><Award className="w-3.5 h-3.5 mr-1" />Health</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="standard" className="space-y-4">
+          <Card className="border-primary/30">
+            <CardContent className="p-5 flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <p className="text-xs text-muted-foreground">Aladiah Program Standard {STANDARD_EVAL.version} · Curriculum Excellence Score</p>
+                <p className={`text-4xl font-bold ${STANDARD_EVAL.ces >= WORLD_CLASS_CES ? 'text-green-600' : 'text-amber-600'}`}>{STANDARD_EVAL.ces}/100</p>
+              </div>
+              <Badge className={STANDARD_EVAL.worldClass ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-amber-100 text-amber-700 border border-amber-200'}>
+                {STANDARD_EVAL.worldClass ? 'WORLD-CLASS (≥85, all critical met)' : `Below world-class — failed: ${STANDARD_EVAL.failedCritical.join(', ') || 'none'}`}
+              </Badge>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3"><CardTitle className="text-base">10 Architectures &amp; dimension scores (reference: AI Scrum Master)</CardTitle></CardHeader>
+            <CardContent className="space-y-2">
+              {STANDARD_EVAL.dimensions.map((d) => {
+                const arch = PROGRAM_ARCHITECTURES.find((a) => a.id === d.id)!;
+                return (
+                  <div key={d.id}>
+                    <div className="flex justify-between text-[11px] mb-0.5">
+                      <span className="text-foreground">{d.name} <span className="text-muted-foreground">· weight {arch.weight} · min {d.threshold}{d.critical ? ' · critical' : ''}</span></span>
+                      <span className={d.met ? 'text-green-600' : 'text-red-600'}>{d.score}{d.met ? ' ✓' : ' ✗'}</span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-muted"><div className={`h-1.5 rounded-full ${d.met ? 'bg-green-500' : 'bg-amber-500'}`} style={{ width: `${d.score}%` }} /></div>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{arch.components.join(' · ')}</p>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3"><CardTitle className="text-base">Program Factory</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">Future programs are generated from the standard. Reference + planned specs:</p>
+              {[REFERENCE_SPEC, ...FUTURE_SPECS].map((s) => (
+                <div key={s.key} className="rounded-lg border border-border/60 p-3 bg-muted/20">
+                  <p className="text-sm font-medium text-foreground">{s.name} {s.key === REFERENCE_SPEC.key && <Badge className="text-[8px] bg-primary text-primary-foreground ml-1">REFERENCE</Badge>}</p>
+                  <p className="text-[11px] text-muted-foreground">{s.moduleCount} modules · program key {s.programKey} · {s.description}</p>
+                </div>
+              ))}
+              <div>
+                <p className="text-xs font-semibold mb-1">Canonical module structure (every module)</p>
+                <ul className="list-disc pl-5 text-[11px] text-muted-foreground space-y-0.5">{CANONICAL_MODULE_STRUCTURE.map((c, i) => <li key={i}>{c}</li>)}</ul>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="audit">
           <Card>

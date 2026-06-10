@@ -36,10 +36,15 @@ export interface CurriculumAudit {
   program: string;
   report_date: string;
   target_modules: number;
-  excellence_score: number;
+  excellence_score: number; // build progress (% artifacts present)
   present_count: number;
   gap_count: number;
   gaps: ModuleGap[];
   summary: string | null;
+  // Program Standard v1.0 evaluation:
+  ces?: number;                                   // Curriculum Excellence Score vs the standard
+  dimension_scores?: Record<string, number>;
+  world_class?: boolean;
+  standard_version?: string;
   created_at: string;
 }

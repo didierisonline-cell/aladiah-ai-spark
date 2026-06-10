@@ -16,6 +16,7 @@ import { CURRICULUM_AGENT_SLUG, CurriculumAudit, ModuleGap } from '@/types/curri
 import { CURRICULUM_STANDARDS, MODULE_REQUIRED_ELEMENTS } from './curriculum/standards';
 import { SCRUM_18_BLUEPRINT, SCRUM_18_TITLE } from './curriculum/blueprint18';
 import { enqueueProductTask } from './productBuilderAgent';
+import { scoreBlueprint } from '@/services/standards/programStandard';
 
 const SLUG = CURRICULUM_AGENT_SLUG;
 const PROGRAM = 'ai-scrum-master';
@@ -70,7 +71,11 @@ export async function runAudit(runId?: string | null): Promise<CurriculumAudit> 
   const gapCount = totalRequired - presentCount;
   const excellenceScore = Math.round((presentCount / totalRequired) * 100);
 
-  const summary = `Curriculum excellence audit of ${SCRUM_18_TITLE}: ${excellenceScore}% against the framework (${presentCount}/${totalRequired} required elements present across ${SCRUM_18_BLUEPRINT.length} modules). ${gapCount} gaps. Current artifacts cover only the first modules; the 18-module redesign requires generating lesson content, AI mentor, labs, enterprise simulations, portfolio artifacts, three quiz tiers, and competency assessments for every module.`;
+  // Program Standard v1.0 — does the 18-module redesign qualify as world-class?
+  const evaluation = scoreBlueprint(SCRUM_18_BLUEPRINT, 'scrum');
+  const dimension_scores = Object.fromEntries(evaluation.dimensions.map((d) => [d.id, d.score]));
+
+  const summary = `Curriculum audit of ${SCRUM_18_TITLE}: Curriculum Excellence Score ${evaluation.ces}/100 (${evaluation.worldClass ? 'WORLD-CLASS' : 'below world-class'}) vs Program Standard ${evaluation.version}. Build progress: ${excellenceScore}% (${presentCount}/${totalRequired} required elements present across ${SCRUM_18_BLUEPRINT.length} modules; ${gapCount} gaps). The redesign blueprint meets the standard; build the artifacts (QA-gated) to close the progress gap.`;
 
   const payload = {
     program: PROGRAM,
@@ -81,12 +86,16 @@ export async function runAudit(runId?: string | null): Promise<CurriculumAudit> 
     gap_count: gapCount,
     gaps,
     summary,
+    ces: evaluation.ces,
+    dimension_scores,
+    world_class: evaluation.worldClass,
+    standard_version: evaluation.version,
   };
   const { data } = await db.from('curriculum_audits').upsert(payload, { onConflict: 'program,report_date' }).select('*').single();
 
-  await remember({ agentSlug: SLUG, content: `Curriculum audit: ${excellenceScore}% excellence, ${gapCount} gaps across 18 modules.`, summary: `audit:${excellenceScore}`, type: 'long_term', importance: 0.85, tags: ['curriculum_audit', PROGRAM], source: runId ?? undefined });
-  await reportToCeo(SLUG, { subject: `Curriculum excellence: ${excellenceScore}% (18-module redesign)`, body: summary, payload: { excellenceScore, gapCount } });
-  await logAction(SLUG, 'run_audit', { runId, result: 'success', message: `${excellenceScore}% excellence, ${gapCount} gaps` });
+  await remember({ agentSlug: SLUG, content: `Curriculum audit: CES ${evaluation.ces}/100 (${evaluation.worldClass ? 'world-class' : 'below'}), build progress ${excellenceScore}%, ${gapCount} gaps.`, summary: `ces:${evaluation.ces}`, type: 'long_term', importance: 0.85, tags: ['curriculum_audit', PROGRAM], source: runId ?? undefined });
+  await reportToCeo(SLUG, { subject: `Curriculum Excellence Score ${evaluation.ces}/100 (${evaluation.worldClass ? 'world-class' : 'below'})`, body: summary, payload: { ces: evaluation.ces, worldClass: evaluation.worldClass, excellenceScore, gapCount } });
+  await logAction(SLUG, 'run_audit', { runId, result: 'success', message: `CES ${evaluation.ces}, progress ${excellenceScore}%, ${gapCount} gaps` });
 
   return (data as CurriculumAudit) ?? ({ ...payload, id: '', created_at: nowISO() } as any);
 }
@@ -135,5 +144,5 @@ export async function listAudits(limit = 20): Promise<CurriculumAudit[]> {
 // ---------------------------------------------------------------------------
 export const curriculumRunner = async (ctx: RunContext): Promise<AgentRunOutput> => {
   const audit = await runAudit(ctx.runId);
-  return { ok: true, output: { excellenceScore: audit.excellence_score, gaps: audit.gap_count } };
+  return { ok: true, output: { ces: audit.ces, worldClass: audit.world_class, excellenceScore: audit.excellence_score, gaps: audit.gap_count } };
 };
