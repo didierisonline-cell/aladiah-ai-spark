@@ -298,6 +298,24 @@ All 11 pills (`Founder Home, Control Center, CEO Dashboard, Curriculum, QA Autho
 
 ---
 
+## 9b. DB role / RLS alignment (founder/student model)
+
+Migration: `supabase/migrations/20260610270000_founder_role_alignment.sql` (apply by hand in Supabase).
+
+| Check | Model | Wiring | Pass/Fail |
+|-------|-------|--------|:---------:|
+| Privileged role = founder | `user_roles.role = 'admin'` | `aos_is_admin()` / `is_admin()` SECURITY DEFINER | PASS |
+| Only founder gets admin on signup | trigger `auto_assign_admin` | redefined → `didiermbok@yahoo.com` only | PASS |
+| Founder guaranteed admin | INSERT … ON CONFLICT DO NOTHING | covers existing account | PASS |
+| All other privileges revoked | DELETE admin/moderator ≠ founder | removes `didierisonline@gmail.com` et al. | PASS |
+| AOS tables RLS | admin-only read/insert/update | `aos_is_admin()` policies (AOS migration) | PASS |
+| Student tables RLS | own rows only | `auth.uid() = user_id` policies | PASS |
+| Verification SELECTs | follow every write | (a)–(d) in migration file | PASS |
+
+> Effect once applied: `didiermbok@yahoo.com` is the sole `admin` (founder) at the data layer; every other account is restricted by RLS to its own student rows — exactly mirroring the app's founder/student split.
+
+---
+
 ## 10. Role protection & redirect tests (static guard analysis)
 
 | Scenario | Expected | Wiring | Pass/Fail |
@@ -320,7 +338,7 @@ All 11 pills (`Founder Home, Control Center, CEO Dashboard, Curriculum, QA Autho
 2. **🟡 Placeholder student links** (Labs, AI Mentor, Help, Leaderboard, Events → existing pages). Pre-existing student UI; untouched by this work. Not blockers.
 3. **🟡 Platform Audit shares the Operations surface** by design. Intentional, functional.
 4. **🟡 Simulation hero totals** ("2,800 / 28") are static marketing copy vs. the `simulations.ts` dataset — content-accuracy item, not a routing defect.
-5. **🟡 DB/RLS vs app-role mismatch (action item):** `didierisonline@gmail.com` is now a *student* at the app level, but migration `auto_assign_admin` still grants Supabase `admin` to both that address and `didiermbok@yahoo.com`. To make the DB founder-only, a reviewable migration is needed (delivered on request; applied by hand per repo canon — never auto-applied).
+5. **🟢 DB/RLS aligned (migration generated):** `supabase/migrations/20260610270000_founder_role_alignment.sql` redefines `auto_assign_admin` to grant `admin` only to `didiermbok@yahoo.com`, guarantees the founder holds `admin`, and **revokes `admin`/`moderator` from every other account** (incl. `didierisonline@gmail.com`). RLS already gates all AOS + admin-scoped tables on `aos_is_admin()`/`is_admin()` (`role = 'admin'`), so once applied, DB-privileged == app-founder. Per canon the SQL is applied by hand in Supabase (not auto-applied); verification SELECTs are included in the file.
 6. **🟡 Live agent data** requires the AOS Supabase migrations to be applied. Until then, founder dashboards render empty-safe (0s), not errors.
 
 ## Deployment verdict
@@ -331,10 +349,12 @@ All 11 pills (`Founder Home, Control Center, CEO Dashboard, Curriculum, QA Autho
 | Student → /portal redirect (never 404) | ✅ PASS |
 | 9 founder authorities exposed | ✅ PASS |
 | Direct nav / refresh works (SPA rewrite) | ✅ PASS |
-| Build green | ✅ PASS |
+| Build green (re-run) | ✅ PASS |
 | Broken links / missing pages | ✅ None |
+| DB role-alignment migration generated | ✅ PASS |
+| RLS matches founder/student model | ✅ PASS |
 
-**Verdict: GO for merge of PR #3.** The `/founder` 404 in production is solely because `main` is stale; merging deploys all of the above. Recommend resolving note #5 (DB role alignment) shortly after merge.
+**Verdict: GO for merge of PR #3.** Audit re-run is green. The `/founder` 404 in production is solely because `main` is stale; merging deploys all of the above. The DB role-alignment migration (`20260610270000`) must be applied by hand in Supabase to revoke non-founder privileges at the data layer — this is independent of the code deploy (the founder portal loads regardless of the SQL; the SQL governs who has DB access).
 
 ---
 *Audit generated from `src/App.tsx`, `Header.tsx`, `PortalSidebar.tsx`, `WorkforceNav.tsx`, `FounderNav.tsx`, `WorkforceLaunchpad.tsx`, `ApprovalsHub.tsx`, `bootstrap.ts`, and `src/pages/**`. Static + build-level verification; not a live browser E2E.*
