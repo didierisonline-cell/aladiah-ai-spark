@@ -50,6 +50,7 @@ import {
 } from './product/generators';
 import { engineForType, outcomesForType } from './product/engines';
 import { runQualityChecks } from './product/quality';
+import { AI_SCRUM_MASTER_PROGRAM } from './product/programs/aiScrumMaster';
 import { ProductOutcome, TransformationOutcome } from '@/types/product';
 
 const SLUG = 'product-builder';
@@ -90,7 +91,7 @@ export interface PersistResult {
 
 async function persistArtifact(
   raw: DraftArtifact,
-  opts: { source?: string; runId?: string | null; gapId?: string } = {},
+  opts: { source?: string; runId?: string | null; gapId?: string; meta?: Record<string, unknown> } = {},
 ): Promise<PersistResult> {
   const draft = enrich(raw);
   const report = runQualityChecks({
@@ -122,7 +123,7 @@ async function persistArtifact(
       quality_score: report.score,
       status,
       source: opts.source ?? opts.runId ?? null,
-      metadata: { quality_report: report, quality_passed: report.passed },
+      metadata: { quality_report: report, quality_passed: report.passed, ...(opts.meta ?? {}) },
       created_by_agent: SLUG,
     })
     .select('*')
@@ -435,6 +436,165 @@ export async function editArtifact(
   await recordDecision(artifactId, 'edited');
   if (alsoApprove) return approveArtifact(artifactId, 'Edited then approved');
   return true;
+}
+
+// ---------------------------------------------------------------------------
+// Program redesign — AI Scrum Master Career Transformation Program
+// Turns the blueprint into engine-tagged, quality-gated artifacts in the Founder
+// Approval Queue. Never touches the live curriculum.
+// ---------------------------------------------------------------------------
+export interface ProgramBuildResult {
+  program: string;
+  title: string;
+  modules: number;
+  generated: number;
+  passedToApproval: number;
+  heldAsDraft: number;
+  artifactIds: string[];
+}
+
+export async function buildAIScrumMasterProgram(runId?: string | null): Promise<ProgramBuildResult> {
+  const bp = AI_SCRUM_MASTER_PROGRAM;
+  const program = bp.program;
+  const artifactIds: string[] = [];
+  let generated = 0;
+  let passedToApproval = 0;
+  let heldAsDraft = 0;
+  const record = (r: PersistResult) => {
+    generated += 1;
+    if (r.artifact) {
+      artifactIds.push(r.artifact.id);
+      if (r.artifact.status === 'pending_approval') passedToApproval += 1;
+      else heldAsDraft += 1;
+    }
+  };
+  const tweak = (d: DraftArtifact, patch: Partial<DraftArtifact> & { payload?: Record<string, unknown> }): DraftArtifact => ({
+    ...d,
+    ...patch,
+    payload: { ...d.payload, ...(patch.payload ?? {}) },
+  });
+
+  await logAction(SLUG, 'program.build_start', { runId, message: `Building ${bp.title}` });
+
+  for (const m of bp.modules) {
+    const meta = { blueprint: bp.key, module: m.no, talent_score_impact: m.talentScoreImpact };
+    const primary = m.competencies[0];
+
+    // Foundational MODULE artifact (Competency Engine) — carries mission briefing,
+    // competency map, lessons, AI workflows, career readiness, employer alignment,
+    // and talent-score impact (components 1,2,3,4,10,11,12).
+    record(
+      await persistArtifact(
+        {
+          artifact_type: 'module',
+          title: `Module ${m.no}: ${m.title}`,
+          summary: `${m.missionBriefing} ${m.careerReadiness}`,
+          program,
+          competencies: m.competencies,
+          quality_score: 90,
+          payload: {
+            mission_briefing: m.missionBriefing,
+            competency_map: m.competencies.map((c) => ({ slug: c, label: labelFor(c) })),
+            objectives: m.objectives,
+            lessons: m.lessons,
+            ai_workflows: m.aiWorkflows,
+            career_readiness: m.careerReadiness,
+            employer_alignment: m.employerNote,
+            talent_score_impact: m.talentScoreImpact,
+          },
+        },
+        { runId, meta, source: bp.key },
+      ),
+    );
+
+    // AI Integration Engine — AI-powered Scrum Master workflows (component 4, in depth)
+    record(await persistArtifact(tweak(generateAIReadiness(program), {
+      title: `Module ${m.no} — AI-Powered Scrum Master Workflows`,
+      summary: `AI woven start to finish for "${m.title}": ${m.aiWorkflows.map((w) => w.name).join(', ')}. Builds AI readiness for the modern, employable Scrum Master.`,
+      competencies: m.competencies.slice(0, 4),
+      payload: { ai_workflows: m.aiWorkflows },
+    }), { runId, meta, source: bp.key }));
+
+    // Lab Engine (component 5)
+    record(await persistArtifact(tweak(generateLab({ program, topic: m.labTopic }), {
+      title: `Module ${m.no} Lab: ${m.labTopic}`,
+    }), { runId, meta, source: bp.key }));
+
+    // Simulation Engine (component 6)
+    record(await persistArtifact(tweak(generateSimulation({ program }), {
+      title: `Module ${m.no} Simulation: ${m.simulationTitle}`,
+      summary: `${m.simulationTitle} — builds leadership readiness and real-world career-transformation capability.`,
+    }), { runId, meta, source: bp.key }));
+
+    // Assessment Engine — quiz (component 7)
+    record(await persistArtifact(tweak(generateQuiz({ program, competency: primary, questionCount: 4 }), {
+      title: `Module ${m.no} Quiz: ${labelFor(primary)}`,
+    }), { runId, meta, source: bp.key }));
+
+    // Project Engine — portfolio artifact (component 8)
+    record(await persistArtifact(tweak(generateProject({ program }), {
+      title: m.portfolioTitle,
+      summary: m.portfolioBrief,
+    }), { runId, meta, source: bp.key }));
+
+    // Interview Preparation Engine (component 9)
+    record(await persistArtifact(tweak(generateInterviewPrep(program), {
+      title: m.interviewTitle,
+      summary: `${m.interviewFocus} Drives employment and promotion readiness.`,
+    }), { runId, meta, source: bp.key }));
+
+    // Employer Alignment Engine (component 11)
+    record(await persistArtifact(tweak(generateEmployerAlignment(program), {
+      title: m.employerTitle,
+      summary: m.employerNote,
+    }), { runId, meta, source: bp.key }));
+  }
+
+  // Program-level artifacts: Career Transformation plan, diagnostic assessment,
+  // and an outcome-improvement plan tying it all to the six outcomes.
+  const pmeta = { blueprint: bp.key, scope: 'program' };
+  record(await persistArtifact(tweak(generateCareerPlan(program, bp.outcome), {
+    title: `${bp.title} — Career Transformation Plan`,
+  }), { runId, meta: pmeta, source: bp.key }));
+  record(await persistArtifact(tweak(generateAssessment(program), {
+    title: `${bp.title} — Program Diagnostic Assessment`,
+  }), { runId, meta: pmeta, source: bp.key }));
+  record(await persistArtifact(tweak(generateOutcomePlan(program), {
+    title: `${bp.title} — Outcome Improvement Plan`,
+  }), { runId, meta: pmeta, source: bp.key }));
+
+  const result: ProgramBuildResult = {
+    program,
+    title: bp.title,
+    modules: bp.modules.length,
+    generated,
+    passedToApproval,
+    heldAsDraft,
+    artifactIds,
+  };
+
+  await remember({
+    agentSlug: SLUG,
+    content: `Redesigned ${bp.title} into ${generated} engine-tagged artifacts (${passedToApproval} queued for founder approval) across ${bp.modules.length} modules.`,
+    summary: `program:${bp.key}`,
+    type: 'long_term',
+    importance: 0.9,
+    tags: ['program_redesign', bp.key],
+    source: runId ?? undefined,
+  });
+  await reportToCeo(SLUG, {
+    subject: `${bp.title} redesigned — ${passedToApproval} artifacts awaiting your approval`,
+    body: `Rebuilt all ${bp.modules.length} modules using the Career Transformation Architecture (competency, assessment, simulation, lab, project, interview prep, employer alignment, AI integration). ${generated} artifacts generated; ${passedToApproval} passed the Aladiah Quality Standard and are in the Founder Approval Queue; ${heldAsDraft} held as draft. Live curriculum untouched.`,
+    payload: result as unknown as Record<string, unknown>,
+  });
+  await logAction(SLUG, 'program.build_complete', {
+    runId,
+    result: 'success',
+    message: `Generated ${generated}, queued ${passedToApproval}, held ${heldAsDraft}`,
+    detail: result as unknown as Record<string, unknown>,
+  });
+
+  return result;
 }
 
 // ---------------------------------------------------------------------------

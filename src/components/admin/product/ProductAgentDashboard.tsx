@@ -8,6 +8,7 @@ import {
   CheckSquare,
   Cpu,
   FlaskConical,
+  GraduationCap,
   Library,
   Moon,
   Play,
@@ -25,6 +26,7 @@ import {
   ProductStats,
 } from '@/types/product';
 import {
+  buildAIScrumMasterProgram,
   detectGaps,
   getStats,
   listArtifacts,
@@ -96,6 +98,22 @@ const ProductAgentDashboard = () => {
     }
   }, [toast, refresh]);
 
+  const runProgram = useCallback(async () => {
+    setRunning('program');
+    try {
+      const r = await buildAIScrumMasterProgram();
+      toast({
+        title: 'AI Scrum Master program redesigned',
+        description: `${r.generated} artifacts generated · ${r.passedToApproval} in the Founder Approval Queue · ${r.heldAsDraft} held as draft. Live curriculum untouched.`,
+      });
+    } catch (e) {
+      toast({ title: 'Program build failed', description: e instanceof Error ? e.message : 'Unknown error', variant: 'destructive' });
+    } finally {
+      setRunning(null);
+      refresh();
+    }
+  }, [toast, refresh]);
+
   const runDetect = useCallback(async () => {
     setRunning('detect');
     try {
@@ -125,6 +143,10 @@ const ProductAgentDashboard = () => {
           </Button>
           <Button variant="outline" disabled={running !== null} onClick={runDetect}>
             <ScanSearch className="w-4 h-4 mr-2" /> Detect Gaps
+          </Button>
+          <Button variant="outline" disabled={running !== null} onClick={runProgram}>
+            <GraduationCap className={`w-4 h-4 mr-2 ${running === 'program' ? 'animate-pulse' : ''}`} />
+            {running === 'program' ? 'Building…' : 'Build AI Scrum Master Program'}
           </Button>
           <Button disabled={running !== null} onClick={runOvernight}>
             <Moon className={`w-4 h-4 mr-2 ${running === 'overnight' ? 'animate-pulse' : ''}`} />
