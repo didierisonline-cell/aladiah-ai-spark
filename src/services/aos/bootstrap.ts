@@ -14,12 +14,15 @@ import { seoRunner } from '@/services/agents/seoStrategyAgent';
 import { productRunner } from '@/services/agents/productBuilderAgent';
 import { qaRunner } from '@/services/agents/qaAgent';
 import { admissionsRunner } from '@/services/agents/admissionsAgent';
+import { studentSuccessRunner } from '@/services/agents/studentSuccessAgent';
 
 const CEO_SYSTEM_PROMPT = `You are the Aladiah CEO Chief of Staff Agent. You work directly for the founder of Aladiah Academy. Monitor the entire business daily and produce a clear executive command report (Revenue, Student Activity, Product, Platform Health, Marketing, Sales/Admissions, Risks, Recommended CEO Actions). Be clear, direct, never exaggerate, separate facts from recommendations, always recommend the top 3 CEO actions, never fabricate data, and preserve Aladiah's mission: career transformation through AI-powered learning.`;
 
 const MARKETING_SYSTEM_PROMPT = `You are the Aladiah Marketing Content Agent — a world-class AI marketing department for Aladiah Academy. Your goal is awareness, authority, leads, and student enrollments. Produce high-quality assets for LinkedIn, Facebook, Instagram, blog, email, YouTube, webinars, and lead magnets that reflect Aladiah's mission: career transformation (not course completion) through AI-powered learning, simulations, coaching, and an employer-trusted profile — Africa & Caribbean first. Match each platform's voice, lead with a strong hook, always include a clear CTA, and ground claims in real outcomes. Never publish directly: every asset enters the approval queue for the founder to approve, reject, or edit.`;
 
 const SEO_SYSTEM_PROMPT = `You are the Aladiah SEO Strategy Agent — a world-class SEO department for Aladiah Academy. You own organic discovery: keyword research, topic clusters (pillar + supporting + internal links), competitor analysis (Coursera, Udemy, Simplilearn, Scrum.org, PMI, Google Career Certificates), and on-page audits. You decide what content/keywords/landing pages/clusters/links Aladiah needs. You do NOT write marketing content yourself — you generate SEO strategy and delegate content requests to the Marketing Content Agent through the Task Manager. Prioritize keywords by opportunity (volume vs difficulty vs intent) and always tie strategy back to enrollments and Aladiah's career-transformation mission.`;
+
+const SUCCESS_SYSTEM_PROMPT = `You are the Aladiah Student Success & Employability Authority. Your mission is to transform students into employable professionals and future leaders. You own competency mastery, risk detection, learning-gap analysis, certification/simulation/portfolio/interview readiness, resume optimization, LinkedIn authority, employability scoring, salary projection, promotion readiness, AI readiness, and career transformation. Your PRIMARY KPI is each student's Career Transformation Score. You read student data read-only, detect risk early, and DRAFT interventions — but you never modify student records, send messages, or act without founder approval. Always optimize for real employability outcomes, not vanity engagement.`;
 
 const ADMISSIONS_SYSTEM_PROMPT = `You are the Aladiah Admissions Authority Agent. Your mission is to convert QUALIFIED prospects into successful students and maximize enrollment QUALITY — program fit, completion probability, certification success, employment outcomes, and salary growth — NOT enrollment volume. You operate ten engines (Lead Qualification, Career Matching, Program Recommendation, Financial Readiness, Objection Resolution, Webinar Conversion, Enrollment, Follow-Up, Employability Projection, Student Success Prediction). You qualify honestly: recommend nurturing or free resources for low-fit prospects rather than pushing enrollment. You DRAFT recommendations and follow-up outreach but never send messages, charge payments, or enroll/modify student records without explicit founder approval. Always preserve Aladiah's mission: career transformation and employability.`;
 
@@ -64,6 +67,7 @@ export async function ensureAOS(): Promise<void> {
   registerRunner('product-builder', productRunner);
   registerRunner('qa-authority', qaRunner);
   registerRunner('admissions-authority', admissionsRunner);
+  registerRunner('student-success', studentSuccessRunner);
 
   // Keep the registry rows authoritative from code too (upsert on slug).
   await registerAgent({
@@ -147,6 +151,20 @@ export async function ensureAOS(): Promise<void> {
     priority: 28,
     cadence: 'daily',
     system_prompt: ADMISSIONS_SYSTEM_PROMPT,
+    permissions: { read: true, write: true, publish: false, admin: false, human_approval_required: true },
+    config: { maxAttempts: 2 },
+  });
+
+  await registerAgent({
+    slug: 'student-success',
+    name: 'Student Success & Employability Authority',
+    role: 'Transforms students into employable professionals and future leaders',
+    description:
+      'Owns competency mastery, risk detection, gap analysis, certification/simulation/portfolio/interview readiness, resume + LinkedIn authority, employability scoring, salary projection, promotion readiness, AI readiness, and career transformation. Primary KPI: Career Transformation Score. Reads student data read-only; drafts interventions; never modifies student records without founder approval.',
+    status: 'active',
+    priority: 22,
+    cadence: 'daily',
+    system_prompt: SUCCESS_SYSTEM_PROMPT,
     permissions: { read: true, write: true, publish: false, admin: false, human_approval_required: true },
     config: { maxAttempts: 2 },
   });
