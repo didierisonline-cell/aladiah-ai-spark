@@ -45,7 +45,7 @@ const EMPTY: WorkforceSnapshot = {
   agents: [],
   globals: {
     activeAgents: 0, totalAgents: 0, tasksCompletedToday: 0, contentGenerated: 0,
-    leadsGenerated: 0, revenueImpact: 0, healthScore: 100,
+    leadsGenerated: 0, revenueImpact: 0, healthScore: 100, ctis: 0,
   },
 };
 
@@ -154,6 +154,7 @@ const AIWorkforceDashboard = () => {
 
       {/* Global metrics */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <Metric icon={Sparkles} label="CTIS (master KPI)" value={g.ctis} accent={g.ctis >= 70 ? 'text-green-600' : 'text-amber-600'} />
         <Metric icon={Users} label="Active Agents" value={`${g.activeAgents}/${g.totalAgents}`} accent="text-green-600" />
         <Metric icon={CheckSquare} label="Tasks Done Today" value={g.tasksCompletedToday} accent="text-blue-600" />
         <Metric icon={Sparkles} label="Content Generated" value={g.contentGenerated} accent="text-purple-600" />

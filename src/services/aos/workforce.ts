@@ -36,6 +36,7 @@ export interface WorkforceGlobals {
   leadsGenerated: number;
   revenueImpact: number;
   healthScore: number;
+  ctis: number; // Career Transformation Impact Score — master company KPI
 }
 
 export interface WorkforceSnapshot {
@@ -131,6 +132,15 @@ export async function getWorkforceSnapshot(): Promise<WorkforceSnapshot> {
       ? Math.round(agentSnapshots.reduce((s, a) => s + a.performanceScore, 0) / agentSnapshots.length)
       : 100;
 
+  // Master KPI from the Analytics agent's latest CEO brief.
+  let ctis = 0;
+  try {
+    const { data } = await db.from('analytics_reports').select('ctis').order('report_date', { ascending: false }).limit(1);
+    ctis = Number(data?.[0]?.ctis ?? 0);
+  } catch {
+    ctis = 0;
+  }
+
   return {
     agents: agentSnapshots,
     globals: {
@@ -141,6 +151,7 @@ export async function getWorkforceSnapshot(): Promise<WorkforceSnapshot> {
       leadsGenerated,
       revenueImpact,
       healthScore,
+      ctis,
     },
   };
 }
