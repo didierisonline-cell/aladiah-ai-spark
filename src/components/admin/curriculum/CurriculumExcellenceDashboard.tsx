@@ -14,6 +14,7 @@ import { PROGRAM_ARCHITECTURES, WORLD_CLASS_CES, scoreBlueprint } from '@/servic
 import { CANONICAL_MODULE_STRUCTURE, FUTURE_SPECS, REFERENCE_SPEC } from '@/services/standards/programFactory';
 import ProgramScorecard from './ProgramScorecard';
 import FlagshipArchitecturePanel from './FlagshipArchitecturePanel';
+import FullCurriculumPanel from './FullCurriculumPanel';
 
 const STANDARD_EVAL = scoreBlueprint(SCRUM_18_BLUEPRINT, 'scrum');
 
@@ -75,6 +76,7 @@ const CurriculumExcellenceDashboard = () => {
       <Tabs defaultValue="audit" className="space-y-4">
         <TabsList className="flex flex-wrap h-auto justify-start">
           <TabsTrigger value="scorecard"><Award className="w-3.5 h-3.5 mr-1" />Scorecard</TabsTrigger>
+          <TabsTrigger value="full"><BookOpen className="w-3.5 h-3.5 mr-1" />Full Curriculum</TabsTrigger>
           <TabsTrigger value="standard"><ShieldCheck className="w-3.5 h-3.5 mr-1" />Program Standard</TabsTrigger>
           <TabsTrigger value="audit"><Target className="w-3.5 h-3.5 mr-1" />Audit &amp; Gaps</TabsTrigger>
           <TabsTrigger value="standards"><ShieldCheck className="w-3.5 h-3.5 mr-1" />Framework</TabsTrigger>
@@ -85,6 +87,7 @@ const CurriculumExcellenceDashboard = () => {
         </TabsList>
 
         <TabsContent value="scorecard"><ProgramScorecard /></TabsContent>
+        <TabsContent value="full"><FullCurriculumPanel /></TabsContent>
 
         <TabsContent value="standard" className="space-y-4">
           <Card className="border-primary/30">
