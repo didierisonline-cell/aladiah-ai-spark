@@ -73,6 +73,8 @@ export interface ProductOutcome {
 
 export type ArtifactStatus =
   | 'draft'
+  | 'qa_review'
+  | 'qa_rejected'
   | 'pending_approval'
   | 'approved'
   | 'rejected'

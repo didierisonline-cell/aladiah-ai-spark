@@ -104,9 +104,10 @@ async function persistArtifact(
     quality_score: draft.quality_score,
   });
 
-  // Passing the Aladiah Quality Standard is the ONLY way into the Founder
-  // Approval Queue. Failing artifacts are held as drafts with their report.
-  const status: ArtifactStatus = report.passed ? 'pending_approval' : 'draft';
+  // Passing the Aladiah Quality Standard routes the artifact into QA REVIEW (the
+  // QA Authority is the final gate before the Founder Approval Queue). Failing
+  // artifacts are held as drafts with their report. Nothing skips QA.
+  const status: ArtifactStatus = report.passed ? 'qa_review' : 'draft';
 
   const { data, error } = await db
     .from(ARTIFACTS)
@@ -337,7 +338,7 @@ export async function runOvernightImprovement(
     generated += 1;
     if (r.artifact) {
       artifactIds.push(r.artifact.id);
-      if (r.artifact.status === 'pending_approval') passedToApproval += 1;
+      if (r.artifact.status === 'qa_review' || r.artifact.status === 'pending_approval') passedToApproval += 1;
       else heldAsDraft += 1;
     }
   };
@@ -384,8 +385,8 @@ export async function runOvernightImprovement(
   });
 
   await reportToCeo(SLUG, {
-    subject: `Overnight course improvement: ${passedToApproval} item(s) awaiting your approval`,
-    body: `Improved ${areas.length} weak area(s) in ${program}. Generated ${generated} artifacts; ${passedToApproval} passed the Aladiah Quality Standard and are in the Founder Approval Queue; ${heldAsDraft} held as draft. Nothing was published.`,
+    subject: `Overnight course improvement: ${passedToApproval} item(s) submitted to QA review`,
+    body: `Improved ${areas.length} weak area(s) in ${program}. Generated ${generated} artifacts; ${passedToApproval} passed the Aladiah Quality Standard and were submitted to the QA Authority for review (the final gate before your approval queue); ${heldAsDraft} held as draft. Nothing was published.`,
     payload: result as unknown as Record<string, unknown>,
   });
 
@@ -464,7 +465,7 @@ export async function buildAIScrumMasterProgram(runId?: string | null): Promise<
     generated += 1;
     if (r.artifact) {
       artifactIds.push(r.artifact.id);
-      if (r.artifact.status === 'pending_approval') passedToApproval += 1;
+      if (r.artifact.status === 'qa_review' || r.artifact.status === 'pending_approval') passedToApproval += 1;
       else heldAsDraft += 1;
     }
   };
@@ -583,8 +584,8 @@ export async function buildAIScrumMasterProgram(runId?: string | null): Promise<
     source: runId ?? undefined,
   });
   await reportToCeo(SLUG, {
-    subject: `${bp.title} redesigned — ${passedToApproval} artifacts awaiting your approval`,
-    body: `Rebuilt all ${bp.modules.length} modules using the Career Transformation Architecture (competency, assessment, simulation, lab, project, interview prep, employer alignment, AI integration). ${generated} artifacts generated; ${passedToApproval} passed the Aladiah Quality Standard and are in the Founder Approval Queue; ${heldAsDraft} held as draft. Live curriculum untouched.`,
+    subject: `${bp.title} redesigned — ${passedToApproval} artifacts submitted to QA review`,
+    body: `Rebuilt all ${bp.modules.length} modules using the Career Transformation Architecture (competency, assessment, simulation, lab, project, interview prep, employer alignment, AI integration). ${generated} artifacts generated; ${passedToApproval} passed the Aladiah Quality Standard and were submitted to the QA Authority (the final gate before your approval queue); ${heldAsDraft} held as draft. Live curriculum untouched.`,
     payload: result as unknown as Record<string, unknown>,
   });
   await logAction(SLUG, 'program.build_complete', {

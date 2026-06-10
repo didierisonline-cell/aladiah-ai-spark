@@ -38,8 +38,9 @@ const ProductApprovalQueue = ({ items, onChange }: Props) => {
           <Badge variant="secondary" className="text-xs">{items.length}</Badge>
         </CardTitle>
         <p className="text-xs text-muted-foreground">
-          Only artifacts that passed the Aladiah Quality Standard appear here. Nothing publishes — approving marks it
-          ready; promotion to the live curriculum is a separate manual step.
+          Only artifacts that passed the Aladiah Quality Standard <span className="font-medium">and QA review</span>
+          {' '}appear here. Nothing publishes — approving marks it ready; promotion to the live curriculum is a separate
+          manual step.
         </p>
       </CardHeader>
       <CardContent className="space-y-3 max-h-[640px] overflow-y-auto">
