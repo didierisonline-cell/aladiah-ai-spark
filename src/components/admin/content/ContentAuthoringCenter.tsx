@@ -3,21 +3,23 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Plus, Sparkles, RefreshCw, Trash2, ChevronRight } from 'lucide-react';
+import { Plus, Sparkles, RefreshCw, Trash2, ChevronRight, Archive } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { db } from '@/services/aos/_internal';
 import {
   ASSET_TYPES, AssetType, AssetStatus, STATUS_FLOW, metaFor,
-  listAssets, createAsset, setStatus, updateAsset, removeAsset, type ContentAsset,
+  listAssets, createAsset, setStatus, updateAsset, removeAsset, archiveAsset,
+  listAudit, type ContentAsset, type AuditEntry,
 } from '@/services/curriculum/contentStore';
-import { generateAssets } from '@/services/curriculum/productBuilder';
+import { generateAssets, generateAllAssets } from '@/services/curriculum/productBuilder';
 
 const STATUS_STYLE: Record<AssetStatus, string> = {
   draft: 'bg-slate-500/15 text-slate-400',
   in_review: 'bg-amber-500/15 text-amber-500',
   approved: 'bg-blue-500/15 text-blue-500',
   published: 'bg-green-500/15 text-green-500',
+  archived: 'bg-zinc-700/30 text-zinc-500',
 };
 const sel = 'h-9 rounded-md border border-input bg-background px-3 text-sm';
 
@@ -30,6 +32,7 @@ const ContentAuthoringCenter = () => {
   const [chapters, setChapters] = useState<{ id: string; title: string }[]>([]);
   const [type, setType] = useState<AssetType>('simulations');
   const [assets, setAssets] = useState<ContentAsset[]>([]);
+  const [audit, setAudit] = useState<AuditEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
   const [showNew, setShowNew] = useState(false);
@@ -63,7 +66,7 @@ const ContentAuthoringCenter = () => {
   const refresh = useCallback(async () => {
     if (!courseId) return;
     setLoading(true);
-    try { setAssets(await listAssets(courseId, type)); }
+    try { const [a, au] = await Promise.all([listAssets(courseId, type), listAudit(courseId, 15)]); setAssets(a); setAudit(au); }
     finally { setLoading(false); }
   }, [courseId, type]);
   useEffect(() => { refresh(); }, [refresh]);
@@ -100,7 +103,16 @@ const ContentAuthoringCenter = () => {
     const pct = Math.max(0, Math.min(100, (a.completion_pct ?? 0) + delta));
     if (await updateAsset(type, a.id, { completion_pct: pct, is_published: a.is_published })) refresh();
   };
-  const del = async (a: ContentAsset) => { if (await removeAsset(type, a.id)) { toast({ title: 'Deleted' }); refresh(); } };
+  const del = async (a: ContentAsset) => { if (await removeAsset(type, a.id, author)) { toast({ title: 'Deleted' }); refresh(); } };
+  const archive = async (a: ContentAsset) => { if (await archiveAsset(type, a.id, author)) { toast({ title: 'Archived' }); refresh(); } };
+  const generateAll = async () => {
+    if (!course) return;
+    setBusy(true);
+    const r = await generateAllAssets(courseId, course.title, author);
+    setBusy(false);
+    if (r.total > 0) { toast({ title: `Product Builder drafted ${r.total} assets`, description: Object.entries(r.byType).map(([k, v]) => `${k}:${v}`).join(' · ') }); refresh(); }
+    else toast({ title: 'Nothing generated', description: r.error || 'Already covered.', variant: r.error ? 'destructive' : 'default' });
+  };
 
   const published = assets.filter((a) => a.is_published).length;
 
@@ -137,7 +149,8 @@ const ContentAuthoringCenter = () => {
         </div>
         <div className="flex gap-2">
           <Button size="sm" variant="outline" onClick={() => setShowNew((s) => !s)}><Plus className="w-4 h-4 mr-1.5" /> New</Button>
-          <Button size="sm" onClick={generate} disabled={busy || !courseId}><Sparkles className="w-4 h-4 mr-1.5" /> Generate with Product Builder</Button>
+          <Button size="sm" variant="outline" onClick={generate} disabled={busy || !courseId}><Sparkles className="w-4 h-4 mr-1.5" /> Generate {meta.label}</Button>
+          <Button size="sm" onClick={generateAll} disabled={busy || !courseId}><Sparkles className="w-4 h-4 mr-1.5" /> Generate Full Program</Button>
         </div>
       </div>
 
@@ -196,16 +209,35 @@ const ContentAuthoringCenter = () => {
               <div className="flex items-center gap-1 shrink-0">
                 <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => editPct(a, -10)}>−</Button>
                 <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => editPct(a, +10)}>+</Button>
-                {a.status !== 'published' && (
+                {a.status !== 'published' && a.status !== 'archived' && (
                   <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => advance(a)}>
                     {a.status === 'approved' ? 'Publish' : a.status === 'in_review' ? 'Approve' : 'Review'} <ChevronRight className="w-3 h-3 ml-1" />
                   </Button>
+                )}
+                {a.status !== 'archived' && (
+                  <Button size="sm" variant="ghost" className="h-7 px-2 text-muted-foreground" title="Archive" onClick={() => archive(a)}><Archive className="w-3.5 h-3.5" /></Button>
                 )}
                 <Button size="sm" variant="ghost" className="h-7 px-2 text-destructive" onClick={() => del(a)}><Trash2 className="w-3.5 h-3.5" /></Button>
               </div>
             </CardContent></Card>
           ))}
         </div>
+      )}
+
+      {audit.length > 0 && (
+        <Card><CardContent className="p-4">
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-2">Audit trail · recent</div>
+          <div className="space-y-1">
+            {audit.map((e) => (
+              <div key={e.id} className="text-[12px] flex gap-2 items-baseline">
+                <span className="font-semibold text-foreground">{e.action}</span>
+                <span className="text-muted-foreground">{e.asset_type}</span>
+                <span className="text-muted-foreground">· {e.actor}</span>
+                <span className="ml-auto text-muted-foreground">{new Date(e.created_at).toLocaleString()}</span>
+              </div>
+            ))}
+          </div>
+        </CardContent></Card>
       )}
     </div>
   );

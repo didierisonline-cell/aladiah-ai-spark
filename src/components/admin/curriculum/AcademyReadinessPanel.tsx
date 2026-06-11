@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { RefreshCw, ChevronDown, ChevronRight, GraduationCap, AlertTriangle } from 'lucide-react';
 import { aos } from '@/services/aos';
-import { getAcademyReadiness, type AcademyReadiness, type ProgramReadiness } from '@/services/curriculum/readiness';
+import { getAcademyReadiness, getArchitectureStatus, type AcademyReadiness, type ProgramReadiness } from '@/services/curriculum/readiness';
 
 const tierColor = (t: string) => t === 'Elite' ? '#a855f7' : t === 'World Class' ? '#22c55e' : t === 'Good' ? '#3b82f6' : t === 'Watch' ? '#f59e0b' : '#ef4444';
 const barColor = (n: number) => (n >= 90 ? '#22c55e' : n >= 80 ? '#3b82f6' : n >= 60 ? '#f59e0b' : '#ef4444');
@@ -36,6 +36,24 @@ const ProgramRow = ({ p }: { p: ProgramReadiness }) => {
               </div>
             ))}
           </div>
+          {p.launchBlockers.length > 0 && (
+            <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-[12px] text-red-400">
+              <span className="font-semibold">Launch blockers:</span> {p.launchBlockers.join(' · ')} (each required asset must exist)
+            </div>
+          )}
+          {p.moduleReadiness.length > 0 && (
+            <div>
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Module readiness</div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                {p.moduleReadiness.map((m) => (
+                  <div key={m.module} className="flex items-center gap-1.5 text-[11px]">
+                    <span className="w-7 text-right font-bold" style={{ color: barColor(m.score) }}>{m.score}%</span>
+                    <span className="text-muted-foreground truncate">M{m.module} {m.lessons ? '📹' : '·'}{m.quiz ? '📝' : '·'}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           {p.moduleGaps.length > 0 ? (
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1.5 flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5 text-amber-500" /> Missing content by module</div>
@@ -62,11 +80,12 @@ const ProgramRow = ({ p }: { p: ProgramReadiness }) => {
 
 const AcademyReadinessPanel = () => {
   const [data, setData] = useState<AcademyReadiness | null>(null);
+  const [arch, setArch] = useState<{ name: string; exists: boolean }[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
-    try { await aos.ensure(); setData(await getAcademyReadiness()); }
+    try { await aos.ensure(); const [r, a] = await Promise.all([getAcademyReadiness(), getArchitectureStatus()]); setData(r); setArch(a); }
     finally { setLoading(false); }
   }, []);
   useEffect(() => { load(); }, [load]);
@@ -89,6 +108,19 @@ const AcademyReadinessPanel = () => {
         <Stat label="Launch-Ready (≥90%)" value={d ? d.launchReady : '—'} accent="#22c55e" />
         <Stat label="Gaps (total missing)" value={d ? d.missing.reduce((a, m) => a + m.count, 0) : '—'} accent="#f59e0b" />
       </div>
+
+      {arch.length > 0 && (
+        <Card>
+          <CardHeader className="pb-2"><CardTitle className="text-base">Architecture Status</CardTitle></CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            {arch.map((a) => (
+              <span key={a.name} className={`text-[11px] px-2 py-1 rounded-md border ${a.exists ? 'border-green-500/40 text-green-500' : 'border-red-500/40 text-red-500'}`}>
+                {a.exists ? '✓' : '✗'} {a.name}
+              </span>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       {d && <LaunchMatrix programs={d.programs} />}
 
@@ -148,7 +180,7 @@ const LaunchMatrix = ({ programs }: { programs: ProgramReadiness[] }) => {
               <tr className="text-left text-muted-foreground border-b border-border/60">
                 <th className="py-2 pr-3">#</th><th className="py-2 pr-3">Program</th>
                 <th className="py-2 pr-3">Readiness %</th><th className="py-2 pr-3">Launch Ready</th>
-                <th className="py-2">Missing Components</th>
+                <th className="py-2 pr-3">Launch Blockers</th><th className="py-2">Missing Components</th>
               </tr>
             </thead>
             <tbody>
@@ -157,9 +189,8 @@ const LaunchMatrix = ({ programs }: { programs: ProgramReadiness[] }) => {
                   <td className="py-2 pr-3 text-muted-foreground">{i + 1}</td>
                   <td className="py-2 pr-3 font-semibold text-foreground">{p.title}</td>
                   <td className="py-2 pr-3 font-bold" style={{ color: barColor(p.readiness) }}>{p.readiness}%</td>
-                  <td className="py-2 pr-3">
-                    <span className={`font-bold ${p.readiness >= 90 ? 'text-green-500' : 'text-red-500'}`}>{p.readiness >= 90 ? 'Y' : 'N'}</span>
-                  </td>
+                  <td className="py-2 pr-3"><span className={`font-bold ${p.launchReady ? 'text-green-500' : 'text-red-500'}`}>{p.launchReady ? 'Y' : 'N'}</span></td>
+                  <td className="py-2 pr-3 text-red-400/90">{p.launchBlockers.length ? p.launchBlockers.join(', ') : '—'}</td>
                   <td className="py-2 text-amber-500/90">{missingOf(p)}</td>
                 </tr>
               ))}

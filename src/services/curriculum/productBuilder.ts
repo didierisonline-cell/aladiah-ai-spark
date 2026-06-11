@@ -7,7 +7,7 @@
 // =============================================================================
 import { db } from '@/services/aos/_internal';
 import { AI_SCRUM_MASTER_CURRICULUM as FLAG } from '@/services/agents/curriculum/programs/aiScrumMasterFull';
-import { AssetType, metaFor } from './contentStore';
+import { AssetType, ASSET_TYPES, metaFor, logAudit } from './contentStore';
 
 const base = (courseId: string, author: string, extra: Record<string, any>) => ({
   course_id: courseId, author, status: 'draft', is_published: false, version: 1,
@@ -63,8 +63,21 @@ export async function generateAssets(courseId: string, courseTitle: string, type
   try {
     const { error } = await db.from(metaFor(type).table).insert(rows);
     if (error) throw error;
+    await logAudit('generate', type, null, courseId, author, { created: rows.length });
     return { created: rows.length };
   } catch (e: any) {
     return { created: 0, error: e?.message || 'Generate failed (is the migration applied?)' };
   }
+}
+
+/** Bulk: draft every asset type for a program in one pass. */
+export async function generateAllAssets(courseId: string, courseTitle: string, author: string): Promise<{ total: number; byType: Record<string, number>; error?: string }> {
+  const byType: Record<string, number> = {};
+  let total = 0; let error: string | undefined;
+  for (const m of ASSET_TYPES) {
+    const r = await generateAssets(courseId, courseTitle, m.type, author);
+    byType[m.type] = r.created; total += r.created;
+    if (r.error && !error) error = r.error;
+  }
+  return { total, byType, error };
 }

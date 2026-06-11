@@ -8,7 +8,7 @@
 import { db } from '@/services/aos/_internal';
 
 export type AssetType = 'simulations' | 'portfolios' | 'interview' | 'mentor' | 'capstones' | 'certifications';
-export type AssetStatus = 'draft' | 'in_review' | 'approved' | 'published';
+export type AssetStatus = 'draft' | 'in_review' | 'approved' | 'published' | 'archived';
 export const STATUS_FLOW: AssetStatus[] = ['draft', 'in_review', 'approved', 'published'];
 
 export interface AssetTypeMeta { type: AssetType; table: string; label: string; level: 'module' | 'program'; target: number; titleField: string; }
@@ -32,6 +32,23 @@ export interface ContentAsset {
 }
 
 const readinessFromCompletion = (pct: number, published: boolean) => published ? Math.max(pct, 70) : Math.min(pct, 69);
+
+/** Append an audit-trail entry (defensive — silent if table absent). */
+export async function logAudit(action: string, type: AssetType, assetId: string | null, courseId: string | null, actor: string, detail: Record<string, any> = {}) {
+  try {
+    await db.from('curriculum_audit_log').insert({ asset_type: type, asset_id: assetId, course_id: courseId || null, action, actor, detail });
+  } catch { /* table not applied yet */ }
+}
+
+export interface AuditEntry { id: string; asset_type: string; action: string; actor: string; created_at: string; detail: any; }
+export async function listAudit(courseId?: string, limit = 50): Promise<AuditEntry[]> {
+  try {
+    let q = db.from('curriculum_audit_log').select('*').order('created_at', { ascending: false }).limit(limit);
+    if (courseId) q = q.eq('course_id', courseId);
+    const { data } = await q;
+    return (data ?? []) as AuditEntry[];
+  } catch { return []; }
+}
 
 export async function listAssets(courseId: string, type: AssetType): Promise<ContentAsset[]> {
   try {
@@ -69,39 +86,50 @@ export async function createAsset(type: AssetType, a: NewAsset): Promise<{ ok: b
   if (type === 'capstones') row.brief = a.details ?? '';
   if (type === 'certifications') row.completion_logic = {};
   try {
-    const { error } = await db.from(m.table).insert(row);
+    const { data, error } = await db.from(m.table).insert(row).select('id').single();
     if (error) throw error;
+    await logAudit('create', type, data?.id ?? null, a.courseId, a.author, { title: a.title });
     return { ok: true };
   } catch (e: any) {
     return { ok: false, error: e?.message || 'Insert failed (is the migration applied?)' };
   }
 }
 
-export async function updateAsset(type: AssetType, id: string, patch: Partial<ContentAsset>): Promise<boolean> {
+export async function updateAsset(type: AssetType, id: string, patch: Partial<ContentAsset>, actor = 'founder'): Promise<boolean> {
   try {
     const next: Record<string, any> = { ...patch };
     if (patch.completion_pct != null) next.readiness_score = readinessFromCompletion(patch.completion_pct, patch.is_published ?? false);
-    // bump version on content edits
-    const { data: cur } = await db.from(metaFor(type).table).select('version, is_published').eq('id', id).maybeSingle();
+    const { data: cur } = await db.from(metaFor(type).table).select('version, course_id').eq('id', id).maybeSingle();
     if (cur) next.version = (cur.version ?? 1) + 1;
     const { error } = await db.from(metaFor(type).table).update(next).eq('id', id);
-    return !error;
+    if (error) return false;
+    await logAudit('update', type, id, cur?.course_id ?? '', actor, { patch });
+    return true;
   } catch { return false; }
 }
 
-export async function setStatus(type: AssetType, id: string, status: AssetStatus): Promise<boolean> {
+export async function setStatus(type: AssetType, id: string, status: AssetStatus, actor = 'founder'): Promise<boolean> {
   try {
     const published = status === 'published';
-    const { data: cur } = await db.from(metaFor(type).table).select('completion_pct').eq('id', id).maybeSingle();
+    const { data: cur } = await db.from(metaFor(type).table).select('completion_pct, course_id').eq('id', id).maybeSingle();
     const pct = cur?.completion_pct ?? 0;
     const { error } = await db.from(metaFor(type).table).update({
       status, is_published: published, readiness_score: readinessFromCompletion(pct, published),
     }).eq('id', id);
-    return !error;
+    if (error) return false;
+    await logAudit(`status:${status}`, type, id, cur?.course_id ?? '', actor, {});
+    return true;
   } catch { return false; }
 }
 
-export async function removeAsset(type: AssetType, id: string): Promise<boolean> {
-  try { const { error } = await db.from(metaFor(type).table).delete().eq('id', id); return !error; }
-  catch { return false; }
+export const archiveAsset = (type: AssetType, id: string, actor = 'founder') => setStatus(type, id, 'archived', actor);
+
+export async function removeAsset(type: AssetType, id: string, actor = 'founder'): Promise<boolean> {
+  try {
+    const { data: cur } = await db.from(metaFor(type).table).select('course_id').eq('id', id).maybeSingle();
+    const { error } = await db.from(metaFor(type).table).delete().eq('id', id);
+    if (error) return false;
+    await logAudit('delete', type, id, cur?.course_id ?? '', actor, {});
+    return true;
+  } catch { return false; }
 }

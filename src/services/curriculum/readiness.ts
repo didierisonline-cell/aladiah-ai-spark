@@ -24,10 +24,15 @@ const ASSET_TABLE: Record<string, string> = {
 
 export interface Dim { key: string; label: string; have: number; target: number; pct: number; }
 export interface ModuleGap { module: number; title: string; missing: string[]; }
+export interface ModuleReadiness { module: number; title: string; lessons: boolean; quiz: boolean; score: number; }
 export interface ProgramReadiness {
   id: string; title: string; source: 'db'; readiness: number; tier: string;
-  dims: Dim[]; moduleGaps: ModuleGap[];
+  dims: Dim[]; moduleGaps: ModuleGap[]; moduleReadiness: ModuleReadiness[];
+  launchBlockers: string[]; launchReady: boolean;
 }
+
+// A program cannot be Launch Ready unless every required dimension exists (>0).
+const REQUIRED = ['lessons', 'quizzes', 'simulations', 'portfolios', 'interview', 'mentor', 'capstones', 'certifications'];
 export interface AcademyReadiness {
   generatedAt: string;
   academyReadiness: number;
@@ -97,13 +102,17 @@ export async function getAcademyReadiness(): Promise<AcademyReadiness> {
           certifications: certMap.get(c.id) ?? 0,
         };
         const { dims, readiness } = buildDims(have);
-        const moduleGaps: ModuleGap[] = cChaps.map((ch, i) => {
-          const missing: string[] = [];
-          if ((vidByChap.get(ch.id) ?? 0) === 0) missing.push('Lessons');
-          if (!quizChaps.has(ch.id)) missing.push('Quiz');
-          return { module: ch.order_index ?? i + 1, title: ch.title, missing };
-        }).filter((g) => g.missing.length > 0);
-        programs.push({ id: c.id, title: c.title, source: 'db', readiness, tier: tierFor(readiness), dims, moduleGaps });
+        const moduleReadiness: ModuleReadiness[] = cChaps.map((ch, i) => {
+          const lessons = (vidByChap.get(ch.id) ?? 0) > 0;
+          const quiz = quizChaps.has(ch.id);
+          return { module: ch.order_index ?? i + 1, title: ch.title, lessons, quiz, score: (lessons ? 50 : 0) + (quiz ? 50 : 0) };
+        });
+        const moduleGaps: ModuleGap[] = moduleReadiness
+          .map((m) => ({ module: m.module, title: m.title, missing: [...(m.lessons ? [] : ['Lessons']), ...(m.quiz ? [] : ['Quiz'])] }))
+          .filter((g) => g.missing.length > 0);
+        const launchBlockers = REQUIRED.filter((k) => ((have as any)[k] ?? 0) === 0).map((k) => DIM_LABEL[k]);
+        const launchReady = launchBlockers.length === 0 && readiness >= 90;
+        programs.push({ id: c.id, title: c.title, source: 'db', readiness, tier: tierFor(readiness), dims, moduleGaps, moduleReadiness, launchBlockers, launchReady });
       }
     }
   } catch { /* defensive */ }
@@ -118,7 +127,25 @@ export async function getAcademyReadiness(): Promise<AcademyReadiness> {
   return {
     generatedAt: new Date().toISOString(),
     academyReadiness, totalPrograms: programs.length,
-    launchReady: programs.filter((p) => p.readiness >= 90).length,
+    launchReady: programs.filter((p) => p.launchReady).length,
     programs, missing,
   };
+}
+
+// Architecture validation — which content entities exist in Supabase.
+const ARCH = [
+  'courses', 'chapters', 'videos', 'quizzes',
+  'program_simulations', 'program_portfolios', 'program_interview_prep',
+  'program_ai_mentor_prompts', 'program_capstones', 'program_certifications',
+  'program_content_readiness', 'curriculum_audit_log',
+];
+export async function getArchitectureStatus(): Promise<{ name: string; exists: boolean }[]> {
+  return Promise.all(ARCH.map(async (t) => {
+    try {
+      const { error } = await db.from(t).select('*', { head: true, count: 'exact' }).limit(1);
+      return { name: t, exists: !error };
+    } catch {
+      return { name: t, exists: false };
+    }
+  }));
 }
