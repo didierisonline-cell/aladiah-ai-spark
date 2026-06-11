@@ -84,11 +84,27 @@ export async function generateAssets(courseId: string, courseTitle: string, type
   }
 
   if (!rows.length) return { created: 0, error: type !== 'capstones' && type !== 'certifications' ? 'No modules (chapters) found for this program — add modules first.' : undefined };
+
+  // Idempotency: skip assets that already exist (deterministic key) so reruns
+  // never duplicate. Module assets key on chapter (+ level for sims); program
+  // assets (capstone/cert) key on the program (one each).
+  const keyOf = (r: any) => type === 'simulations'
+    ? `${r.chapter_id ?? ''}|${r.level ?? ''}`
+    : (type === 'capstones' || type === 'certifications') ? 'program' : `${r.chapter_id ?? ''}`;
+  const existing = new Set<string>();
   try {
-    const { error } = await db.from(metaFor(type).table).insert(rows);
+    const cols = type === 'simulations' ? 'chapter_id, level' : (type === 'capstones' || type === 'certifications') ? 'id' : 'chapter_id';
+    const { data } = await db.from(metaFor(type).table).select(cols).eq('course_id', courseId).limit(10000);
+    (data ?? []).forEach((r: any) => existing.add(keyOf(r)));
+  } catch { /* table absent */ }
+  const newRows = rows.filter((r) => !existing.has(keyOf(r)));
+  if (!newRows.length) return { created: 0 };
+
+  try {
+    const { error } = await db.from(metaFor(type).table).insert(newRows);
     if (error) throw error;
-    await logAudit('generate', type, null, courseId, author, { created: rows.length });
-    return { created: rows.length };
+    await logAudit('generate', type, null, courseId, author, { created: newRows.length });
+    return { created: newRows.length };
   } catch (e: any) {
     return { created: 0, error: e?.message || 'Generate failed (is the migration applied?)' };
   }
