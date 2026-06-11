@@ -11,6 +11,7 @@ const LINKS = [
   { to: '/admin/command-center', label: 'CEO Dashboard', icon: Sparkles },
   { to: '/admin/curriculum-excellence', label: 'Curriculum', icon: Award },
   { to: '/admin/content', label: 'Authoring', icon: FilePlus2 },
+  { to: '/admin/production', label: 'Production', icon: LayoutGrid },
   { to: '/admin/qa-agent', label: 'QA Authority', icon: ShieldCheck },
   { to: '/admin/security', label: 'Security', icon: Shield },
   { to: '/admin/admissions-agent', label: 'Admissions', icon: GraduationCap },

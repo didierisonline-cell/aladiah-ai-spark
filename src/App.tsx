@@ -37,6 +37,7 @@ import AnalyticsAgent from "./pages/admin/AnalyticsAgent";
 import OperationsAgent from "./pages/admin/OperationsAgent";
 import CurriculumExcellence from "./pages/admin/CurriculumExcellence";
 import ContentStudio from "./pages/admin/ContentStudio";
+import Production from "./pages/admin/Production";
 import Approvals from "./pages/admin/Approvals";
 import Security from "./pages/admin/Security";
 import FounderPortal from "./pages/founder/FounderPortal";
@@ -137,6 +138,7 @@ const AppContent = () => {
         <Route path="/admin/operations" element={<FounderRoute><OperationsAgent /></FounderRoute>} />
         <Route path="/admin/curriculum-excellence" element={<FounderRoute><CurriculumExcellence /></FounderRoute>} />
         <Route path="/admin/content" element={<FounderRoute><ContentStudio /></FounderRoute>} />
+        <Route path="/admin/production" element={<FounderRoute><Production /></FounderRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <RouterAwareFloat />
