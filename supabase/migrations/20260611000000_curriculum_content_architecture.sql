@@ -1,40 +1,60 @@
 -- =============================================================================
--- Curriculum Content Architecture v1.0
--- Makes simulations, portfolios, interview prep, AI-mentor prompts, capstones,
--- and certifications FIRST-CLASS Supabase entities so launch readiness is
--- traceable to authored content (no code-only assumptions).
+-- Curriculum Content Architecture v1.1 — Curriculum Intelligence edition.
+-- First-class assets: simulations, portfolios, interview prep, AI-mentor prompts,
+-- capstones, certifications. Designed ONCE to support all 28 programs + future
+-- programs: quality scoring, launch readiness, employer alignment, AI-assisted
+-- generation at scale. Builds on courses (programs) · chapters (modules) ·
+-- videos (lessons) · quizzes.
 --
--- Builds on existing: courses (programs) · chapters (modules) · videos (lessons)
--- · quizzes. Adds 6 content tables + a readiness VIEW.
---
--- ⚠️ Apply BY HAND in the Supabase SQL editor. Claude Code does not auto-apply.
---    Run the verification SELECT at the bottom afterwards.
+-- ⚠️ Apply BY HAND in the Supabase SQL editor. Run the verification SELECT after.
 -- =============================================================================
 
--- Shared updated_at trigger -------------------------------------------------
 CREATE OR REPLACE FUNCTION public.set_updated_at()
 RETURNS TRIGGER LANGUAGE plpgsql AS $$
 BEGIN NEW.updated_at = now(); RETURN NEW; END; $$;
 
--- Each asset carries the common lifecycle columns the founder requires:
---   status · completion_pct · author · version · created/updated · is_published · readiness_score
--- Module-level assets reference chapter_id; program-level (capstone/cert) leave it null.
+-- Common asset intelligence columns (every asset table carries these):
+--   lifecycle: status · completion_pct · version · is_published · created/updated
+--   scoring:   readiness_score · quality_score
+--   provenance:ai_generated · ai_reviewed · human_reviewed · author · approved_by/at · last_reviewed_at
+--   metadata:  estimated_completion_minutes · difficulty_level · competency_tags ·
+--              learning_objectives · industry_alignment
 
 CREATE TABLE IF NOT EXISTS public.program_simulations (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   course_id uuid NOT NULL REFERENCES public.courses(id) ON DELETE CASCADE,
   chapter_id uuid REFERENCES public.chapters(id) ON DELETE SET NULL,
   title text NOT NULL,
-  level text DEFAULT 'beginner',            -- beginner | intermediate | advanced
-  scenario jsonb DEFAULT '{}'::jsonb,
-  scoring jsonb DEFAULT '{}'::jsonb,
   order_index int DEFAULT 0,
-  status text NOT NULL DEFAULT 'draft',     -- draft|in_review|approved|published|archived
+  -- common lifecycle / scoring / provenance / metadata
+  status text NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','in_review','approved','published','archived')),
   completion_pct int NOT NULL DEFAULT 0,
-  author text,
   version int NOT NULL DEFAULT 1,
   is_published boolean NOT NULL DEFAULT false,
   readiness_score int NOT NULL DEFAULT 0,
+  quality_score int NOT NULL DEFAULT 0,
+  ai_generated boolean NOT NULL DEFAULT false,
+  ai_reviewed boolean NOT NULL DEFAULT false,
+  human_reviewed boolean NOT NULL DEFAULT false,
+  author text,
+  approved_by text,
+  approved_at timestamptz,
+  last_reviewed_at timestamptz,
+  estimated_completion_minutes int,
+  difficulty_level text,
+  competency_tags text[] DEFAULT '{}',
+  learning_objectives text[] DEFAULT '{}',
+  industry_alignment text[] DEFAULT '{}',
+  -- simulation-specific
+  level text DEFAULT 'beginner',
+  scenario_type text,
+  industry text,
+  complexity text,
+  role text,
+  scenario jsonb DEFAULT '{}'::jsonb,
+  expected_deliverables text[] DEFAULT '{}',
+  grading_rubric jsonb DEFAULT '{}'::jsonb,
+  scoring jsonb DEFAULT '{}'::jsonb,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
@@ -44,15 +64,31 @@ CREATE TABLE IF NOT EXISTS public.program_portfolios (
   course_id uuid NOT NULL REFERENCES public.courses(id) ON DELETE CASCADE,
   chapter_id uuid REFERENCES public.chapters(id) ON DELETE SET NULL,
   title text NOT NULL,
-  deliverable text,
-  rubric jsonb DEFAULT '{}'::jsonb,
   order_index int DEFAULT 0,
-  status text NOT NULL DEFAULT 'draft',
+  status text NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','in_review','approved','published','archived')),
   completion_pct int NOT NULL DEFAULT 0,
-  author text,
   version int NOT NULL DEFAULT 1,
   is_published boolean NOT NULL DEFAULT false,
   readiness_score int NOT NULL DEFAULT 0,
+  quality_score int NOT NULL DEFAULT 0,
+  ai_generated boolean NOT NULL DEFAULT false,
+  ai_reviewed boolean NOT NULL DEFAULT false,
+  human_reviewed boolean NOT NULL DEFAULT false,
+  author text,
+  approved_by text,
+  approved_at timestamptz,
+  last_reviewed_at timestamptz,
+  estimated_completion_minutes int,
+  difficulty_level text,
+  competency_tags text[] DEFAULT '{}',
+  learning_objectives text[] DEFAULT '{}',
+  industry_alignment text[] DEFAULT '{}',
+  -- portfolio-specific
+  deliverable text,
+  portfolio_category text,
+  employer_value_score int DEFAULT 0,
+  interview_relevance_score int DEFAULT 0,
+  rubric jsonb DEFAULT '{}'::jsonb,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
@@ -62,15 +98,32 @@ CREATE TABLE IF NOT EXISTS public.program_interview_prep (
   course_id uuid NOT NULL REFERENCES public.courses(id) ON DELETE CASCADE,
   chapter_id uuid REFERENCES public.chapters(id) ON DELETE SET NULL,
   title text NOT NULL,
-  kind text DEFAULT 'behavioral',           -- behavioral | scenario | leadership
-  questions jsonb DEFAULT '[]'::jsonb,
   order_index int DEFAULT 0,
-  status text NOT NULL DEFAULT 'draft',
+  status text NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','in_review','approved','published','archived')),
   completion_pct int NOT NULL DEFAULT 0,
-  author text,
   version int NOT NULL DEFAULT 1,
   is_published boolean NOT NULL DEFAULT false,
   readiness_score int NOT NULL DEFAULT 0,
+  quality_score int NOT NULL DEFAULT 0,
+  ai_generated boolean NOT NULL DEFAULT false,
+  ai_reviewed boolean NOT NULL DEFAULT false,
+  human_reviewed boolean NOT NULL DEFAULT false,
+  author text,
+  approved_by text,
+  approved_at timestamptz,
+  last_reviewed_at timestamptz,
+  estimated_completion_minutes int,
+  difficulty_level text,
+  competency_tags text[] DEFAULT '{}',
+  learning_objectives text[] DEFAULT '{}',
+  industry_alignment text[] DEFAULT '{}',
+  -- interview-specific
+  kind text DEFAULT 'behavioral',
+  company_type text,
+  interview_stage text,
+  questions jsonb DEFAULT '[]'::jsonb,
+  expected_answers jsonb DEFAULT '[]'::jsonb,
+  evaluation_criteria jsonb DEFAULT '{}'::jsonb,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
@@ -80,15 +133,31 @@ CREATE TABLE IF NOT EXISTS public.program_ai_mentor_prompts (
   course_id uuid NOT NULL REFERENCES public.courses(id) ON DELETE CASCADE,
   chapter_id uuid REFERENCES public.chapters(id) ON DELETE SET NULL,
   title text NOT NULL,
-  prompt text,
-  activity text,
   order_index int DEFAULT 0,
-  status text NOT NULL DEFAULT 'draft',
+  status text NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','in_review','approved','published','archived')),
   completion_pct int NOT NULL DEFAULT 0,
-  author text,
   version int NOT NULL DEFAULT 1,
   is_published boolean NOT NULL DEFAULT false,
   readiness_score int NOT NULL DEFAULT 0,
+  quality_score int NOT NULL DEFAULT 0,
+  ai_generated boolean NOT NULL DEFAULT false,
+  ai_reviewed boolean NOT NULL DEFAULT false,
+  human_reviewed boolean NOT NULL DEFAULT false,
+  author text,
+  approved_by text,
+  approved_at timestamptz,
+  last_reviewed_at timestamptz,
+  estimated_completion_minutes int,
+  difficulty_level text,
+  competency_tags text[] DEFAULT '{}',
+  learning_objectives text[] DEFAULT '{}',
+  industry_alignment text[] DEFAULT '{}',
+  -- mentor-specific
+  prompt text,
+  activity text,
+  mentor_persona text,
+  coaching_type text,
+  competency_area text,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
@@ -97,14 +166,30 @@ CREATE TABLE IF NOT EXISTS public.program_capstones (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   course_id uuid NOT NULL REFERENCES public.courses(id) ON DELETE CASCADE,
   title text NOT NULL,
-  brief text,
-  rubric jsonb DEFAULT '{}'::jsonb,
-  status text NOT NULL DEFAULT 'draft',
+  status text NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','in_review','approved','published','archived')),
   completion_pct int NOT NULL DEFAULT 0,
-  author text,
   version int NOT NULL DEFAULT 1,
   is_published boolean NOT NULL DEFAULT false,
   readiness_score int NOT NULL DEFAULT 0,
+  quality_score int NOT NULL DEFAULT 0,
+  ai_generated boolean NOT NULL DEFAULT false,
+  ai_reviewed boolean NOT NULL DEFAULT false,
+  human_reviewed boolean NOT NULL DEFAULT false,
+  author text,
+  approved_by text,
+  approved_at timestamptz,
+  last_reviewed_at timestamptz,
+  estimated_completion_minutes int,
+  difficulty_level text,
+  competency_tags text[] DEFAULT '{}',
+  learning_objectives text[] DEFAULT '{}',
+  industry_alignment text[] DEFAULT '{}',
+  -- capstone-specific
+  brief text,
+  project_type text,
+  business_domain text,
+  estimated_hours int,
+  rubric jsonb DEFAULT '{}'::jsonb,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
@@ -113,20 +198,35 @@ CREATE TABLE IF NOT EXISTS public.program_certifications (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   course_id uuid NOT NULL REFERENCES public.courses(id) ON DELETE CASCADE,
   credential_name text NOT NULL,
-  exam_blueprint jsonb DEFAULT '{}'::jsonb,
-  passing_score int DEFAULT 85,
-  completion_logic jsonb DEFAULT '{}'::jsonb,
-  status text NOT NULL DEFAULT 'draft',
+  status text NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','in_review','approved','published','archived')),
   completion_pct int NOT NULL DEFAULT 0,
-  author text,
   version int NOT NULL DEFAULT 1,
   is_published boolean NOT NULL DEFAULT false,
   readiness_score int NOT NULL DEFAULT 0,
+  quality_score int NOT NULL DEFAULT 0,
+  ai_generated boolean NOT NULL DEFAULT false,
+  ai_reviewed boolean NOT NULL DEFAULT false,
+  human_reviewed boolean NOT NULL DEFAULT false,
+  author text,
+  approved_by text,
+  approved_at timestamptz,
+  last_reviewed_at timestamptz,
+  estimated_completion_minutes int,
+  difficulty_level text,
+  competency_tags text[] DEFAULT '{}',
+  learning_objectives text[] DEFAULT '{}',
+  industry_alignment text[] DEFAULT '{}',
+  -- certification-specific
+  exam_blueprint jsonb DEFAULT '{}'::jsonb,
+  passing_score int DEFAULT 85,
+  exam_duration int,
+  credential_level text,
+  completion_logic jsonb DEFAULT '{}'::jsonb,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
--- RLS + triggers + indexes for all six (admin write via aos_is_admin; published readable)
+-- RLS + triggers + indexes for all six
 DO $$
 DECLARE t text;
 BEGIN
@@ -145,11 +245,7 @@ BEGIN
   END LOOP;
 END $$;
 
--- =============================================================================
--- Authoritative readiness VIEW — every score traceable to authored rows.
--- Counts PUBLISHED assets (launch readiness = what is actually shippable).
--- security_invoker so RLS of the querying user (founder/admin) is enforced.
--- =============================================================================
+-- Authoritative readiness VIEW (published counts; security_invoker enforces RLS)
 CREATE OR REPLACE VIEW public.program_content_readiness
 WITH (security_invoker = true) AS
 WITH base AS (
@@ -164,34 +260,23 @@ WITH base AS (
     (SELECT count(*) FROM public.program_capstones cap WHERE cap.course_id = c.id AND cap.is_published) AS capstones,
     (SELECT count(*) FROM public.program_certifications cert WHERE cert.course_id = c.id AND cert.is_published) AS certifications
   FROM public.courses c
-  WHERE c.is_published = true
-)
-SELECT b.*,
-  round(100 * (
-    0.12 * least(modules / 18.0, 1) +
-    0.18 * least(lessons / 162.0, 1) +
-    0.12 * least(quizzes / 18.0, 1) +
-    0.18 * least(simulations / 54.0, 1) +
-    0.12 * least(portfolios / 18.0, 1) +
-    0.08 * least(interview_prep / 18.0, 1) +
-    0.05 * least(ai_mentor_prompts / 18.0, 1) +
-    0.08 * least(capstones / 1.0, 1) +
-    0.07 * least(certifications / 1.0, 1)
-  ))::int AS readiness_score,
-  (round(100 * (
+  WHERE c.is_published = true OR COALESCE(c.is_flagship, false) = true
+), scored AS (
+  SELECT b.*, round(100 * (
     0.12 * least(modules / 18.0, 1) + 0.18 * least(lessons / 162.0, 1) +
     0.12 * least(quizzes / 18.0, 1) + 0.18 * least(simulations / 54.0, 1) +
     0.12 * least(portfolios / 18.0, 1) + 0.08 * least(interview_prep / 18.0, 1) +
     0.05 * least(ai_mentor_prompts / 18.0, 1) + 0.08 * least(capstones / 1.0, 1) +
     0.07 * least(certifications / 1.0, 1)
-  ))::int >= 90) AS launch_ready
-FROM base b;
+  ))::int AS readiness_score FROM base b
+)
+SELECT s.*,
+  (s.readiness_score >= 90
+   AND lessons > 0 AND quizzes > 0 AND simulations > 0 AND portfolios > 0
+   AND interview_prep > 0 AND ai_mentor_prompts > 0 AND capstones > 0 AND certifications > 0) AS launch_ready
+FROM scored s;
 
--- =============================================================================
--- VERIFICATION (run after apply) — the live Content Completion Matrix:
--- SELECT program, modules, lessons, quizzes, simulations, portfolios,
---        interview_prep, ai_mentor_prompts, capstones, certifications,
---        readiness_score, launch_ready
--- FROM public.program_content_readiness
--- ORDER BY readiness_score DESC;
--- =============================================================================
+-- VERIFICATION (Content Completion Matrix):
+-- SELECT program, modules, lessons, quizzes, simulations, portfolios, interview_prep,
+--        ai_mentor_prompts, capstones, certifications, readiness_score, launch_ready
+-- FROM public.program_content_readiness ORDER BY readiness_score DESC;

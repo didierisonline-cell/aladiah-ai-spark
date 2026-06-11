@@ -111,11 +111,15 @@ export async function updateAsset(type: AssetType, id: string, patch: Partial<Co
 export async function setStatus(type: AssetType, id: string, status: AssetStatus, actor = 'founder'): Promise<boolean> {
   try {
     const published = status === 'published';
+    const reviewed = status === 'approved' || status === 'published';
     const { data: cur } = await db.from(metaFor(type).table).select('completion_pct, course_id').eq('id', id).maybeSingle();
     const pct = cur?.completion_pct ?? 0;
-    const { error } = await db.from(metaFor(type).table).update({
-      status, is_published: published, readiness_score: readinessFromCompletion(pct, published),
-    }).eq('id', id);
+    const nowIso = new Date().toISOString();
+    const patch: Record<string, any> = {
+      status, is_published: published, readiness_score: readinessFromCompletion(pct, published), last_reviewed_at: nowIso,
+    };
+    if (reviewed) { patch.human_reviewed = true; patch.approved_by = actor; patch.approved_at = nowIso; }
+    const { error } = await db.from(metaFor(type).table).update(patch).eq('id', id);
     if (error) return false;
     await logAudit(`status:${status}`, type, id, cur?.course_id ?? '', actor, {});
     return true;

@@ -11,7 +11,9 @@ import { AssetType, ASSET_TYPES, metaFor, logAudit } from './contentStore';
 
 const base = (courseId: string, author: string, extra: Record<string, any>) => ({
   course_id: courseId, author, status: 'draft', is_published: false, version: 1,
-  completion_pct: 60, readiness_score: 60, ...extra,
+  completion_pct: 60, readiness_score: 60,
+  ai_generated: true, ai_reviewed: false, human_reviewed: false, quality_score: 60,
+  ...extra,
 });
 
 export async function generateAssets(courseId: string, courseTitle: string, type: AssetType, author: string): Promise<{ created: number; error?: string }> {
@@ -25,38 +27,60 @@ export async function generateAssets(courseId: string, courseTitle: string, type
   const rows: Record<string, any>[] = [];
   const flagAt = (i: number) => (isFlag ? FLAG[i] : undefined);
 
+  // shared per-module intelligence metadata from the reference curriculum
+  const meta = (i: number) => {
+    const m = flagAt(i);
+    return {
+      competency_tags: m?.competencies ?? [],
+      learning_objectives: m?.learningObjectives ?? [],
+      industry_alignment: m?.alignment ?? [],
+    };
+  };
+
   if (type === 'simulations') {
     chaps.forEach((ch, i) => {
       (['beginner', 'intermediate', 'advanced'] as const).forEach((level) => {
         const f = flagAt(i)?.simulations?.[level];
         rows.push(base(courseId, author, {
-          chapter_id: ch.id, level, order_index: i,
+          chapter_id: ch.id, level, order_index: i, difficulty_level: level, estimated_completion_minutes: 45,
           title: f?.title ? `${f.title}` : `${ch.title} — ${level} simulation`,
+          scenario_type: 'case_study', industry: f?.company ?? 'Enterprise', complexity: level, role: 'Scrum Master',
           scenario: f ? { company: f.company, conflict: f.conflict, decisionPoints: f.decisionPoints } : {},
+          expected_deliverables: f?.decisionPoints ?? [], grading_rubric: f ? { scoring: f.scoring } : {},
+          ...meta(i),
         }));
       });
     });
   } else if (type === 'portfolios') {
     chaps.forEach((ch, i) => rows.push(base(courseId, author, {
-      chapter_id: ch.id, order_index: i,
+      chapter_id: ch.id, order_index: i, difficulty_level: 'intermediate', estimated_completion_minutes: 120,
       title: `${ch.title} — portfolio`, deliverable: flagAt(i)?.portfolioDeliverable ?? `${ch.title} deliverable`,
+      portfolio_category: 'project_artifact', employer_value_score: 80, interview_relevance_score: 78, ...meta(i),
     })));
   } else if (type === 'interview') {
     chaps.forEach((ch, i) => rows.push(base(courseId, author, {
-      chapter_id: ch.id, order_index: i, kind: 'behavioral',
-      title: `${ch.title} — interview prep`,
+      chapter_id: ch.id, order_index: i, kind: 'behavioral', difficulty_level: 'intermediate', estimated_completion_minutes: 30,
+      title: `${ch.title} — interview prep`, company_type: 'enterprise', interview_stage: 'onsite',
       questions: flagAt(i)?.interviewPrep ? [...(flagAt(i)!.interviewPrep.behavioral || []), ...(flagAt(i)!.interviewPrep.scenario || [])] : [],
+      expected_answers: [], evaluation_criteria: { star: true }, ...meta(i),
     })));
   } else if (type === 'mentor') {
     chaps.forEach((ch, i) => rows.push(base(courseId, author, {
-      chapter_id: ch.id, order_index: i,
+      chapter_id: ch.id, order_index: i, difficulty_level: 'all', estimated_completion_minutes: 20,
       title: `${ch.title} — AI mentor`, prompt: flagAt(i)?.aiMentorActivities?.[0] ?? `Coach the student through ${ch.title}.`,
       activity: flagAt(i)?.aiMentorActivities?.join(' · ') ?? '',
+      mentor_persona: 'Prof. Didier', coaching_type: 'socratic', competency_area: flagAt(i)?.competencies?.[0] ?? '', ...meta(i),
     })));
   } else if (type === 'capstones') {
-    rows.push(base(courseId, author, { title: `${courseTitle} Capstone`, brief: `Integrate every competency from ${courseTitle} into one capstone deliverable.` }));
+    rows.push(base(courseId, author, {
+      title: `${courseTitle} Capstone`, brief: `Integrate every competency from ${courseTitle} into one capstone deliverable.`,
+      project_type: 'integrative', business_domain: 'Agile delivery', estimated_hours: 40, difficulty_level: 'advanced',
+    }));
   } else if (type === 'certifications') {
-    rows.push(base(courseId, author, { credential_name: `${courseTitle} Professional Certification`, passing_score: 85, exam_blueprint: {}, completion_logic: {} }));
+    rows.push(base(courseId, author, {
+      credential_name: `${courseTitle} Professional Certification`, passing_score: 85, exam_duration: 90,
+      credential_level: 'professional', difficulty_level: 'advanced', exam_blueprint: {}, completion_logic: {},
+    }));
   }
 
   if (!rows.length) return { created: 0, error: type !== 'capstones' && type !== 'certifications' ? 'No modules (chapters) found for this program — add modules first.' : undefined };

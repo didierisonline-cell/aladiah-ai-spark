@@ -30,7 +30,14 @@ export async function buildFlagshipV2(author: string): Promise<FlagshipResult> {
 
     // 1) Course (unpublished + flagship → invisible to students, visible to founder dashboards)
     const { data: course, error: cErr } = await db.from('courses')
-      .insert({ title: FLAGSHIP_V2_NAME, description: 'Authoritative master curriculum — 18 modules, full asset coverage. Reference model for all programs.', is_published: false, is_flagship: true })
+      .insert({
+        title: FLAGSHIP_V2_NAME,
+        description: 'Authoritative master curriculum — 18 modules, full asset coverage. Reference model for all programs.',
+        is_published: false, is_flagship: true,
+        flagship_version: 'v2', curriculum_version: 'v1.0', launch_status: 'internal', launch_score: 0,
+        target_market: 'Agile teams · Scrum Masters · Delivery leads',
+        target_salary_low: 95000, target_salary_high: 160000, owner: author,
+      })
       .select('id').single();
     if (cErr || !course) return { ok: false, error: cErr?.message || 'Course insert failed (is_flagship migration applied?)' };
     const courseId = course.id as string;
