@@ -27,8 +27,46 @@ export interface ContentAsset {
   title?: string; credential_name?: string;
   status: AssetStatus; completion_pct: number; author: string | null; version: number;
   is_published: boolean; readiness_score: number; created_at: string; updated_at: string;
-  details?: string; level?: string; kind?: string; deliverable?: string;
+  quality_score?: number; ai_generated?: boolean; ai_reviewed?: boolean; human_reviewed?: boolean;
+  approved_by?: string | null; approved_at?: string | null; last_reviewed_at?: string | null;
+  estimated_completion_minutes?: number | null; difficulty_level?: string | null;
+  competency_tags?: string[]; learning_objectives?: string[]; industry_alignment?: string[];
   [k: string]: any;
+}
+
+export interface CourseIntel {
+  id: string; title: string; is_flagship?: boolean; flagship_version?: string; curriculum_version?: string;
+  launch_status?: string; launch_score?: number; target_market?: string;
+  target_salary_low?: number; target_salary_high?: number; owner?: string;
+}
+
+/** Full course row incl. intelligence fields (defensive — undefined fields pre-migration). */
+export async function getCourseIntel(courseId: string): Promise<CourseIntel | null> {
+  try {
+    const { data } = await db.from('courses').select('*').eq('id', courseId).maybeSingle();
+    return (data ?? null) as CourseIntel | null;
+  } catch { return null; }
+}
+
+export interface ProgramSummary { total: number; published: number; draft: number; avgReadiness: number; avgQuality: number; missingLaunch: number; }
+
+/** Aggregate the selected program's assets across all six types (display only). */
+export async function getProgramSummary(courseId: string): Promise<ProgramSummary> {
+  let total = 0, published = 0, draft = 0, sumR = 0, sumQ = 0;
+  const pubByType: Record<string, number> = {};
+  await Promise.all(ASSET_TYPES.map(async (m) => {
+    try {
+      const { data } = await db.from(m.table).select('status, is_published, readiness_score, quality_score').eq('course_id', courseId).limit(5000);
+      (data ?? []).forEach((r: any) => {
+        total += 1; sumR += r.readiness_score ?? 0; sumQ += r.quality_score ?? 0;
+        if (r.is_published) { published += 1; pubByType[m.type] = (pubByType[m.type] ?? 0) + 1; }
+        if (r.status === 'draft') draft += 1;
+      });
+    } catch { /* table absent */ }
+  }));
+  const required = ['simulations', 'portfolios', 'interview', 'mentor', 'capstones', 'certifications'];
+  const missingLaunch = required.filter((t) => !(pubByType[t] > 0)).length;
+  return { total, published, draft, avgReadiness: total ? Math.round(sumR / total) : 0, avgQuality: total ? Math.round(sumQ / total) : 0, missingLaunch };
 }
 
 const readinessFromCompletion = (pct: number, published: boolean) => published ? Math.max(pct, 70) : Math.min(pct, 69);
