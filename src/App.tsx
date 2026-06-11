@@ -37,6 +37,7 @@ import AnalyticsAgent from "./pages/admin/AnalyticsAgent";
 import OperationsAgent from "./pages/admin/OperationsAgent";
 import CurriculumExcellence from "./pages/admin/CurriculumExcellence";
 import Approvals from "./pages/admin/Approvals";
+import Security from "./pages/admin/Security";
 import FounderPortal from "./pages/founder/FounderPortal";
 import FounderControlCenter from "./pages/founder/FounderControlCenter";
 import ResumeStudio from "./pages/ResumeStudio";
@@ -120,6 +121,7 @@ const AppContent = () => {
         <Route path="/admin" element={<FounderRoute><AdminDashboard /></FounderRoute>} />
         <Route path="/admin/ai-workforce" element={<FounderRoute><AIWorkforce /></FounderRoute>} />
         <Route path="/admin/approvals" element={<FounderRoute><Approvals /></FounderRoute>} />
+        <Route path="/admin/security" element={<FounderRoute><Security /></FounderRoute>} />
         <Route path="/admin/command-center" element={<FounderRoute><CommandCenter /></FounderRoute>} />
         <Route path="/admin/agent-os" element={<FounderRoute><AgentOS /></FounderRoute>} />
         <Route path="/admin/marketing-agent" element={<FounderRoute><MarketingAgent /></FounderRoute>} />

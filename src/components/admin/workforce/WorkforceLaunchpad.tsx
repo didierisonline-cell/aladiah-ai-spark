@@ -48,6 +48,7 @@ const SURFACES: Surface[] = [
   { key: 'seo', title: 'SEO Strategy', blurb: 'Keyword clusters, audits, competitors', icon: Search, to: '/admin/seo-agent', slug: 'seo-strategy' },
   { key: 'product', title: 'Product Builder', blurb: 'Career Transformation Factory', icon: BookOpen, to: '/admin/product-agent', slug: 'product-builder' },
   { key: 'qa', title: 'QA Authority', blurb: 'Mandatory gate before approval', icon: ShieldCheck, to: '/admin/qa-agent', slug: 'qa-authority' },
+  { key: 'security', title: 'Security Command Center', blurb: 'CISO · secrets, RLS, access, deploy gate', icon: ShieldAlert, to: '/admin/security' },
   { key: 'admissions', title: 'Admissions Authority', blurb: 'Enrollment quality & program fit', icon: GraduationCap, to: '/admin/admissions-agent', slug: 'admissions-authority' },
   { key: 'success', title: 'Student Success', blurb: 'Career Transformation Score', icon: Rocket, to: '/admin/student-success', slug: 'student-success' },
   { key: 'placement', title: 'Placement & Employers', blurb: 'Academy ↔ Management bridge', icon: Briefcase, to: '/admin/placement-agent', slug: 'placement-authority' },
