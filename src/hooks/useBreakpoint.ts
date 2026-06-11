@@ -1,30 +1,25 @@
 import { useEffect, useState } from 'react';
 
-// Aladiah responsive breakpoints (see Mobile UX Audit §1).
-//   xs  < 480    phone
-//   sm  480-767  large phone
-//   md  768-1279 tablet / iPad (portrait AND landscape) → mobile shell
-//   xl  >= 1280  laptop / desktop → keeps the existing desktop layout (untouched)
-//
-// NOTE: desktop threshold is 1280 (not 1024) on purpose — iPad landscape is
-// 1024-1194px and MUST get the mobile-first shell, per the directive to treat
-// iPhone, Android, iPad and tablets as mobile.
-export const BP = { sm: 480, md: 768, lg: 1024, desktop: 1280 } as const;
+// Aladiah responsive strategy (per directive — PHONE ONLY gets the new shell):
+//   Phone   < 768   → mobile shell (no sidebar, bottom nav, single column)
+//   Tablet  768-1023 → KEEP current tablet/desktop layout (unchanged)
+//   Desktop >= 1024  → KEEP current desktop layout (unchanged)
+// iPad landscape (>=768) intentionally stays on the existing layout.
+export const BP = { phone: 768, desktop: 1024 } as const;
 
 function read() {
   const w = typeof window !== 'undefined' ? window.innerWidth : 1440;
   return {
     width: w,
-    isPhone: w < BP.md,                          // < 768
-    isTablet: w >= BP.md && w < BP.desktop,      // 768-1279 (incl. iPad landscape)
-    isDesktop: w >= BP.desktop,                  // >= 1280
-    isCompact: w < BP.desktop,                   // phone or tablet → mobile shell
+    isPhone: w < BP.phone,                        // < 768  → mobile shell
+    isTablet: w >= BP.phone && w < BP.desktop,    // 768-1023 → unchanged
+    isDesktop: w >= BP.desktop,                   // >= 1024 → unchanged
   };
 }
 
 /**
- * Viewport-aware breakpoint hook. Drives the mobile shell decision so the
- * desktop layout (>= 1280) is never altered.
+ * Viewport-aware breakpoint hook. Only `isPhone` (< 768) switches a surface to
+ * the mobile shell; tablet and desktop keep their existing layouts untouched.
  */
 export function useBreakpoint() {
   const [state, setState] = useState(read);

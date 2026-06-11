@@ -133,7 +133,7 @@ export default function StudentPortal() {
   const { user } = useAuth();
   const { language, setLanguage } = useLanguage();
   const { progress: overallProgress } = useProgress(user?.id);
-  const { isDesktop } = useBreakpoint();
+  const { isPhone } = useBreakpoint();
   const { tier } = useSubscription();
 
   const [needsCreed, setNeedsCreed] = useState(shouldShowCreedGate());
@@ -439,8 +439,8 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
     <CourseSelectionGate userId={user.id} onCourseSelected={() => setNeedsCourseSelection(false)} />
   );
 
-  // ── Mobile / tablet (< lg): the redesigned student app shell. Desktop below is untouched. ──
-  if (!isDesktop) {
+  // ── Phone only (< 768px): the redesigned mobile shell. Tablet & desktop below are untouched. ──
+  if (isPhone) {
     return (
       <MobileHome
         name={displayName}
