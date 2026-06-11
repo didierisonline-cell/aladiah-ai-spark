@@ -32,9 +32,7 @@ const ProgramRow = ({ p }: { p: ProgramReadiness }) => {
             {p.dims.map((d) => (
               <div key={d.key} className="rounded-lg bg-muted/30 px-2.5 py-2">
                 <div className="text-[13px] font-bold text-foreground">{d.have}<span className="text-muted-foreground font-normal">/{d.target}</span></div>
-                <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                  {d.label}{!d.dbTracked && <span title="Not tracked in DB content yet" className="opacity-60">·code</span>}
-                </div>
+                <div className="text-[10px] text-muted-foreground">{d.label}</div>
               </div>
             ))}
           </div>
@@ -51,10 +49,10 @@ const ProgramRow = ({ p }: { p: ProgramReadiness }) => {
               </div>
             </div>
           ) : (
-            <div className="text-[12px] text-green-500">All modules have lessons + quiz{p.source === 'flagship' ? ' · full reference curriculum' : ''}.</div>
+            <div className="text-[12px] text-green-500">All modules have lessons + quiz.</div>
           )}
           {p.source === 'db' && (
-            <p className="text-[11px] text-muted-foreground">Simulations / Labs / Portfolios / Interview / AI-Mentor are not yet in the DB content model for this program — they read 0 until authored into the platform.</p>
+            <p className="text-[11px] text-muted-foreground">A dimension reading 0 means no <strong>published</strong> rows exist in Supabase yet for that asset type — author + publish them to raise readiness.</p>
           )}
         </div>
       )}
@@ -114,7 +112,7 @@ const AcademyReadinessPanel = () => {
                 <span className="font-bold" style={{ color: m.count > 0 ? '#f59e0b' : '#22c55e' }}>{m.count.toLocaleString()}</span>
               </div>
             ))}
-            <p className="text-[11px] text-muted-foreground pt-1">Total components still to author across all programs to reach world-class (18/162/18/54/18/18/18/18 per program).</p>
+            <p className="text-[11px] text-muted-foreground pt-1">Components still to author across all programs to reach world-class (per program: modules 18 · lessons 162 · quizzes 18 · simulations 54 · portfolios 18 · interview 18 · mentor 18 · capstone 1 · certification 1).</p>
           </CardContent>
         </Card>
       </div>
