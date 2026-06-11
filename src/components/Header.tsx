@@ -50,6 +50,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
   const portalNavItems = [
     { labelKey: 'nav.portal', href: '/portal' },
     { labelKey: 'nav.courses', href: '/portal/courses' },
+    { label: 'Flagship', href: '/portal/flagship' },
     { label: 'Simulations', href: '/portal/simulations' },
     { labelKey: 'nav.talent_score', href: '/portal/talent-score' },
     { labelKey: 'nav.career', href: '/portal/career' },

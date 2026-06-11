@@ -26,6 +26,7 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
   const LINKS: { icon: string; lbl: string; path: string; exact?: boolean; badge?: number }[] = [
     { icon: '🏠', lbl: T('overview'), path: '/portal', exact: true },
     { icon: '📚', lbl: T('my_academy'), path: '/portal/courses', badge: coursesCount || undefined },
+    { icon: '🏆', lbl: 'Flagship Program', path: '/portal/flagship' },
     { icon: '🎯', lbl: T('my_career'), path: '/portal/my-career-path' },
     { icon: '🌐', lbl: 'Simulations', path: '/portal/simulations' },
     { icon: '⭐', lbl: T('talent'), path: '/portal/talent-score' },
