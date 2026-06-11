@@ -13,6 +13,8 @@ import {
   listAudit, type ContentAsset, type AuditEntry,
 } from '@/services/curriculum/contentStore';
 import { generateAssets, generateAllAssets } from '@/services/curriculum/productBuilder';
+import { listManagedCourses, FLAGSHIP_V2_NAME } from '@/services/curriculum/courses';
+import { buildFlagshipV2 } from '@/services/curriculum/flagshipBuilder';
 
 const STATUS_STYLE: Record<AssetStatus, string> = {
   draft: 'bg-slate-500/15 text-slate-400',
@@ -44,12 +46,9 @@ const ContentAuthoringCenter = () => {
 
   useEffect(() => {
     (async () => {
-      try {
-        const { data } = await db.from('courses').select('id, title').eq('is_published', true).order('title');
-        const list = (data ?? []) as any[];
-        setCourses(list);
-        if (list.length && !courseId) setCourseId(list[0].id);
-      } catch { /* ignore */ }
+      const list = await listManagedCourses();
+      setCourses(list);
+      if (list.length && !courseId) setCourseId(list[0].id);
     })();
   }, []); // eslint-disable-line
 
@@ -105,6 +104,16 @@ const ContentAuthoringCenter = () => {
   };
   const del = async (a: ContentAsset) => { if (await removeAsset(type, a.id, author)) { toast({ title: 'Deleted' }); refresh(); } };
   const archive = async (a: ContentAsset) => { if (await archiveAsset(type, a.id, author)) { toast({ title: 'Archived' }); refresh(); } };
+  const buildFlagship = async () => {
+    setBusy(true);
+    const r = await buildFlagshipV2(author);
+    setBusy(false);
+    if (r.ok) {
+      toast({ title: 'Flagship v2 built', description: `${r.modules} modules · ${r.lessons} lessons · ${r.quizzes} quizzes · ${r.assets} draft assets` });
+      const list = await listManagedCourses(); setCourses(list);
+      const f = list.find((c) => c.title === FLAGSHIP_V2_NAME); if (f) setCourseId(f.id);
+    } else toast({ title: 'Flagship build failed', description: r.error, variant: 'destructive' });
+  };
   const generateAll = async () => {
     if (!course) return;
     setBusy(true);
@@ -128,6 +137,7 @@ const ContentAuthoringCenter = () => {
             {courses.length === 0 && <option value="">No published programs</option>}
             {courses.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
           </select>
+          <Button size="sm" onClick={buildFlagship} disabled={busy}>🏗 Build Flagship v2</Button>
           <Button variant="outline" size="sm" onClick={refresh} disabled={loading}><RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /></Button>
         </div>
       </div>

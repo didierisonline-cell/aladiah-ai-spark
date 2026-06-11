@@ -6,6 +6,7 @@
 // Defensive: a table that doesn't exist yet (migration not applied) → 0.
 // =============================================================================
 import { db } from '@/services/aos/_internal';
+import { listManagedCourses } from './courses';
 
 // World-class target per program (Aladiah Program Standard v1.0).
 const TARGET = { modules: 18, lessons: 162, quizzes: 18, simulations: 54, portfolios: 18, interview: 18, mentor: 18, capstones: 1, certifications: 1 };
@@ -67,8 +68,7 @@ async function countByCourse(table: string): Promise<Map<string, number>> {
 export async function getAcademyReadiness(): Promise<AcademyReadiness> {
   const programs: ProgramReadiness[] = [];
   try {
-    const { data: courses } = await db.from('courses').select('id, title').eq('is_published', true).order('title');
-    const courseList = (courses ?? []) as { id: string; title: string }[];
+    const courseList = await listManagedCourses();
     if (courseList.length) {
       const ids = courseList.map((c) => c.id);
       const { data: chapters } = await db.from('chapters').select('id, course_id, title, order_index').in('course_id', ids).order('order_index');

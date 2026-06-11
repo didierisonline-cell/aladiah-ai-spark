@@ -6,6 +6,7 @@
 // =============================================================================
 import { db } from '@/services/aos/_internal';
 import { ASSET_TYPES, type AssetStatus } from './contentStore';
+import { listManagedCourses } from './courses';
 import type { AcademyReadiness, ProgramReadiness } from './readiness';
 
 export type StatusCounts = Record<AssetStatus, number>;
@@ -16,11 +17,7 @@ export interface ProductionStatus { programs: ProgramProduction[]; academy: Stat
 
 export async function getProductionStatus(): Promise<ProductionStatus> {
   const byCourse = new Map<string, StatusCounts>();
-  let courses: { id: string; title: string }[] = [];
-  try {
-    const { data } = await db.from('courses').select('id, title').eq('is_published', true).order('title');
-    courses = (data ?? []) as any[];
-  } catch { /* ignore */ }
+  const courses = await listManagedCourses();
   courses.forEach((c) => byCourse.set(c.id, emptyCounts()));
 
   await Promise.all(ASSET_TYPES.map(async (m) => {
