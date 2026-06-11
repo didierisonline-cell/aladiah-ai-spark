@@ -5,6 +5,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { useProgress } from '@/hooks/useProgress';
+import { useBreakpoint } from '@/hooks/useBreakpoint';
+import MobileHome from '@/components/portal/MobileHome';
 import { useSubscription } from '@/hooks/useSubscription';
 import { CreedAcknowledgmentGate, shouldShowCreedGate, getLocalDateString } from '@/components/CreedAcknowledgmentGate';
 import CourseSelectionGate from '@/components/CourseSelectionGate';
@@ -131,6 +133,7 @@ export default function StudentPortal() {
   const { user } = useAuth();
   const { language, setLanguage } = useLanguage();
   const { progress: overallProgress } = useProgress(user?.id);
+  const { isDesktop } = useBreakpoint();
   const { tier } = useSubscription();
 
   const [needsCreed, setNeedsCreed] = useState(shouldShowCreedGate());
@@ -435,6 +438,17 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
   if (needsCourseSelection) return (
     <CourseSelectionGate userId={user.id} onCourseSelected={() => setNeedsCourseSelection(false)} />
   );
+
+  // ── Mobile / tablet (< lg): the redesigned student app shell. Desktop below is untouched. ──
+  if (!isDesktop) {
+    return (
+      <MobileHome
+        name={displayName}
+        score={overallProgress}
+        course={nextActionCourse ? { id: nextActionCourse.id, title: nextActionCourse.title, pct: nextActionCourse.prog?.pct ?? 0 } : null}
+      />
+    );
+  }
 
   return (
     <div style={{ position: 'relative', height: '100vh', overflow: 'hidden', fontFamily: "'Inter',system-ui,sans-serif", color: '#e2e8f8', background: '#020817', display: 'flex', flexDirection: 'column' }}>

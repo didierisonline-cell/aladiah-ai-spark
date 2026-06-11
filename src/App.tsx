@@ -59,6 +59,8 @@ import PortalSimulations from "./pages/PortalSimulations";
 import PortalResources from "./pages/PortalResources";
 import PortalCertifications from "./pages/PortalCertifications";
 import FlagshipProgram from "./pages/portal/FlagshipProgram";
+import MentorHub from "./pages/portal/MentorHub";
+import ProfileHub from "./pages/portal/ProfileHub";
 
 const queryClient = new QueryClient();
 
@@ -97,6 +99,8 @@ const AppContent = () => {
         <Route path="/portal" element={<ProtectedRoute><StudentPortal /></ProtectedRoute>} />
         <Route path="/portal/courses" element={<ProtectedRoute><PortalCourses /></ProtectedRoute>} />
         <Route path="/portal/flagship" element={<ProtectedRoute><FlagshipProgram /></ProtectedRoute>} />
+        <Route path="/portal/mentor" element={<ProtectedRoute><MentorHub /></ProtectedRoute>} />
+        <Route path="/portal/profile" element={<ProtectedRoute><ProfileHub /></ProtectedRoute>} />
         <Route path="/portal/course/:courseId" element={<ProtectedRoute><PortalCourseDetail /></ProtectedRoute>} />
         <Route path="/portal/talent-score" element={<ProtectedRoute><PortalTalentScore /></ProtectedRoute>} />
         <Route path="/portal/portfolio" element={<ProtectedRoute><PortalPortfolio /></ProtectedRoute>} />
