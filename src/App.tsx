@@ -44,6 +44,7 @@ import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
 import HomepageBot from "@/components/HomepageBot";
+import FounderModeBadge from "@/components/founder/FounderModeBadge";
 import { useLocation } from "react-router-dom";
 // New pages
 import Schools from "./pages/Schools";
@@ -137,6 +138,7 @@ const AppContent = () => {
         <Route path="*" element={<NotFound />} />
       </Routes>
       <RouterAwareFloat />
+      <FounderModeBadge />
     </BrowserRouter>
   );
 };

@@ -11,6 +11,7 @@ import Quiz from '@/components/course/Quiz';
 import StarterPaywall from '@/components/StarterPaywall';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { isFounderEmail } from '@/lib/roles';
+import { founderModeOn } from '@/hooks/useFounderMode';
 import MobileLessonPlayer from '@/components/portal/MobileLessonPlayer';
 
 const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string;
@@ -293,8 +294,8 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       // Check free tier access
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        // Master founder bypass — full access to any course/module regardless of tier
-        if (isFounderEmail(user.email)) {
+        // Founder God Mode bypass — full access to any course/module regardless of tier
+        if (isFounderEmail(user.email) && founderModeOn()) {
           setIsStarter(false);
           // skip all tier checks
         } else {

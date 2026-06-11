@@ -7,6 +7,7 @@ import { overviewT } from '@/contexts/overviewStrings';
 import { useProgress } from '@/hooks/useProgress';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { isFounderEmail } from '@/lib/roles';
+import { useFounderMode } from '@/hooks/useFounderMode';
 import MobileHome from '@/components/portal/MobileHome';
 import { useSubscription } from '@/hooks/useSubscription';
 import { CreedAcknowledgmentGate, shouldShowCreedGate, getLocalDateString } from '@/components/CreedAcknowledgmentGate';
@@ -135,8 +136,10 @@ export default function StudentPortal() {
   const { language, setLanguage } = useLanguage();
   const { progress: overallProgress } = useProgress(user?.id);
   const { isPhone } = useBreakpoint();
-  // Master founder: unrestricted — no creed gate, no course-selection gate, all content.
-  const founder = isFounderEmail(user?.email);
+  // Founder God Mode: unrestricted only when the founder has the toggle ON.
+  // When OFF, the founder sees the real student experience (gates apply).
+  const { godMode } = useFounderMode();
+  const founder = isFounderEmail(user?.email) && godMode;
   const { tier } = useSubscription();
 
   const [needsCreed, setNeedsCreed] = useState(shouldShowCreedGate());
