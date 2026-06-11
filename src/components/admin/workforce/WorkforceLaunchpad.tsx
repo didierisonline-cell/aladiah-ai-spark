@@ -55,6 +55,7 @@ const SURFACES: Surface[] = [
   { key: 'analytics', title: 'Analytics & Intelligence', blurb: 'CTIS — master company KPI', icon: BarChart3, to: '/admin/analytics', slug: 'analytics-intelligence' },
   { key: 'operations', title: 'Operations & Platform', blurb: 'Health, severity & incident watch', icon: Server, to: '/admin/operations', slug: 'operations-platform' },
   { key: 'curriculum', title: 'Curriculum Excellence', blurb: 'Program Standard scorecards', icon: Award, to: '/admin/curriculum-excellence', slug: 'curriculum-excellence' },
+  { key: 'authoring', title: 'Content Authoring Center', blurb: 'Create sims/portfolios/interview/mentor/capstones/certs', icon: BookOpen, to: '/admin/content' },
   { key: 'audit', title: 'Platform Audit', blurb: 'Site audit: issues, severity, fixes', icon: ShieldAlert, to: '/admin/operations', slug: 'operations-platform' },
   { key: 'approvals', title: 'Founder Approval Queue', blurb: 'Everything awaiting your sign-off', icon: Inbox, to: '/admin/approvals', approvals: true },
 ];

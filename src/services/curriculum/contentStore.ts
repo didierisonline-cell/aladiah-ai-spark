@@ -1,0 +1,107 @@
+// =============================================================================
+// Content Store — CRUD for first-class curriculum assets (founder authoring).
+// Writes go through the founder's Supabase session (RLS: aos_is_admin). The
+// founder never hand-edits tables — the Authoring Center calls this.
+// Defensive: if the content tables don't exist yet (migration not applied),
+// reads return [] and writes surface a clear error.
+// =============================================================================
+import { db } from '@/services/aos/_internal';
+
+export type AssetType = 'simulations' | 'portfolios' | 'interview' | 'mentor' | 'capstones' | 'certifications';
+export type AssetStatus = 'draft' | 'in_review' | 'approved' | 'published';
+export const STATUS_FLOW: AssetStatus[] = ['draft', 'in_review', 'approved', 'published'];
+
+export interface AssetTypeMeta { type: AssetType; table: string; label: string; level: 'module' | 'program'; target: number; titleField: string; }
+export const ASSET_TYPES: AssetTypeMeta[] = [
+  { type: 'simulations', table: 'program_simulations', label: 'Simulations', level: 'module', target: 54, titleField: 'title' },
+  { type: 'portfolios', table: 'program_portfolios', label: 'Portfolios', level: 'module', target: 18, titleField: 'title' },
+  { type: 'interview', table: 'program_interview_prep', label: 'Interview Prep', level: 'module', target: 18, titleField: 'title' },
+  { type: 'mentor', table: 'program_ai_mentor_prompts', label: 'AI Mentor Prompts', level: 'module', target: 18, titleField: 'title' },
+  { type: 'capstones', table: 'program_capstones', label: 'Capstones', level: 'program', target: 1, titleField: 'title' },
+  { type: 'certifications', table: 'program_certifications', label: 'Certifications', level: 'program', target: 1, titleField: 'credential_name' },
+];
+export const metaFor = (t: AssetType) => ASSET_TYPES.find((m) => m.type === t)!;
+
+export interface ContentAsset {
+  id: string; course_id: string; chapter_id?: string | null;
+  title?: string; credential_name?: string;
+  status: AssetStatus; completion_pct: number; author: string | null; version: number;
+  is_published: boolean; readiness_score: number; created_at: string; updated_at: string;
+  details?: string; level?: string; kind?: string; deliverable?: string;
+  [k: string]: any;
+}
+
+const readinessFromCompletion = (pct: number, published: boolean) => published ? Math.max(pct, 70) : Math.min(pct, 69);
+
+export async function listAssets(courseId: string, type: AssetType): Promise<ContentAsset[]> {
+  try {
+    const { data, error } = await db.from(metaFor(type).table).select('*').eq('course_id', courseId).order('order_index').order('created_at');
+    if (error) throw error;
+    return (data ?? []) as ContentAsset[];
+  } catch {
+    return [];
+  }
+}
+
+export interface NewAsset {
+  courseId: string; chapterId?: string | null; title: string; author: string;
+  completion_pct?: number; details?: string; level?: string; kind?: string; deliverable?: string;
+}
+
+export async function createAsset(type: AssetType, a: NewAsset): Promise<{ ok: boolean; error?: string }> {
+  const m = metaFor(type);
+  const titleCol = m.titleField;
+  const row: Record<string, any> = {
+    course_id: a.courseId,
+    [titleCol]: a.title,
+    author: a.author,
+    status: 'draft',
+    completion_pct: a.completion_pct ?? 10,
+    version: 1,
+    is_published: false,
+    readiness_score: readinessFromCompletion(a.completion_pct ?? 10, false),
+  };
+  if (m.level === 'module' && a.chapterId) row.chapter_id = a.chapterId;
+  if (type === 'simulations') row.level = a.level ?? 'beginner';
+  if (type === 'interview') row.kind = a.kind ?? 'behavioral';
+  if (type === 'portfolios') row.deliverable = a.deliverable ?? a.title;
+  if (type === 'mentor') row.prompt = a.details ?? '';
+  if (type === 'capstones') row.brief = a.details ?? '';
+  if (type === 'certifications') row.completion_logic = {};
+  try {
+    const { error } = await db.from(m.table).insert(row);
+    if (error) throw error;
+    return { ok: true };
+  } catch (e: any) {
+    return { ok: false, error: e?.message || 'Insert failed (is the migration applied?)' };
+  }
+}
+
+export async function updateAsset(type: AssetType, id: string, patch: Partial<ContentAsset>): Promise<boolean> {
+  try {
+    const next: Record<string, any> = { ...patch };
+    if (patch.completion_pct != null) next.readiness_score = readinessFromCompletion(patch.completion_pct, patch.is_published ?? false);
+    // bump version on content edits
+    const { data: cur } = await db.from(metaFor(type).table).select('version, is_published').eq('id', id).maybeSingle();
+    if (cur) next.version = (cur.version ?? 1) + 1;
+    const { error } = await db.from(metaFor(type).table).update(next).eq('id', id);
+    return !error;
+  } catch { return false; }
+}
+
+export async function setStatus(type: AssetType, id: string, status: AssetStatus): Promise<boolean> {
+  try {
+    const published = status === 'published';
+    const { data: cur } = await db.from(metaFor(type).table).select('completion_pct').eq('id', id).maybeSingle();
+    const pct = cur?.completion_pct ?? 0;
+    const { error } = await db.from(metaFor(type).table).update({
+      status, is_published: published, readiness_score: readinessFromCompletion(pct, published),
+    }).eq('id', id);
+    return !error;
+  } catch { return false; }
+}
+
+export async function removeAsset(type: AssetType, id: string): Promise<boolean> {
+  try { const { error } = await db.from(metaFor(type).table).delete().eq('id', id); return !error; }
+  catch { return false; }
+}
