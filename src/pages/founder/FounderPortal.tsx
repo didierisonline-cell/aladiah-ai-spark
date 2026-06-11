@@ -1,5 +1,6 @@
 import Header from '@/components/Header';
 import FounderNav from '@/components/founder/FounderNav';
+import CEOStatusBoard from '@/components/admin/ceo/CEOStatusBoard';
 import WorkforceLaunchpad from '@/components/admin/workforce/WorkforceLaunchpad';
 import { Crown } from 'lucide-react';
 
@@ -25,7 +26,10 @@ const FounderPortal = () => (
           </p>
         </div>
       </div>
-      <WorkforceLaunchpad />
+      <CEOStatusBoard />
+      <div className="mt-10">
+        <WorkforceLaunchpad />
+      </div>
     </main>
   </div>
 );
