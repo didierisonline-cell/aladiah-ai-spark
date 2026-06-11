@@ -51,9 +51,10 @@ const CEOStatusBoard = () => {
       </div>
 
       {/* Executive headline */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <Tile icon={Heart} label="Company Health" value={d ? d.companyHealth : '—'} accent="#22c55e" />
         <Tile icon={Sparkles} label="CTIS (master KPI)" value={d ? d.ctis : '—'} accent="#a855f7" />
+        <Tile icon={GraduationCap} label="Curriculum Readiness" value={d ? `${d.curriculumReadiness}%` : '—'} accent={d && d.curriculumReadiness >= 90 ? '#22c55e' : '#f59e0b'} />
         <Tile icon={ShieldCheck} label="Security" value={d ? `${d.security.score} · ${d.security.gate}` : '—'} accent={d && d.security.gate === 'GO' ? '#22c55e' : '#ef4444'} />
         <Tile icon={Activity} label="Pending Approvals" value={d ? d.pendingApprovals : '—'} accent="#f59e0b" />
       </div>

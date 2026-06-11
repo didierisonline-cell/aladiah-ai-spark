@@ -9,6 +9,7 @@ import { db } from '@/services/aos/_internal';
 import { getWorkforceSnapshot, type AgentSnapshot } from '@/services/aos/workforce';
 import { getApprovalQueue } from '@/services/aos/approvals';
 import { getSecurityPosture } from '@/services/security/securityPosture';
+import { getAcademyReadiness } from '@/services/curriculum/readiness';
 
 export interface Metric { label: string; value: number | string | null; money?: boolean; pct?: boolean; }
 export interface CEOSection { key: string; title: string; metrics: Metric[]; }
@@ -16,6 +17,7 @@ export interface CEOStatus {
   generatedAt: string;
   companyHealth: number;
   ctis: number;
+  curriculumReadiness: number;
   security: { score: number; gate: 'GO' | 'NO-GO'; criticals: number; lastScan: string };
   pendingApprovals: number;
   sections: CEOSection[];
@@ -33,7 +35,7 @@ async function count(table: string, apply: (q: any) => any = (q) => q): Promise<
 }
 
 export async function getCEOStatus(): Promise<CEOStatus> {
-  const [snap, approvals] = await Promise.all([getWorkforceSnapshot(), getApprovalQueue()]);
+  const [snap, approvals, academy] = await Promise.all([getWorkforceSnapshot(), getApprovalQueue(), getAcademyReadiness()]);
   const security = getSecurityPosture();
 
   // Defensive pipeline counts (null → "—" in the UI; never fabricated).
@@ -105,6 +107,7 @@ export async function getCEOStatus(): Promise<CEOStatus> {
     generatedAt: new Date().toISOString(),
     companyHealth: g.healthScore,
     ctis: g.ctis,
+    curriculumReadiness: academy.academyReadiness,
     security: { score: security.overall, gate: security.gate.verdict, criticals: security.criticalsOpen, lastScan: security.lastScan },
     pendingApprovals: approvals.total,
     sections,
