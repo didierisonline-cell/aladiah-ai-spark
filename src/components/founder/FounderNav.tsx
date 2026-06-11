@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import {
   Award, BarChart3, Briefcase, GraduationCap, Home, Inbox,
-  LayoutGrid, Rocket, Server, Shield, ShieldCheck, Sparkles,
+  LayoutGrid, Rocket, Server, Shield, ShieldCheck, Sparkles, BookOpen,
 } from 'lucide-react';
 
 // Founder Portal navigation — home, control center, and the founder authorities.
@@ -18,6 +18,7 @@ const LINKS = [
   { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/admin/operations', label: 'Operations', icon: Server },
   { to: '/admin/approvals', label: 'Approval Queue', icon: Inbox },
+  { to: '/portal', label: 'Student Portal', icon: BookOpen },
 ];
 
 /** Cross-navigation across every Founder Portal surface. Drop under <Header/>. */

@@ -57,6 +57,17 @@
 
 ---
 
+## §B2 — FOUNDER MASTER ACCESS (didiermbok@yahoo.com — zero restrictions)
+| ID | Persona | Scenario | Expected | Result | Sev |
+|---|---|---|---|:--:|:--:|
+| FND-01 | P1 | Founder opens **`/portal`** | Loads directly — **no creed gate, no course-selection gate** | ☐ | High |
+| FND-02 | P1 | Founder Home → **"Enter Student Portal"** button | Navigates to `/portal` | ☐ | Med |
+| FND-03 | P1 | Founder opens **any course → any module** | No Starter paywall / module lock — full content | ☐ | High |
+| FND-04 | P1 | Founder still reaches **all founder/admin** surfaces | `/founder`, `/admin/*` all load | ☐ | High |
+| FND-05 | P1 | Case-insensitivity | `Didiermbok@…` (capital D) resolves as founder | ☐ | Med |
+
+---
+
 ## §C — LEARNING JOURNEY
 | ID | Persona | Scenario | Expected | Result | Sev |
 |---|---|---|---|:--:|:--:|

@@ -10,6 +10,7 @@ import PortalLangWidget from '@/components/portal/PortalLangWidget';
 import Quiz from '@/components/course/Quiz';
 import StarterPaywall from '@/components/StarterPaywall';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
+import { isFounderEmail } from '@/lib/roles';
 import MobileLessonPlayer from '@/components/portal/MobileLessonPlayer';
 
 const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string;
@@ -292,8 +293,8 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       // Check free tier access
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        // Admin bypass — full access regardless of tier
-        if (user.email === 'didiermbok@yahoo.com') {
+        // Master founder bypass — full access to any course/module regardless of tier
+        if (isFounderEmail(user.email)) {
           setIsStarter(false);
           // skip all tier checks
         } else {
