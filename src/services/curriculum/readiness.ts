@@ -54,13 +54,17 @@ function buildDims(have: Record<string, number>): { dims: Dim[]; readiness: numb
   return { dims, readiness };
 }
 
-/** Published-row count per course for a content table (defensive: missing table → empty). */
-async function countByCourse(table: string): Promise<Map<string, number>> {
-  const m = new Map<string, number>();
+/** Authored + published counts per course for a content table (defensive). */
+async function countByCourse(table: string): Promise<Map<string, { all: number; pub: number }>> {
+  const m = new Map<string, { all: number; pub: number }>();
   try {
-    const { data, error } = await db.from(table).select('course_id, is_published').eq('is_published', true).limit(5000);
+    const { data, error } = await db.from(table).select('course_id, is_published').limit(10000);
     if (error || !data) return m;
-    for (const r of data as any[]) m.set(r.course_id, (m.get(r.course_id) ?? 0) + 1);
+    for (const r of data as any[]) {
+      const e = m.get(r.course_id) ?? { all: 0, pub: 0 };
+      e.all += 1; if (r.is_published) e.pub += 1;
+      m.set(r.course_id, e);
+    }
   } catch { /* table not created yet */ }
   return m;
 }
@@ -88,18 +92,24 @@ export async function getAcademyReadiness(): Promise<AcademyReadiness> {
       (videos ?? []).forEach((r: any) => vidByChap.set(r.chapter_id, (vidByChap.get(r.chapter_id) ?? 0) + 1));
       const quizChaps = new Set((quizzes ?? []).map((r: any) => r.chapter_id));
 
+      const z = { all: 0, pub: 0 };
       for (const c of courseList) {
         const cChaps = chaps.filter((ch) => ch.course_id === c.id);
+        const lessons = cChaps.reduce((a, ch) => a + (vidByChap.get(ch.id) ?? 0), 0);
+        const quizzesHave = cChaps.filter((ch) => quizChaps.has(ch.id)).length;
+        const sim = simMap.get(c.id) ?? z, port = portMap.get(c.id) ?? z, iv = ivMap.get(c.id) ?? z;
+        const men = mentorMap.get(c.id) ?? z, cap = capMap.get(c.id) ?? z, cert = certMap.get(c.id) ?? z;
+        // Authored counts drive completion/readiness (what's built).
         const have = {
-          modules: cChaps.length,
-          lessons: cChaps.reduce((a, ch) => a + (vidByChap.get(ch.id) ?? 0), 0),
-          quizzes: cChaps.filter((ch) => quizChaps.has(ch.id)).length,
-          simulations: simMap.get(c.id) ?? 0,
-          portfolios: portMap.get(c.id) ?? 0,
-          interview: ivMap.get(c.id) ?? 0,
-          mentor: mentorMap.get(c.id) ?? 0,
-          capstones: capMap.get(c.id) ?? 0,
-          certifications: certMap.get(c.id) ?? 0,
+          modules: cChaps.length, lessons, quizzes: quizzesHave,
+          simulations: sim.all, portfolios: port.all, interview: iv.all,
+          mentor: men.all, capstones: cap.all, certifications: cert.all,
+        };
+        // Published counts drive the launch gate (what's shippable).
+        const pub: Record<string, number> = {
+          lessons, quizzes: quizzesHave,
+          simulations: sim.pub, portfolios: port.pub, interview: iv.pub,
+          mentor: men.pub, capstones: cap.pub, certifications: cert.pub,
         };
         const { dims, readiness } = buildDims(have);
         const moduleReadiness: ModuleReadiness[] = cChaps.map((ch, i) => {
@@ -110,7 +120,8 @@ export async function getAcademyReadiness(): Promise<AcademyReadiness> {
         const moduleGaps: ModuleGap[] = moduleReadiness
           .map((m) => ({ module: m.module, title: m.title, missing: [...(m.lessons ? [] : ['Lessons']), ...(m.quiz ? [] : ['Quiz'])] }))
           .filter((g) => g.missing.length > 0);
-        const launchBlockers = REQUIRED.filter((k) => ((have as any)[k] ?? 0) === 0).map((k) => DIM_LABEL[k]);
+        // Launch gate requires PUBLISHED rows for every required dimension.
+        const launchBlockers = REQUIRED.filter((k) => (pub[k] ?? 0) === 0).map((k) => DIM_LABEL[k]);
         const launchReady = launchBlockers.length === 0 && readiness >= 90;
         programs.push({ id: c.id, title: c.title, source: 'db', readiness, tier: tierFor(readiness), dims, moduleGaps, moduleReadiness, launchBlockers, launchReady });
       }
