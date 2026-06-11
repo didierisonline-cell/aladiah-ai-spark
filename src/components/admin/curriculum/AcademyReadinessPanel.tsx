@@ -92,6 +92,8 @@ const AcademyReadinessPanel = () => {
         <Stat label="Gaps (total missing)" value={d ? d.missing.reduce((a, m) => a + m.count, 0) : '—'} accent="#f59e0b" />
       </div>
 
+      {d && <LaunchMatrix programs={d.programs} />}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Heat map */}
         <Card className="lg:col-span-2">
@@ -126,5 +128,49 @@ const Stat = ({ label, value, accent }: { label: string; value: string | number;
     <div className="text-[10.5px] text-muted-foreground">{label}</div>
   </CardContent></Card>
 );
+
+// Strict Launch Matrix — LIVE Supabase programs only (no code/flagship assumptions).
+const missingOf = (p: ProgramReadiness) =>
+  p.dims.filter((x) => x.have < x.target).map((x) => `${x.label} ${x.have}/${x.target}`).join(' · ') || 'none';
+
+const LaunchMatrix = ({ programs }: { programs: ProgramReadiness[] }) => {
+  const live = programs.filter((p) => p.source === 'db').sort((a, b) => b.readiness - a.readiness);
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base">Launch Matrix — live Supabase only</CardTitle>
+        <p className="text-[11px] text-muted-foreground">Ranked most → least complete. Launch only programs ≥ 90%. No code/flagship assumptions.</p>
+      </CardHeader>
+      <CardContent className="overflow-x-auto">
+        {live.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-6 text-center">No published programs found in Supabase.</p>
+        ) : (
+          <table className="w-full text-[12.5px]">
+            <thead>
+              <tr className="text-left text-muted-foreground border-b border-border/60">
+                <th className="py-2 pr-3">#</th><th className="py-2 pr-3">Program</th>
+                <th className="py-2 pr-3">Readiness %</th><th className="py-2 pr-3">Launch Ready</th>
+                <th className="py-2">Missing Components</th>
+              </tr>
+            </thead>
+            <tbody>
+              {live.map((p, i) => (
+                <tr key={p.id} className="border-b border-border/40 align-top">
+                  <td className="py-2 pr-3 text-muted-foreground">{i + 1}</td>
+                  <td className="py-2 pr-3 font-semibold text-foreground">{p.title}</td>
+                  <td className="py-2 pr-3 font-bold" style={{ color: barColor(p.readiness) }}>{p.readiness}%</td>
+                  <td className="py-2 pr-3">
+                    <span className={`font-bold ${p.readiness >= 90 ? 'text-green-500' : 'text-red-500'}`}>{p.readiness >= 90 ? 'Y' : 'N'}</span>
+                  </td>
+                  <td className="py-2 text-amber-500/90">{missingOf(p)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
 
 export default AcademyReadinessPanel;
