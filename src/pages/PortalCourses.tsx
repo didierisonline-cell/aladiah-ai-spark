@@ -5,6 +5,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useBreakpoint } from '@/hooks/useBreakpoint';
+import MobileLearn from '@/components/portal/MobileLearn';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', border:'#1E2D47', fg:'#EDF2F7', fm:'#8596AD',
@@ -56,6 +58,7 @@ export default function PortalCourses() {
   const { user } = useAuth();
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { isPhone } = useBreakpoint();
 
   useEffect(() => {
     if (!user) return;
@@ -69,6 +72,8 @@ export default function PortalCourses() {
         setLoading(false);
       });
   }, [user]);
+
+  if (isPhone) return <MobileLearn courses={courses} loading={loading} />;
 
   return (
     <div style={{ background: DS.bg, minHeight: '100vh', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif", color: DS.fg }}>

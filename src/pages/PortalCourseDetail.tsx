@@ -4,6 +4,8 @@ import PortalSidebar from '@/components/PortalSidebar';
 import { useAuth } from '@/hooks/useAuth';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useBreakpoint } from '@/hooks/useBreakpoint';
+import MobileCourse from '@/components/portal/MobileCourse';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', border:'#1E2D47', fg:'#EDF2F7', fm:'#8596AD',
@@ -21,7 +23,9 @@ export default function PortalCourseDetail() {
   const [course, setCourse] = useState<any>(null);
   const [chapters, setChapters] = useState<any[]>([]);
   const [lessonCounts, setLessonCounts] = useState<Record<string, number>>({});
+  const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const { isPhone } = useBreakpoint();
 
   useEffect(() => {
     if (!user || !courseId) return;
@@ -47,6 +51,17 @@ export default function PortalCourseDetail() {
             });
             setLessonCounts(counts);
           });
+
+        // Completed modules = chapters whose chapter_end quiz the student has passed.
+        Promise.all([
+          supabase.from('quizzes').select('id, chapter_id, quiz_type').in('chapter_id', chapterIds).eq('quiz_type', 'chapter_end'),
+          supabase.from('user_progress').select('quiz_id').not('quiz_id', 'is', null),
+        ]).then(([qz, pr]) => {
+          const passed = new Set((pr.data || []).map((p: any) => p.quiz_id));
+          const done = new Set<string>();
+          (qz.data || []).forEach((q: any) => { if (passed.has(q.id)) done.add(q.chapter_id); });
+          setCompleted(done);
+        });
       }
       setLoading(false);
     });
@@ -57,6 +72,8 @@ export default function PortalCourseDetail() {
       Loading...
     </div>
   );
+
+  if (isPhone) return <MobileCourse course={course} chapters={chapters} lessonCounts={lessonCounts} completed={completed} />;
 
   return (
     <div style={{ background: DS.bg, minHeight: '100vh', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif", color: DS.fg }}>
