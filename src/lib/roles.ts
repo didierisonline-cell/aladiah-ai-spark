@@ -1,14 +1,14 @@
 // =============================================================================
 // Role middleware — the single source of truth for who is a founder vs student.
 // Priority #1: Founder vs Student separation.
-//   - didiermbok@yahoo.com  → role 'founder'
+//   - didier@aladiahacademy.com  → role 'founder'
 //   - every other signed-in user → role 'student'
 // Routing homes: founder → /founder, student → /portal.
 // =============================================================================
 export type Role = 'founder' | 'student';
 
 /** Emails that are automatically granted the founder role. */
-export const FOUNDER_EMAILS = ['didiermbok@yahoo.com'];
+export const FOUNDER_EMAILS = ['didier@aladiahacademy.com'];
 
 export const FOUNDER_HOME = '/founder';
 export const STUDENT_HOME = '/portal';
