@@ -159,12 +159,55 @@ export async function setStatus(type: AssetType, id: string, status: AssetStatus
     if (reviewed) { patch.human_reviewed = true; patch.approved_by = actor; patch.approved_at = nowIso; }
     const { error } = await db.from(metaFor(type).table).update(patch).eq('id', id);
     if (error) return false;
+    // Best-effort published_at (column may not be applied yet — never blocks publish).
+    if (published) { try { await db.from(metaFor(type).table).update({ published_at: nowIso }).eq('id', id); } catch { /* column absent */ } }
     await logAudit(`status:${status}`, type, id, cur?.course_id ?? '', actor, {});
     return true;
   } catch { return false; }
 }
 
 export const archiveAsset = (type: AssetType, id: string, actor = 'founder') => setStatus(type, id, 'archived', actor);
+
+// ---------------------------------------------------------------------------
+// Founder-only BULK actions across all six asset tables for a program.
+// RLS (aos_is_admin) authorizes the writes; published_at is best-effort.
+// ---------------------------------------------------------------------------
+export interface BulkResult { updated: number; byType: Record<string, number>; }
+
+export async function approveAllForCourse(courseId: string, actor: string): Promise<BulkResult> {
+  const now = new Date().toISOString();
+  const byType: Record<string, number> = {};
+  let updated = 0;
+  for (const m of ASSET_TYPES) {
+    try {
+      const { data } = await db.from(m.table)
+        .update({ status: 'approved', human_reviewed: true, approved_by: actor, approved_at: now, last_reviewed_at: now })
+        .eq('course_id', courseId).in('status', ['draft', 'in_review', 'approved']).select('id');
+      const n = data?.length ?? 0; byType[m.type] = n; updated += n;
+    } catch { byType[m.type] = 0; }
+  }
+  await logAudit('approve_all', 'simulations', null, courseId, actor, { updated, byType });
+  return { updated, byType };
+}
+
+export async function publishAllForCourse(courseId: string, actor: string): Promise<BulkResult> {
+  const now = new Date().toISOString();
+  const byType: Record<string, number> = {};
+  let updated = 0;
+  for (const m of ASSET_TYPES) {
+    try {
+      // Core publish (always works, even if published_at column not applied yet).
+      const { data } = await db.from(m.table)
+        .update({ status: 'published', is_published: true, human_reviewed: true, approved_by: actor, approved_at: now, last_reviewed_at: now })
+        .eq('course_id', courseId).neq('status', 'archived').select('id');
+      const n = data?.length ?? 0; byType[m.type] = n; updated += n;
+      // Best-effort published_at stamp.
+      try { await db.from(m.table).update({ published_at: now }).eq('course_id', courseId).eq('is_published', true); } catch { /* column absent */ }
+    } catch { byType[m.type] = 0; }
+  }
+  await logAudit('publish_all', 'simulations', null, courseId, actor, { updated, byType });
+  return { updated, byType };
+}
 
 export async function removeAsset(type: AssetType, id: string, actor = 'founder'): Promise<boolean> {
   try {

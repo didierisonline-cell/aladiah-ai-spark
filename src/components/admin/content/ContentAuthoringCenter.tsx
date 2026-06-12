@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import {
   ASSET_TYPES, AssetType, AssetStatus, STATUS_FLOW, metaFor,
   listAssets, createAsset, setStatus, updateAsset, removeAsset, archiveAsset,
+  approveAllForCourse, publishAllForCourse,
   listAudit, getCourseIntel, getProgramSummary,
   type ContentAsset, type AuditEntry, type CourseIntel, type ProgramSummary,
 } from '@/services/curriculum/contentStore';
@@ -110,6 +111,16 @@ const ContentAuthoringCenter = () => {
   const del = async (a: ContentAsset) => { if (await removeAsset(type, a.id, author)) { toast({ title: 'Deleted' }); refresh(); } };
   const archive = async (a: ContentAsset) => { if (await archiveAsset(type, a.id, author)) { toast({ title: 'Archived' }); refresh(); } };
   const toggle = (id: string) => setExpanded((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const approveAll = async () => {
+    if (!courseId || !window.confirm('Approve ALL non-archived assets for this program?')) return;
+    setBusy(true); const r = await approveAllForCourse(courseId, author); setBusy(false);
+    toast({ title: `Approved ${r.updated} assets`, description: Object.entries(r.byType).map(([k, v]) => `${k}:${v}`).join(' · ') }); refresh();
+  };
+  const publishAll = async () => {
+    if (!courseId || !window.confirm('Publish ALL non-archived assets for this program? They become shippable and count toward launch readiness.')) return;
+    setBusy(true); const r = await publishAllForCourse(courseId, author); setBusy(false);
+    toast({ title: `Published ${r.updated} assets`, description: Object.entries(r.byType).map(([k, v]) => `${k}:${v}`).join(' · ') }); refresh();
+  };
 
   const filtered = assets.filter((a) => {
     if (f.status !== 'all' && a.status !== f.status) return false;
@@ -201,6 +212,8 @@ const ContentAuthoringCenter = () => {
           <Button size="sm" variant="outline" onClick={() => setShowNew((s) => !s)}><Plus className="w-4 h-4 mr-1.5" /> New</Button>
           <Button size="sm" variant="outline" onClick={generate} disabled={busy || !courseId}><Sparkles className="w-4 h-4 mr-1.5" /> Generate {meta.label}</Button>
           <Button size="sm" onClick={generateAll} disabled={busy || !courseId}><Sparkles className="w-4 h-4 mr-1.5" /> Generate Full Program</Button>
+          <Button size="sm" variant="outline" onClick={approveAll} disabled={busy || !courseId}>✅ Approve All</Button>
+          <Button size="sm" onClick={publishAll} disabled={busy || !courseId}>🚀 Publish All</Button>
         </div>
       </div>
 
