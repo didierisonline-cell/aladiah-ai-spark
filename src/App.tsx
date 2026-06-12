@@ -42,6 +42,7 @@ import Approvals from "./pages/admin/Approvals";
 import Security from "./pages/admin/Security";
 import FounderPortal from "./pages/founder/FounderPortal";
 import FounderControlCenter from "./pages/founder/FounderControlCenter";
+import FounderCurriculum from "./pages/founder/FounderCurriculum";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
@@ -120,6 +121,7 @@ const AppContent = () => {
         {/* Founder Portal — founder-only; students are redirected to /portal */}
         <Route path="/founder" element={<FounderRoute><FounderPortal /></FounderRoute>} />
         <Route path="/founder/control-center" element={<FounderRoute><FounderControlCenter /></FounderRoute>} />
+        <Route path="/founder/curriculum" element={<FounderRoute><FounderCurriculum /></FounderRoute>} />
         {/* Founder authorities (legacy /admin paths, founder-protected) */}
         <Route path="/admin" element={<FounderRoute><AdminDashboard /></FounderRoute>} />
         <Route path="/admin/ai-workforce" element={<FounderRoute><AIWorkforce /></FounderRoute>} />

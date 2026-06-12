@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Award, BarChart3, Briefcase, GraduationCap, Home, Inbox,
+  Award, BarChart3, Briefcase, ClipboardCheck, GraduationCap, Home, Inbox,
   LayoutGrid, Rocket, Server, Shield, ShieldCheck, Sparkles, BookOpen, FilePlus2,
 } from 'lucide-react';
 
@@ -8,6 +8,7 @@ import {
 const LINKS = [
   { to: '/founder', label: 'Founder Home', icon: Home, exact: true },
   { to: '/founder/control-center', label: 'Control Center', icon: LayoutGrid },
+  { to: '/founder/curriculum', label: 'Review & Readiness', icon: ClipboardCheck },
   { to: '/admin/command-center', label: 'CEO Dashboard', icon: Sparkles },
   { to: '/admin/curriculum-excellence', label: 'Curriculum', icon: Award },
   { to: '/admin/content', label: 'Authoring', icon: FilePlus2 },
