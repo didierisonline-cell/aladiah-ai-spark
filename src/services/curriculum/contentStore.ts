@@ -76,6 +76,15 @@ export async function getProgramSummary(courseId: string): Promise<ProgramSummar
 
 const readinessFromCompletion = (pct: number, published: boolean) => published ? Math.max(pct, 70) : Math.min(pct, 69);
 
+// Computed readiness + quality from the lifecycle state (replaces the flat
+// generation placeholders). Published/approved assets are review-gated, so they
+// reflect their true reviewed scores; drafts reflect authoring completion.
+export function scoreFor(status: AssetStatus, pct: number, humanReviewed: boolean, aiReviewed = false): { readiness: number; quality: number } {
+  const readiness = status === 'published' ? 100 : status === 'approved' ? 85 : status === 'in_review' ? 70 : status === 'archived' ? 0 : Math.min(Math.max(pct, 0), 65);
+  const quality = humanReviewed ? 100 : aiReviewed ? 80 : Math.min(Math.max(pct, 0), 60);
+  return { readiness, quality };
+}
+
 /** Append an audit-trail entry (defensive — silent if table absent). */
 export async function logAudit(action: string, type: AssetType, assetId: string | null, courseId: string | null, actor: string, detail: Record<string, any> = {}) {
   try {
@@ -158,8 +167,9 @@ export async function setStatus(type: AssetType, id: string, status: AssetStatus
     const { data: cur } = await db.from(metaFor(type).table).select('completion_pct, course_id').eq('id', id).maybeSingle();
     const pct = cur?.completion_pct ?? 0;
     const nowIso = new Date().toISOString();
+    const s = scoreFor(status, pct, reviewed);
     const patch: Record<string, any> = {
-      status, is_published: published, readiness_score: readinessFromCompletion(pct, published), last_reviewed_at: nowIso,
+      status, is_published: published, readiness_score: s.readiness, quality_score: s.quality, last_reviewed_at: nowIso,
     };
     if (reviewed) { patch.human_reviewed = true; patch.approved_by = actor; patch.approved_at = nowIso; }
     const { error } = await db.from(metaFor(type).table).update(patch).eq('id', id);
@@ -186,7 +196,7 @@ export async function approveAllForCourse(courseId: string, actor: string): Prom
   for (const m of ASSET_TYPES) {
     try {
       const { data } = await db.from(m.table)
-        .update({ status: 'approved', human_reviewed: true, approved_by: actor, approved_at: now, last_reviewed_at: now })
+        .update({ status: 'approved', human_reviewed: true, approved_by: actor, approved_at: now, last_reviewed_at: now, readiness_score: 85, quality_score: 100 })
         .eq('course_id', courseId).in('status', ['draft', 'in_review', 'approved']).select('id');
       const n = data?.length ?? 0; byType[m.type] = n; updated += n;
     } catch { byType[m.type] = 0; }
@@ -203,7 +213,7 @@ export async function publishAllForCourse(courseId: string, actor: string): Prom
     try {
       // Core publish (always works, even if published_at column not applied yet).
       const { data } = await db.from(m.table)
-        .update({ status: 'published', is_published: true, human_reviewed: true, approved_by: actor, approved_at: now, last_reviewed_at: now })
+        .update({ status: 'published', is_published: true, human_reviewed: true, approved_by: actor, approved_at: now, last_reviewed_at: now, readiness_score: 100, quality_score: 100 })
         .eq('course_id', courseId).neq('status', 'archived').select('id');
       const n = data?.length ?? 0; byType[m.type] = n; updated += n;
       // Best-effort published_at stamp.

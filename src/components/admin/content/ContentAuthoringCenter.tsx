@@ -16,7 +16,7 @@ import {
 import { generateAssets, generateAllAssets } from '@/services/curriculum/productBuilder';
 import { listManagedCourses, FLAGSHIP_V2_NAME } from '@/services/curriculum/courses';
 import { buildFlagshipV2, upgradeToFlagshipV3 } from '@/services/curriculum/flagshipBuilder';
-import { getAcademyReadiness } from '@/services/curriculum/readiness';
+import { getAcademyReadiness, recomputeLaunch } from '@/services/curriculum/readiness';
 
 const STATUS_STYLE: Record<AssetStatus, string> = {
   draft: 'bg-slate-500/15 text-slate-400', in_review: 'bg-amber-500/15 text-amber-500',
@@ -120,7 +120,8 @@ const ContentAuthoringCenter = () => {
     if (r.ok) { toast({ title: 'Upgraded to Flagship v3', description: `${r.assets} assets ensured · ${Object.entries(r.byType || {}).map(([k, v]) => `${k}:${v}`).join(' · ')}` }); const list = await listManagedCourses(); setCourses(list); const fl = list.find((c) => c.title === FLAGSHIP_V2_NAME); if (fl) setCourseId(fl.id); refresh(); }
     else toast({ title: 'Upgrade failed', description: r.error, variant: 'destructive' });
   };
-  const advance = async (a: ContentAsset) => { const i = STATUS_FLOW.indexOf(a.status); const next = STATUS_FLOW[Math.min(i + 1, STATUS_FLOW.length - 1)]; if (next !== a.status && await setStatus(type, a.id, next, author)) { toast({ title: `→ ${next.replace('_', ' ')}` }); refresh(); } };
+  const syncLaunch = async () => { try { await recomputeLaunch(courseId); setIntel(await getCourseIntel(courseId)); const r = await getAcademyReadiness(); setAcademy({ above: r.programs.filter((p) => p.readiness >= 90).length, below: r.programs.filter((p) => p.readiness < 90).length }); } catch { /* ignore */ } };
+  const advance = async (a: ContentAsset) => { const i = STATUS_FLOW.indexOf(a.status); const next = STATUS_FLOW[Math.min(i + 1, STATUS_FLOW.length - 1)]; if (next !== a.status && await setStatus(type, a.id, next, author)) { toast({ title: `→ ${next.replace('_', ' ')}` }); refresh(); syncLaunch(); } };
   const editPct = async (a: ContentAsset, d: number) => { const pct = Math.max(0, Math.min(100, (a.completion_pct ?? 0) + d)); if (await updateAsset(type, a.id, { completion_pct: pct, is_published: a.is_published }, author)) refresh(); };
   const del = async (a: ContentAsset) => { if (await removeAsset(type, a.id, author)) { toast({ title: 'Deleted' }); refresh(); } };
   const archive = async (a: ContentAsset) => { if (await archiveAsset(type, a.id, author)) { toast({ title: 'Archived' }); refresh(); } };
@@ -128,12 +129,12 @@ const ContentAuthoringCenter = () => {
   const approveAll = async () => {
     if (!courseId || !window.confirm('Approve ALL non-archived assets for this program?')) return;
     setBusy(true); const r = await approveAllForCourse(courseId, author); setBusy(false);
-    toast({ title: `Approved ${r.updated} assets`, description: Object.entries(r.byType).map(([k, v]) => `${k}:${v}`).join(' · ') }); refresh();
+    toast({ title: `Approved ${r.updated} assets`, description: Object.entries(r.byType).map(([k, v]) => `${k}:${v}`).join(' · ') }); refresh(); syncLaunch();
   };
   const publishAll = async () => {
     if (!courseId || !window.confirm('Publish ALL non-archived assets for this program? They become shippable and count toward launch readiness.')) return;
     setBusy(true); const r = await publishAllForCourse(courseId, author); setBusy(false);
-    toast({ title: `Published ${r.updated} assets`, description: Object.entries(r.byType).map(([k, v]) => `${k}:${v}`).join(' · ') }); refresh();
+    toast({ title: `Published ${r.updated} assets`, description: Object.entries(r.byType).map(([k, v]) => `${k}:${v}`).join(' · ') }); refresh(); syncLaunch();
   };
 
   const filtered = assets.filter((a) => {

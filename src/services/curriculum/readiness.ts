@@ -153,6 +153,16 @@ export async function getAcademyReadiness(): Promise<AcademyReadiness> {
   };
 }
 
+/** Persist launch_score + launch_status on a course from its real readiness. */
+export async function recomputeLaunch(courseId: string): Promise<{ score: number; status: string; launchReady: boolean }> {
+  const r = await getAcademyReadiness();
+  const p = r.programs.find((x) => x.id === courseId);
+  if (!p) return { score: 0, status: 'draft', launchReady: false };
+  const status = p.launchReady ? 'launch_ready' : p.readiness >= 80 ? 'beta' : p.readiness >= 40 ? 'internal' : 'draft';
+  try { await db.from('courses').update({ launch_score: p.readiness, launch_status: status }).eq('id', courseId); } catch { /* columns absent */ }
+  return { score: p.readiness, status, launchReady: p.launchReady };
+}
+
 // Architecture validation — which content entities exist in Supabase.
 const ARCH = [
   'courses', 'chapters', 'videos', 'quizzes',
