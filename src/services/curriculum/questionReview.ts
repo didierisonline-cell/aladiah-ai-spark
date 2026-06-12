@@ -5,6 +5,7 @@
 // projects (labs), interview scenarios, portfolio work, and certification.
 // Defensive: a missing table or absent migration degrades to zero, never throws.
 // =============================================================================
+import { supabase } from '@/integrations/supabase/client';
 import { db } from '@/services/aos/_internal';
 import { listManagedCourses, type ManagedCourse } from './courses';
 
@@ -127,31 +128,22 @@ export function tallyByStatus(rows: ReviewQuestion[]): Record<QuestionStatus, nu
   return t;
 }
 
-/** Apply a bulk workflow transition, stamping reviewer provenance. */
+/**
+ * Apply a bulk workflow transition via the atomic, founder-gated RPC
+ * (review_quiz_questions). The RPC stamps reviewed_by/at on every action,
+ * approved_by/at on approve (cleared on reject), and bumps version on reject —
+ * all server-side, so the founder check is enforced beyond RLS.
+ */
 export async function bulkSetStatus(
   ids: string[], action: ReviewAction, reviewer: string,
 ): Promise<{ updated: number; error?: string }> {
   if (!ids.length) return { updated: 0 };
-  const now = new Date().toISOString();
-  const patch: Record<string, unknown> = {};
-  switch (action) {
-    case 'approve':
-      patch.status = 'approved'; patch.approved_by = reviewer; patch.approved_at = now;
-      patch.reviewed_by = reviewer; patch.reviewed_at = now; break;
-    case 'review':
-      patch.status = 'in_review'; patch.reviewed_by = reviewer; patch.reviewed_at = now; break;
-    case 'reject':
-      // back to author for rework; clear any prior approval
-      patch.status = 'draft'; patch.reviewed_by = reviewer; patch.reviewed_at = now;
-      patch.approved_by = null; patch.approved_at = null; break;
-    case 'archive':
-      patch.status = 'archived'; patch.reviewed_by = reviewer; patch.reviewed_at = now; break;
-  }
   try {
-    const { error, count } = await db.from('quiz_questions')
-      .update(patch, { count: 'exact' }).in('id', ids);
+    const { data, error } = await (supabase as any).rpc('review_quiz_questions', {
+      p_ids: ids, p_action: action, p_reviewer: reviewer,
+    });
     if (error) return { updated: 0, error: error.message };
-    return { updated: count ?? ids.length };
+    return { updated: typeof data === 'number' ? data : ids.length };
   } catch (e) {
     return { updated: 0, error: e instanceof Error ? e.message : String(e) };
   }

@@ -88,8 +88,11 @@ serve(async (req) => {
 
     if (servedIds) {
       // Bound the served set to questions that genuinely belong to this quiz —
-      // a forged ID from another quiz is simply ignored, not graded.
-      questionsQuery = questionsQuery.in("id", servedIds);
+      // a forged ID from another quiz is simply ignored, not graded. Also require
+      // status='approved' so a forged draft/archived ID can't be graded (and have
+      // its answer/rationale returned). Legacy array-mode is left unfiltered for
+      // backward compatibility (existing live courses default to 'approved').
+      questionsQuery = questionsQuery.in("id", servedIds).eq("status", "approved");
     }
 
     const { data: questions, error: questionsError } = await questionsQuery

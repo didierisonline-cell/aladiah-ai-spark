@@ -26,11 +26,16 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Get questions WITHOUT the correct answer
+    // Get questions WITHOUT the correct answer. This path uses the service role
+    // (bypasses RLS), so it MUST filter to status='approved' itself — otherwise
+    // draft / in_review / archived questions would leak to students. Existing
+    // live courses default to status='approved' (migration 20260612040000), so
+    // this filter is backward compatible and changes nothing for them.
     const { data: questions, error } = await supabaseAdmin
       .from("quiz_questions")
       .select("id, quiz_id, question_text, scenario_context, options, explanation, order_index")
       .eq("quiz_id", quizId)
+      .eq("status", "approved")
       .order("order_index", { ascending: true });
 
     if (error) {
