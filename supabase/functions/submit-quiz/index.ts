@@ -38,9 +38,22 @@ serve(async (req) => {
 
     const { quizId, answers } = await req.json();
 
-    if (!quizId || !answers || !Array.isArray(answers)) {
+    // `answers` accepts two shapes, both supported for backward compatibility:
+    //  - LEGACY (existing live courses): a positional array indexed by
+    //    order_index. Every question in the quiz is served and graded.
+    //  - SERVED-SUBSET (exam/question-bank mode): an object map of
+    //    { questionId: answerIndex }. Only the questions that were actually
+    //    served/answered are fetched and graded — used when get_exam_questions
+    //    serves N random questions from a large bank.
+    const isArrayMode = Array.isArray(answers);
+    const isMapMode =
+      !isArrayMode &&
+      answers !== null &&
+      typeof answers === "object";
+
+    if (!quizId || !answers || (!isArrayMode && !isMapMode)) {
       return new Response(
-        JSON.stringify({ error: "Quiz ID and answers array are required" }),
+        JSON.stringify({ error: "Quiz ID and answers (array or {questionId: index} map) are required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -64,11 +77,22 @@ serve(async (req) => {
       );
     }
 
-    // Get questions with correct answers
-    const { data: questions, error: questionsError } = await supabaseAdmin
+    // In map-mode we grade ONLY the question IDs that were served/answered.
+    // In array-mode we grade every question in the quiz (legacy behaviour).
+    const servedIds = isMapMode ? Object.keys(answers as Record<string, unknown>) : null;
+
+    let questionsQuery = supabaseAdmin
       .from("quiz_questions")
       .select("id, correct_answer_index, explanation")
-      .eq("quiz_id", quizId)
+      .eq("quiz_id", quizId);
+
+    if (servedIds) {
+      // Bound the served set to questions that genuinely belong to this quiz —
+      // a forged ID from another quiz is simply ignored, not graded.
+      questionsQuery = questionsQuery.in("id", servedIds);
+    }
+
+    const { data: questions, error: questionsError } = await questionsQuery
       .order("order_index", { ascending: true });
 
     if (questionsError || !questions) {
@@ -78,21 +102,33 @@ serve(async (req) => {
       );
     }
 
-    // Grade the quiz
+    if (questions.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "No questions to grade for this quiz" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Grade the quiz. In array-mode the answer is looked up positionally; in
+    // map-mode it is looked up by question id, so only the served subset counts.
     let correctCount = 0;
     const results = questions.map((q, index) => {
-      const userAnswer = answers[index];
+      const userAnswer = isMapMode
+        ? (answers as Record<string, number>)[q.id]
+        : (answers as number[])[index];
       const isCorrect = userAnswer === q.correct_answer_index;
       if (isCorrect) correctCount++;
       return {
         questionId: q.id,
-        userAnswer,
+        userAnswer: userAnswer ?? null,
         correctAnswer: q.correct_answer_index,
         isCorrect,
         explanation: q.explanation,
       };
     });
 
+    // Denominator is the number of questions actually served/graded — the full
+    // quiz in array-mode, the served subset (e.g. 20 of 350) in map-mode.
     const score = Math.round((correctCount / questions.length) * 100);
     const passed = score >= quiz.passing_score;
 
