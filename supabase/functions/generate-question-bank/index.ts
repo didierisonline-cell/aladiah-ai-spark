@@ -5,6 +5,10 @@
 // competency, topic, difficulty). Additive only — never deletes.
 // Run repeatedly (perRun batches) until each module reaches `target` (300-400).
 //
+// REVIEW GATE: every generated question is inserted with status='draft' and is
+// NOT served to students until a human promotes it to status='approved'.
+// get_exam_questions only serves approved questions, so drafts stay invisible.
+//
 // Body: { courseId?, perRun?=25, target?=350 }
 // =============================================================================
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -95,6 +99,10 @@ Return ONLY a JSON array, each item:
           options: it.options, correct_answer_index: Math.max(0, Math.min(3, it.correct_answer_index)),
           explanation: it.explanation ?? null, order_index: have + i,
           competency: it.competency ?? mod.comp.split(",")[0], topic: it.topic ?? mod.topic, difficulty: it.difficulty ?? "medium",
+          // Mandatory review gate: every generated question lands as 'draft' and
+          // is NOT served to students until a human promotes it to 'approved'.
+          // get_exam_questions filters to status='approved', so drafts are invisible.
+          status: "draft", version: 1,
         }));
       if (rows.length) await db.from("quiz_questions").insert(rows);
       result[`M${idx + 1}`] = rows.length;
