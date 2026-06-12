@@ -9,6 +9,10 @@ import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle, Lock, Play, BookOpen
 import PortalLangWidget from '@/components/portal/PortalLangWidget';
 import Quiz from '@/components/course/Quiz';
 import StarterPaywall from '@/components/StarterPaywall';
+import { useBreakpoint } from '@/hooks/useBreakpoint';
+import { isFounderEmail } from '@/lib/roles';
+import { founderModeOn } from '@/hooks/useFounderMode';
+import MobileLessonPlayer from '@/components/portal/MobileLessonPlayer';
 
 const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string;
 
@@ -54,6 +58,7 @@ export default function ChapterView() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { language, t } = useLanguage();
+  const { isPhone } = useBreakpoint();
 
   const [course, setCourse] = useState<Course | null>(null);
   const [showStudyGuide, setShowStudyGuide] = useState(false);
@@ -289,8 +294,8 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       // Check free tier access
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        // Admin bypass — full access regardless of tier
-        if (user.email === 'didiermbok@yahoo.com') {
+        // Founder God Mode bypass — full access to any course/module regardless of tier
+        if (isFounderEmail(user.email) && founderModeOn()) {
           setIsStarter(false);
           // skip all tier checks
         } else {
@@ -450,6 +455,20 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
         </div>
       )}
 
+      {/* Phone (< 768px): immersive single-column lesson player. */}
+      {isPhone && currentLesson && (
+        <MobileLessonPlayer
+          course={course} chapter={chapter} currentLesson={currentLesson} videos={videos} quizzes={quizzes}
+          progress={progress} continueIsToQuiz={continueIsToQuiz}
+          isLive={isLive} isSpeaking={isSpeaking} convStatus={convStatus} transcript={transcript} duration={duration}
+          fmt={fmt} getTitle={getTitle} getDescription={getDescription} getTranscript={getTranscript}
+          onSelectLesson={setCurrentLesson} onOpenQuiz={(id) => setActiveQuizId(id)} onContinue={handleContinue}
+          onStart={startSession} onEnd={endSession} onBack={() => navigate(`/portal/course/${courseId}`)}
+        />
+      )}
+
+      {/* Desktop / tablet (>= 768px): unchanged two-column layout. */}
+      {!isPhone && (<>
       {/* Top Nav */}
       <div style={{ borderBottom: '1px solid rgba(96,165,250,0.12)', background: 'rgba(10,15,30,0.8)', backdropFilter: 'blur(12px)', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56, position: 'sticky', top: 0, zIndex: 50 }}>
         <button onClick={() => navigate('/courses')} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: 14, fontWeight: 500 }}>
@@ -797,6 +816,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
           </div>
         </div>
       </div>
+      </>)}
       {/* Quiz Modal */}
       {activeQuizId && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>

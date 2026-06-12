@@ -6,6 +6,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { useProgress } from '@/hooks/useProgress';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
+import { isFounderEmail } from '@/lib/roles';
+import { useFounderMode } from '@/hooks/useFounderMode';
 import MobileHome from '@/components/portal/MobileHome';
 import { useSubscription } from '@/hooks/useSubscription';
 import { CreedAcknowledgmentGate, shouldShowCreedGate, getLocalDateString } from '@/components/CreedAcknowledgmentGate';
@@ -134,6 +136,10 @@ export default function StudentPortal() {
   const { language, setLanguage } = useLanguage();
   const { progress: overallProgress } = useProgress(user?.id);
   const { isPhone } = useBreakpoint();
+  // Founder God Mode: unrestricted only when the founder has the toggle ON.
+  // When OFF, the founder sees the real student experience (gates apply).
+  const { godMode } = useFounderMode();
+  const founder = isFounderEmail(user?.email) && godMode;
   const { tier } = useSubscription();
 
   const [needsCreed, setNeedsCreed] = useState(shouldShowCreedGate());
@@ -186,7 +192,7 @@ export default function StudentPortal() {
         // (mute short-circuit + DB day-gate writer are follow-ups). Reuses this single
         // profiles read — no second/parallel fetch.
         setProfileRow(profile);
-        if (profile?.tier === 'starter' && !profile?.free_course_id) {
+        if (!founder && profile?.tier === 'starter' && !profile?.free_course_id) {
           setNeedsCourseSelection(true);
         }
       }
@@ -432,10 +438,10 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
   const certCourses = courses.filter(c => c.isCert);
 
   if (!creedLoaded || !courseSelectionLoaded) return <div style={{ background: '#020817', minHeight: '100vh' }} />;
-  if (needsCreed) return (
+  if (needsCreed && !founder) return (
     <CreedAcknowledgmentGate onAcknowledge={() => setNeedsCreed(false)} />
   );
-  if (needsCourseSelection) return (
+  if (needsCourseSelection && !founder) return (
     <CourseSelectionGate userId={user.id} onCourseSelected={() => setNeedsCourseSelection(false)} />
   );
 

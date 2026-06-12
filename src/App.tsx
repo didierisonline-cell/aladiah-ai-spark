@@ -36,13 +36,17 @@ import PlacementAgent from "./pages/admin/PlacementAgent";
 import AnalyticsAgent from "./pages/admin/AnalyticsAgent";
 import OperationsAgent from "./pages/admin/OperationsAgent";
 import CurriculumExcellence from "./pages/admin/CurriculumExcellence";
+import ContentStudio from "./pages/admin/ContentStudio";
+import Production from "./pages/admin/Production";
 import Approvals from "./pages/admin/Approvals";
+import Security from "./pages/admin/Security";
 import FounderPortal from "./pages/founder/FounderPortal";
 import FounderControlCenter from "./pages/founder/FounderControlCenter";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
 import HomepageBot from "@/components/HomepageBot";
+import FounderModeBadge from "@/components/founder/FounderModeBadge";
 import { useLocation } from "react-router-dom";
 // New pages
 import Schools from "./pages/Schools";
@@ -120,6 +124,7 @@ const AppContent = () => {
         <Route path="/admin" element={<FounderRoute><AdminDashboard /></FounderRoute>} />
         <Route path="/admin/ai-workforce" element={<FounderRoute><AIWorkforce /></FounderRoute>} />
         <Route path="/admin/approvals" element={<FounderRoute><Approvals /></FounderRoute>} />
+        <Route path="/admin/security" element={<FounderRoute><Security /></FounderRoute>} />
         <Route path="/admin/command-center" element={<FounderRoute><CommandCenter /></FounderRoute>} />
         <Route path="/admin/agent-os" element={<FounderRoute><AgentOS /></FounderRoute>} />
         <Route path="/admin/marketing-agent" element={<FounderRoute><MarketingAgent /></FounderRoute>} />
@@ -132,9 +137,12 @@ const AppContent = () => {
         <Route path="/admin/analytics" element={<FounderRoute><AnalyticsAgent /></FounderRoute>} />
         <Route path="/admin/operations" element={<FounderRoute><OperationsAgent /></FounderRoute>} />
         <Route path="/admin/curriculum-excellence" element={<FounderRoute><CurriculumExcellence /></FounderRoute>} />
+        <Route path="/admin/content" element={<FounderRoute><ContentStudio /></FounderRoute>} />
+        <Route path="/admin/production" element={<FounderRoute><Production /></FounderRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <RouterAwareFloat />
+      <FounderModeBadge />
     </BrowserRouter>
   );
 };
