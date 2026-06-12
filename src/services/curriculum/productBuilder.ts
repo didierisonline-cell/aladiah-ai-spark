@@ -71,6 +71,44 @@ export async function generateAssets(courseId: string, courseTitle: string, type
       activity: flagAt(i)?.aiMentorActivities?.join(' · ') ?? '',
       mentor_persona: 'Prof. Didier', coaching_type: 'socratic', competency_area: flagAt(i)?.competencies?.[0] ?? '', ...meta(i),
     })));
+  } else if (type === 'labs') {
+    chaps.forEach((ch, i) => {
+      const lab = flagAt(i)?.lab;
+      rows.push(base(courseId, author, {
+        chapter_id: ch.id, order_index: i, difficulty_level: 'intermediate', estimated_completion_minutes: 90,
+        title: lab?.name ?? `${ch.title} — lab`, tool: lab?.tool ?? 'Jira',
+        task: lab?.task ?? `Apply ${ch.title} hands-on.`, deliverable: lab?.deliverable ?? `${ch.title} artifact`,
+        ...meta(i),
+      }));
+    });
+  } else if (type === 'executive') {
+    const EXEC = new Set([6, 8, 10, 13, 15, 18]); // module numbers (order_index + 1)
+    chaps.forEach((ch, i) => {
+      if (!EXEC.has(i + 1)) return;
+      rows.push(base(courseId, author, {
+        chapter_id: ch.id, order_index: i, difficulty_level: 'executive', estimated_completion_minutes: 120,
+        title: `${ch.title} — Executive Simulation`, crisis_type: 'delivery',
+        exec_stakeholders: ['VP Engineering', 'CPO', 'PMO Director'], board_presentation: (i + 1) === 18,
+        scenario: { company: 'Enterprise', stakes: 'board-level' }, grading_rubric: {}, ...meta(i),
+      }));
+    });
+  } else if (type === 'copilot') {
+    chaps.forEach((ch, i) => rows.push(base(courseId, author, {
+      chapter_id: ch.id, order_index: i, difficulty_level: 'intermediate', estimated_completion_minutes: 40,
+      title: `${ch.title} — AI Co-Pilot Challenge`, ai_tool: 'AI co-pilot',
+      challenge: `Use an AI co-pilot to accelerate ${ch.title}.`, expected_output: 'A reviewed, AI-assisted deliverable',
+      evaluation_criteria: {}, ...meta(i),
+    })));
+  } else if (type === 'employer') {
+    const CHECK = new Set([6, 12, 18]);
+    chaps.forEach((ch, i) => {
+      if (!CHECK.has(i + 1)) return;
+      rows.push(base(courseId, author, {
+        chapter_id: ch.id, order_index: i, difficulty_level: 'checkpoint', estimated_completion_minutes: 60,
+        title: `Employer Validation — after ${ch.title}`, employer: 'Aladiah employer panel',
+        checkpoint: `Checkpoint at module ${i + 1}`, validation_criteria: {}, ...meta(i),
+      }));
+    });
   } else if (type === 'capstones') {
     rows.push(base(courseId, author, {
       title: `${courseTitle} Capstone`, brief: `Integrate every competency from ${courseTitle} into one capstone deliverable.`,

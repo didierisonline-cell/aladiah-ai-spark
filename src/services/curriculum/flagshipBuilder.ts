@@ -22,6 +22,40 @@ export interface FlagshipResult {
   modules?: number; lessons?: number; quizzes?: number; assets?: number; byType?: Record<string, number>;
 }
 
+// Upgrade the v2 flagship to v3: version bump + Enterprise Transformation
+// Command Center capstone + the new asset types (labs/executive/co-pilot/
+// employer). Idempotent; preserves all existing assets.
+export async function upgradeToFlagshipV3(author: string): Promise<FlagshipResult & { upgraded?: boolean }> {
+  try {
+    const { data: course } = await db.from('courses').select('id').eq('title', FLAGSHIP_V2_NAME).maybeSingle();
+    if (!course?.id) return { ok: false, error: 'Build Flagship v2 first.' };
+    const courseId = course.id as string;
+
+    try { await db.from('courses').update({ flagship_version: 'v3', curriculum_version: 'v3.0' }).eq('id', courseId); } catch { /* columns */ }
+
+    // Enterprise Agile Transformation Command Center capstone (idempotent by title).
+    const capTitle = 'Enterprise Agile Transformation Command Center';
+    const { data: capEx } = await db.from('program_capstones').select('id').eq('course_id', courseId).eq('title', capTitle).maybeSingle();
+    if (!capEx) {
+      await db.from('program_capstones').insert({
+        course_id: courseId, title: capTitle, author, status: 'draft', is_published: false, version: 1,
+        completion_pct: 60, readiness_score: 60, ai_generated: true,
+        project_type: 'enterprise_transformation', business_domain: 'Enterprise Agile', estimated_hours: 90, difficulty_level: 'capstone',
+        brief: '90-day enterprise agile transformation: lead 6 teams through a delivery crisis, a quality crisis, and organizational resistance; present outcomes to the board.',
+        rubric: { duration_days: 90, teams: 6, stakeholders: ['CEO', 'CTO', 'CPO', 'VP Engineering', 'PMO', 'Board'], crises: ['delivery', 'quality', 'organizational_resistance'], deliverable: 'board_presentation' },
+      });
+    }
+
+    // Fill all asset types (idempotent — capstone skipped since one now exists;
+    // generates labs/executive/co-pilot/employer + any missing of the rest).
+    const gen = await generateAllAssets(courseId, FLAGSHIP_V2_NAME, author);
+    await logAudit('upgrade_flagship_v3', 'simulations', null, courseId, author, { assets: gen.total, byType: gen.byType });
+    return { ok: true, courseId, assets: gen.total, byType: gen.byType, upgraded: true };
+  } catch (e: any) {
+    return { ok: false, error: e?.message || 'Upgrade failed' };
+  }
+}
+
 export async function buildFlagshipV2(author: string): Promise<FlagshipResult> {
   try {
     // 1) Course — get-or-create (idempotent; rerun reuses the same flagship course)

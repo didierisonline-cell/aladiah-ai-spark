@@ -15,7 +15,7 @@ import {
 } from '@/services/curriculum/contentStore';
 import { generateAssets, generateAllAssets } from '@/services/curriculum/productBuilder';
 import { listManagedCourses, FLAGSHIP_V2_NAME } from '@/services/curriculum/courses';
-import { buildFlagshipV2 } from '@/services/curriculum/flagshipBuilder';
+import { buildFlagshipV2, upgradeToFlagshipV3 } from '@/services/curriculum/flagshipBuilder';
 import { getAcademyReadiness } from '@/services/curriculum/readiness';
 
 const STATUS_STYLE: Record<AssetStatus, string> = {
@@ -31,6 +31,10 @@ const TYPE_FIELDS: Record<AssetType, string[]> = {
   mentor: ['mentor_persona', 'coaching_type', 'competency_area'],
   certifications: ['passing_score', 'exam_duration', 'credential_level'],
   capstones: ['project_type', 'business_domain', 'estimated_hours'],
+  labs: ['tool', 'task', 'deliverable'],
+  executive: ['crisis_type', 'exec_stakeholders', 'board_presentation', 'scenario', 'grading_rubric'],
+  copilot: ['ai_tool', 'challenge', 'expected_output', 'evaluation_criteria'],
+  employer: ['employer', 'checkpoint', 'validation_criteria'],
 };
 const LABEL: Record<string, string> = {
   scenario_type: 'Scenario', industry: 'Industry', complexity: 'Complexity', role: 'Role', expected_deliverables: 'Deliverables', grading_rubric: 'Rubric',
@@ -39,6 +43,10 @@ const LABEL: Record<string, string> = {
   mentor_persona: 'Persona', coaching_type: 'Coaching', competency_area: 'Competency',
   passing_score: 'Passing', exam_duration: 'Duration (min)', credential_level: 'Level',
   project_type: 'Project', business_domain: 'Domain', estimated_hours: 'Hours',
+  tool: 'Tool', task: 'Task', deliverable: 'Deliverable', scenario: 'Scenario',
+  crisis_type: 'Crisis', exec_stakeholders: 'Stakeholders', board_presentation: 'Board presentation',
+  ai_tool: 'AI tool', challenge: 'Challenge', expected_output: 'Expected output',
+  employer: 'Employer', checkpoint: 'Checkpoint', validation_criteria: 'Validation criteria',
 };
 const fmt = (v: any): string => {
   if (v == null || v === '') return '—';
@@ -106,6 +114,12 @@ const ContentAuthoringCenter = () => {
   const generate = async () => { if (!course) return; setBusy(true); const r = await generateAssets(courseId, course.title, type, author); setBusy(false); if (r.created > 0) { toast({ title: `Drafted ${r.created} ${meta.label}` }); refresh(); } else toast({ title: 'Nothing generated', description: r.error, variant: r.error ? 'destructive' : 'default' }); };
   const generateAll = async () => { if (!course) return; setBusy(true); const r = await generateAllAssets(courseId, course.title, author); setBusy(false); if (r.total > 0) { toast({ title: `Drafted ${r.total} assets` }); refresh(); } else toast({ title: 'Nothing generated', description: r.error, variant: r.error ? 'destructive' : 'default' }); };
   const buildFlagship = async () => { setBusy(true); const r = await buildFlagshipV2(author); setBusy(false); if (r.ok) { toast({ title: 'Flagship v2 built', description: `${r.modules} modules · ${r.lessons} lessons · ${r.quizzes} quizzes · ${r.assets} assets` }); const list = await listManagedCourses(); setCourses(list); const fl = list.find((c) => c.title === FLAGSHIP_V2_NAME); if (fl) setCourseId(fl.id); } else toast({ title: 'Build failed', description: r.error, variant: 'destructive' }); };
+  const upgradeV3 = async () => {
+    if (!window.confirm('Upgrade the flagship to v3? Adds labs, executive sims, AI co-pilot challenges, employer validation, and the Enterprise Transformation capstone. Existing assets are preserved.')) return;
+    setBusy(true); const r = await upgradeToFlagshipV3(author); setBusy(false);
+    if (r.ok) { toast({ title: 'Upgraded to Flagship v3', description: `${r.assets} assets ensured · ${Object.entries(r.byType || {}).map(([k, v]) => `${k}:${v}`).join(' · ')}` }); const list = await listManagedCourses(); setCourses(list); const fl = list.find((c) => c.title === FLAGSHIP_V2_NAME); if (fl) setCourseId(fl.id); refresh(); }
+    else toast({ title: 'Upgrade failed', description: r.error, variant: 'destructive' });
+  };
   const advance = async (a: ContentAsset) => { const i = STATUS_FLOW.indexOf(a.status); const next = STATUS_FLOW[Math.min(i + 1, STATUS_FLOW.length - 1)]; if (next !== a.status && await setStatus(type, a.id, next, author)) { toast({ title: `→ ${next.replace('_', ' ')}` }); refresh(); } };
   const editPct = async (a: ContentAsset, d: number) => { const pct = Math.max(0, Math.min(100, (a.completion_pct ?? 0) + d)); if (await updateAsset(type, a.id, { completion_pct: pct, is_published: a.is_published }, author)) refresh(); };
   const del = async (a: ContentAsset) => { if (await removeAsset(type, a.id, author)) { toast({ title: 'Deleted' }); refresh(); } };
@@ -148,6 +162,7 @@ const ContentAuthoringCenter = () => {
             {courses.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
           </select>
           <Button size="sm" onClick={buildFlagship} disabled={busy}>🏗 Build Flagship v2</Button>
+          <Button size="sm" onClick={upgradeV3} disabled={busy}>⬆️ Upgrade to v3</Button>
           <Button variant="outline" size="sm" onClick={refresh} disabled={loading}><RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /></Button>
         </div>
       </div>

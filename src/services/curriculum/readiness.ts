@@ -9,17 +9,20 @@ import { db } from '@/services/aos/_internal';
 import { listManagedCourses } from './courses';
 
 // World-class target per program (Aladiah Program Standard v1.0).
-const TARGET = { modules: 18, lessons: 162, quizzes: 18, simulations: 54, portfolios: 18, interview: 18, mentor: 18, capstones: 1, certifications: 1 };
-const WEIGHT: Record<string, number> = { modules: 0.12, lessons: 0.18, quizzes: 0.12, simulations: 0.18, portfolios: 0.12, interview: 0.08, mentor: 0.05, capstones: 0.08, certifications: 0.07 };
+const TARGET = { modules: 18, lessons: 162, quizzes: 18, simulations: 54, labs: 18, portfolios: 18, interview: 18, mentor: 18, copilot: 18, executive: 6, employer: 3, capstones: 1, certifications: 1 };
+const WEIGHT: Record<string, number> = { modules: 0.08, lessons: 0.14, quizzes: 0.08, simulations: 0.12, labs: 0.08, portfolios: 0.08, interview: 0.06, mentor: 0.03, copilot: 0.10, executive: 0.08, employer: 0.03, capstones: 0.08, certifications: 0.04 };
 const DIM_LABEL: Record<string, string> = {
   modules: 'Modules', lessons: 'Lessons', quizzes: 'Quizzes', simulations: 'Simulations',
-  portfolios: 'Portfolios', interview: 'Interview Prep', mentor: 'AI Mentor Prompts',
+  labs: 'Labs', portfolios: 'Portfolios', interview: 'Interview Prep', mentor: 'AI Mentor Prompts',
+  copilot: 'AI Co-Pilot', executive: 'Executive Sims', employer: 'Employer Validation',
   capstones: 'Capstones', certifications: 'Certifications',
 };
 // content table per dimension (published rows only count toward launch readiness)
 const ASSET_TABLE: Record<string, string> = {
-  simulations: 'program_simulations', portfolios: 'program_portfolios',
+  simulations: 'program_simulations', labs: 'program_labs', portfolios: 'program_portfolios',
   interview: 'program_interview_prep', mentor: 'program_ai_mentor_prompts',
+  copilot: 'program_ai_copilot_challenges', executive: 'program_executive_simulations',
+  employer: 'program_employer_validation',
   capstones: 'program_capstones', certifications: 'program_certifications',
 };
 
@@ -33,7 +36,7 @@ export interface ProgramReadiness {
 }
 
 // A program cannot be Launch Ready unless every required dimension exists (>0).
-const REQUIRED = ['lessons', 'quizzes', 'simulations', 'portfolios', 'interview', 'mentor', 'capstones', 'certifications'];
+const REQUIRED = ['lessons', 'quizzes', 'simulations', 'labs', 'portfolios', 'interview', 'copilot', 'executive', 'capstones'];
 export interface AcademyReadiness {
   generatedAt: string;
   academyReadiness: number;
@@ -78,13 +81,17 @@ export async function getAcademyReadiness(): Promise<AcademyReadiness> {
       const { data: chapters } = await db.from('chapters').select('id, course_id, title, order_index').in('course_id', ids).order('order_index');
       const chaps = (chapters ?? []) as any[];
       const chapIds = chaps.map((c) => c.id);
-      const [{ data: videos }, { data: quizzes }, simMap, portMap, ivMap, mentorMap, capMap, certMap] = await Promise.all([
+      const [{ data: videos }, { data: quizzes }, simMap, labsMap, portMap, ivMap, mentorMap, copMap, execMap, empMap, capMap, certMap] = await Promise.all([
         db.from('videos').select('chapter_id').in('chapter_id', chapIds),
         db.from('quizzes').select('chapter_id, quiz_type').in('chapter_id', chapIds).eq('quiz_type', 'chapter_end'),
         countByCourse(ASSET_TABLE.simulations),
+        countByCourse(ASSET_TABLE.labs),
         countByCourse(ASSET_TABLE.portfolios),
         countByCourse(ASSET_TABLE.interview),
         countByCourse(ASSET_TABLE.mentor),
+        countByCourse(ASSET_TABLE.copilot),
+        countByCourse(ASSET_TABLE.executive),
+        countByCourse(ASSET_TABLE.employer),
         countByCourse(ASSET_TABLE.capstones),
         countByCourse(ASSET_TABLE.certifications),
       ]);
@@ -97,19 +104,22 @@ export async function getAcademyReadiness(): Promise<AcademyReadiness> {
         const cChaps = chaps.filter((ch) => ch.course_id === c.id);
         const lessons = cChaps.reduce((a, ch) => a + (vidByChap.get(ch.id) ?? 0), 0);
         const quizzesHave = cChaps.filter((ch) => quizChaps.has(ch.id)).length;
-        const sim = simMap.get(c.id) ?? z, port = portMap.get(c.id) ?? z, iv = ivMap.get(c.id) ?? z;
-        const men = mentorMap.get(c.id) ?? z, cap = capMap.get(c.id) ?? z, cert = certMap.get(c.id) ?? z;
+        const sim = simMap.get(c.id) ?? z, labs = labsMap.get(c.id) ?? z, port = portMap.get(c.id) ?? z, iv = ivMap.get(c.id) ?? z;
+        const men = mentorMap.get(c.id) ?? z, cop = copMap.get(c.id) ?? z, exec = execMap.get(c.id) ?? z, emp = empMap.get(c.id) ?? z;
+        const cap = capMap.get(c.id) ?? z, cert = certMap.get(c.id) ?? z;
         // Authored counts drive completion/readiness (what's built).
         const have = {
           modules: cChaps.length, lessons, quizzes: quizzesHave,
-          simulations: sim.all, portfolios: port.all, interview: iv.all,
-          mentor: men.all, capstones: cap.all, certifications: cert.all,
+          simulations: sim.all, labs: labs.all, portfolios: port.all, interview: iv.all, mentor: men.all,
+          copilot: cop.all, executive: exec.all, employer: emp.all,
+          capstones: cap.all, certifications: cert.all,
         };
         // Published counts drive the launch gate (what's shippable).
         const pub: Record<string, number> = {
           lessons, quizzes: quizzesHave,
-          simulations: sim.pub, portfolios: port.pub, interview: iv.pub,
-          mentor: men.pub, capstones: cap.pub, certifications: cert.pub,
+          simulations: sim.pub, labs: labs.pub, portfolios: port.pub, interview: iv.pub, mentor: men.pub,
+          copilot: cop.pub, executive: exec.pub, employer: emp.pub,
+          capstones: cap.pub, certifications: cert.pub,
         };
         const { dims, readiness } = buildDims(have);
         const moduleReadiness: ModuleReadiness[] = cChaps.map((ch, i) => {
@@ -146,8 +156,9 @@ export async function getAcademyReadiness(): Promise<AcademyReadiness> {
 // Architecture validation — which content entities exist in Supabase.
 const ARCH = [
   'courses', 'chapters', 'videos', 'quizzes',
-  'program_simulations', 'program_portfolios', 'program_interview_prep',
-  'program_ai_mentor_prompts', 'program_capstones', 'program_certifications',
+  'program_simulations', 'program_labs', 'program_portfolios', 'program_interview_prep',
+  'program_ai_mentor_prompts', 'program_ai_copilot_challenges', 'program_executive_simulations',
+  'program_employer_validation', 'program_capstones', 'program_certifications',
   'program_content_readiness', 'curriculum_audit_log',
 ];
 export async function getArchitectureStatus(): Promise<{ name: string; exists: boolean }[]> {

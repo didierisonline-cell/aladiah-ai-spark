@@ -7,7 +7,8 @@
 // =============================================================================
 import { db } from '@/services/aos/_internal';
 
-export type AssetType = 'simulations' | 'portfolios' | 'interview' | 'mentor' | 'capstones' | 'certifications';
+export type AssetType = 'simulations' | 'portfolios' | 'interview' | 'mentor' | 'capstones' | 'certifications'
+  | 'labs' | 'executive' | 'copilot' | 'employer';
 export type AssetStatus = 'draft' | 'in_review' | 'approved' | 'published' | 'archived';
 export const STATUS_FLOW: AssetStatus[] = ['draft', 'in_review', 'approved', 'published'];
 
@@ -17,6 +18,10 @@ export const ASSET_TYPES: AssetTypeMeta[] = [
   { type: 'portfolios', table: 'program_portfolios', label: 'Portfolios', level: 'module', target: 18, titleField: 'title' },
   { type: 'interview', table: 'program_interview_prep', label: 'Interview Prep', level: 'module', target: 18, titleField: 'title' },
   { type: 'mentor', table: 'program_ai_mentor_prompts', label: 'AI Mentor Prompts', level: 'module', target: 18, titleField: 'title' },
+  { type: 'labs', table: 'program_labs', label: 'Labs', level: 'module', target: 18, titleField: 'title' },
+  { type: 'executive', table: 'program_executive_simulations', label: 'Executive Sims', level: 'module', target: 6, titleField: 'title' },
+  { type: 'copilot', table: 'program_ai_copilot_challenges', label: 'AI Co-Pilot', level: 'module', target: 18, titleField: 'title' },
+  { type: 'employer', table: 'program_employer_validation', label: 'Employer Validation', level: 'module', target: 3, titleField: 'title' },
   { type: 'capstones', table: 'program_capstones', label: 'Capstones', level: 'program', target: 1, titleField: 'title' },
   { type: 'certifications', table: 'program_certifications', label: 'Certifications', level: 'program', target: 1, titleField: 'credential_name' },
 ];
