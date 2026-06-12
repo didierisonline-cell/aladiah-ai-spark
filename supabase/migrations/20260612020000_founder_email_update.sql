@@ -1,23 +1,20 @@
 -- =============================================================================
--- Founder identity update → didier@aladiahacademy.com
--- Updates the LIVE DB RBAC to the new founder email. Editing the source of the
--- earlier helper/alignment migrations does NOT change an already-applied DB —
--- this migration re-applies the function + trigger with the new address.
---
--- ⚠️ PREREQUISITE: didier@aladiahacademy.com must be a registered Supabase auth
---    user (sign it up first) — otherwise the founder cannot authenticate as
---    admin after this runs.
--- Apply BY HAND in the Supabase SQL editor. Run the verification SELECTs after.
+-- Founder identity — ZERO-DOWNTIME dual-email cutover.
+-- Both addresses are treated as founder during the transition:
+--   - didier@aladiahacademy.com  (primary, new)
+--   - didiermbok@yahoo.com       (legacy, temporary)
+-- A later cleanup migration removes the legacy address once the cutover is
+-- confirmed stable. Apply BY HAND in the Supabase SQL editor.
 -- =============================================================================
 
--- 1) RBAC helper — founder recognized by JWT email (+ optional user_roles).
+-- 1) RBAC helper — either founder email (+ optional user_roles) is admin.
 CREATE OR REPLACE FUNCTION public.aos_is_admin()
 RETURNS boolean
 LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public
 AS $$
 DECLARE has_role boolean := false;
 BEGIN
-  IF lower(coalesce(auth.jwt() ->> 'email', '')) = 'didier@aladiahacademy.com' THEN
+  IF lower(coalesce(auth.jwt() ->> 'email', '')) IN ('didier@aladiahacademy.com','didiermbok@yahoo.com') THEN
     RETURN true;
   END IF;
   IF to_regclass('public.user_roles') IS NOT NULL THEN
@@ -28,12 +25,12 @@ BEGIN
 END;
 $$;
 
--- 2) Signup trigger — only the founder email auto-receives the admin role.
+-- 2) Signup trigger — either founder email auto-receives the admin role.
 CREATE OR REPLACE FUNCTION public.auto_assign_admin()
 RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public
 AS $$
 BEGIN
-  IF lower(NEW.email) = 'didier@aladiahacademy.com' THEN
+  IF lower(NEW.email) IN ('didier@aladiahacademy.com','didiermbok@yahoo.com') THEN
     INSERT INTO public.user_roles (user_id, role)
     VALUES (NEW.id, 'admin')
     ON CONFLICT (user_id, role) DO NOTHING;
@@ -45,20 +42,20 @@ DROP TRIGGER IF EXISTS assign_admin_on_signup ON auth.users;
 CREATE TRIGGER assign_admin_on_signup
 AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.auto_assign_admin();
 
--- 3) Grant admin to the new founder account if it already exists.
+-- 3) Grant admin to BOTH founder accounts if they exist.
 INSERT INTO public.user_roles (user_id, role)
 SELECT u.id, 'admin'::public.app_role
 FROM auth.users u
-WHERE lower(u.email) = 'didier@aladiahacademy.com'
+WHERE lower(u.email) IN ('didier@aladiahacademy.com','didiermbok@yahoo.com')
 ON CONFLICT (user_id, role) DO NOTHING;
 
--- 4) Revoke admin/moderator from every other account (incl. the old founder).
+-- 4) Revoke admin/moderator from every NON-founder account (keeps both founders).
 DELETE FROM public.user_roles ur
 WHERE ur.role IN ('admin','moderator')
-  AND ur.user_id NOT IN (SELECT u.id FROM auth.users u WHERE lower(u.email) = 'didier@aladiahacademy.com');
+  AND ur.user_id NOT IN (
+    SELECT u.id FROM auth.users u WHERE lower(u.email) IN ('didier@aladiahacademy.com','didiermbok@yahoo.com')
+  );
 
 -- VERIFICATION:
--- (a) Exactly one admin = founder:
 -- SELECT u.email, ur.role FROM public.user_roles ur JOIN auth.users u ON u.id=ur.user_id WHERE ur.role='admin';
--- (b) Founder resolves as admin:
--- SELECT public.is_admin(u.id) FROM auth.users u WHERE lower(u.email)='didier@aladiahacademy.com';
+--   → expect exactly the two founder emails (or one, if the new account hasn't signed in yet).
