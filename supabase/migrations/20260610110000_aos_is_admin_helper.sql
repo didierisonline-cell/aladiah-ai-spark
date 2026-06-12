@@ -17,7 +17,7 @@ AS $$
 DECLARE
   has_role boolean := false;
 BEGIN
-  IF lower(coalesce(auth.jwt() ->> 'email', '')) = 'didiermbok@yahoo.com' THEN
+  IF lower(coalesce(auth.jwt() ->> 'email', '')) = 'didier@aladiahacademy.com' THEN
     RETURN true;
   END IF;
 

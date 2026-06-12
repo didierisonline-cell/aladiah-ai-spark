@@ -4,7 +4,7 @@
 **Branch audited:** `claude/adoring-brown-1f452f` (PR #3 → `main`)
 **Date:** 2026-06-10
 **Build:** `bun run build` → ✓ green (vite/esbuild)
-**Founder identity:** `didiermbok@yahoo.com` → role `founder`; all others → `student`
+**Founder identity:** `didier@aladiahacademy.com` → role `founder`; all others → `student`
 
 ---
 
@@ -305,14 +305,14 @@ Migration: `supabase/migrations/20260610270000_founder_role_alignment.sql` (appl
 | Check | Model | Wiring | Pass/Fail |
 |-------|-------|--------|:---------:|
 | Privileged role = founder | `user_roles.role = 'admin'` | `aos_is_admin()` / `is_admin()` SECURITY DEFINER | PASS |
-| Only founder gets admin on signup | trigger `auto_assign_admin` | redefined → `didiermbok@yahoo.com` only | PASS |
+| Only founder gets admin on signup | trigger `auto_assign_admin` | redefined → `didier@aladiahacademy.com` only | PASS |
 | Founder guaranteed admin | INSERT … ON CONFLICT DO NOTHING | covers existing account | PASS |
 | All other privileges revoked | DELETE admin/moderator ≠ founder | removes `didierisonline@gmail.com` et al. | PASS |
 | AOS tables RLS | admin-only read/insert/update | `aos_is_admin()` policies (AOS migration) | PASS |
 | Student tables RLS | own rows only | `auth.uid() = user_id` policies | PASS |
 | Verification SELECTs | follow every write | (a)–(d) in migration file | PASS |
 
-> Effect once applied: `didiermbok@yahoo.com` is the sole `admin` (founder) at the data layer; every other account is restricted by RLS to its own student rows — exactly mirroring the app's founder/student split.
+> Effect once applied: `didier@aladiahacademy.com` is the sole `admin` (founder) at the data layer; every other account is restricted by RLS to its own student rows — exactly mirroring the app's founder/student split.
 
 ---
 
@@ -320,8 +320,8 @@ Migration: `supabase/migrations/20260610270000_founder_role_alignment.sql` (appl
 
 | Scenario | Expected | Wiring | Pass/Fail |
 |----------|----------|--------|:---------:|
-| `didiermbok@yahoo.com` → `/founder` | Loads | `roleForEmail` → founder; FounderRoute renders | PASS |
-| `didiermbok@yahoo.com` → `/founder/control-center` | Loads | FounderRoute renders | PASS |
+| `didier@aladiahacademy.com` → `/founder` | Loads | `roleForEmail` → founder; FounderRoute renders | PASS |
+| `didier@aladiahacademy.com` → `/founder/control-center` | Loads | FounderRoute renders | PASS |
 | Student → `/founder` | Redirect `/portal` | FounderGate `Navigate to /portal replace` | PASS |
 | Student → any `/admin/*` | Redirect `/portal` | FounderRoute on all admin routes | PASS |
 | Not signed in → founder route | Redirect `/auth` | ProtectedRoute inside FounderRoute | PASS |
@@ -338,7 +338,7 @@ Migration: `supabase/migrations/20260610270000_founder_role_alignment.sql` (appl
 2. **🟡 Placeholder student links** (Labs, AI Mentor, Help, Leaderboard, Events → existing pages). Pre-existing student UI; untouched by this work. Not blockers.
 3. **🟡 Platform Audit shares the Operations surface** by design. Intentional, functional.
 4. **🟡 Simulation hero totals** ("2,800 / 28") are static marketing copy vs. the `simulations.ts` dataset — content-accuracy item, not a routing defect.
-5. **🟢 DB/RLS aligned (migration generated):** `supabase/migrations/20260610270000_founder_role_alignment.sql` redefines `auto_assign_admin` to grant `admin` only to `didiermbok@yahoo.com`, guarantees the founder holds `admin`, and **revokes `admin`/`moderator` from every other account** (incl. `didierisonline@gmail.com`). RLS already gates all AOS + admin-scoped tables on `aos_is_admin()`/`is_admin()` (`role = 'admin'`), so once applied, DB-privileged == app-founder. Per canon the SQL is applied by hand in Supabase (not auto-applied); verification SELECTs are included in the file.
+5. **🟢 DB/RLS aligned (migration generated):** `supabase/migrations/20260610270000_founder_role_alignment.sql` redefines `auto_assign_admin` to grant `admin` only to `didier@aladiahacademy.com`, guarantees the founder holds `admin`, and **revokes `admin`/`moderator` from every other account** (incl. `didierisonline@gmail.com`). RLS already gates all AOS + admin-scoped tables on `aos_is_admin()`/`is_admin()` (`role = 'admin'`), so once applied, DB-privileged == app-founder. Per canon the SQL is applied by hand in Supabase (not auto-applied); verification SELECTs are included in the file.
 6. **🟡 Live agent data** requires the AOS Supabase migrations to be applied. Until then, founder dashboards render empty-safe (0s), not errors.
 
 ## Deployment verdict

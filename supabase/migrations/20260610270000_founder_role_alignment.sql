@@ -1,11 +1,11 @@
 -- =============================================================================
--- Founder Role Alignment — single founder: didiermbok@yahoo.com
+-- Founder Role Alignment — single founder: didier@aladiahacademy.com
 -- -----------------------------------------------------------------------------
 -- Aligns the DB privilege model with the app role architecture (founder vs
 -- student). DB privilege = public.user_roles.role = 'admin', enforced by
 -- public.aos_is_admin() / public.is_admin() across every AOS + admin-scoped RLS
 -- policy. After this migration the ONLY account with admin (founder) privileges
--- is didiermbok@yahoo.com; every other account is a student.
+-- is didier@aladiahacademy.com; every other account is a student.
 --
 -- ⚠️  Apply BY HAND in the Supabase SQL editor. Claude Code does not auto-apply
 --     SQL. "Success / no rows" means the statement RAN, not that it was correct —
@@ -23,7 +23,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  IF lower(NEW.email) = 'didiermbok@yahoo.com' THEN
+  IF lower(NEW.email) = 'didier@aladiahacademy.com' THEN
     INSERT INTO public.user_roles (user_id, role)
     VALUES (NEW.id, 'admin')
     ON CONFLICT (user_id, role) DO NOTHING;
@@ -43,7 +43,7 @@ EXECUTE FUNCTION public.auto_assign_admin();
 INSERT INTO public.user_roles (user_id, role)
 SELECT u.id, 'admin'::public.app_role
 FROM auth.users u
-WHERE lower(u.email) = 'didiermbok@yahoo.com'
+WHERE lower(u.email) = 'didier@aladiahacademy.com'
 ON CONFLICT (user_id, role) DO NOTHING;
 
 -- 3) Revoke every privileged role (admin, moderator) from ALL other accounts.
@@ -51,7 +51,7 @@ ON CONFLICT (user_id, role) DO NOTHING;
 DELETE FROM public.user_roles ur
 WHERE ur.role IN ('admin', 'moderator')
   AND ur.user_id NOT IN (
-    SELECT u.id FROM auth.users u WHERE lower(u.email) = 'didiermbok@yahoo.com'
+    SELECT u.id FROM auth.users u WHERE lower(u.email) = 'didier@aladiahacademy.com'
   );
 
 COMMIT;
@@ -60,7 +60,7 @@ COMMIT;
 -- VERIFICATION — run AFTER committing. Confirm each expected result.
 -- =============================================================================
 
--- (a) Exactly ONE admin and it is the founder.  EXPECT: 1 row → didiermbok@yahoo.com
+-- (a) Exactly ONE admin and it is the founder.  EXPECT: 1 row → didier@aladiahacademy.com
 SELECT u.email, ur.role
 FROM public.user_roles ur
 JOIN auth.users u ON u.id = ur.user_id
@@ -71,12 +71,12 @@ SELECT u.email, ur.role
 FROM public.user_roles ur
 JOIN auth.users u ON u.id = ur.user_id
 WHERE ur.role IN ('admin', 'moderator')
-  AND lower(u.email) <> 'didiermbok@yahoo.com';
+  AND lower(u.email) <> 'didier@aladiahacademy.com';
 
 -- (c) The founder resolves as admin via the RLS helper.  EXPECT: founder_is_admin = true
 SELECT u.email, public.is_admin(u.id) AS founder_is_admin
 FROM auth.users u
-WHERE lower(u.email) = 'didiermbok@yahoo.com';
+WHERE lower(u.email) = 'didier@aladiahacademy.com';
 
 -- (d) Sanity: full privileged-role census (should list only the founder).
 SELECT u.email, ur.role
