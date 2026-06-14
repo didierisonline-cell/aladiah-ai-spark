@@ -47,9 +47,12 @@ const Auth = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as any)?.from || '/portal';
-  // Founders land on their portal; honor an explicit deep-link otherwise.
+  // Honor the intended destination. A founder is only sent to /founder when that
+  // was the explicit login target (e.g. they were bounced off a founder route);
+  // a default/student target lands them on /portal, where the founder preview
+  // banner appears. This keeps /portal reachable by founders (no forced redirect).
   const destFor = (email?: string | null) =>
-    isFounderEmail(email) && (from === '/portal' || from === FOUNDER_HOME) ? FOUNDER_HOME : from;
+    isFounderEmail(email) && from === FOUNDER_HOME ? FOUNDER_HOME : from;
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { t } = useLanguage();
