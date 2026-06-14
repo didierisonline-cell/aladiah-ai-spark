@@ -4,7 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import FounderRoute from "@/components/FounderRoute";
+import FounderRoute, { FounderRedirect } from "@/components/FounderRoute";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { useCartSync } from "@/hooks/useCartSync";
 import Index from "./pages/Index";
@@ -81,6 +82,7 @@ const AppContent = () => {
   useCartSync();
   return (
     <BrowserRouter>
+      <ErrorBoundary>
       <Routes>
         {/* Public */}
         <Route path="/" element={<Index />} />
@@ -104,7 +106,7 @@ const AppContent = () => {
         <Route path="/refer/:code" element={<ReferralProfile />} />
         <Route path="/dashboard" element={<Dashboard />} />
         {/* Portal */}
-        <Route path="/portal" element={<ProtectedRoute><StudentPortal /></ProtectedRoute>} />
+        <Route path="/portal" element={<ProtectedRoute><FounderRedirect><StudentPortal /></FounderRedirect></ProtectedRoute>} />
         <Route path="/portal/courses" element={<ProtectedRoute><PortalCourses /></ProtectedRoute>} />
         <Route path="/portal/flagship" element={<ProtectedRoute><FlagshipProgram /></ProtectedRoute>} />
         <Route path="/portal/mentor" element={<ProtectedRoute><MentorHub /></ProtectedRoute>} />
@@ -147,6 +149,7 @@ const AppContent = () => {
         <Route path="/admin/production" element={<FounderRoute><Production /></FounderRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </ErrorBoundary>
       <RouterAwareFloat />
       <FounderModeBadge />
     </BrowserRouter>
