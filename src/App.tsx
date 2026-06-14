@@ -9,6 +9,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { useCartSync } from "@/hooks/useCartSync";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
 import Courses from "./pages/Courses";
@@ -84,6 +85,7 @@ const AppContent = () => {
         {/* Public */}
         <Route path="/" element={<Index />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/schools" element={<Schools />} />
         <Route path="/certifications" element={<Certifications />} />
