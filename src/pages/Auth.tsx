@@ -8,10 +8,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { GraduationCap, Mail, Lock, User, Linkedin, Phone, ShieldCheck, CheckCircle, Zap, Crown, MailCheck } from 'lucide-react';
+import { GraduationCap, Mail, Lock, User, Linkedin, Phone, ShieldCheck, CheckCircle, Zap, Crown, MailCheck, Eye, EyeOff, Loader2, KeyRound, Info, AlertCircle } from 'lucide-react';
 import Header from '@/components/Header';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Link } from 'react-router-dom';
+import { PASSWORD_RULES } from '@/lib/passwordPolicy';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { isFounderEmail, FOUNDER_HOME } from '@/lib/roles';
+
+const REMEMBER_KEY = 'aladiah-remember-email';
 
 const TIERS = [
   { id: 'accelerator', key: 't2', price: 99.99, priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || "price_1TW7U21wgazWak4Atj7TblB3", name: 'All-Access Pass' },
@@ -28,6 +34,15 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [showEmailConfirm, setShowEmailConfirm] = useState(false);
   const [confirmedEmail, setConfirmedEmail] = useState('');
+  // Enterprise auth UX
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
+  const [authError, setAuthError] = useState('');
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [forgotMode, setForgotMode] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotSent, setForgotSent] = useState(false);
   const registering = useRef(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -54,13 +69,27 @@ const Auth = () => {
     }
   }, [user, authLoading, navigate, isLogin]);
 
+  // Prefill a remembered email (Remember Me) on first load.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(REMEMBER_KEY);
+      if (saved) { setEmail(saved); setRememberMe(true); }
+    } catch { /* storage unavailable */ }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setAuthError('');
     try {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        // Remember Me: persist the email for prefill (session itself always persists).
+        try {
+          if (rememberMe) localStorage.setItem(REMEMBER_KEY, email);
+          else localStorage.removeItem(REMEMBER_KEY);
+        } catch { /* ignore */ }
         toast({ title: t('auth.welcome'), description: t('auth.magiclink.verified.sub') });
         navigate(destFor(email));
       } else {
@@ -131,9 +160,47 @@ const Auth = () => {
       }
     } catch (error: any) {
       registering.current = false;
-      toast({ title: t('auth.error'), description: error.message, variant: 'destructive' });
+      const msg = /invalid login credentials/i.test(error?.message || '')
+        ? 'Incorrect email or password. Please try again.'
+        : (error?.message || 'Something went wrong. Please try again.');
+      setAuthError(msg);
+      toast({ title: t('auth.error'), description: msg, variant: 'destructive' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Send a password reset email → links back to /reset-password.
+  const handleForgot = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotLoading(true);
+    setAuthError('');
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail.trim(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      setForgotSent(true);
+    } catch (error: any) {
+      setAuthError(error?.message || 'Could not send reset email. Please try again.');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  // Optional Google OAuth (requires the Google provider enabled in Supabase Auth).
+  const handleGoogle = async () => {
+    setGoogleLoading(true);
+    setAuthError('');
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: `${window.location.origin}/portal` },
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      setAuthError(error?.message || 'Google sign-in is unavailable right now.');
+      setGoogleLoading(false);
     }
   };
 
@@ -144,6 +211,75 @@ const Auth = () => {
       setIsLogin(false);
     }
   }, [searchParams]);
+
+  // ── FORGOT PASSWORD SCREEN ─────────────────────────────────
+  if (forgotMode) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
+        <Header />
+        <div className="flex items-center justify-center p-4 pt-28 pb-12">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full max-w-md">
+            <Card className="shadow-large border-primary/10">
+              {forgotSent ? (
+                <>
+                  <CardHeader className="text-center">
+                    <div className="mx-auto w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4">
+                      <MailCheck className="w-8 h-8 text-green-400" />
+                    </div>
+                    <CardTitle className="text-2xl font-display">Check your email</CardTitle>
+                    <CardDescription>If an account exists for that address, a reset link is on its way.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4 text-center">
+                    <div style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 12, padding: 16 }}>
+                      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', margin: 0 }}>We sent a password reset link to:</p>
+                      <p style={{ fontSize: 15, fontWeight: 700, color: '#fff', margin: '6px 0 0' }}>{forgotEmail}</p>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground">The link opens the reset page and expires after a single use. Check spam if you don't see it.</p>
+                    <Button variant="outline" className="w-full" onClick={() => { setForgotMode(false); setForgotSent(false); }}>← Back to Sign In</Button>
+                  </CardContent>
+                </>
+              ) : (
+                <>
+                  <CardHeader className="text-center">
+                    <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                      <KeyRound className="w-8 h-8 text-primary" />
+                    </div>
+                    <CardTitle className="text-2xl font-display">Forgot your password?</CardTitle>
+                    <CardDescription>Enter your email and we'll send you a reset link.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleForgot} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="forgot-email">Email</Label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                          <Input id="forgot-email" type="email" placeholder="you@example.com" value={forgotEmail}
+                            onChange={(e) => setForgotEmail(e.target.value)} required className="pl-9" autoFocus />
+                        </div>
+                      </div>
+                      {authError && (
+                        <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2">
+                          <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                          <p className="text-xs text-red-300">{authError}</p>
+                        </div>
+                      )}
+                      <Button type="submit" className="w-full" variant="coral" disabled={forgotLoading}>
+                        {forgotLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending…</> : 'Send Reset Link'}
+                      </Button>
+                      <button type="button" onClick={() => { setForgotMode(false); setAuthError(''); }}
+                        className="w-full text-sm text-muted-foreground hover:text-primary transition-colors">
+                        ← Back to Sign In
+                      </button>
+                    </form>
+                  </CardContent>
+                </>
+              )}
+            </Card>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
 
   // ── EMAIL CONFIRMATION SCREEN ──────────────────────────────
   if (showEmailConfirm) {
@@ -317,14 +453,57 @@ const Auth = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="password">{t('auth.password')}</Label>
+                    <div className="flex items-center gap-1.5">
+                      <Label htmlFor="password">{t('auth.password')}</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button type="button" aria-label="Password requirements" className="text-muted-foreground hover:text-primary">
+                            <Info className="w-3.5 h-3.5" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64 text-xs">
+                          <p className="font-semibold mb-2">Password must contain:</p>
+                          <ul className="space-y-1">
+                            {PASSWORD_RULES.map((r) => (
+                              <li key={r.key} className="flex items-center gap-2 text-muted-foreground">
+                                <CheckCircle className="w-3 h-3 text-primary flex-shrink-0" />{r.label}
+                              </li>
+                            ))}
+                          </ul>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                      <Input id="password" type="password" placeholder="********" value={password}
-                        onChange={(e) => setPassword(e.target.value)} required minLength={6} className="pl-9" />
+                      <Input id="password" type={showPassword ? 'text' : 'password'} placeholder="********" value={password}
+                        onChange={(e) => setPassword(e.target.value)} required minLength={6} className="pl-9 pr-10" />
+                      <button type="button" onClick={() => setShowPassword((s) => !s)} aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
                     </div>
                   </div>
                 </div>
+
+                {isLogin && (
+                  <div className="flex items-center justify-between">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <Checkbox checked={rememberMe} onCheckedChange={(v) => setRememberMe(v === true)} />
+                      <span className="text-sm text-muted-foreground">Remember me</span>
+                    </label>
+                    <button type="button" onClick={() => { setForgotMode(true); setForgotEmail(email); setAuthError(''); }}
+                      className="text-sm text-primary hover:underline">
+                      Forgot Password?
+                    </button>
+                  </div>
+                )}
+
+                {authError && (
+                  <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2">
+                    <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                    <p className="text-xs text-red-300">{authError}</p>
+                  </div>
+                )}
 
                 {isLogin && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: 'rgba(59,130,246,0.08)', borderRadius: '10px', border: '1px solid rgba(59,130,246,0.2)' }}>
@@ -333,8 +512,28 @@ const Auth = () => {
                   </div>
                 )}
 
-                <Button type="submit" className="w-full" variant="coral" disabled={loading}>
-                  {loading ? t('auth.loading') : isLogin ? t('auth.signin.btn') : selectedTier === 'free' ? 'Create Free Account' : 'Continue to Payment →'}
+                <Button type="submit" className="w-full" variant="coral" disabled={loading || googleLoading}>
+                  {loading
+                    ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t('auth.loading')}</>
+                    : isLogin ? t('auth.signin.btn') : selectedTier === 'free' ? 'Create Free Account' : 'Continue to Payment →'}
+                </Button>
+
+                {/* Optional Google OAuth (requires Google provider enabled in Supabase Auth) */}
+                <div className="flex items-center gap-3 py-1">
+                  <div className="h-px flex-1 bg-border" />
+                  <span className="text-[11px] text-muted-foreground">or</span>
+                  <div className="h-px flex-1 bg-border" />
+                </div>
+                <Button type="button" variant="outline" className="w-full" onClick={handleGoogle} disabled={loading || googleLoading}>
+                  {googleLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : (
+                    <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" aria-hidden="true">
+                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/>
+                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/>
+                      <path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/>
+                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15A10.99 10.99 0 0 0 12 1 11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/>
+                    </svg>
+                  )}
+                  Continue with Google
                 </Button>
 
                 {!isLogin && selectedTier === 'paid' && (
