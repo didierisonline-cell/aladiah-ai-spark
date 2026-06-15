@@ -1,0 +1,9 @@
+# datasets/raw/
+
+Stage 1 of the pipeline. Holds **original, unmodified** source acquisitions
+(PDF exports, parsed text dumps) — one file/folder per acquisition batch.
+
+Rules:
+- Nothing lands here until the source's `licenseStatus` is `approved`.
+- Keep originals untouched; transformations happen downstream in `processed/`.
+- Do NOT commit large/copyrighted raw assets unless rights explicitly permit it.

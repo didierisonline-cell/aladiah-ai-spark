@@ -1,0 +1,8 @@
+# datasets/validated/
+
+Stage 3 of the pipeline. Holds **human/agent-validated** records ready for loading.
+
+- Passed the quality-reviewer prompt (tone marks, glosses, orthography normalization).
+- `review_status: "validated"`.
+- Next step: generate reviewable SQL (per `../../basaa-database-plan.md`); a human
+  applies it in Supabase, then verifies with a `SELECT`. Claude Code never auto-applies SQL.

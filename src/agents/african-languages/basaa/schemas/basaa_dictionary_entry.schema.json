@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aladiah.com/schemas/basaa/basaa_dictionary_entry.schema.json",
+  "title": "Basaa Dictionary Entry",
+  "description": "A single normalized Basaa lexical entry with multilingual glosses. Maps to the basaa_dictionary_entries table. Tone marking is preserved on headword and forms.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["headword", "part_of_speech", "glosses", "source_id"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Stable unique id for the entry (UUID or slug). Assigned at load time if absent."
+    },
+    "headword": {
+      "type": "string",
+      "description": "Basaa headword in canonical orthography, with tone diacritics preserved.",
+      "minLength": 1
+    },
+    "headword_normalized": {
+      "type": "string",
+      "description": "Toneless / ASCII-folded form for fuzzy search and indexing."
+    },
+    "ipa": {
+      "type": "string",
+      "description": "IPA pronunciation, if available."
+    },
+    "tone_pattern": {
+      "type": "string",
+      "description": "Tone pattern notation (e.g. 'H.L', 'LHL') if recorded separately from the headword."
+    },
+    "part_of_speech": {
+      "type": "string",
+      "description": "Grammatical category.",
+      "enum": [
+        "noun",
+        "verb",
+        "adjective",
+        "adverb",
+        "pronoun",
+        "preposition",
+        "conjunction",
+        "interjection",
+        "numeral",
+        "determiner",
+        "particle",
+        "ideophone",
+        "proper-noun",
+        "affix",
+        "phrase",
+        "unknown"
+      ]
+    },
+    "noun_class": {
+      "type": ["string", "null"],
+      "description": "Bantu noun class (e.g. '1', '1/2', '7/8') for nouns; null otherwise."
+    },
+    "glosses": {
+      "type": "array",
+      "description": "Translations/definitions keyed by language. At least one required.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["language", "text"],
+        "properties": {
+          "language": {
+            "type": "string",
+            "description": "ISO 639-1/3 code of the gloss language.",
+            "enum": ["en", "fr", "de", "bas"]
+          },
+          "text": { "type": "string", "minLength": 1 },
+          "domain": {
+            "type": "string",
+            "description": "Semantic/usage domain (e.g. 'health', 'technology', 'kinship')."
+          }
+        }
+      }
+    },
+    "examples": {
+      "type": "array",
+      "description": "Usage examples; ideally aligned with a translation.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["basaa"],
+        "properties": {
+          "basaa": { "type": "string" },
+          "translation": { "type": "string" },
+          "translation_language": {
+            "type": "string",
+            "enum": ["en", "fr", "de"]
+          }
+        }
+      }
+    },
+    "dialect": {
+      "type": "string",
+      "description": "Dialect/variety this entry belongs to, if marked."
+    },
+    "variants": {
+      "type": "array",
+      "description": "Alternate spellings/forms across writing systems.",
+      "items": { "type": "string" }
+    },
+    "source_id": {
+      "type": "string",
+      "description": "Registry id of the source asset (matches BASAA_SOURCES[].id in basaa-agent-config.ts)."
+    },
+    "orthography_normalized": {
+      "type": "boolean",
+      "description": "True if the headword/forms have passed orthography normalization.",
+      "default": false
+    },
+    "confidence": {
+      "type": "number",
+      "description": "Extraction/normalization confidence 0..1.",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "review_status": {
+      "type": "string",
+      "enum": ["raw", "processed", "validated"],
+      "default": "processed"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Free-text reviewer notes."
+    }
+  }
+}

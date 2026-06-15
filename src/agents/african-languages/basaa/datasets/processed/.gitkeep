@@ -1,0 +1,8 @@
+# datasets/processed/
+
+Stage 2 of the pipeline. Holds **extracted, schema-conforming** records that have
+NOT yet passed quality review.
+
+- Output of the extractor prompts; each record conforms to a schema in `../../schemas/`.
+- `review_status: "processed"`.
+- Next step: run the quality-reviewer prompt → `../validated/`.

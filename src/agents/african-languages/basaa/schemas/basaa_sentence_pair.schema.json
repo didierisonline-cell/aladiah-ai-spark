@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aladiah.com/schemas/basaa/basaa_sentence_pair.schema.json",
+  "title": "Basaa Sentence Pair",
+  "description": "An aligned bilingual sentence pair (Basaa <-> a pivot language) for translation training and translation memory. Maps to the basaa_sentence_pairs table.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["basaa", "translation", "translation_language", "source_id"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Stable unique id for the pair (UUID). Assigned at load time if absent."
+    },
+    "basaa": {
+      "type": "string",
+      "description": "Basaa sentence in canonical orthography, tone diacritics preserved.",
+      "minLength": 1
+    },
+    "translation": {
+      "type": "string",
+      "description": "Sentence in the pivot/translation language.",
+      "minLength": 1
+    },
+    "translation_language": {
+      "type": "string",
+      "description": "ISO code of the translation language.",
+      "enum": ["en", "fr", "de"]
+    },
+    "direction": {
+      "type": "string",
+      "description": "Original direction of the pair as found in the source.",
+      "enum": ["bas->xx", "xx->bas", "unknown"],
+      "default": "unknown"
+    },
+    "domain": {
+      "type": "string",
+      "description": "Topic/domain (e.g. 'health', 'greetings', 'technology', 'daily-life')."
+    },
+    "register": {
+      "type": "string",
+      "description": "Register/formality.",
+      "enum": ["formal", "informal", "neutral", "unknown"],
+      "default": "unknown"
+    },
+    "dialect": {
+      "type": "string",
+      "description": "Dialect/variety, if marked."
+    },
+    "alignment": {
+      "type": "string",
+      "description": "Alignment quality.",
+      "enum": ["sentence", "approximate", "segment", "unknown"],
+      "default": "sentence"
+    },
+    "source_id": {
+      "type": "string",
+      "description": "Registry id of the source asset (matches BASAA_SOURCES[].id)."
+    },
+    "source_location": {
+      "type": "string",
+      "description": "Where in the source it came from (e.g. 'page 142, Dialogue 7')."
+    },
+    "orthography_normalized": {
+      "type": "boolean",
+      "default": false
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "review_status": {
+      "type": "string",
+      "enum": ["raw", "processed", "validated"],
+      "default": "processed"
+    },
+    "notes": { "type": "string" }
+  }
+}

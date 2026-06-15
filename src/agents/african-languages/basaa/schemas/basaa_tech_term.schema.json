@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aladiah.com/schemas/basaa/basaa_tech_term.schema.json",
+  "title": "Basaa Tech Term",
+  "description": "A curated Basaa rendering of a technical / digital / career-domain term. Many such terms have no traditional Basaa equivalent, so this schema supports coinage, loanword, and descriptive strategies. Maps to the basaa_tech_terms table.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["term_source", "source_language", "basaa_term", "strategy"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Stable unique id (UUID/slug). Assigned at load time if absent."
+    },
+    "term_source": {
+      "type": "string",
+      "description": "The source-language technical term being rendered (e.g. 'database', 'login').",
+      "minLength": 1
+    },
+    "source_language": {
+      "type": "string",
+      "description": "Language of term_source.",
+      "enum": ["en", "fr"]
+    },
+    "basaa_term": {
+      "type": "string",
+      "description": "Proposed/approved Basaa term in canonical orthography, tone preserved.",
+      "minLength": 1
+    },
+    "strategy": {
+      "type": "string",
+      "description": "How the Basaa term was derived.",
+      "enum": ["loanword", "calque", "coinage", "descriptive", "existing-word"]
+    },
+    "domain": {
+      "type": "string",
+      "description": "Domain (e.g. 'computing', 'internet', 'finance', 'career', 'health-tech').",
+      "default": "technology"
+    },
+    "definition_basaa": {
+      "type": "string",
+      "description": "Short explanation of the term in Basaa."
+    },
+    "definition_gloss": {
+      "type": "string",
+      "description": "Short explanation in the source language for reviewers."
+    },
+    "example": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "basaa": { "type": "string" },
+        "translation": { "type": "string" }
+      }
+    },
+    "alternatives": {
+      "type": "array",
+      "description": "Other candidate Basaa renderings considered.",
+      "items": { "type": "string" }
+    },
+    "approval_status": {
+      "type": "string",
+      "description": "Lifecycle of the coined/curated term.",
+      "enum": ["proposed", "under-review", "approved", "deprecated"],
+      "default": "proposed"
+    },
+    "source_id": {
+      "type": "string",
+      "description": "Registry id of the source asset, if derived from one (matches BASAA_SOURCES[].id)."
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "review_status": {
+      "type": "string",
+      "enum": ["raw", "processed", "validated"],
+      "default": "processed"
+    },
+    "notes": { "type": "string" }
+  }
+}
