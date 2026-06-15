@@ -33,8 +33,7 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
     { icon: '🏅', lbl: T('certs'), path: '/portal/certifications' },
     { icon: '💼', lbl: T('career_tools'), path: '/portal/career' },
     { icon: '🗂️', lbl: T('portfolio'), path: '/portal/portfolio' },
-    { icon: '🧪', lbl: T('labs'), path: '/portal' },
-    { icon: '🤖', lbl: 'AI Mentor', path: '/portal' },
+    { icon: '🤖', lbl: 'AI Mentor', path: '/portal/mentor' },
     { icon: '👥', lbl: T('community'), path: '/community' },
     { icon: '🏆', lbl: T('leaderboard'), path: '/portal/talent-score' },
     { icon: '📅', lbl: T('events'), path: '/community' },
@@ -88,7 +87,7 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
         <a href="https://www.aladiahmanagement.com" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, textDecoration: 'none' }}>
           <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>🏢</span>{T('management')}
         </a>
-        <button onClick={() => navigate('/portal')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
+        <button onClick={() => navigate('/community')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
           <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>❓</span>Help &amp; Support
         </button>
       </div>

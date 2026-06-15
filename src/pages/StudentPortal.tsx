@@ -558,8 +558,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               { icon: '🏅', lbl: T('certs'), path: '/portal/certifications' },
               { icon: '💼', lbl: T('career_tools'), path: '/portal/career' },
               { icon: '🗂️', lbl: T('portfolio'), path: '/portal/portfolio' },
-              { icon: '🧪', lbl: T('labs'), path: '/portal' },
-              { icon: '🤖', lbl: 'AI Mentor', path: '/portal' },
+              { icon: '🤖', lbl: 'AI Mentor', path: '/portal/mentor' },
               { icon: '👥', lbl: T('community'), path: '/community' },
               { icon: '🏆', lbl: T('leaderboard'), path: '/portal/talent-score' },
               { icon: '📅', lbl: T('events'), path: '/community' },
@@ -580,7 +579,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
             <a href="https://www.aladiahmanagement.com" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, textDecoration: 'none' }}>
               <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>🏢</span>{T('management')}
             </a>
-            <button onClick={() => navigate('/portal')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
+            <button onClick={() => navigate('/community')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
               <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>❓</span>Help &amp; Support
             </button>
           </div>
@@ -686,7 +685,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                 <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 38, opacity: .55 }}>🎯</div>
                 <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>{T('daily_challenge')}</div>
                 <div style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.6, marginBottom: 13 }}>{T('daily_challenge_sub')}</div>
-                <button style={{ border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, padding: '8px 16px', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(90deg,#16a34a,#15803d)', color: '#fff' }}>
+                <button onClick={() => navigate('/portal/simulations')} style={{ border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, padding: '8px 16px', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(90deg,#16a34a,#15803d)', color: '#fff' }}>
                   {T('start_challenge')}
                 </button>
               </div>
@@ -709,7 +708,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                     ))}
                     <span style={{ fontSize: 9, color: '#475569', marginLeft: 5, alignSelf: 'center' }}>+142</span>
                   </div>
-                  <button style={{ border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, padding: '8px 14px', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(90deg,#dc2626,#b91c1c)', color: '#fff' }}>
+                  <button onClick={() => navigate('/community')} style={{ border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, padding: '8px 14px', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(90deg,#dc2626,#b91c1c)', color: '#fff' }}>
                     {T('join_now')}
                   </button>
                 </div>
@@ -719,11 +718,11 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
             {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', background: 'linear-gradient(155deg,rgba(8,20,52,.85),rgba(5,13,38,.9))', border: '1px solid rgba(255,255,255,.08)', borderRadius: 16, overflow: 'hidden', backdropFilter: 'blur(28px)', marginBottom: 14 }}>
               {[
-                { val: `${overallPct}%`, lbl: T('overall_progress'), sub: T('keep_going'), color: '#6366f1', onClick: () => { } },
+                { val: `${overallPct}%`, lbl: T('overall_progress'), sub: T('keep_going'), color: '#6366f1', onClick: () => navigate('/portal/my-career-path') },
                 { val: streak, lbl: `${T('day_streak')} 🔥`, sub: T('amazing'), color: '#f97316', onClick: () => setStreakModal(true) },
                 { val: totalPoints.toLocaleString(), lbl: T('points_earned'), sub: T('this_week'), color: '#f59e0b', onClick: () => setPointsModal(true) },
                 { val: labs.filter((l: any) => l.completed).length, lbl: T('labs_completed'), sub: T('labs_week'), color: '#34d399', onClick: () => setLabsModal(true) },
-                { val: certCount, lbl: T('certifications'), sub: T('in_progress'), color: '#a855f7', onClick: () => { } },
+                { val: certCount, lbl: T('certifications'), sub: T('in_progress'), color: '#a855f7', onClick: () => navigate('/portal/certifications') },
               ].map((s, i) => (
                 <div key={i} onClick={s.onClick} style={{ padding: '20px 10px', textAlign: 'center', borderRight: i < 4 ? '1px solid rgba(255,255,255,.06)' : 'none', cursor: 'pointer' }}>
                   <div style={{ fontSize: '2rem', fontWeight: 800, lineHeight: 1, marginBottom: 5, color: s.color, letterSpacing: '-.5px' }}>{s.val}</div>
