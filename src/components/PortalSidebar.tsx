@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
+import { useProgress } from '@/hooks/useProgress';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { activeHref } from '@/lib/nav';
@@ -11,11 +12,15 @@ interface PortalSidebarProps {
   coursesCount?: number;
 }
 
-export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalSidebarProps) {
+export default function PortalSidebar({ hoursLeft, coursesCount }: PortalSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const { progress } = useProgress(user?.id);
+  // "Hours to employable" derived from real progress (600-hour program target),
+  // not a hardcoded placeholder. Callers may still pass an explicit value.
+  const hours = hoursLeft ?? Math.round(((100 - Math.max(0, Math.min(100, progress))) / 100) * 600);
   const { language } = useLanguage();
   const T = (key: string) => overviewT(language || 'en', key);
 
@@ -54,11 +59,11 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
         <div style={{ fontSize: 12, color: '#64748b', marginBottom: 13 }}>Plan: <b style={{ color: '#e2e8f8' }}>{T('all_access')}</b></div>
         <div style={{ background: 'rgba(5,15,40,.65)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 10, padding: '10px 12px' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 7, marginBottom: 7 }}>
-            <span style={{ fontSize: 24, fontWeight: 900, color: '#f97316', textShadow: '0 0 18px rgba(249,115,22,.5)' }}>{hoursLeft}</span>
+            <span style={{ fontSize: 24, fontWeight: 900, color: '#f97316', textShadow: '0 0 18px rgba(249,115,22,.5)' }}>{hours}</span>
             <span style={{ fontSize: 11.5, color: '#94a3b8' }}>{T('hours_employable')}</span>
           </div>
           <div style={{ height: 5, background: 'rgba(255,255,255,.08)', borderRadius: 99, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${(hoursLeft / 600) * 100}%`, background: 'linear-gradient(90deg,#f97316,#fb923c)', borderRadius: 99, boxShadow: '0 0 10px rgba(249,115,22,.5)' }} />
+            <div style={{ height: '100%', width: `${((600 - hours) / 600) * 100}%`, background: 'linear-gradient(90deg,#f97316,#fb923c)', borderRadius: 99, boxShadow: '0 0 10px rgba(249,115,22,.5)' }} />
           </div>
         </div>
       </div>

@@ -36,11 +36,10 @@ function getDateStr(lang?: string) {
   }
 }
 
-const MOMENTUM = [
-  { name: 'Sarah K.', action: 'got_hired', role: 'Cloud Engineer', company: 'Amazon', salary: '$120,000', time: '2min' },
-  { name: 'David M.', action: 'completed', program: 'AI Cloud Engineer Program', time: '15min' },
-  { name: 'Aisha B.', action: 'earned', cert: 'AWS Solutions Architect Cert.', time: '32min' },
-];
+// Career-momentum feed: previously hardcoded fabricated hires/salaries (e.g.
+// "Sarah K. hired … $120,000"). Cleared to avoid showing fabricated social proof
+// in production; populate from real verified graduate outcomes when available.
+const MOMENTUM: { name: string; action: string; role?: string; company?: string; salary?: string; program?: string; cert?: string; time: string }[] = [];
 const SKILLS = [
   { label: 'Cloud Architecture', pct: 92, color: '#6366f1' },
   { label: 'Problem Solving', pct: 88, color: '#8b5cf6' },
@@ -51,7 +50,7 @@ const SKILLS = [
 const TOOLS = [
   { icon: '🎤', lbl: 'ai_interview', sub: 'practice_now', path: '/portal/career' },
   { icon: '📄', lbl: 'resume_builder', sub: 'optimize_cv', path: '/portal/career' },
-  { icon: '💼', lbl: 'job_matches', sub: 'new_jobs', path: '/portal/my-career-path', count: '12' },
+  { icon: '💼', lbl: 'job_matches', sub: 'new_jobs', path: '/portal/my-career-path' },
   { icon: '📊', lbl: 'portfolio_analyzer', sub: 'get_feedback', path: '/portal/portfolio' },
   { icon: '💰', lbl: 'salary_insights', sub: 'know_worth', path: '/portal/my-career-path' },
 ];
@@ -166,7 +165,9 @@ export default function StudentPortal() {
   // Talent Score — single source of truth (derived from real quiz progress).
   // Same formula the Talent Score page uses, so the two screens always agree.
   const talentScore = talentScoreFromProgress(overallProgress);
-  const [hoursLeft] = useState(412);
+  // "Hours to employable" derived from real progress against a 600-hour program
+  // target (was a hardcoded 412 placeholder).
+  const hoursLeft = Math.round(((100 - Math.max(0, Math.min(100, overallProgress))) / 100) * 600);
 
   const T = (key: string) => overviewT(language || 'en', key);
 
@@ -543,7 +544,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                 <span style={{ fontSize: 11.5, color: '#94a3b8' }}>{T('hours_employable')}</span>
               </div>
               <div style={{ height: 5, background: 'rgba(255,255,255,.08)', borderRadius: 99, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${(hoursLeft / 600) * 100}%`, background: 'linear-gradient(90deg,#f97316,#fb923c)', borderRadius: 99, boxShadow: '0 0 10px rgba(249,115,22,.5)' }} />
+                <div style={{ height: '100%', width: `${((600 - hoursLeft) / 600) * 100}%`, background: 'linear-gradient(90deg,#f97316,#fb923c)', borderRadius: 99, boxShadow: '0 0 10px rgba(249,115,22,.5)' }} />
               </div>
             </div>
           </div>
@@ -707,7 +708,6 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                         {['S', 'D', 'A'][i]}
                       </div>
                     ))}
-                    <span style={{ fontSize: 9, color: '#475569', marginLeft: 5, alignSelf: 'center' }}>+142</span>
                   </div>
                   <button onClick={() => navigate('/community')} style={{ border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, padding: '8px 14px', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(90deg,#dc2626,#b91c1c)', color: '#fff' }}>
                     {T('join_now')}
@@ -876,17 +876,21 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               {T('view_breakdown')}
             </button>
             <div style={{ fontSize: 11.5, fontWeight: 700, marginBottom: 9, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,.06)' }}>{T('top_skills')}</div>
-            {SKILLS.map((sk, i) => (
+            {SKILLS.map((sk, i) => {
+              // Scale the aspirational target by REAL overall progress so the bar
+              // reflects actual learning (0 progress → 0%), never a fabricated value.
+              const pct = Math.round((sk.pct * overallProgress) / 100);
+              return (
               <div key={i} style={{ marginBottom: i < 4 ? 8 : 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, fontSize: 10.5 }}>
                   <span style={{ color: '#64748b' }}>{sk.label}</span>
-                  <span style={{ fontWeight: 700, color: sk.color }}>{sk.pct}%</span>
+                  <span style={{ fontWeight: 700, color: sk.color }}>{pct}%</span>
                 </div>
                 <div style={{ height: 4, background: 'rgba(255,255,255,.07)', borderRadius: 99, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${sk.pct}%`, background: sk.color, borderRadius: 99, opacity: .9 }} />
+                  <div style={{ height: '100%', width: `${pct}%`, background: sk.color, borderRadius: 99, opacity: .9 }} />
                 </div>
               </div>
-            ))}
+            );})}
           </div>
 
           {/* 3. CAREER MOMENTUM */}
@@ -920,6 +924,9 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                 </div>
               </div>
             ))}
+            {MOMENTUM.length === 0 && (
+              <div style={{ fontSize: 11, color: '#64748b', lineHeight: 1.5 }}>Verified graduate outcomes will appear here as our community grows.</div>
+            )}
           </div>
 
           {/* 4. FUTURE READY */}
