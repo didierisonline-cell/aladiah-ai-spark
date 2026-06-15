@@ -4,6 +4,7 @@ import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { activeHref } from '@/lib/nav';
+import { displayNameFromEmail, initialsFromEmail } from '@/lib/avatar';
 
 interface PortalSidebarProps {
   hoursLeft?: number;
@@ -18,11 +19,8 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
   const { language } = useLanguage();
   const T = (key: string) => overviewT(language || 'en', key);
 
-  const namePart = user?.email?.split('@')[0] || 'Student';
-  const displayName = namePart;
-  const initials = (
-    (namePart.slice(0, 1) || 'A') + (namePart.slice(1, 2) || '')
-  ).toUpperCase();
+  const displayName = displayNameFromEmail(user?.email);
+  const initials = initialsFromEmail(user?.email);
 
   const LINKS: { icon: string; lbl: string; path: string; exact?: boolean; badge?: number }[] = [
     { icon: '🏠', lbl: T('overview'), path: '/portal', exact: true },
