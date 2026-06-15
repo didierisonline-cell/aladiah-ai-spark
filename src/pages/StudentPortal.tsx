@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { useProgress } from '@/hooks/useProgress';
+import { talentScoreFromProgress } from '@/hooks/useTalentScore';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { isFounderEmail } from '@/lib/roles';
 import { useFounderMode } from '@/hooks/useFounderMode';
@@ -161,7 +162,9 @@ export default function StudentPortal() {
   const [profLoading, setProfLoading] = useState(false);
   const [profileRow, setProfileRow] = useState<any | null>(null); // extended profiles row (recap-state cols); consumers (mute/DB day-gate) land in a follow-up
   const [recap, setRecap] = useState<any | null>(null);           // get-student-recap response (Option-A contract); text-only this step
-  const [talentScore] = useState(612);
+  // Talent Score — single source of truth (derived from real quiz progress).
+  // Same formula the Talent Score page uses, so the two screens always agree.
+  const talentScore = talentScoreFromProgress(overallProgress);
   const [hoursLeft] = useState(412);
 
   const T = (key: string) => overviewT(language || 'en', key);
