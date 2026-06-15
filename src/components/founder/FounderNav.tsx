@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import { activeHref } from '@/lib/nav';
 import {
   Award, BarChart3, Briefcase, ClipboardCheck, GaugeCircle, GraduationCap, Home, Inbox,
   LayoutGrid, Rocket, Server, Shield, ShieldCheck, Sparkles, BookOpen, FilePlus2,
@@ -28,10 +29,11 @@ const LINKS = [
 /** Cross-navigation across every Founder Portal surface. Drop under <Header/>. */
 const FounderNav = () => {
   const { pathname } = useLocation();
+  const current = activeHref(pathname, LINKS.map((l) => l.to));
   return (
     <nav className="flex flex-wrap items-center gap-1.5 mb-6">
-      {LINKS.map(({ to, label, icon: Icon, exact }) => {
-        const active = exact ? pathname === to : pathname === to;
+      {LINKS.map(({ to, label, icon: Icon }) => {
+        const active = to === current;
         return (
           <Link
             key={to}

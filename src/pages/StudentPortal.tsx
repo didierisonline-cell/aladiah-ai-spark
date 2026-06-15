@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { useProgress } from '@/hooks/useProgress';
 import { talentScoreFromProgress } from '@/hooks/useTalentScore';
+import { activeHref } from '@/lib/nav';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { isFounderEmail } from '@/lib/roles';
 import { useFounderMode } from '@/hooks/useFounderMode';
@@ -549,7 +550,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
 
           {/* Nav links */}
           <div style={{ flex: 1, overflow: 'hidden' }}>
-            {[
+            {(() => { const items = [
               { icon: '🏠', lbl: T('overview'), path: '/portal', exact: true },
               { icon: '📚', lbl: T('my_academy'), path: '/portal/courses', badge: courses.length || undefined },
               { icon: '🎯', lbl: T('my_career'), path: '/portal/my-career-path' },
@@ -562,8 +563,8 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               { icon: '👥', lbl: T('community'), path: '/community' },
               { icon: '🏆', lbl: T('leaderboard'), path: '/portal/talent-score' },
               { icon: '📅', lbl: T('events'), path: '/community' },
-            ].map(link => {
-              const isOn = link.exact ? location.pathname === '/portal' : location.pathname === link.path;
+            ]; const current = activeHref(location.pathname, items.map(i => i.path)); return items.map(link => {
+              const isOn = link.path === current;
               return (
                 <button key={link.lbl} onClick={() => navigate(link.path)} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: isOn ? '#fff' : '#64748b', fontSize: 13, fontWeight: isOn ? 700 : 500, cursor: 'pointer', border: 'none', background: isOn ? 'linear-gradient(90deg,rgba(59,130,246,.22),rgba(99,102,241,.05))' : 'none', borderLeft: `3px solid ${isOn ? '#3b82f6' : 'transparent'}`, width: '100%', textAlign: 'left', fontFamily: 'inherit', transition: 'all .15s' }}>
                   <span style={{ fontSize: 15, width: 18, textAlign: 'center', flexShrink: 0 }}>{link.icon}</span>
@@ -571,7 +572,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                   {link.badge && <span style={{ marginLeft: 'auto', background: '#f97316', color: '#fff', borderRadius: 99, fontSize: 10, padding: '2px 7px', fontWeight: 800 }}>{link.badge}</span>}
                 </button>
               );
-            })}
+            }); })()}
             <div style={{ padding: '12px 15px 4px', fontSize: 9, fontWeight: 700, letterSpacing: '.18em', textTransform: 'uppercase', color: '#2a3a55' }}>{T('account')}</div>
             <button onClick={() => navigate('/portal/settings')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
               <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>⚙️</span>{T('settings')}

@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import { activeHref } from '@/lib/nav';
 import { Award, BarChart3, BookOpen, Briefcase, Cpu, GraduationCap, Inbox, LayoutGrid, Megaphone, Rocket, Search, Server, ServerCog, Shield, ShieldCheck, Sparkles } from 'lucide-react';
 
 const LINKS = [
@@ -23,10 +24,11 @@ const LINKS = [
 /** Cross-navigation across every AI Workforce surface. Drop under <Header/>. */
 const WorkforceNav = () => {
   const { pathname } = useLocation();
+  const current = activeHref(pathname, LINKS.map((l) => l.to));
   return (
     <nav className="flex flex-wrap items-center gap-1.5 mb-6">
       {LINKS.map(({ to, label, icon: Icon }) => {
-        const active = pathname === to;
+        const active = to === current;
         return (
           <Link
             key={to}
