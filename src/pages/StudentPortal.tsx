@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -140,7 +140,11 @@ export default function StudentPortal() {
   // Founder God Mode: unrestricted only when the founder has the toggle ON.
   // When OFF, the founder sees the real student experience (gates apply).
   const { godMode } = useFounderMode();
-  const founder = isFounderEmail(user?.email) && godMode;
+  // ?preview=student forces the genuine student experience: founder gate-bypass
+  // is disabled so the real student gates (creed, course selection) apply.
+  const [searchParams] = useSearchParams();
+  const previewAsStudent = searchParams.get('preview') === 'student';
+  const founder = isFounderEmail(user?.email) && godMode && !previewAsStudent;
   const { tier } = useSubscription();
 
   const [needsCreed, setNeedsCreed] = useState(shouldShowCreedGate());

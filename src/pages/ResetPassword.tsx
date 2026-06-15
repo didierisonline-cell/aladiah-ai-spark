@@ -12,6 +12,24 @@ import { PASSWORD_RULES, isPasswordValid } from '@/lib/passwordPolicy';
 import { KeyRound, Lock, Eye, EyeOff, CheckCircle2, Circle, AlertCircle, ShieldCheck, Loader2 } from 'lucide-react';
 
 /**
+ * Page shell. Declared at module scope (NOT inside ResetPassword) so it keeps a
+ * stable component identity across re-renders. If it were defined inside the
+ * component, every keystroke would mint a new component type, forcing React to
+ * unmount/remount the whole card — which drops input focus mid-typing (the
+ * Confirm Password → New Password focus-jump bug on iOS Safari).
+ */
+const Shell = ({ children }: { children: React.ReactNode }) => (
+  <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
+    <Header />
+    <div className="flex items-center justify-center p-4 pt-28 pb-12">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full max-w-md">
+        <Card className="shadow-large border-primary/10">{children}</Card>
+      </motion.div>
+    </div>
+  </div>
+);
+
+/**
  * /reset-password — the destination of the Supabase recovery email link.
  * Supabase exchanges the recovery token in the URL for a session (detectSessionInUrl)
  * and fires a PASSWORD_RECOVERY auth event; the user then sets a new password via
@@ -69,17 +87,6 @@ const ResetPassword = () => {
       setLoading(false);
     }
   };
-
-  const Shell = ({ children }: { children: React.ReactNode }) => (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
-      <Header />
-      <div className="flex items-center justify-center p-4 pt-28 pb-12">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full max-w-md">
-          <Card className="shadow-large border-primary/10">{children}</Card>
-        </motion.div>
-      </div>
-    </div>
-  );
 
   // ── SUCCESS ────────────────────────────────────────────────
   if (done) {
@@ -146,7 +153,7 @@ const ResetPassword = () => {
             <div className="relative">
               <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
               <Input id="new-password" type={showPw ? 'text' : 'password'} placeholder="••••••••••••"
-                value={password} onChange={(e) => setPassword(e.target.value)} required className="pl-9 pr-10" autoFocus />
+                value={password} onChange={(e) => setPassword(e.target.value)} required className="pl-9 pr-10" />
               <button type="button" onClick={() => setShowPw((s) => !s)} aria-label={showPw ? 'Hide password' : 'Show password'}
                 className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
                 {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
