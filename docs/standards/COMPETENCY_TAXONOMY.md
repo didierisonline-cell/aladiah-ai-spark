@@ -45,6 +45,26 @@ This file is the model every future program extends — append a new Axis-1 sect
 
 ---
 
+## 2A. Business Analyst — Axis-1 registry (9 slugs)
+
+Program key: `ba`. Appended per the governance rules (append-only; a new program
+**extends** the taxonomy, it does not fork it). Reference program: **AI-Augmented
+Business Analyst & Product Intelligence Specialist**. A program uses a SUBSET per module.
+
+| Slug | Label | Description |
+|---|---|---|
+| `ba:foundations` | The AI-Era BA Role | The BA as requirements translator and AI-adoption champion, the AI requirements lifecycle, and probabilistic vs. deterministic thinking. |
+| `ba:requirements` | AI Requirements Engineering | Functional and non-functional requirements for AI (accuracy, latency, fairness, explainability), AI acceptance criteria, and managing requirements uncertainty. |
+| `ba:data-analysis` | Data Analysis (SQL & Python) | SQL (joins, window functions, CTEs), Python/pandas EDA, and statistical reasoning to validate requirements with evidence. |
+| `ba:process-modeling` | Process Modeling & AI Opportunity | BPMN AS-IS/TO-BE modeling, process simulation, and identifying/prioritizing AI opportunities from process analysis. |
+| `ba:stakeholders` | Stakeholder Analysis & AI Communication | Stakeholder mapping, tailoring AI communication across executives/data science/users/regulators, and the BA's role in AI governance. |
+| `ba:data-governance` | Data Governance & Quality for AI | Data quality dimensions and lineage (DAMA-DMBOK) and how they drive model performance; governance requirements for AI data. |
+| `ba:testing-acceptance` | AI Testing & Acceptance | Test planning for AI systems, bias/adversarial testing, edge-case catalogs, and monitoring-based definitions of done. |
+| `ba:agile-delivery` | Agile BA for AI Teams | ML sprint models (research/experiment/deployment), estimating uncertain ML work, and cross-functional AI-team collaboration. |
+| `ba:analytics-monitoring` | BI & AI Monitoring | Analytics and BI requirements for AI monitoring and governance: drift, fairness and value KPIs, dashboards and alerting. |
+
+---
+
 ## 3. Axis-2 cross-program meta-category map (CONFIRMED — locked for Phase-2 build)
 
 Phase-2 analytics resolves each Axis-1 slug to a cross-program meta-category at rollup
@@ -61,6 +81,15 @@ Meta-category keys are deliberately generic so other programs map into the same 
 | `scrum:team-dynamics` | `people-leadership` |
 | `scrum:stakeholders` | `stakeholder-engagement` |
 | `scrum:delivery-metrics` | `measurement-outcomes` |
+| `ba:foundations` | `foundations` |
+| `ba:requirements` | `artifacts-tooling` |
+| `ba:data-analysis` | `measurement-outcomes` |
+| `ba:process-modeling` | `process-execution` |
+| `ba:stakeholders` | `stakeholder-engagement` |
+| `ba:data-governance` | `artifacts-tooling` |
+| `ba:testing-acceptance` | `measurement-outcomes` |
+| `ba:agile-delivery` | `process-execution` |
+| `ba:analytics-monitoring` | `measurement-outcomes` |
 
 Cross-program meta-category set (the fixed Axis-2 vocabulary future programs map into):
 `foundations` · `roles-accountabilities` · `process-execution` · `artifacts-tooling` ·

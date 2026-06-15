@@ -40,7 +40,7 @@ export const PROGRAM_ARCHITECTURES: ArchitectureDef[] = [
   { id: 'career_transformation', name: 'Career Transformation Architecture', components: ['Outcome Mapping', 'Employability', 'Salary Projection', 'Placement Link'], weight: 12, threshold: 80, critical: true },
 ];
 
-const PROGRAM_COMPETENCY_COUNT: Record<string, number> = { scrum: 8 };
+const PROGRAM_COMPETENCY_COUNT: Record<string, number> = { scrum: 8, ba: 9 };
 const pct = (n: number, d: number) => (d > 0 ? Math.round((n / d) * 100) : 0);
 
 /**
