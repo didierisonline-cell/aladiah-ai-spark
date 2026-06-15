@@ -18,9 +18,9 @@ export default function PortalSidebar({ hoursLeft, coursesCount }: PortalSidebar
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
   const { progress } = useProgress(user?.id);
-  // "Hours to employable" derived from real progress (600-hour program target),
-  // not a hardcoded placeholder. Callers may still pass an explicit value.
-  const hours = hoursLeft ?? Math.round(((100 - Math.max(0, Math.min(100, progress))) / 100) * 600);
+  // Truthful career-path metric: hours COMPLETED of a 600-hour path (0 for a new
+  // student). Never a fabricated "hours to employable" figure.
+  const completedHours = Math.round((Math.max(0, Math.min(100, progress)) / 100) * 600);
   const { language } = useLanguage();
   const T = (key: string) => overviewT(language || 'en', key);
 
@@ -44,9 +44,9 @@ export default function PortalSidebar({ hoursLeft, coursesCount }: PortalSidebar
   ];
 
   return (
-    <aside style={{ background: 'rgba(2,6,18,.72)', backdropFilter: 'blur(20px)', display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRight: 'none', position: 'relative', zIndex: 5 }}>
-      <div style={{ padding: '20px 14px 16px', borderBottom: '1px solid rgba(255,255,255,.06)', flexShrink: 0 }}>
-        <div style={{ position: 'relative', width: 64, height: 64, marginBottom: 12 }}>
+    <aside style={{ background: 'rgba(2,6,18,.72)', backdropFilter: 'blur(20px)', display: 'flex', flexDirection: 'column', minHeight: 0, borderRight: 'none', position: 'relative', zIndex: 5 }}>
+      <div style={{ padding: '26px 16px 16px', borderBottom: '1px solid rgba(255,255,255,.06)', flexShrink: 0 }}>
+        <div style={{ position: 'relative', width: 64, height: 64, marginBottom: 12, marginTop: 4 }}>
           <div style={{ position: 'absolute', inset: -3, borderRadius: '50%', background: 'linear-gradient(135deg,#3b82f6,#7c3aed,#a855f7)', boxShadow: '0 0 18px rgba(59,130,246,.75),0 0 35px rgba(124,58,237,.5)' }} />
           <div style={{ position: 'absolute', inset: 3, borderRadius: '50%', background: 'linear-gradient(160deg,#1a2550,#0d1535,#080d28)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 800, color: '#fff' }}>
             {initials}
@@ -58,13 +58,14 @@ export default function PortalSidebar({ hoursLeft, coursesCount }: PortalSidebar
         </div>
         <div style={{ fontSize: 12, color: '#64748b', marginBottom: 13 }}>Plan: <b style={{ color: '#e2e8f8' }}>{T('all_access')}</b></div>
         <div style={{ background: 'rgba(5,15,40,.65)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 10, padding: '10px 12px' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 7, marginBottom: 7 }}>
-            <span style={{ fontSize: 24, fontWeight: 900, color: '#f97316', textShadow: '0 0 18px rgba(249,115,22,.5)' }}>{hours}</span>
-            <span style={{ fontSize: 11.5, color: '#94a3b8' }}>{T('hours_employable')}</span>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 7 }}>
+            <span style={{ fontSize: 24, fontWeight: 900, color: '#f97316', textShadow: '0 0 18px rgba(249,115,22,.5)' }}>{completedHours}</span>
+            <span style={{ fontSize: 11.5, color: '#94a3b8' }}>/ 600 hr career path</span>
           </div>
           <div style={{ height: 5, background: 'rgba(255,255,255,.08)', borderRadius: 99, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${((600 - hours) / 600) * 100}%`, background: 'linear-gradient(90deg,#f97316,#fb923c)', borderRadius: 99, boxShadow: '0 0 10px rgba(249,115,22,.5)' }} />
+            <div style={{ height: '100%', width: `${(completedHours / 600) * 100}%`, background: 'linear-gradient(90deg,#f97316,#fb923c)', borderRadius: 99, boxShadow: '0 0 10px rgba(249,115,22,.5)' }} />
           </div>
+          <div style={{ fontSize: 10, color: '#64748b', marginTop: 6 }}>Career-path progress</div>
         </div>
       </div>
 
