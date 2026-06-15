@@ -19,6 +19,9 @@ import { placementRunner } from '@/services/agents/placementAgent';
 import { analyticsRunner } from '@/services/agents/analyticsAgent';
 import { operationsRunner } from '@/services/agents/operationsAgent';
 import { curriculumRunner } from '@/services/agents/curriculumExcellenceAgent';
+import { cgoRunner } from '@/services/agents/chiefGrowthOfficerAgent';
+
+const CGO_SYSTEM_PROMPT = `You are the Aladiah Chief Growth Officer (CGO) Agent — the world-class AI growth operating system for Aladiah Academy. Your mission: build the most disciplined, intelligent, and outcome-driven growth machine in the AI education industry by June 19, 2026 launch and beyond. You command 12 sub-agents (Viral Strategy, LinkedIn Authority, Short-Form Video, Email Revenue, Webinar, Community Growth, SEO Content, Cameroon Growth, DR Growth, Employer Trust, Success Story, Analytics). You operate the Aladiah growth flywheel: Attention → Trust → Community → Transformation → Employment → Success Stories → Authority. Every asset must serve one flywheel stage, target a specific audience, carry proof, include a clear CTA, and score ≥85/100. You may autonomously create, stage, QA, and schedule low-risk organic content. You must request founder approval before any spend, pricing changes, outcome claims, partnership references, or high-risk product copy. Nothing publishes without approval. You never fabricate claims, statistics, partnerships, or testimonials. You produce: daily growth brief, launch campaign assets, hook bank, LinkedIn posts, video scripts, emails, lead magnets, regional growth packs (Cameroon, DR), employer trust content, and founder review packets.`;
 
 const CEO_SYSTEM_PROMPT = `You are the Aladiah CEO Chief of Staff Agent. You work directly for the founder of Aladiah Academy. Monitor the entire business daily and produce a clear executive command report (Revenue, Student Activity, Product, Platform Health, Marketing, Sales/Admissions, Risks, Recommended CEO Actions). Be clear, direct, never exaggerate, separate facts from recommendations, always recommend the top 3 CEO actions, never fabricate data, and preserve Aladiah's mission: career transformation through AI-powered learning.`;
 
@@ -73,6 +76,7 @@ export async function ensureAOS(): Promise<void> {
   if (booted) return;
   booted = true;
 
+  registerRunner('chief-growth-officer', cgoRunner);
   registerRunner('ceo-chief-of-staff', ceoRunner);
   registerRunner('marketing-content', marketingRunner);
   registerRunner('seo-strategy', seoRunner);
@@ -86,6 +90,20 @@ export async function ensureAOS(): Promise<void> {
   registerRunner('curriculum-excellence', curriculumRunner);
 
   // Keep the registry rows authoritative from code too (upsert on slug).
+  await registerAgent({
+    slug: 'chief-growth-officer',
+    name: 'Chief Growth Officer Agent',
+    role: 'World-class AI growth operating system — launch campaigns, content, hook banks, regional growth',
+    description:
+      'Commands 12 sub-agents (Viral Strategy, LinkedIn Authority, Short-Form Video, Email Revenue, Webinar, Community Growth, SEO Content, Cameroon Growth, DR Growth, Employer Trust, Success Story, Analytics) to build and operate the Aladiah growth flywheel (Attention → Trust → Community → Transformation → Employment → Success Stories → Authority). Generates hook banks, launch campaigns, LinkedIn posts, video scripts, email sequences, lead magnets, and regional packs for Cameroon/Africa and the Dominican Republic. Everything approval-gated — nothing publishes without founder sign-off.',
+    status: 'active',
+    priority: 35,
+    cadence: 'daily',
+    system_prompt: CGO_SYSTEM_PROMPT,
+    permissions: { read: true, write: true, publish: false, admin: false, human_approval_required: true },
+    config: { maxAttempts: 2 },
+  });
+
   await registerAgent({
     slug: 'ceo-chief-of-staff',
     name: 'CEO Chief of Staff Agent',
