@@ -78,7 +78,7 @@ export default function PortalCourseDetail() {
   return (
     <div style={{ background: DS.bg, minHeight: '100vh', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif", color: DS.fg }}>
       <Header />
-      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', minHeight: '100vh', paddingTop: 70 }}>
+      <div className="portal-shell" style={{ display: 'grid', gridTemplateColumns: '260px 1fr', minHeight: '100vh', paddingTop: 70 }}>
         <PortalSidebar />
         <main style={{ padding: '2rem 2.5rem', background: DS.bg }}>
 

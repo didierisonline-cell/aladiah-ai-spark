@@ -373,7 +373,7 @@ const ResumeStudio = () => {
   return (
     <div style={{ minHeight:'100vh', background:DS.bg, fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif", color:DS.fg }}>
       <Header />
-      <div style={{ display:'grid', gridTemplateColumns:'260px 1fr', minHeight:'100vh', paddingTop:70 }}>
+      <div className="portal-shell" style={{ display:'grid', gridTemplateColumns:'260px 1fr', minHeight:'100vh', paddingTop:70 }}>
         <PortalSidebar />
         <main style={{ padding:'2rem', background:DS.bg, overflowX:'hidden', minWidth:0, width:'100%' }}>
 
