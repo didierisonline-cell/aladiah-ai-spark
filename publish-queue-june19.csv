@@ -1,0 +1,73 @@
+date,relative_day,channel,content_type,title,hook,flywheel_stage,audience,risk_tier,score,approval_status,cta
+2026-06-15,T-4,linkedin,thought_leadership,T-4 — launch countdown,T-4 to launch: launch countdown,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-15,T-4,instagram,caption,T-4 — launch countdown,T-4 to launch: launch countdown,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-15,T-4,instagram,reel_script,T-4 — launch countdown,T-4 to launch: launch countdown,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-15,T-4,tiktok,tiktok_script,T-4 — launch countdown,T-4 to launch: launch countdown,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-15,T-4,email,launch_email,T-4 — launch countdown,T-4 to launch: launch countdown,trust,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-15,T-4,community,community_post,T-4 — launch countdown,T-4 to launch: launch countdown,community,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-16,T-3,linkedin,thought_leadership,T-3 — product demo,T-3 to launch: product demo,attention,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-16,T-3,instagram,caption,T-3 — product demo,T-3 to launch: product demo,attention,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-16,T-3,instagram,reel_script,T-3 — product demo,T-3 to launch: product demo,attention,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-16,T-3,tiktok,tiktok_script,T-3 — product demo,T-3 to launch: product demo,attention,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-16,T-3,email,launch_email,T-3 — product demo,T-3 to launch: product demo,trust,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-16,T-3,community,community_post,T-3 — product demo,T-3 to launch: product demo,community,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-17,T-2,linkedin,thought_leadership,T-2 — simulation walkthrough,T-2 to launch: simulation walkthrough,attention,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-17,T-2,instagram,caption,T-2 — simulation walkthrough,T-2 to launch: simulation walkthrough,attention,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-17,T-2,instagram,reel_script,T-2 — simulation walkthrough,T-2 to launch: simulation walkthrough,attention,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-17,T-2,tiktok,tiktok_script,T-2 — simulation walkthrough,T-2 to launch: simulation walkthrough,attention,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-17,T-2,email,launch_email,T-2 — simulation walkthrough,T-2 to launch: simulation walkthrough,trust,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-17,T-2,community,community_post,T-2 — simulation walkthrough,T-2 to launch: simulation walkthrough,community,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-18,T-1,linkedin,thought_leadership,T-1 — final countdown,T-1 to launch: final countdown,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-18,T-1,instagram,caption,T-1 — final countdown,T-1 to launch: final countdown,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-18,T-1,instagram,reel_script,T-1 — final countdown,T-1 to launch: final countdown,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-18,T-1,tiktok,tiktok_script,T-1 — final countdown,T-1 to launch: final countdown,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-18,T-1,email,launch_email,T-1 — final countdown,T-1 to launch: final countdown,trust,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-18,T-1,community,community_post,T-1 — final countdown,T-1 to launch: final countdown,community,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-19,Launch,linkedin,thought_leadership,Launch — official launch,Aladiah is live. The AI-powered career transformation ecosystem is open.,employment,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-19,Launch,instagram,caption,Launch — official launch,Aladiah is live. The AI-powered career transformation ecosystem is open.,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-19,Launch,instagram,reel_script,Launch — official launch,Aladiah is live. The AI-powered career transformation ecosystem is open.,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-19,Launch,tiktok,tiktok_script,Launch — official launch,Aladiah is live. The AI-powered career transformation ecosystem is open.,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-19,Launch,email,launch_email,Launch — official launch,Aladiah is live. The AI-powered career transformation ecosystem is open.,employment,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-19,Launch,community,community_post,Launch — official launch,Aladiah is live. The AI-powered career transformation ecosystem is open.,community,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-20,T+1,linkedin,thought_leadership,T+1 — 24h learnings,T+1: 24h learnings,attention,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-20,T+1,instagram,caption,T+1 — 24h learnings,T+1: 24h learnings,attention,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-20,T+1,instagram,reel_script,T+1 — 24h learnings,T+1: 24h learnings,attention,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-20,T+1,tiktok,tiktok_script,T+1 — 24h learnings,T+1: 24h learnings,attention,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-20,T+1,email,launch_email,T+1 — 24h learnings,T+1: 24h learnings,trust,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-20,T+1,community,community_post,T+1 — 24h learnings,T+1: 24h learnings,community,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-21,T+2,linkedin,thought_leadership,T+2 — FAQ carousel,T+2: FAQ carousel,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-21,T+2,instagram,caption,T+2 — FAQ carousel,T+2: FAQ carousel,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-21,T+2,instagram,reel_script,T+2 — FAQ carousel,T+2: FAQ carousel,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-21,T+2,tiktok,tiktok_script,T+2 — FAQ carousel,T+2: FAQ carousel,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-21,T+2,email,launch_email,T+2 — FAQ carousel,T+2: FAQ carousel,trust,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-21,T+2,community,community_post,T+2 — FAQ carousel,T+2: FAQ carousel,community,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-22,T+3,linkedin,thought_leadership,T+3 — early response,T+3: early response,attention,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-22,T+3,instagram,caption,T+3 — early response,T+3: early response,attention,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-22,T+3,instagram,reel_script,T+3 — early response,T+3: early response,attention,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-22,T+3,tiktok,tiktok_script,T+3 — early response,T+3: early response,attention,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-22,T+3,email,launch_email,T+3 — early response,T+3: early response,trust,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-22,T+3,community,community_post,T+3 — early response,T+3: early response,community,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-23,T+4,linkedin,thought_leadership,T+4 — webinar invite,T+4: webinar invite,attention,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-23,T+4,instagram,caption,T+4 — webinar invite,T+4: webinar invite,attention,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-23,T+4,instagram,reel_script,T+4 — webinar invite,T+4: webinar invite,attention,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-23,T+4,tiktok,tiktok_script,T+4 — webinar invite,T+4: webinar invite,attention,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-23,T+4,email,launch_email,T+4 — webinar invite,T+4: webinar invite,trust,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-23,T+4,community,community_post,T+4 — webinar invite,T+4: webinar invite,community,working_professionals,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-24,T+5,linkedin,thought_leadership,T+5 — employer value,T+5: employer value,attention,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-24,T+5,instagram,caption,T+5 — employer value,T+5: employer value,attention,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-24,T+5,instagram,reel_script,T+5 — employer value,T+5: employer value,attention,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-24,T+5,tiktok,tiktok_script,T+5 — employer value,T+5: employer value,attention,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-24,T+5,email,launch_email,T+5 — employer value,T+5: employer value,trust,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-24,T+5,community,community_post,T+5 — employer value,T+5: employer value,community,employers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-25,T+6,linkedin,thought_leadership,T+6 — myth busting,T+6: myth busting,attention,africa_cameroon,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-25,T+6,instagram,caption,T+6 — myth busting,T+6: myth busting,attention,africa_cameroon,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-25,T+6,instagram,reel_script,T+6 — myth busting,T+6: myth busting,attention,africa_cameroon,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-25,T+6,tiktok,tiktok_script,T+6 — myth busting,T+6: myth busting,attention,africa_cameroon,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-25,T+6,email,launch_email,T+6 — myth busting,T+6: myth busting,trust,africa_cameroon,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-25,T+6,community,community_post,T+6 — myth busting,T+6: myth busting,community,africa_cameroon,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-26,T+7,linkedin,thought_leadership,T+7 — week one report,T+7: week one report,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-26,T+7,instagram,caption,T+7 — week one report,T+7: week one report,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-26,T+7,instagram,reel_script,T+7 — week one report,T+7: week one report,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-26,T+7,tiktok,tiktok_script,T+7 — week one report,T+7: week one report,attention,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-26,T+7,email,launch_email,T+7 — week one report,T+7: week one report,trust,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
+2026-06-26,T+7,community,community_post,T+7 — week one report,T+7: week one report,community,career_changers,low,89,PENDING_FOUNDER_APPROVAL,Start free → https://aladiah.academy
