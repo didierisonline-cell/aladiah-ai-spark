@@ -96,7 +96,7 @@ export default function MyCareerPath() {
   return (
     <div style={{minHeight:'100vh',background:DS.bg,fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif",color:DS.fg}}>
       <Header/>
-      <div style={{display:'grid',gridTemplateColumns:'260px 1fr',minHeight:'100vh',paddingTop:70}}>
+      <div className="portal-shell" style={{display:'grid',gridTemplateColumns:'260px 1fr',minHeight:'100vh',paddingTop:70}}>
         <PortalSidebar/>
         <main style={{padding:'2rem',background:DS.bg,minWidth:0}}>
           <div style={{marginBottom:'1.75rem'}}>
@@ -195,7 +195,7 @@ export default function MyCareerPath() {
                           </div>
                         ))}
                         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'.75rem',marginTop:'1.5rem'}}>
-                          {[{icon:'🧪',label:'Labs',desc:'Apply everything learned',go:()=>navigate('/portal#labs')},{icon:'🎮',label:'Simulations',desc:'Live AI-graded exercises',go:()=>navigate('/simulation')},{icon:'📋',label:'Case Studies',desc:'Real-world incidents',go:()=>navigate('/portal/cases')}].map(x=>(
+                          {[{icon:'🧪',label:'Labs',desc:'Apply everything learned',go:()=>navigate('/portal/simulations')},{icon:'🎮',label:'Simulations',desc:'Live AI-graded exercises',go:()=>navigate('/portal/simulations')},{icon:'📋',label:'Case Studies',desc:'Real-world incidents',go:()=>navigate('/portal/resources')}].map(x=>(
                             <button key={x.label} onClick={x.go} style={{padding:'1rem',background:DS.card2,border:`1px solid ${DS.border}`,borderRadius:'.75rem',cursor:'pointer',textAlign:'left' as const,transition:'all .15s'}}
                               onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.borderColor=DS.blue+'60';}}
                               onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.borderColor=DS.border;}}>

@@ -11,6 +11,7 @@ import {
 import Logo from '@/components/Logo';
 import { supabase } from '@/integrations/supabase/client';
 import { useRole } from '@/hooks/useRole';
+import { activeHref } from '@/lib/nav';
 
 function getStoredUser(): any | null {
   try {
@@ -72,6 +73,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
     : isPortal
       ? portalNavItems
       : publicNavItems;
+  const currentHref = activeHref(pathname, navItems.map((i) => i.href));
 
   return (
     <header style={{
@@ -97,9 +99,9 @@ const Header = ({ onProfileClick }: HeaderProps) => {
             onClick={e => { e.preventDefault(); navigate(item.href); }}
             style={{
               fontSize: 13, fontWeight: 500,
-              color: pathname === item.href ? '#EDF2F7' : '#8596AD',
+              color: currentHref === item.href ? '#EDF2F7' : '#8596AD',
               transition: 'color .2s', padding: '2px 0',
-              borderBottom: pathname === item.href ? '2px solid #4A90F5' : '2px solid transparent',
+              borderBottom: currentHref === item.href ? '2px solid #4A90F5' : '2px solid transparent',
               textDecoration: 'none',
             }}
           >

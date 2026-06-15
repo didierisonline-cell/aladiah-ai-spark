@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import PortalSidebar from '@/components/PortalSidebar';
 import { useAuth } from '@/hooks/useAuth';
+import { initialsFromEmail } from '@/lib/avatar';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', border:'#1E2D47', fg:'#EDF2F7', fm:'#8596AD',
@@ -14,13 +15,13 @@ const DS = {
 export default function PortalPortfolio() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const initials = user?.email?.slice(0,2).toUpperCase() || 'AA';
+  const initials = initialsFromEmail(user?.email);
   const pathname = '/portal/portfolio';
 
   return (
     <div style={{ background: DS.bg, minHeight: '100vh', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif", color: DS.fg }}>
       <Header />
-      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', minHeight: '100vh', paddingTop: 70 }}>
+      <div className="portal-shell" style={{ display: 'grid', gridTemplateColumns: '260px 1fr', minHeight: '100vh', paddingTop: 70 }}>
         <PortalSidebar />
         <main style={{ padding: '2rem', background: DS.bg }}>
           <div style={{ marginBottom: '1.75rem' }}>

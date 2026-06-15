@@ -29,7 +29,7 @@ export default function PortalCertifications() {
   return (
     <div style={{ background: DS.bg, minHeight: '100vh', fontFamily: '"Inter",system-ui,sans-serif' }}>
       <Header />
-      <div style={{ display: 'flex' }}>
+      <div className="portal-shell" style={{ display: 'flex' }}>
         <PortalSidebar />
         <div style={{ flex: 1, padding: '40px 48px', minHeight: 'calc(100vh - 70px)' }}>
 

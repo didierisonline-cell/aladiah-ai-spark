@@ -2,7 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import PortalSidebar from '@/components/PortalSidebar';
 import { useAuth } from '@/hooks/useAuth';
-import { useProgress } from '@/hooks/useProgress';
+import { useTalentScore } from '@/hooks/useTalentScore';
+import { initialsFromEmail } from '@/lib/avatar';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', border:'#1E2D47', fg:'#EDF2F7', fm:'#8596AD',
@@ -13,25 +14,21 @@ const DS = {
 };
 
 
-const DIMENSIONS = [
-  { label:'Knowledge Mastery', score:0, max:300, color:DS.blue },
-  { label:'Project Quality', score:0, max:200, color:DS.orange },
-  { label:'Certifications', score:0, max:150, color:DS.gold },
-  { label:'Enterprise Simulation', score:0, max:200, color:DS.green },
-  { label:'Peer Review Score', score:0, max:100, color:'#A78BFA' },
-  { label:'Consistency & Streak', score:0, max:50, color:'#F472B6' },
-];
-
 export default function PortalTalentScore() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const initials = user?.email?.slice(0,2).toUpperCase() || 'AA';
+  const initials = initialsFromEmail(user?.email);
   const pathname = '/portal/talent-score';
+
+  // Single source of truth — same hook/formula the dashboard uses.
+  const { overall, max, dimensions } = useTalentScore(user?.id);
+  const C = 2 * Math.PI * 60; // ring circumference (r=60)
+  const filled = max > 0 ? (overall / max) * C : 0;
 
   return (
     <div style={{ background: DS.bg, minHeight: '100vh', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif", color: DS.fg }}>
       <Header />
-      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', minHeight: '100vh', paddingTop: 70 }}>
+      <div className="portal-shell" style={{ display: 'grid', gridTemplateColumns: '260px 1fr', minHeight: '100vh', paddingTop: 70 }}>
         {/* Sidebar */}
         <PortalSidebar />
 
@@ -51,18 +48,18 @@ export default function PortalTalentScore() {
               <div style={{ position: 'relative' as const, width: 140, height: 140, margin: '0 auto 1rem' }}>
                 <svg width="140" height="140" viewBox="0 0 140 140" style={{ transform: 'rotate(-90deg)' }}>
                   <circle cx="70" cy="70" r="60" fill="none" stroke="rgba(255,255,255,.06)" strokeWidth="12"/>
-                  <circle cx="70" cy="70" r="60" fill="none" stroke={DS.gold} strokeWidth="12" strokeDasharray={`0 ${2*Math.PI*60}`} strokeLinecap="round"/>
+                  <circle cx="70" cy="70" r="60" fill="none" stroke={DS.gold} strokeWidth="12" strokeDasharray={`${filled} ${C}`} strokeLinecap="round"/>
                 </svg>
                 <div style={{ position: 'absolute' as const, top: '50%', left: '50%', transform: 'translate(-50%,-50%)', textAlign: 'center' as const }}>
-                  <div style={{ fontSize: '2rem', fontWeight: 800, color: DS.gold, lineHeight: 1 }}>0</div>
-                  <div style={{ fontSize: 9, color: DS.fm, letterSpacing: .5 }}>/ 1000</div>
+                  <div style={{ fontSize: '2rem', fontWeight: 800, color: DS.gold, lineHeight: 1 }}>{overall}</div>
+                  <div style={{ fontSize: 9, color: DS.fm, letterSpacing: .5 }}>/ {max}</div>
                 </div>
               </div>
               <div style={{ fontSize: 12, color: DS.fm, lineHeight: 1.5 }}>Start learning to build your score. Each lesson, project, and certification adds points.</div>
             </div>
             <div style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', padding: '1.5rem' }}>
               <div style={{ fontSize: 14, fontWeight: 700, marginBottom: '1.25rem' }}>Score Breakdown</div>
-              {DIMENSIONS.map(d => (
+              {dimensions.map(d => (
                 <div key={d.label} style={{ marginBottom: '1rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '.35rem' }}>
                     <span style={{ fontSize: 12, color: DS.fm }}>{d.label}</span>

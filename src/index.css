@@ -196,3 +196,27 @@
     box-shadow: var(--shadow-glow);
   }
 }
+
+/* =============================================================================
+ * Portal responsive shell — one responsive system for the portal pages.
+ * Desktop portal pages use a fixed "260px 1fr" grid (or flex) with PortalSidebar
+ * as the first child. On tablet/phone (<=1024px) that fixed sidebar caused
+ * horizontal overflow. Adding className="portal-shell" to the layout container
+ * collapses it to a single column and hides the sidebar (the Header provides
+ * navigation on small screens). !important overrides the inline grid/flex.
+ * ============================================================================= */
+@media (max-width: 1024px) {
+  .portal-shell {
+    display: block !important;
+    grid-template-columns: 1fr !important;
+  }
+  .portal-shell > aside {
+    display: none !important;
+  }
+}
+/* Collapse multi-column inner sections on phones. */
+@media (max-width: 768px) {
+  .portal-stack {
+    grid-template-columns: 1fr !important;
+  }
+}

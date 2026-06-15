@@ -5,6 +5,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { useProgress } from '@/hooks/useProgress';
+import { talentScoreFromProgress } from '@/hooks/useTalentScore';
+import { activeHref } from '@/lib/nav';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { isFounderEmail } from '@/lib/roles';
 import { useFounderMode } from '@/hooks/useFounderMode';
@@ -34,11 +36,10 @@ function getDateStr(lang?: string) {
   }
 }
 
-const MOMENTUM = [
-  { name: 'Sarah K.', action: 'got_hired', role: 'Cloud Engineer', company: 'Amazon', salary: '$120,000', time: '2min' },
-  { name: 'David M.', action: 'completed', program: 'AI Cloud Engineer Program', time: '15min' },
-  { name: 'Aisha B.', action: 'earned', cert: 'AWS Solutions Architect Cert.', time: '32min' },
-];
+// Career-momentum feed: previously hardcoded fabricated hires/salaries (e.g.
+// "Sarah K. hired … $120,000"). Cleared to avoid showing fabricated social proof
+// in production; populate from real verified graduate outcomes when available.
+const MOMENTUM: { name: string; action: string; role?: string; company?: string; salary?: string; program?: string; cert?: string; time: string }[] = [];
 const SKILLS = [
   { label: 'Cloud Architecture', pct: 92, color: '#6366f1' },
   { label: 'Problem Solving', pct: 88, color: '#8b5cf6' },
@@ -49,7 +50,7 @@ const SKILLS = [
 const TOOLS = [
   { icon: '🎤', lbl: 'ai_interview', sub: 'practice_now', path: '/portal/career' },
   { icon: '📄', lbl: 'resume_builder', sub: 'optimize_cv', path: '/portal/career' },
-  { icon: '💼', lbl: 'job_matches', sub: 'new_jobs', path: '/portal/my-career-path', count: '12' },
+  { icon: '💼', lbl: 'job_matches', sub: 'new_jobs', path: '/portal/my-career-path' },
   { icon: '📊', lbl: 'portfolio_analyzer', sub: 'get_feedback', path: '/portal/portfolio' },
   { icon: '💰', lbl: 'salary_insights', sub: 'know_worth', path: '/portal/my-career-path' },
 ];
@@ -165,8 +166,12 @@ export default function StudentPortal() {
   const [profLoading, setProfLoading] = useState(false);
   const [profileRow, setProfileRow] = useState<any | null>(null); // extended profiles row (recap-state cols); consumers (mute/DB day-gate) land in a follow-up
   const [recap, setRecap] = useState<any | null>(null);           // get-student-recap response (Option-A contract); text-only this step
-  const [talentScore] = useState(612);
-  const [hoursLeft] = useState(412);
+  // Talent Score — single source of truth (derived from real quiz progress).
+  // Same formula the Talent Score page uses, so the two screens always agree.
+  const talentScore = talentScoreFromProgress(overallProgress);
+  // "Hours to employable" derived from real progress against a 600-hour program
+  // target (was a hardcoded 412 placeholder).
+  const hoursLeft = Math.round(((100 - Math.max(0, Math.min(100, overallProgress))) / 100) * 600);
 
   const T = (key: string) => overviewT(language || 'en', key);
 
@@ -543,14 +548,14 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                 <span style={{ fontSize: 11.5, color: '#94a3b8' }}>{T('hours_employable')}</span>
               </div>
               <div style={{ height: 5, background: 'rgba(255,255,255,.08)', borderRadius: 99, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${(hoursLeft / 600) * 100}%`, background: 'linear-gradient(90deg,#f97316,#fb923c)', borderRadius: 99, boxShadow: '0 0 10px rgba(249,115,22,.5)' }} />
+                <div style={{ height: '100%', width: `${((600 - hoursLeft) / 600) * 100}%`, background: 'linear-gradient(90deg,#f97316,#fb923c)', borderRadius: 99, boxShadow: '0 0 10px rgba(249,115,22,.5)' }} />
               </div>
             </div>
           </div>
 
           {/* Nav links */}
           <div style={{ flex: 1, overflow: 'hidden' }}>
-            {[
+            {(() => { const items = [
               { icon: '🏠', lbl: T('overview'), path: '/portal', exact: true },
               { icon: '📚', lbl: T('my_academy'), path: '/portal/courses', badge: courses.length || undefined },
               { icon: '🎯', lbl: T('my_career'), path: '/portal/my-career-path' },
@@ -559,13 +564,12 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               { icon: '🏅', lbl: T('certs'), path: '/portal/certifications' },
               { icon: '💼', lbl: T('career_tools'), path: '/portal/career' },
               { icon: '🗂️', lbl: T('portfolio'), path: '/portal/portfolio' },
-              { icon: '🧪', lbl: T('labs'), path: '/portal' },
-              { icon: '🤖', lbl: 'AI Mentor', path: '/portal' },
+              { icon: '🤖', lbl: 'AI Mentor', path: '/portal/mentor' },
               { icon: '👥', lbl: T('community'), path: '/community' },
               { icon: '🏆', lbl: T('leaderboard'), path: '/portal/talent-score' },
               { icon: '📅', lbl: T('events'), path: '/community' },
-            ].map(link => {
-              const isOn = link.exact ? location.pathname === '/portal' : location.pathname === link.path;
+            ]; const current = activeHref(location.pathname, items.map(i => i.path)); return items.map(link => {
+              const isOn = link.path === current;
               return (
                 <button key={link.lbl} onClick={() => navigate(link.path)} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: isOn ? '#fff' : '#64748b', fontSize: 13, fontWeight: isOn ? 700 : 500, cursor: 'pointer', border: 'none', background: isOn ? 'linear-gradient(90deg,rgba(59,130,246,.22),rgba(99,102,241,.05))' : 'none', borderLeft: `3px solid ${isOn ? '#3b82f6' : 'transparent'}`, width: '100%', textAlign: 'left', fontFamily: 'inherit', transition: 'all .15s' }}>
                   <span style={{ fontSize: 15, width: 18, textAlign: 'center', flexShrink: 0 }}>{link.icon}</span>
@@ -573,7 +577,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                   {link.badge && <span style={{ marginLeft: 'auto', background: '#f97316', color: '#fff', borderRadius: 99, fontSize: 10, padding: '2px 7px', fontWeight: 800 }}>{link.badge}</span>}
                 </button>
               );
-            })}
+            }); })()}
             <div style={{ padding: '12px 15px 4px', fontSize: 9, fontWeight: 700, letterSpacing: '.18em', textTransform: 'uppercase', color: '#2a3a55' }}>{T('account')}</div>
             <button onClick={() => navigate('/portal/settings')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
               <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>⚙️</span>{T('settings')}
@@ -581,7 +585,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
             <a href="https://www.aladiahmanagement.com" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, textDecoration: 'none' }}>
               <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>🏢</span>{T('management')}
             </a>
-            <button onClick={() => navigate('/portal')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
+            <button onClick={() => navigate('/community')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
               <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>❓</span>Help &amp; Support
             </button>
           </div>
@@ -687,7 +691,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                 <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 38, opacity: .55 }}>🎯</div>
                 <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>{T('daily_challenge')}</div>
                 <div style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.6, marginBottom: 13 }}>{T('daily_challenge_sub')}</div>
-                <button style={{ border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, padding: '8px 16px', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(90deg,#16a34a,#15803d)', color: '#fff' }}>
+                <button onClick={() => navigate('/portal/simulations')} style={{ border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, padding: '8px 16px', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(90deg,#16a34a,#15803d)', color: '#fff' }}>
                   {T('start_challenge')}
                 </button>
               </div>
@@ -708,9 +712,8 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                         {['S', 'D', 'A'][i]}
                       </div>
                     ))}
-                    <span style={{ fontSize: 9, color: '#475569', marginLeft: 5, alignSelf: 'center' }}>+142</span>
                   </div>
-                  <button style={{ border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, padding: '8px 14px', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(90deg,#dc2626,#b91c1c)', color: '#fff' }}>
+                  <button onClick={() => navigate('/community')} style={{ border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, padding: '8px 14px', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(90deg,#dc2626,#b91c1c)', color: '#fff' }}>
                     {T('join_now')}
                   </button>
                 </div>
@@ -720,11 +723,11 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
             {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', background: 'linear-gradient(155deg,rgba(8,20,52,.85),rgba(5,13,38,.9))', border: '1px solid rgba(255,255,255,.08)', borderRadius: 16, overflow: 'hidden', backdropFilter: 'blur(28px)', marginBottom: 14 }}>
               {[
-                { val: `${overallPct}%`, lbl: T('overall_progress'), sub: T('keep_going'), color: '#6366f1', onClick: () => { } },
+                { val: `${overallPct}%`, lbl: T('overall_progress'), sub: T('keep_going'), color: '#6366f1', onClick: () => navigate('/portal/my-career-path') },
                 { val: streak, lbl: `${T('day_streak')} 🔥`, sub: T('amazing'), color: '#f97316', onClick: () => setStreakModal(true) },
                 { val: totalPoints.toLocaleString(), lbl: T('points_earned'), sub: T('this_week'), color: '#f59e0b', onClick: () => setPointsModal(true) },
                 { val: labs.filter((l: any) => l.completed).length, lbl: T('labs_completed'), sub: T('labs_week'), color: '#34d399', onClick: () => setLabsModal(true) },
-                { val: certCount, lbl: T('certifications'), sub: T('in_progress'), color: '#a855f7', onClick: () => { } },
+                { val: certCount, lbl: T('certifications'), sub: T('in_progress'), color: '#a855f7', onClick: () => navigate('/portal/certifications') },
               ].map((s, i) => (
                 <div key={i} onClick={s.onClick} style={{ padding: '20px 10px', textAlign: 'center', borderRight: i < 4 ? '1px solid rgba(255,255,255,.06)' : 'none', cursor: 'pointer' }}>
                   <div style={{ fontSize: '2rem', fontWeight: 800, lineHeight: 1, marginBottom: 5, color: s.color, letterSpacing: '-.5px' }}>{s.val}</div>
@@ -877,17 +880,21 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               {T('view_breakdown')}
             </button>
             <div style={{ fontSize: 11.5, fontWeight: 700, marginBottom: 9, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,.06)' }}>{T('top_skills')}</div>
-            {SKILLS.map((sk, i) => (
+            {SKILLS.map((sk, i) => {
+              // Scale the aspirational target by REAL overall progress so the bar
+              // reflects actual learning (0 progress → 0%), never a fabricated value.
+              const pct = Math.round((sk.pct * overallProgress) / 100);
+              return (
               <div key={i} style={{ marginBottom: i < 4 ? 8 : 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, fontSize: 10.5 }}>
                   <span style={{ color: '#64748b' }}>{sk.label}</span>
-                  <span style={{ fontWeight: 700, color: sk.color }}>{sk.pct}%</span>
+                  <span style={{ fontWeight: 700, color: sk.color }}>{pct}%</span>
                 </div>
                 <div style={{ height: 4, background: 'rgba(255,255,255,.07)', borderRadius: 99, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${sk.pct}%`, background: sk.color, borderRadius: 99, opacity: .9 }} />
+                  <div style={{ height: '100%', width: `${pct}%`, background: sk.color, borderRadius: 99, opacity: .9 }} />
                 </div>
               </div>
-            ))}
+            );})}
           </div>
 
           {/* 3. CAREER MOMENTUM */}
@@ -921,6 +928,9 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                 </div>
               </div>
             ))}
+            {MOMENTUM.length === 0 && (
+              <div style={{ fontSize: 11, color: '#64748b', lineHeight: 1.5 }}>Verified graduate outcomes will appear here as our community grows.</div>
+            )}
           </div>
 
           {/* 4. FUTURE READY */}

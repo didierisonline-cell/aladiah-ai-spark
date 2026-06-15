@@ -1,27 +1,31 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
+import { useProgress } from '@/hooks/useProgress';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
+import { activeHref } from '@/lib/nav';
+import { displayNameFromEmail, initialsFromEmail } from '@/lib/avatar';
 
 interface PortalSidebarProps {
   hoursLeft?: number;
   coursesCount?: number;
 }
 
-export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalSidebarProps) {
+export default function PortalSidebar({ hoursLeft, coursesCount }: PortalSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const { progress } = useProgress(user?.id);
+  // "Hours to employable" derived from real progress (600-hour program target),
+  // not a hardcoded placeholder. Callers may still pass an explicit value.
+  const hours = hoursLeft ?? Math.round(((100 - Math.max(0, Math.min(100, progress))) / 100) * 600);
   const { language } = useLanguage();
   const T = (key: string) => overviewT(language || 'en', key);
 
-  const namePart = user?.email?.split('@')[0] || 'Student';
-  const displayName = namePart;
-  const initials = (
-    (namePart.slice(0, 1) || 'A') + (namePart.slice(1, 2) || '')
-  ).toUpperCase();
+  const displayName = displayNameFromEmail(user?.email);
+  const initials = initialsFromEmail(user?.email);
 
   const LINKS: { icon: string; lbl: string; path: string; exact?: boolean; badge?: number }[] = [
     { icon: '🏠', lbl: T('overview'), path: '/portal', exact: true },
@@ -33,8 +37,7 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
     { icon: '🏅', lbl: T('certs'), path: '/portal/certifications' },
     { icon: '💼', lbl: T('career_tools'), path: '/portal/career' },
     { icon: '🗂️', lbl: T('portfolio'), path: '/portal/portfolio' },
-    { icon: '🧪', lbl: T('labs'), path: '/portal' },
-    { icon: '🤖', lbl: 'AI Mentor', path: '/portal' },
+    { icon: '🤖', lbl: 'AI Mentor', path: '/portal/mentor' },
     { icon: '👥', lbl: T('community'), path: '/community' },
     { icon: '🏆', lbl: T('leaderboard'), path: '/portal/talent-score' },
     { icon: '📅', lbl: T('events'), path: '/community' },
@@ -56,11 +59,11 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
         <div style={{ fontSize: 12, color: '#64748b', marginBottom: 13 }}>Plan: <b style={{ color: '#e2e8f8' }}>{T('all_access')}</b></div>
         <div style={{ background: 'rgba(5,15,40,.65)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 10, padding: '10px 12px' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 7, marginBottom: 7 }}>
-            <span style={{ fontSize: 24, fontWeight: 900, color: '#f97316', textShadow: '0 0 18px rgba(249,115,22,.5)' }}>{hoursLeft}</span>
+            <span style={{ fontSize: 24, fontWeight: 900, color: '#f97316', textShadow: '0 0 18px rgba(249,115,22,.5)' }}>{hours}</span>
             <span style={{ fontSize: 11.5, color: '#94a3b8' }}>{T('hours_employable')}</span>
           </div>
           <div style={{ height: 5, background: 'rgba(255,255,255,.08)', borderRadius: 99, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${(hoursLeft / 600) * 100}%`, background: 'linear-gradient(90deg,#f97316,#fb923c)', borderRadius: 99, boxShadow: '0 0 10px rgba(249,115,22,.5)' }} />
+            <div style={{ height: '100%', width: `${((600 - hours) / 600) * 100}%`, background: 'linear-gradient(90deg,#f97316,#fb923c)', borderRadius: 99, boxShadow: '0 0 10px rgba(249,115,22,.5)' }} />
           </div>
         </div>
       </div>
@@ -71,8 +74,8 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
             <span style={{ fontSize: 16 }}>👑</span>Founder Command Center
           </button>
         )}
-        {LINKS.map(link => {
-          const isOn = link.exact ? location.pathname === '/portal' : location.pathname === link.path;
+        {(() => { const current = activeHref(location.pathname, LINKS.map(l => l.path)); return LINKS.map(link => {
+          const isOn = link.path === current;
           return (
             <button key={link.lbl} onClick={() => navigate(link.path)} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: isOn ? '#fff' : '#64748b', fontSize: 13, fontWeight: isOn ? 700 : 500, cursor: 'pointer', border: 'none', background: isOn ? 'linear-gradient(90deg,rgba(59,130,246,.22),rgba(99,102,241,.05))' : 'none', borderLeft: `3px solid ${isOn ? '#3b82f6' : 'transparent'}`, width: '100%', textAlign: 'left', fontFamily: 'inherit', transition: 'all .15s' }}>
               <span style={{ fontSize: 15, width: 18, textAlign: 'center', flexShrink: 0 }}>{link.icon}</span>
@@ -80,7 +83,7 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
               {link.badge && <span style={{ marginLeft: 'auto', background: '#f97316', color: '#fff', borderRadius: 99, fontSize: 10, padding: '2px 7px', fontWeight: 800 }}>{link.badge}</span>}
             </button>
           );
-        })}
+        }); })()}
         <div style={{ padding: '12px 15px 4px', fontSize: 9, fontWeight: 700, letterSpacing: '.18em', textTransform: 'uppercase', color: '#2a3a55' }}>{T('account')}</div>
         <button onClick={() => navigate('/portal/settings')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
           <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>⚙️</span>{T('settings')}
@@ -88,7 +91,7 @@ export default function PortalSidebar({ hoursLeft = 412, coursesCount }: PortalS
         <a href="https://www.aladiahmanagement.com" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, textDecoration: 'none' }}>
           <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>🏢</span>{T('management')}
         </a>
-        <button onClick={() => navigate('/portal')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
+        <button onClick={() => navigate('/community')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
           <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>❓</span>Help &amp; Support
         </button>
       </div>

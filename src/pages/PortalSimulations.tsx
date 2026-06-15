@@ -117,7 +117,7 @@ export default function PortalSimulations() {
   return (
     <div style={{ background: DS.bg, minHeight:'100vh', fontFamily: '"Inter",system-ui,sans-serif' }}>
       <Header />
-      <div style={{ display:'flex' }}>
+      <div className="portal-shell" style={{ display:'flex' }}>
         <PortalSidebar />
 
         {/* Main content */}
