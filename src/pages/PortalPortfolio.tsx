@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import Header from '@/components/Header';
-import PortalSidebar from '@/components/PortalSidebar';
+import PortalShell from '@/components/portal/PortalShell';
 import { useAuth } from '@/hooks/useAuth';
 import { initialsFromEmail } from '@/lib/avatar';
 
@@ -19,10 +18,7 @@ export default function PortalPortfolio() {
   const pathname = '/portal/portfolio';
 
   return (
-    <div style={{ background: DS.bg, minHeight: '100vh', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif", color: DS.fg }}>
-      <Header />
-      <div className="portal-shell" style={{ display: 'grid', gridTemplateColumns: '260px 1fr', minHeight: '100vh', paddingTop: 70 }}>
-        <PortalSidebar />
+    <PortalShell background={DS.bg}>
         <main style={{ padding: '2rem', background: DS.bg }}>
           <div style={{ marginBottom: '1.75rem' }}>
             <h1 style={{ fontSize: '1.6rem', fontWeight: 800 }}>My Portfolio</h1>
@@ -50,7 +46,6 @@ export default function PortalPortfolio() {
             ))}
           </div>
         </main>
-      </div>
-    </div>
+    </PortalShell>
   );
 }
