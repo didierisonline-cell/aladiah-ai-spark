@@ -13,3 +13,6 @@ supabase/.temp/
 .vercel
 translations_output.json
 *.bak*
+
+# Global Language Adaptation scanner output
+language-reports/
