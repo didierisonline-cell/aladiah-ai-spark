@@ -100,9 +100,15 @@ RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS
   SELECT EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin');
 $$;
 
--- 3) Remove the signup auto-grant (no automatic escalation).
-DROP TRIGGER IF EXISTS assign_admin_on_signup ON auth.users;
-DROP FUNCTION IF EXISTS public.auto_assign_admin();
+-- 3) Neutralize the signup auto-grant WITHOUT deleting the trigger/function.
+--    The trigger stays attached; the function becomes a no-op (no auto-elevation).
+CREATE OR REPLACE FUNCTION public.auto_assign_admin()
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  -- SEC-C2: NO-OP. No founder-email auto-elevation. Admin is managed via user_roles only.
+  RETURN NEW;
+END;
+$$;
 
 -- 4) Revoke admin/moderator from everyone who is NOT your verified account.
 DELETE FROM public.user_roles ur
@@ -120,7 +126,7 @@ COMMIT;
 | **Expected** | "Success." |
 | **Verify (a)** | `SELECT u.email, ur.role FROM public.user_roles ur JOIN auth.users u ON u.id=ur.user_id WHERE ur.role='admin';` → **only your account(s)**. |
 | **Verify (b)** | Open the app in a new tab, signed in as founder → go to `/founder` → it loads (not redirected to `/portal`). |
-| **Verify (c)** | `SELECT tgname FROM pg_trigger WHERE tgname='assign_admin_on_signup';` → **0 rows**. |
+| **Verify (c)** | Trigger kept, function neutralized: `SELECT prosrc FROM pg_proc WHERE proname='auto_assign_admin';` → body is the **no-op** (NO `didierisonline`/`didiermbok`/`INSERT … user_roles`). |
 | **Failure indicators** | Verify (a) empty, or (b) redirects you off `/founder` → you're not admin. Use the **emergency rollback** below. |
 | **Emergency rollback (un-lock yourself)** | The SQL Editor runs as service role and ignores RLS, so you can always re-grant:<br>`INSERT INTO public.user_roles (user_id, role) SELECT id,'admin'::public.app_role FROM auth.users WHERE lower(email)='YOUR_EMAIL' ON CONFLICT DO NOTHING;` |
 

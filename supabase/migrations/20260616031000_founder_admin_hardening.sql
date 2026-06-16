@@ -10,6 +10,10 @@
 -- admin. This migration removes BOTH automatic paths so admin is conferred ONLY
 -- by an explicit user_roles grant that the founder applies by hand.
 --
+-- NOTE (founder directive): NO trigger/function deletion. Step 3 REPLACES the
+-- function body with a no-op instead of dropping the trigger — the trigger stays
+-- wired to auth.users but performs no auto-elevation.
+--
 -- ⚠️ APPLY BY HAND in the Supabase SQL editor. Claude Code does not auto-apply.
 -- ⚠️ LOCKOUT SAFETY: the grant (step 1) runs BEFORE the helper is tightened
 --    (step 2), and is guarded on email_confirmed_at, so a confirmed, owned
@@ -48,9 +52,24 @@ AS $$
   );
 $$;
 
--- ── STEP 3 — Remove the signup auto-grant (no automatic escalation) ───────────
-DROP TRIGGER IF EXISTS assign_admin_on_signup ON auth.users;
-DROP FUNCTION IF EXISTS public.auto_assign_admin();
+-- ── STEP 3 — Neutralize the signup auto-grant WITHOUT deleting anything ───────
+-- Per founder directive: NO trigger or function deletion. The trigger
+-- 'assign_admin_on_signup' stays attached to auth.users; we only REPLACE the
+-- function body so it no longer auto-elevates ANY email. Admin is conferred only
+-- by explicit user_roles grants (Step 1). This removes the auto-escalation path
+-- while leaving the existing trigger wiring intact.
+CREATE OR REPLACE FUNCTION public.auto_assign_admin()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  -- SEC-C2: intentionally a NO-OP. No founder-email auto-elevation. Do not add
+  -- privilege grants here — admin is managed exclusively via user_roles by hand.
+  RETURN NEW;
+END;
+$$;
 
 -- ── STEP 4 — Revoke admin/moderator from everyone who is NOT a verified founder ─
 DELETE FROM public.user_roles ur
@@ -73,6 +92,10 @@ COMMIT;
 --   JOIN auth.users u ON u.id = ur.user_id WHERE ur.role='admin';
 -- (b) No JWT-email bypass remains (run while signed in as the founder):
 --   SELECT public.aos_is_admin();            -- expect TRUE for the founder
--- (c) The signup trigger is gone:
---   SELECT tgname FROM pg_trigger WHERE tgname = 'assign_admin_on_signup'; -- 0 rows
+-- (c) The trigger still exists (not deleted) BUT no longer auto-elevates:
+--   SELECT tgname FROM pg_trigger WHERE tgname='assign_admin_on_signup';  -- 1 row (kept)
+--   SELECT prosrc FROM pg_proc WHERE proname='auto_assign_admin';
+--       -- expect the no-op body: NO 'didierisonline'/'didiermbok'/'INSERT ... user_roles'.
+-- (d) Negative test (optional): create a throwaway account with a founder-looking
+--     email -> it must NOT appear in the admin census from (a).
 -- =============================================================================
