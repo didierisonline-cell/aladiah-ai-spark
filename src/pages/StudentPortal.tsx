@@ -13,13 +13,13 @@ import { isFounderEmail } from '@/lib/roles';
 import { useFounderMode } from '@/hooks/useFounderMode';
 import MobileHome from '@/components/portal/MobileHome';
 import PortalSidebar from '@/components/PortalSidebar';
+import Header from '@/components/Header';
 import { useSubscription } from '@/hooks/useSubscription';
 import { CreedAcknowledgmentGate, shouldShowCreedGate, getLocalDateString } from '@/components/CreedAcknowledgmentGate';
 import CourseSelectionGate from '@/components/CourseSelectionGate';
 import { StreakDetailModal, PointsDetailModal, LabsDetailModal } from '@/components/portal/StatDetailModals';
 import globeBg from '@/assets/global-network-bg.png';
 import profCardBg from '@/assets/professor-didier-card.png';
-import Logo from '@/components/Logo';
 
 // ── TRANSLATIONS ──────────────────────────────────────────────────────────────
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -121,22 +121,11 @@ function sbFetch<T>(query: Promise<{ data: T | null; error: any }>, fallback: T,
 
 const LANGS = ['EN', 'ES', 'FR', 'DE', 'ZH', 'AR', 'JA'];
 
-const OVERVIEW_LANGS = [
-  { code: 'en', label: 'English' }, { code: 'es', label: 'Español' }, { code: 'zh', label: '中文' },
-  { code: 'ar', label: 'العربية' }, { code: 'fr', label: 'Français' }, { code: 'de', label: 'Deutsch' },
-  { code: 'ja', label: '日本語' }, { code: 'pt', label: 'Português' }, { code: 'hi', label: 'हिन्दी' },
-  { code: 'ko', label: '한국어' }, { code: 'it', label: 'Italiano' }, { code: 'ru', label: 'Русский' },
-  { code: 'nl', label: 'Nederlands' }, { code: 'pl', label: 'Polski' }, { code: 'tr', label: 'Türkçe' },
-  { code: 'sw', label: 'Kiswahili' }, { code: 'yo', label: 'Yorùbá' }, { code: 'ha', label: 'Hausa' },
-  { code: 'ig', label: 'Igbo' }, { code: 'vi', label: 'Tiếng Việt' }, { code: 'th', label: 'ภาษาไทย' },
-];
-
 export default function StudentPortal() {
   const navigate = useNavigate();
-  const handleLogout = async () => { await supabase.auth.signOut(); window.location.href = '/'; };
   const location = useLocation();
   const { user } = useAuth();
-  const { language, setLanguage } = useLanguage();
+  const { language } = useLanguage();
   const { progress: overallProgress } = useProgress(user?.id);
   const { isPhone, isDesktop } = useBreakpoint();
   // Founder God Mode: unrestricted only when the founder has the toggle ON.
@@ -159,7 +148,6 @@ export default function StudentPortal() {
   const [courses, setCourses] = useState<any[]>([]);
   const [certCount, setCertCount] = useState(0);
   const [activeSchool, setActiveSchool] = useState('AI Engineering');
-  const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [streakModal, setStreakModal] = useState(false);
   const [pointsModal, setPointsModal] = useState(false);
   const [labsModal, setLabsModal] = useState(false);
@@ -477,44 +465,10 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
       {/* Gradient overlay */}
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1, pointerEvents: 'none', background: 'linear-gradient(to right,rgba(2,8,23,.97) 0%,rgba(2,8,23,.9) 14%,rgba(2,8,23,.58) 36%,rgba(2,8,23,.1) 62%,rgba(2,8,23,0) 100%)' }} />
 
-      {/* ── TOP NAV ── */}
-      <nav style={{ position: 'relative', zIndex: 20, height: 70, flexShrink: 0, background: 'rgba(2,8,23,.9)', borderBottom: '1px solid rgba(255,255,255,.07)', backdropFilter: 'blur(24px)', display: 'grid', gridTemplateColumns: '200px 1fr auto', alignItems: 'center', padding: '0 22px' }}>
-        <div onClick={() => navigate('/portal')} style={{ cursor: 'pointer' }}><Logo variant="full" style={{ height: 44 }} /></div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-          {[T('nav_my_portal'), T('nav_courses'), 'Simulations', T('nav_talent_score'), T('nav_career'), T('nav_community'), T('nav_resources')].map((item, i) => (
-            <button key={item} onClick={() => {
-              if (i === 0) navigate('/portal');
-              else if (i === 1) navigate('/portal/courses');
-              else if (i === 2) navigate('/portal/simulations');
-              else if (i === 3) navigate('/portal/talent-score');
-              else if (i === 4) navigate('/portal/career');
-              else if (i === 5) navigate('/community');
-              else if (i === 6) navigate('/portal/resources');
-              else navigate('/portal');
-            }} style={{ background: 'none', border: 'none', borderBottom: i === 0 ? '2.5px solid #3b82f6' : '2.5px solid transparent', color: i === 0 ? '#fff' : '#5a6a8a', fontSize: 14, fontWeight: i === 0 ? 700 : 500, padding: '0 16px', height: 56, cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap', transition: 'color .15s' }}>
-              {item}
-            </button>
-          ))}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {/* Language */}
-          <div style={{ position: 'relative' }}>
-            <button onClick={() => setLangMenuOpen(!langMenuOpen)} style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.13)', color: '#cbd5e1', borderRadius: 8, padding: '6px 12px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
-              {(language || 'en').toUpperCase()} <span style={{ fontSize: 10 }}>▾</span>
-            </button>
-            {langMenuOpen && (
-              <div style={{ position: 'absolute', top: '110%', right: 0, background: '#0d1829', border: '1px solid rgba(255,255,255,.1)', borderRadius: 10, padding: 6, zIndex: 200, minWidth: 140, maxHeight: 320, overflowY: 'auto' }}>
-                {OVERVIEW_LANGS.map(l => (
-                  <button key={l.code} onClick={() => { setLanguage(l.code as any); setLangMenuOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', textAlign: 'left', padding: '7px 12px', background: language === l.code ? 'rgba(59,130,246,.2)' : 'none', border: 'none', color: '#e2e8f8', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', borderRadius: 6, fontFamily: 'inherit' }}>
-                    <span style={{ opacity: .55, fontSize: 11, minWidth: 20 }}>{l.code.toUpperCase()}</span>{l.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: '#f97316', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Done for the Day</button>
-        </div>
-      </nav>
+      {/* ── TOP NAV ── the one shared Header (fixed, 70px). Spacer below reserves
+          its space in the flex column, mirroring PortalShell's paddingTop:70. */}
+      <Header />
+      <div style={{ height: 70, flexShrink: 0 }} />
 
       {/* ── SECOND BAR ── */}
       <div style={{ position: 'relative', zIndex: 10, height: 44, flexShrink: 0, background: 'rgba(2,8,23,.82)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,.05)', display: 'flex', alignItems: 'center', padding: '0 22px' }}>

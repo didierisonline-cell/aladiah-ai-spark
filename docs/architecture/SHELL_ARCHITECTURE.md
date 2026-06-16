@@ -93,13 +93,15 @@ graph TD
 
 ## Deliberate exceptions
 
-- **StudentPortal** composes `PortalSidebar` directly (not `PortalShell`) because
-  it is the bespoke command-center home: a 3-column top `<nav>` + sidebar + right
-  rail with its own grid, and `MobileHome` at ≤1024px. It uses the shared
-  `PortalSidebar`, `talentScoreFromProgress`, `displayNameFromEmail`, and
-  `activeHref` — so it shares every renderer, just not the generic shell.
-  **Open item:** whether to replace its bespoke top `<nav>` with the shared
-  `Header` (removes the last duplicate top-nav) — pending founder UX decision.
+- **StudentPortal** composes `Header` + `PortalSidebar` directly (not the generic
+  `PortalShell`) because it is the bespoke command-center home: shared `Header` +
+  a talent-score/Continue bar + sidebar + right rail in its own full-height grid,
+  with `MobileHome` at ≤1024px. As of the founder decision (2026-06-16) its old
+  bespoke top `<nav>` was **replaced with the shared `Header`** — so the last
+  duplicate top-nav is gone. It now uses every shared renderer (`Header`,
+  `PortalSidebar`, `talentScoreFromProgress`, `displayNameFromEmail`,
+  `activeHref`); only its command-center body grid is bespoke, by design.
+  _One Shell. One Navigation Framework. One User Experience._
 - **Public / marketing pages** (Index, Pricing, Schools, Employers, Store, Auth,
   ResetPassword, Referral, TalentNetwork, …) use `Header` standalone with no
   shell. They are unauthenticated and intentionally outside the portal chrome.
