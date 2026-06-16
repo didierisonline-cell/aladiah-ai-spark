@@ -28,12 +28,15 @@ import { AgentRunOutput, RunContext } from '@/types/aos';
 import {
   GrowthAsset,
   HookBankEntry,
+  ScoredHook,
   LaunchDayAssets,
   DailyGrowthBrief,
   EmailAsset,
   LeadMagnetSpec,
   FounderBrandPlan,
   buildHookBank,
+  generateHooks,
+  selectTopHooks,
   linkedinAuthorityPosts,
   shortVideoScripts,
   launchEmailSequence,
@@ -64,6 +67,21 @@ async function persistGrowthAsset(
   asset: GrowthAsset,
   opts: { campaignId?: string; runId?: string | null } = {},
 ): Promise<string | null> {
+  // Gate logic: rejected assets are logged but not persisted
+  if (asset.excellence?.gate === 'reject') {
+    await logAction(CGO_AGENT_SLUG, 'asset_rejected_by_gate', {
+      runId: opts.runId,
+      level: 'warn',
+      result: 'rejected',
+      message: `Score ${asset.score} < 80 — "${asset.title}" rejected by Content Excellence Gate`,
+      detail: { channel: asset.channel, score: asset.score, excellence: asset.excellence },
+    });
+    return null;
+  }
+
+  // 'revise' gate: staged but marked for revision, not publish
+  const status = asset.excellence?.gate === 'revise' ? 'needs_revision' : 'pending_approval';
+
   const row = {
     agent_slug: CGO_AGENT_SLUG,
     sub_agent: asset.sub_agent,
@@ -80,8 +98,18 @@ async function persistGrowthAsset(
     kpi_target: asset.kpi_target,
     score: asset.score,
     hashtags: asset.hashtags,
-    metadata: asset.metadata,
-    status: 'pending_approval',
+    // Store full 5-gate breakdown in metadata for founder review
+    metadata: {
+      ...asset.metadata,
+      excellence: asset.excellence,
+      kane_score: asset.excellence?.kane?.total,
+      hormozi_score: asset.excellence?.hormozi?.total,
+      trust_score: asset.excellence?.trust?.total,
+      transformation_score: asset.excellence?.transformation?.total,
+      employment_score: asset.excellence?.employment?.total,
+      gate: asset.excellence?.gate,
+    },
+    status,
     campaign_id: opts.campaignId ?? null,
     created_by_agent: CGO_AGENT_SLUG,
   };
@@ -449,10 +477,31 @@ export const cgoRunner = async (ctx: RunContext): Promise<AgentRunOutput> => {
       // === DAILY GROWTH BRIEF ===
       await ctx.log('cgo_daily', { message: 'Generating daily growth brief' });
 
-      // Produce fresh hooks for today's test batch
-      const hooks = buildHookBank(25);
-      await persistHookBank(hooks, runId);
-      assetsCreated += hooks.length;
+      // Generate 25 hooks per daily topic, rank by Kane score, persist top scorers
+      const dailyTopics = ['AI Scrum Master', 'career transformation', 'Talent Score', 'AI workforce'];
+      let hookCount = 0;
+      for (const topic of dailyTopics) {
+        const scored = generateHooks(topic, 25);
+        const top3 = selectTopHooks(scored, 3);
+        const bankEntries = scored.map((h) => ({
+          hook: h.hook,
+          bucket: h.bucket,
+          audience: 'career_changers' as const,
+          channel: 'linkedin' as const,
+          emotional_trigger: h.emotion_trigger,
+          shareability: h.shareability,
+          controversy: h.controversy,
+          trust: 7,
+        }));
+        hookCount += await persistHookBank(bankEntries, runId);
+        await logAction(CGO_AGENT_SLUG, 'daily_hook_test', {
+          runId,
+          result: 'success',
+          message: `Topic "${topic}": top hook score ${top3[0]?.kane_score ?? 0} — "${top3[0]?.hook}"`,
+          detail: { topic, top3: top3.map((h) => ({ hook: h.hook, score: h.kane_score })) },
+        });
+      }
+      assetsCreated += hookCount;
     }
 
     // Build and persist the daily brief

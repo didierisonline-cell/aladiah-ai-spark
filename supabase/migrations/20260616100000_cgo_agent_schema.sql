@@ -52,7 +52,14 @@ CREATE TABLE IF NOT EXISTS public.cgo_growth_assets (
   kpi_target      text,
   score           integer,        -- 0-100 quality score; >=85 ships
   hashtags        text[]  NOT NULL DEFAULT '{}',
-  status          text NOT NULL DEFAULT 'pending_approval',  -- pending_approval | approved | rejected | scheduled | published
+  -- Content Excellence Gate scores (stored for founder review transparency)
+  kane_score      integer,
+  hormozi_score   integer,
+  trust_score     integer,
+  transformation_score integer,
+  employment_score integer,
+  excellence_gate text,  -- publish | revise | reject
+  status          text NOT NULL DEFAULT 'pending_approval',  -- pending_approval | needs_revision | approved | rejected | scheduled | published
   campaign_id     uuid REFERENCES public.cgo_growth_campaigns(id) ON DELETE SET NULL,
   created_by_agent text,
   approved_by     text,

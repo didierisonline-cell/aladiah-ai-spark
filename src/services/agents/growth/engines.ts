@@ -49,8 +49,73 @@ export interface GrowthAsset {
   proof_source: string;
   kpi_target: string;
   score: number;
+  excellence: ContentExcellenceScore;
   hashtags: string[];
   metadata: Record<string, unknown>;
+}
+
+// ---------------------------------------------------------------------------
+// Content Excellence Framework — 5-gate scoring
+// ---------------------------------------------------------------------------
+
+export interface KaneScore {
+  curiosity: number;       // 0-20: does it make you need to know more?
+  contrarian: number;      // 0-20: does it challenge a belief?
+  emotion: number;         // 0-20: fear, aspiration, identity, urgency, or relief?
+  novelty: number;         // 0-20: is it unexpected or fresh?
+  shareability: number;    // 0-20: would someone forward this?
+  total: number;           // 0-100
+}
+
+export interface HormoziScore {
+  dream_outcome: number;   // 0-25: how desirable is the promised result?
+  likelihood: number;      // 0-25: does it make success feel achievable?
+  speed: number;           // 0-25: does it reduce time to result?
+  simplicity: number;      // 0-25: does it reduce perceived effort?
+  total: number;           // 0-100 (Value Equation: DO×L / T×E)
+}
+
+export interface TrustScore {
+  has_real_numbers: number;    // 0-20
+  has_specific_example: number; // 0-20
+  has_employer_signal: number;  // 0-20
+  has_salary_signal: number;    // 0-20
+  has_proof_artifact: number;   // 0-20
+  total: number;               // 0-100
+}
+
+export interface TransformationScore {
+  teaches_one_thing: number;   // 0-34: is there a clear learnable insight?
+  creates_before_after: number; // 0-33: does the viewer understand differently after?
+  drives_next_action: number;  // 0-33: does it make them want to do something now?
+  total: number;               // 0-100
+}
+
+export interface EmploymentScore {
+  job_relevance: number;       // 0-34: tied to a real job title or role?
+  interview_relevance: number; // 0-33: would this come up in an interview?
+  salary_relevance: number;    // 0-33: does it connect to compensation or career growth?
+  total: number;               // 0-100
+}
+
+export interface ContentExcellenceScore {
+  kane: KaneScore;
+  hormozi: HormoziScore;
+  trust: TrustScore;
+  transformation: TransformationScore;
+  employment: EmploymentScore;
+  final: number;   // weighted composite 0-100
+  gate: 'publish' | 'revise' | 'reject';  // 90+ publish | 80-89 revise | <80 reject
+}
+
+export interface ScoredHook {
+  hook: string;
+  bucket: string;
+  kane_score: number;
+  emotion_trigger: string;
+  shareability: number;
+  controversy: number;
+  rank: number;
 }
 
 export interface HookBankEntry {
@@ -276,26 +341,305 @@ function scoreTrust(bucket: string): number {
 }
 
 // ---------------------------------------------------------------------------
-// Asset quality scorer (85+ ships, 70-84 revise, <70 kill)
+// Content Excellence Engine — 5-gate scoring system
+// Gate 1: Kane (Attention)   — 90+ publish | 80-89 revise | <80 reject
+// Gate 2: Hormozi (Value)
+// Gate 3: Trust
+// Gate 4: Transformation
+// Gate 5: Employment
 // ---------------------------------------------------------------------------
 
-function scoreAsset(asset: Omit<GrowthAsset, 'score'>): number {
-  let score = 0;
-  // Hook strength (20)
-  score += asset.hook.length > 40 && asset.hook.length < 200 ? 18 : 12;
-  // Clarity (15)
-  score += asset.body.length > 80 ? 13 : 8;
-  // Proof/credibility (15)
-  score += asset.proof_source.length > 10 ? 13 : 6;
-  // Flywheel fit (10)
-  score += asset.flywheel_stage ? 9 : 0;
-  // Hormozi value fit (20) — cta quality proxy
-  score += asset.cta.length > 20 ? 18 : 10;
-  // Native format fit (10)
-  score += 9;
-  // CTA quality (10)
-  score += asset.cta.includes(SITE) || asset.cta.length > 30 ? 9 : 5;
-  return Math.min(100, score);
+// Gate 1 — Brendan Kane: Will someone stop scrolling?
+function scoreKane(hook: string, bucket: string, body: string): KaneScore {
+  // Curiosity: open loops, incomplete information, pattern interrupts
+  const curiositySignals = [
+    /\?/.test(hook),
+    /mistake|error|wrong|fail|never|always|nobody|everyone/.test(hook.toLowerCase()),
+    /here.s why|here.s what|this is why/.test(hook.toLowerCase()),
+    hook.length > 50 && hook.length < 120,
+    /\.\.\./.test(hook),
+  ];
+  const curiosity = Math.round((curiositySignals.filter(Boolean).length / curiositySignals.length) * 20);
+
+  // Contrarian: challenges conventional wisdom
+  const contrarianSignals = [
+    /myth:|wrong:|not|never|stop|quit|forget/.test(hook.toLowerCase()),
+    /most people|everyone thinks|they told you/.test(hook.toLowerCase()),
+    bucket === 'contrarian_belief' || bucket === 'myth_busting',
+    /but actually|truth is|reality is/.test(hook.toLowerCase()),
+    /obsolete|wrong|lie|mistake/.test(hook.toLowerCase()),
+  ];
+  const contrarian = Math.round((contrarianSignals.filter(Boolean).length / contrarianSignals.length) * 20);
+
+  // Emotion: fear, aspiration, identity, urgency, or relief
+  const emotionSignals = [
+    /replace|obsolete|behind|miss|lose|fail|afraid/.test(hook.toLowerCase()),
+    /transform|career|hired|ready|leader|global/.test(hook.toLowerCase()),
+    /you|your|we|our/.test(hook.toLowerCase()),
+    /now|today|this week|2026|2028/.test(hook.toLowerCase()),
+    /don.t|can.t|won.t|shouldn.t/.test(hook.toLowerCase()),
+  ];
+  const emotion = Math.round((emotionSignals.filter(Boolean).length / emotionSignals.length) * 20);
+
+  // Novelty: unexpected angle, specific data, fresh framing
+  const noveltySignals = [
+    /\d+%|\d+ hours|\d+ minutes|\$\d+/.test(hook),
+    bucket === 'surprising_proof' || bucket === 'behind_the_build',
+    /tested|discovered|found|learned|built/.test(hook.toLowerCase()),
+    /ai scrum|talent score|aladiah/.test(hook.toLowerCase()),
+    hook.split(' ').length <= 12,  // short punchy = novel
+  ];
+  const novelty = Math.round((noveltySignals.filter(Boolean).length / noveltySignals.length) * 20);
+
+  // Shareability: would someone forward this to a colleague?
+  const baseShareability = scoreShareability(bucket);
+  const shareability = Math.round((baseShareability / 10) * 20);
+
+  const total = Math.min(100, curiosity + contrarian + emotion + novelty + shareability);
+  return { curiosity, contrarian, emotion, novelty, shareability, total };
+}
+
+// Gate 2 — Alex Hormozi: Value = (Dream Outcome × Likelihood) ÷ (Time × Effort)
+function scoreHormozi(hook: string, body: string, cta: string): HormoziScore {
+  // Dream Outcome: how desirable is the promised result?
+  const dreamOutcomeSignals = [
+    /hired|job|career|salary|interview|employed/.test(body.toLowerCase()),
+    /transform|promotion|leadership|global/.test(body.toLowerCase()),
+    /scrum master|project manager|business analyst|cybersecurity|cloud|ai/.test(body.toLowerCase()),
+    /result|outcome|achieve|become/.test(body.toLowerCase()),
+    body.length > 150,
+  ];
+  const dream_outcome = Math.round((dreamOutcomeSignals.filter(Boolean).length / dreamOutcomeSignals.length) * 25);
+
+  // Likelihood of Success: proof, credentials, system
+  const likelihoodSignals = [
+    /proof|score|verified|certified|validated/.test(body.toLowerCase()),
+    /talent score|simulation|artifact|portfolio/.test(body.toLowerCase()),
+    /aladiah|system|path|framework|step/.test(body.toLowerCase()),
+    /example|case|result|student|learner/.test(body.toLowerCase()),
+    /free|start|begin|try/.test(cta.toLowerCase()),
+  ];
+  const likelihood = Math.round((likelihoodSignals.filter(Boolean).length / likelihoodSignals.length) * 25);
+
+  // Speed to Result: fast, today, minutes, this week
+  const speedSignals = [
+    /minutes|hours|days|week|today|now|immediately/.test(body.toLowerCase()),
+    /fast|quick|rapid|instant|start/.test(body.toLowerCase()),
+    /first step|next step|one thing/.test(body.toLowerCase()),
+    /clear|simple|direct|straight/.test(body.toLowerCase()),
+    /in \d+|within \d+/.test(body.toLowerCase()),
+  ];
+  const speed = Math.round((speedSignals.filter(Boolean).length / speedSignals.length) * 25);
+
+  // Simplicity / Effort Reduction: easy, manageable, one step
+  const simplicitySignals = [
+    /one|single|simple|clear|just/.test(body.toLowerCase()),
+    /don.t need|no degree|no experience/.test(body.toLowerCase()),
+    /step \d|step by step|three things|three steps/.test(body.toLowerCase()),
+    /without|instead of|rather than/.test(body.toLowerCase()),
+    cta.length < 60,
+  ];
+  const simplicity = Math.round((simplicitySignals.filter(Boolean).length / simplicitySignals.length) * 25);
+
+  const total = Math.min(100, dream_outcome + likelihood + speed + simplicity);
+  return { dream_outcome, likelihood, speed, simplicity, total };
+}
+
+// Gate 3 — Trust: Real numbers, real examples, employer demand, salary signal
+function scoreTrustGate(hook: string, body: string, proof_source: string): TrustScore {
+  // Real numbers
+  const has_real_numbers = /\d+%|\d+ hours|\d+ minutes|\$\d+|\d+ months|\d+x|612|0/.test(body) ? 20 : 0;
+
+  // Specific example or scenario
+  const has_specific_example = (
+    /example|scenario|case|specifically|such as|for instance/.test(body.toLowerCase()) ||
+    /sprint|backlog|stakeholder|client|project/.test(body.toLowerCase())
+  ) ? 20 : 0;
+
+  // Employer signal: what employers see, want, or accept
+  const has_employer_signal = /employer|recruit|interview|hire|company|job post|demand/.test(body.toLowerCase()) ? 20 : 0;
+
+  // Salary signal: compensation, income, salary growth
+  const has_salary_signal = /salary|\$|income|pay|compens|earn|raise|promotion/.test(body.toLowerCase()) ? 20 : 0;
+
+  // Proof artifact: Talent Score, simulation, portfolio, certification
+  const has_proof_artifact = (
+    /talent score|simulation|portfolio|certification|artifact|proof/.test(body.toLowerCase()) ||
+    proof_source.length > 15
+  ) ? 20 : 0;
+
+  const total = Math.min(100, has_real_numbers + has_specific_example + has_employer_signal + has_salary_signal + has_proof_artifact);
+  return { has_real_numbers, has_specific_example, has_employer_signal, has_salary_signal, has_proof_artifact, total };
+}
+
+// Gate 4 — Transformation: Does the viewer understand differently after?
+function scoreTransformation(hook: string, body: string, flywheel_stage: FlywheelStage): TransformationScore {
+  // Teaches one clear thing
+  const teaches_one_thing = (
+    body.includes('1.') || body.includes('•') || body.includes(':') ||
+    /difference between|instead of|the truth is|what it actually/.test(body.toLowerCase()) ||
+    flywheel_stage === 'trust' || flywheel_stage === 'authority'
+  ) ? 34 : 12;
+
+  // Creates before/after contrast
+  const creates_before_after = (
+    /from .+ to|before .+ after|used to .+ now|instead of .+ you/.test(body.toLowerCase()) ||
+    /confused|unclear|lost/.test(body.toLowerCase()) ||
+    flywheel_stage === 'transformation'
+  ) ? 33 : 10;
+
+  // Drives next action
+  const drives_next_action = (
+    /follow|start|take|join|try|apply|learn|discover|see/.test(body.toLowerCase().slice(-200)) ||
+    flywheel_stage === 'employment' || flywheel_stage === 'community'
+  ) ? 33 : 10;
+
+  const total = Math.min(100, teaches_one_thing + creates_before_after + drives_next_action);
+  return { teaches_one_thing, creates_before_after, drives_next_action, total };
+}
+
+// Gate 5 — Employment: The Aladiah layer nobody else has
+function scoreEmployment(hook: string, body: string, audience: GrowthAudience): EmploymentScore {
+  // Job relevance: tied to a real role
+  const jobTitles = /scrum master|project manager|business analyst|product owner|devops|cybersecurity|cloud|data analyst|agile coach/;
+  const job_relevance = (
+    jobTitles.test(body.toLowerCase()) ||
+    /role|position|career|job title|professional/.test(body.toLowerCase()) ||
+    audience === 'employers'
+  ) ? 34 : 10;
+
+  // Interview relevance: would this come up in a real interview?
+  const interview_relevance = (
+    /interview|question|answer|hiring|recruiter|resume|cv/.test(body.toLowerCase()) ||
+    /demonstrate|show|prove|evidence|capability/.test(body.toLowerCase())
+  ) ? 33 : 10;
+
+  // Salary relevance: connects to compensation or career growth
+  const salary_relevance = (
+    /salary|earn|income|\$|compens|raise|level up|senior|lead/.test(body.toLowerCase()) ||
+    audience === 'working_professionals' || audience === 'employers'
+  ) ? 33 : 10;
+
+  const total = Math.min(100, job_relevance + interview_relevance + salary_relevance);
+  return { job_relevance, interview_relevance, salary_relevance, total };
+}
+
+// Composite gate — weighted across all 5
+// Kane: 25% | Hormozi: 25% | Trust: 20% | Transformation: 15% | Employment: 15%
+export function runExcellenceGates(asset: Omit<GrowthAsset, 'score' | 'excellence'>): ContentExcellenceScore {
+  const kane = scoreKane(asset.hook, asset.metadata?.bucket as string ?? '', asset.body);
+  const hormozi = scoreHormozi(asset.hook, asset.body, asset.cta);
+  const trust = scoreTrustGate(asset.hook, asset.body, asset.proof_source);
+  const transformation = scoreTransformation(asset.hook, asset.body, asset.flywheel_stage);
+  const employment = scoreEmployment(asset.hook, asset.body, asset.audience);
+
+  const final = Math.round(
+    kane.total * 0.25 +
+    hormozi.total * 0.25 +
+    trust.total * 0.20 +
+    transformation.total * 0.15 +
+    employment.total * 0.15,
+  );
+
+  const gate: ContentExcellenceScore['gate'] =
+    final >= 90 ? 'publish' : final >= 80 ? 'revise' : 'reject';
+
+  return { kane, hormozi, trust, transformation, employment, final, gate };
+}
+
+// Convenience wrapper used by all generators
+function scoreAsset(asset: Omit<GrowthAsset, 'score' | 'excellence'>): { score: number; excellence: ContentExcellenceScore } {
+  const excellence = runExcellenceGates(asset);
+  return { score: excellence.final, excellence };
+}
+
+// ---------------------------------------------------------------------------
+// Hook Generation + Kane ranking (25 hooks → top 3)
+// ---------------------------------------------------------------------------
+
+export function generateHooks(topic: string, count = 25): ScoredHook[] {
+  const bucketKeys = Object.keys(HOOK_BUCKETS);
+  const raw: ScoredHook[] = [];
+
+  // Base hooks from buckets + topic-aware variants
+  for (const bKey of bucketKeys) {
+    for (const baseHook of HOOK_BUCKETS[bKey]) {
+      raw.push({
+        hook: baseHook,
+        bucket: bKey,
+        kane_score: scoreKane(baseHook, bKey, '').total,
+        emotion_trigger: bucketToTrigger(bKey),
+        shareability: scoreShareability(bKey),
+        controversy: scoreControversy(bKey),
+        rank: 0,
+      });
+    }
+    // Topic-specific variant
+    const topicHooks = topicVariants(topic, bKey);
+    for (const h of topicHooks) {
+      raw.push({
+        hook: h,
+        bucket: bKey,
+        kane_score: scoreKane(h, bKey, '').total,
+        emotion_trigger: bucketToTrigger(bKey),
+        shareability: scoreShareability(bKey),
+        controversy: scoreControversy(bKey),
+        rank: 0,
+      });
+    }
+  }
+
+  // Sort by Kane score descending, assign rank
+  raw.sort((a, b) => b.kane_score - a.kane_score);
+  raw.forEach((h, i) => { h.rank = i + 1; });
+  return raw.slice(0, count);
+}
+
+export function selectTopHooks(hooks: ScoredHook[], n = 3): ScoredHook[] {
+  return hooks.slice(0, n);
+}
+
+function topicVariants(topic: string, bucket: string): string[] {
+  const t = topic.toLowerCase();
+  const variants: Record<string, string[]> = {
+    contrarian_belief: [
+      `Most people think ${t} requires years. It requires the right system.`,
+      `The problem with ${t} is not what you think.`,
+    ],
+    costly_mistake: [
+      `The mistake most people make with ${t} costs them months.`,
+      `Why ${t} fails for most learners — and what fixes it.`,
+    ],
+    surprising_proof: [
+      `We measured ${t} across real enterprise scenarios. Here is what we found.`,
+      `One ${t} proof artifact changes what employers see.`,
+    ],
+    identity_aspiration: [
+      `You can master ${t} — faster than you think.`,
+      `${t.charAt(0).toUpperCase() + t.slice(1)} is not gatekept. It is just undersystematized.`,
+    ],
+    identity_threat: [
+      `If you have not updated your ${t} skills since 2022, you are already behind.`,
+      `AI is changing ${t} faster than most training programs are admitting.`,
+    ],
+    speed_to_outcome: [
+      `Start with ${t}. See measurable progress this week.`,
+      `One ${t} session shows you more than six months of theory.`,
+    ],
+    myth_busting: [
+      `Myth: ${t} is only for senior professionals. Truth: it is for anyone who can prove it.`,
+      `Myth: ${t} takes a degree. Truth: it takes demonstrated capability.`,
+    ],
+    behind_the_build: [
+      `We built ${t} into every Aladiah module. Here is why.`,
+      `Why ${t} was the first thing we got right — and how we did it.`,
+    ],
+    transformation_story: [
+      `From zero ${t} experience to interview-ready: what the path looks like.`,
+      `${t.charAt(0).toUpperCase() + t.slice(1)} is not a topic. It is a transformation.`,
+    ],
+  };
+  return variants[bucket] ?? [];
 }
 
 // ---------------------------------------------------------------------------
@@ -317,7 +661,7 @@ export function linkedinAuthorityPosts(count = 10): GrowthAsset[] {
   ];
 
   return topics.slice(0, count).map((t) => {
-    const base: Omit<GrowthAsset, 'score'> = {
+    const base: Omit<GrowthAsset, 'score' | 'excellence'> = {
       sub_agent: 'linkedin-authority',
       channel: 'linkedin',
       content_type: 'thought_leadership',
@@ -341,7 +685,7 @@ export function linkedinAuthorityPosts(count = 10): GrowthAsset[] {
       hashtags: ['CareerTransformation', 'AIWorkforce', 'FutureOfWork', 'Aladiah'],
       metadata: { pillar: 'ai_career_transformation' },
     };
-    return { ...base, score: scoreAsset(base) };
+    return { ...base, ...scoreAsset(base) };
   });
 }
 
@@ -404,7 +748,7 @@ export function shortVideoScripts(count = 10): GrowthAsset[] {
   ];
 
   return scripts.slice(0, count).map((s, i) => {
-    const base: Omit<GrowthAsset, 'score'> = {
+    const base: Omit<GrowthAsset, 'score' | 'excellence'> = {
       sub_agent: 'short-form-video',
       channel: i % 2 === 0 ? 'instagram' : 'tiktok',
       content_type: 'reel_script',
@@ -420,7 +764,7 @@ export function shortVideoScripts(count = 10): GrowthAsset[] {
       hashtags: ['AladiaAcademy', 'AICareer', 'CareerTransformation', 'FutureOfWork'],
       metadata: { format: 'vertical_9x16', target_length_sec: 30 },
     };
-    return { ...base, score: scoreAsset(base) };
+    return { ...base, ...scoreAsset(base) };
   });
 }
 
@@ -588,7 +932,7 @@ function buildChannelAsset(
 ): GrowthAsset {
   const ct = contentType ?? (channel === 'linkedin' ? 'thought_leadership' : channel === 'email' ? 'launch_email' : 'caption');
   const body = buildBody(channel, hook, theme, day);
-  const base: Omit<GrowthAsset, 'score'> = {
+  const base: Omit<GrowthAsset, 'score' | 'excellence'> = {
     sub_agent: channelToAgent(channel),
     channel,
     content_type: ct,
@@ -604,7 +948,7 @@ function buildChannelAsset(
     hashtags: ['Aladiah', 'AICareer', 'CareerTransformation', 'FutureOfWork'],
     metadata: { day, theme, channel },
   };
-  return { ...base, score: scoreAsset(base) };
+  return { ...base, ...scoreAsset(base) };
 }
 
 function buildBody(channel: GrowthChannel, hook: string, theme: string, day: string): string {
@@ -703,7 +1047,7 @@ export function cameroonGrowthAssets(): GrowthAsset[] {
   ];
 
   return posts.map((p) => {
-    const base: Omit<GrowthAsset, 'score'> = {
+    const base: Omit<GrowthAsset, 'score' | 'excellence'> = {
       sub_agent: 'cameroon-growth',
       channel: 'linkedin',
       content_type: 'regional_authority',
@@ -719,7 +1063,7 @@ export function cameroonGrowthAssets(): GrowthAsset[] {
       hashtags: ['Cameroon', 'AfricaAI', 'WorkforceTransformation', 'Aladiah', 'CAMTEL'],
       metadata: { region: 'cameroon', pillar: 'africa_workforce' },
     };
-    return { ...base, score: scoreAsset(base) };
+    return { ...base, ...scoreAsset(base) };
   });
 }
 
@@ -746,7 +1090,7 @@ export function dominicanRepublicGrowthAssets(): GrowthAsset[] {
   ];
 
   return posts.map((p) => {
-    const base: Omit<GrowthAsset, 'score'> = {
+    const base: Omit<GrowthAsset, 'score' | 'excellence'> = {
       sub_agent: 'dr-growth',
       channel: 'instagram',
       content_type: 'regional_caption',
@@ -762,7 +1106,7 @@ export function dominicanRepublicGrowthAssets(): GrowthAsset[] {
       hashtags: ['RepublicaDominicana', 'CarreraEnTech', 'AICareer', 'Aladiah'],
       metadata: { region: 'dominican_republic', language: 'es', pillar: 'dr_workforce' },
     };
-    return { ...base, score: scoreAsset(base) };
+    return { ...base, ...scoreAsset(base) };
   });
 }
 
@@ -785,7 +1129,7 @@ export function employerTrustAssets(): GrowthAsset[] {
   ];
 
   return posts.map((p) => {
-    const base: Omit<GrowthAsset, 'score'> = {
+    const base: Omit<GrowthAsset, 'score' | 'excellence'> = {
       sub_agent: 'employer-trust',
       channel: 'linkedin',
       content_type: 'b2b_authority',
@@ -801,7 +1145,7 @@ export function employerTrustAssets(): GrowthAsset[] {
       hashtags: ['TalentAcquisition', 'FutureOfWork', 'AIWorkforce', 'Aladiah'],
       metadata: { pillar: 'employer_trust', b2b: true },
     };
-    return { ...base, score: scoreAsset(base) };
+    return { ...base, ...scoreAsset(base) };
   });
 }
 
