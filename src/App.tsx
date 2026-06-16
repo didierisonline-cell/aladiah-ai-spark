@@ -29,6 +29,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import CommandCenter from "./pages/admin/CommandCenter";
 import AgentOS from "./pages/admin/AgentOS";
 import MarketingAgent from "./pages/admin/MarketingAgent";
+import GrowthAgent from "./pages/admin/GrowthAgent";
 import SeoAgent from "./pages/admin/SeoAgent";
 import AIWorkforce from "./pages/admin/AIWorkforce";
 import ProductAgent from "./pages/admin/ProductAgent";
@@ -137,6 +138,7 @@ const AppContent = () => {
         <Route path="/admin/command-center" element={<FounderRoute><CommandCenter /></FounderRoute>} />
         <Route path="/admin/agent-os" element={<FounderRoute><AgentOS /></FounderRoute>} />
         <Route path="/admin/marketing-agent" element={<FounderRoute><MarketingAgent /></FounderRoute>} />
+        <Route path="/admin/growth-agent" element={<FounderRoute><GrowthAgent /></FounderRoute>} />
         <Route path="/admin/seo-agent" element={<FounderRoute><SeoAgent /></FounderRoute>} />
         <Route path="/admin/product-agent" element={<FounderRoute><ProductAgent /></FounderRoute>} />
         <Route path="/admin/qa-agent" element={<FounderRoute><QAAgent /></FounderRoute>} />

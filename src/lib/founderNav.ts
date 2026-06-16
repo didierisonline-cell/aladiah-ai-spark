@@ -29,6 +29,7 @@ export const FOUNDER_NAV_ITEMS: FounderNavItem[] = [
   { to: '/admin/curriculum-excellence', label: 'Curriculum', icon: Award },
   { to: '/admin/content', label: 'Authoring', icon: FilePlus2 },
   { to: '/admin/production', label: 'Production', icon: Server },
+  { to: '/admin/growth-agent', label: 'Growth CGO', icon: Rocket },
   { to: '/admin/marketing-agent', label: 'Marketing', icon: Megaphone },
   { to: '/admin/seo-agent', label: 'SEO', icon: Search },
   { to: '/admin/product-agent', label: 'Product', icon: BookOpen },
