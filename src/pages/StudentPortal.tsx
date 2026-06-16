@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { useProgress } from '@/hooks/useProgress';
 import { talentScoreFromProgress } from '@/hooks/useTalentScore';
+import { displayNameFromEmail } from '@/lib/avatar';
 import { activeHref } from '@/lib/nav';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { isFounderEmail } from '@/lib/roles';
@@ -414,7 +415,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
     }
   };
 
-  const userName = user?.email?.split('@')[0] || 'Student';
+  const userName = displayNameFromEmail(user?.email);
   const displayName = userName.length > 12 ? userName.slice(0, 12) : userName;
   const initials = (userName[0] || 'A').toUpperCase() + (userName[1] || '').toUpperCase();
 

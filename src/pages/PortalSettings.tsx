@@ -4,6 +4,7 @@ import PortalShell from '@/components/portal/PortalShell';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { displayNameFromEmail, initialsFromEmail } from '@/lib/avatar';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', muted:'#18243A', border:'#1E2D47',
@@ -106,8 +107,8 @@ export default function PortalSettings() {
   const { user } = useAuth();
   const { language, setLanguage, t } = useLanguage();
 
-  const initials = (user?.email?.slice(0,1) || 'A').toUpperCase() + (user?.email?.split('@')[0]?.slice(1,2) || '').toUpperCase();
-  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || '';
+  const initials = initialsFromEmail(user?.email, user?.user_metadata?.full_name);
+  const displayName = displayNameFromEmail(user?.email, user?.user_metadata?.full_name);
 
   // Form state
   const [name, setName] = useState(displayName);

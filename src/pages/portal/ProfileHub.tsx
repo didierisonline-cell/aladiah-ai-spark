@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import MobileShell from '@/components/mobile/MobileShell';
+import { displayNameFromEmail, initialsFromEmail } from '@/lib/avatar';
 
 const C = { fg: '#EDF2F7', fm: '#8596AD', card: 'rgba(8,20,52,.7)', border: 'rgba(255,255,255,.08)' };
 
@@ -31,8 +32,8 @@ const GROUPS: { title: string; items: { icon: string; label: string; to?: string
 export default function ProfileHub() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const name = user?.email?.split('@')[0] || 'Student';
-  const initials = (name.slice(0, 1) + (name.slice(1, 2) || '')).toUpperCase();
+  const name = displayNameFromEmail(user?.email);
+  const initials = initialsFromEmail(user?.email);
 
   const logout = async () => {
     try { await supabase.auth.signOut(); } catch { /* ignore */ }
