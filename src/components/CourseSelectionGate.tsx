@@ -82,13 +82,13 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
       const { error } = await supabase.from('profiles').upsert(updateData, { onConflict: 'user_id' });
       if (error) {
         console.error('Course selection save failed:', error);
-        setSaveError('Could not save your course selection. Please try again.');
+        setSaveError('Could not save your program selection. Please try again.');
         setLoading(false);
         return;
       }
     } catch (e) {
       console.error('Course selection save exception:', e);
-      setSaveError('Could not save your course selection. Please try again.');
+      setSaveError('Could not save your program selection. Please try again.');
       setLoading(false);
       return;
     }
@@ -113,16 +113,16 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
             <GraduationCap className="w-8 h-8" style={{ color: '#818cf8' }} />
           </div>
           <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>
-            Choose Your Free Course
+            Choose Your Free Program
           </h1>
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', maxWidth: '400px', margin: '0 auto' }}>
-            Pick one course to explore with full Module 1 access. You can change your selection once before you start.
+            Pick one program to explore — Module 1 free. You can change your selection once before you start.
           </p>
           {currentSelection && (
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '12px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '100px', padding: '4px 14px' }}>
               <RefreshCw style={{ width: '12px', height: '12px', color: '#f59e0b' }} />
               <span style={{ fontSize: '11px', color: '#f59e0b', fontWeight: 600 }}>
-                {switchUsed ? 'Switch already used — this is your locked course' : 'You can change this one more time'}
+                {switchUsed ? 'Switch already used — this is your locked program' : 'You can change this one more time'}
               </span>
             </div>
           )}
@@ -159,7 +159,7 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
                       {course.title}
                     </p>
                     <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.4 }}>
-                      Module 1 free · Full access with All-Access Pass
+                      Module 1 free · All programs unlocked with All-Access Pass
                     </p>
                   </div>
                 </div>
@@ -187,13 +187,13 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
           >
             {loading ? 'Saving...' : (
               <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {selectedCourseName ? `Start with ${selectedCourseName.split(':')[0]}` : 'Select a Course'}
+                {selectedCourseName ? `Start with ${selectedCourseName.split(':')[0]}` : 'Select a Program'}
                 <ArrowRight style={{ width: '16px', height: '16px' }} />
               </span>
             )}
           </Button>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '10px' }}>
-            Want all 8 courses? Upgrade to All-Access Pass for $99.99/month
+            Want access to all programs? Upgrade to All-Access Pass for $99.99/month
           </p>
           {saveError && (
             <p style={{ fontSize: '12px', color: '#f87171', marginTop: '10px' }}>{saveError}</p>

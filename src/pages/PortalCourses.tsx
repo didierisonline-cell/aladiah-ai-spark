@@ -56,11 +56,14 @@ export default function PortalCourses() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [courses, setCourses] = useState<any[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { isPhone } = useBreakpoint();
 
   useEffect(() => {
     if (!user) return;
+    // Load published programs AND the student's selected program (free_course_id) so
+    // the Learn tab continues with the SAME program chosen at signup, not courses[0].
     supabase
       .from('courses')
       .select('id, title, description, translations')
@@ -70,9 +73,21 @@ export default function PortalCourses() {
         if (data) setCourses(data);
         setLoading(false);
       });
+    supabase
+      .from('profiles')
+      .select('free_course_id')
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data }) => setSelectedId(data?.free_course_id ?? null));
   }, [user]);
 
-  if (isPhone) return <MobileLearn courses={courses} loading={loading} />;
+  // Selected program first, so both the phone "continue" card and the desktop grid
+  // lead with the program the student actually chose.
+  const orderedCourses = selectedId
+    ? [...courses].sort((a, b) => (a.id === selectedId ? -1 : b.id === selectedId ? 1 : 0))
+    : courses;
+
+  if (isPhone) return <MobileLearn courses={orderedCourses} loading={loading} selectedId={selectedId} />;
 
   return (
     <PortalShell background={DS.bg}>
@@ -80,39 +95,43 @@ export default function PortalCourses() {
           <div style={{ marginBottom: '1.75rem', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
             <div>
               <h1 style={{ fontSize: '1.6rem', fontWeight: 800 }}>My Academy</h1>
-              <div style={{ fontSize: 13, color: DS.fm, marginTop: '.2rem' }}>Select a course to start learning.</div>
+              <div style={{ fontSize: 13, color: DS.fm, marginTop: '.2rem' }}>Select a program to start learning.</div>
             </div>
             <button onClick={() => navigate('/portal/my-career-path')} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', background: 'linear-gradient(135deg, #4A90F5, #7AB5FF)', border: 'none', borderRadius: '.75rem', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 14px rgba(74,144,245,.35)', whiteSpace: 'nowrap' }}>🎯 My Career Path</button>
           </div>
 
           {loading ? (
-            <div style={{ color: DS.fm, fontSize: 14 }}>Loading courses...</div>
+            <div style={{ color: DS.fm, fontSize: 14 }}>Loading programs...</div>
           ) : courses.length === 0 ? (
             <div style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', padding: '3rem', textAlign: 'center' }}>
               <div style={{ fontSize: 32, marginBottom: '.75rem' }}>📚</div>
-              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: '.5rem' }}>No Courses Yet</div>
-              <div style={{ fontSize: 13, color: DS.fm }}>Check back soon — courses are being added.</div>
+              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: '.5rem' }}>No Programs Yet</div>
+              <div style={{ fontSize: 13, color: DS.fm }}>Check back soon — programs are being added.</div>
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
-              {courses.map((c) => {
+              {orderedCourses.map((c) => {
                 const icon = COURSE_ICONS[c.title] || '📖';
+                const isSelected = c.id === selectedId;
                 return (
                   <div
                     key={c.id}
                     onClick={() => navigate(`/portal/course/${c.id}`)}
-                    style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.875rem', padding: '1.5rem', cursor: 'pointer', transition: 'all .18s' }}
+                    style={{ background: DS.card, border: `1px solid ${isSelected ? DS.blue : DS.border}`, borderRadius: '.875rem', padding: '1.5rem', cursor: 'pointer', transition: 'all .18s', boxShadow: isSelected ? '0 0 0 1px rgba(74,144,245,.35)' : 'none' }}
                     onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = DS.bb; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 24px rgba(0,0,0,.25)'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = DS.border; (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = isSelected ? DS.blue : DS.border; (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = isSelected ? '0 0 0 1px rgba(74,144,245,.35)' : 'none'; }}
                   >
-                    <div style={{ fontSize: 32, marginBottom: '.75rem' }}>{icon}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '.75rem' }}>
+                      <div style={{ fontSize: 32 }}>{icon}</div>
+                      {isSelected && <span style={{ fontSize: 10, fontWeight: 800, color: DS.blue, background: 'rgba(74,144,245,.12)', border: `1px solid ${DS.bb}`, borderRadius: 99, padding: '3px 10px', letterSpacing: '.04em' }}>YOUR PROGRAM</span>}
+                    </div>
                     <div style={{ fontSize: 14, fontWeight: 700, marginBottom: '.4rem', lineHeight: 1.3 }}>{c.translations?.[language]?.title || c.title}</div>
                     <div style={{ fontSize: 12, color: DS.fm, lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>
                       {c.description}
                     </div>
                     <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span style={{ fontSize: 11, color: DS.green, fontWeight: 600 }}>All-Access Pass™</span>
-                      <span style={{ fontSize: 12, color: DS.fm }}>Start →</span>
+                      <span style={{ fontSize: 12, color: isSelected ? DS.blue : DS.fm, fontWeight: isSelected ? 700 : 400 }}>{isSelected ? 'Continue →' : 'Start →'}</span>
                     </div>
                   </div>
                 );

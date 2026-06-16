@@ -13,12 +13,13 @@ const ICONS: Record<string, string> = {
 };
 
 /** Learn tab root (phone). Program list + continue where you left off. */
-export default function MobileLearn({ courses, loading }: { courses: any[]; loading: boolean }) {
+export default function MobileLearn({ courses, loading, selectedId }: { courses: any[]; loading: boolean; selectedId?: string | null }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { language } = useLanguage();
   const { progress } = useProgress(user?.id);
-  const top = courses[0];
+  // Continue with the student's SELECTED program (source of truth), not courses[0].
+  const top = (selectedId && courses.find(c => c.id === selectedId)) || courses[0];
   const titleOf = (c: any) => c?.translations?.[language]?.title || c?.title || 'Program';
 
   return (

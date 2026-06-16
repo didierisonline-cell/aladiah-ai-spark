@@ -11,7 +11,7 @@ interface Props {
 }
 
 const FEATURES = [
-  'All 8 certification courses',
+  'All certification programs',
   'All modules unlocked',
   'Prof. Didier AI voice — unlimited',
   '60 module quizzes',
@@ -69,16 +69,16 @@ export const StarterPaywall = ({ reason, courseName }: Props) => {
                 🎉 You Completed Module 1!
               </h1>
               <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.55)', maxWidth: '360px', margin: '0 auto', lineHeight: 1.6 }}>
-                Your free access covers Module 1 only. Unlock the full course — and all 7 others — with the All-Access Pass.
+                Your free access covers Module 1 only. All programs unlocked with the All-Access Pass.
               </p>
             </>
           ) : (
             <>
               <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#fff', marginBottom: '10px' }}>
-                This Course is Locked
+                This Program is Locked
               </h1>
               <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.55)', maxWidth: '360px', margin: '0 auto', lineHeight: 1.6 }}>
-                Your free access is limited to <strong style={{ color: '#fff' }}>{courseName || 'your selected course'}</strong>, Module 1 only. Upgrade to access everything.
+                Your free access is limited to <strong style={{ color: '#fff' }}>{courseName || 'your selected program'}</strong>, Module 1 only. Upgrade to All-Access Pass for $99.99/month to access everything.
               </p>
             </>
           )}

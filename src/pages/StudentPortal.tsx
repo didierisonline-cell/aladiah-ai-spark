@@ -421,15 +421,25 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
     recap?.mode === 'upgrade_coach' ? T('prof_rec_upgrade') :
     null;
   const topCourse = courses.find(c => c.pct > 0 && c.pct < 100) || courses[0];
-  // "Your Next Action" source: prefer the student's actually-selected program
-  // (recap.current_course) over topCourse's courses[0] fallback. No new fetch —
-  // if the selected program matches a loaded `courses` entry, reuse its real
-  // progress (done/total/pct); otherwise render title-only (no fabricated numbers).
+  // "Your Next Action" source of truth = the student's SELECTED program
+  // (profiles.free_course_id, already loaded into profileRow — no extra fetch).
+  // The home, Learn tab, and program detail must all reflect the SAME program the
+  // student chose, so the selection wins over any progress-based default. When a
+  // program is selected we never fall back to courses[0] (that was the bug: a fresh
+  // free student with no progress saw an arbitrary default instead of their pick).
+  // recap.current_course (also derived from free_course_id) and topCourse remain
+  // fallbacks ONLY when no program has been selected (e.g. All-Access students).
   const recapCourse = recap?.current_course;
   const recapCourseProg = recapCourse?.id ? courses.find((c: any) => c.id === recapCourse.id) : null;
-  const nextActionCourse = recapCourse?.id
-    ? { id: recapCourse.id, title: recapCourse.title || recapCourseProg?.title || '', prog: recapCourseProg }
-    : (topCourse ? { id: topCourse.id, title: topCourse.title, prog: topCourse } : null);
+  const selectedProgramId = profileRow?.free_course_id || null;
+  const selectedProgram = selectedProgramId ? courses.find((c: any) => c.id === selectedProgramId) : null;
+  const nextActionCourse = selectedProgramId
+    ? (selectedProgram
+        ? { id: selectedProgram.id, title: selectedProgram.title, prog: selectedProgram }
+        : { id: selectedProgramId, title: recapCourse?.id === selectedProgramId ? (recapCourse.title || '') : '', prog: null })
+    : (recapCourse?.id
+        ? { id: recapCourse.id, title: recapCourse.title || recapCourseProg?.title || '', prog: recapCourseProg }
+        : (topCourse ? { id: topCourse.id, title: topCourse.title, prog: topCourse } : null));
   const nextActionHasProgress = !!(nextActionCourse?.prog && (nextActionCourse.prog.total ?? 0) > 0);
   const overallPct = courses.length > 0 ? Math.round(courses.reduce((s, c) => s + c.pct, 0) / courses.length) : 0;
   const ALL_SCHOOLS = ['AI Engineering', 'AI Business', 'Governance & Risk', 'Human-AI Experience'];
