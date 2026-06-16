@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import MobileShell from '@/components/mobile/MobileShell';
+import PortalShell from '@/components/portal/PortalShell';
+import { useBreakpoint } from '@/hooks/useBreakpoint';
 
 const C = { fg: '#EDF2F7', fm: '#8596AD', blue: '#4A90F5', purple: '#A78BFA', card: 'rgba(8,20,52,.7)', border: 'rgba(255,255,255,.08)' };
 
@@ -17,8 +19,9 @@ const MODES = [
 
 export default function MentorHub() {
   const navigate = useNavigate();
-  return (
-    <MobileShell title="AI Mentor">
+  const { isPhone } = useBreakpoint();
+
+  const body = (
       <div style={{ padding: '18px 16px 8px', maxWidth: 620, margin: '0 auto' }}>
         {/* Hero */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, background: 'linear-gradient(150deg,rgba(37,99,235,.26),rgba(124,58,237,.22))', border: '1px solid rgba(99,102,241,.3)', borderRadius: 20, padding: 18, marginBottom: 18 }}>
@@ -41,6 +44,10 @@ export default function MentorHub() {
           ))}
         </div>
       </div>
-    </MobileShell>
   );
+
+  // Phone keeps the native mobile shell; desktop/tablet folds into the one
+  // PortalShell (Header + sidebar) so the mentor surface matches every other page.
+  if (isPhone) return <MobileShell title="AI Mentor">{body}</MobileShell>;
+  return <PortalShell>{body}</PortalShell>;
 }

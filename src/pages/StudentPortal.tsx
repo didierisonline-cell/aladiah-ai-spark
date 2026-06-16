@@ -5,17 +5,21 @@ import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { useProgress } from '@/hooks/useProgress';
+import { talentScoreFromProgress } from '@/hooks/useTalentScore';
+import { displayNameFromEmail } from '@/lib/avatar';
+import { activeHref } from '@/lib/nav';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { isFounderEmail } from '@/lib/roles';
 import { useFounderMode } from '@/hooks/useFounderMode';
 import MobileHome from '@/components/portal/MobileHome';
+import PortalSidebar from '@/components/PortalSidebar';
+import Header from '@/components/Header';
 import { useSubscription } from '@/hooks/useSubscription';
 import { CreedAcknowledgmentGate, shouldShowCreedGate, getLocalDateString } from '@/components/CreedAcknowledgmentGate';
 import CourseSelectionGate from '@/components/CourseSelectionGate';
 import { StreakDetailModal, PointsDetailModal, LabsDetailModal } from '@/components/portal/StatDetailModals';
 import globeBg from '@/assets/global-network-bg.png';
 import profCardBg from '@/assets/professor-didier-card.png';
-import Logo from '@/components/Logo';
 
 // ── TRANSLATIONS ──────────────────────────────────────────────────────────────
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -34,11 +38,10 @@ function getDateStr(lang?: string) {
   }
 }
 
-const MOMENTUM = [
-  { name: 'Sarah K.', action: 'got_hired', role: 'Cloud Engineer', company: 'Amazon', salary: '$120,000', time: '2min' },
-  { name: 'David M.', action: 'completed', program: 'AI Cloud Engineer Program', time: '15min' },
-  { name: 'Aisha B.', action: 'earned', cert: 'AWS Solutions Architect Cert.', time: '32min' },
-];
+// Career-momentum feed: previously hardcoded fabricated hires/salaries (e.g.
+// "Sarah K. hired … $120,000"). Cleared to avoid showing fabricated social proof
+// in production; populate from real verified graduate outcomes when available.
+const MOMENTUM: { name: string; action: string; role?: string; company?: string; salary?: string; program?: string; cert?: string; time: string }[] = [];
 const SKILLS = [
   { label: 'Cloud Architecture', pct: 92, color: '#6366f1' },
   { label: 'Problem Solving', pct: 88, color: '#8b5cf6' },
@@ -49,7 +52,7 @@ const SKILLS = [
 const TOOLS = [
   { icon: '🎤', lbl: 'ai_interview', sub: 'practice_now', path: '/portal/career' },
   { icon: '📄', lbl: 'resume_builder', sub: 'optimize_cv', path: '/portal/career' },
-  { icon: '💼', lbl: 'job_matches', sub: 'new_jobs', path: '/portal/my-career-path', count: '12' },
+  { icon: '💼', lbl: 'job_matches', sub: 'new_jobs', path: '/portal/my-career-path' },
   { icon: '📊', lbl: 'portfolio_analyzer', sub: 'get_feedback', path: '/portal/portfolio' },
   { icon: '💰', lbl: 'salary_insights', sub: 'know_worth', path: '/portal/my-career-path' },
 ];
@@ -118,24 +121,13 @@ function sbFetch<T>(query: Promise<{ data: T | null; error: any }>, fallback: T,
 
 const LANGS = ['EN', 'ES', 'FR', 'DE', 'ZH', 'AR', 'JA'];
 
-const OVERVIEW_LANGS = [
-  { code: 'en', label: 'English' }, { code: 'es', label: 'Español' }, { code: 'zh', label: '中文' },
-  { code: 'ar', label: 'العربية' }, { code: 'fr', label: 'Français' }, { code: 'de', label: 'Deutsch' },
-  { code: 'ja', label: '日本語' }, { code: 'pt', label: 'Português' }, { code: 'hi', label: 'हिन्दी' },
-  { code: 'ko', label: '한국어' }, { code: 'it', label: 'Italiano' }, { code: 'ru', label: 'Русский' },
-  { code: 'nl', label: 'Nederlands' }, { code: 'pl', label: 'Polski' }, { code: 'tr', label: 'Türkçe' },
-  { code: 'sw', label: 'Kiswahili' }, { code: 'yo', label: 'Yorùbá' }, { code: 'ha', label: 'Hausa' },
-  { code: 'ig', label: 'Igbo' }, { code: 'vi', label: 'Tiếng Việt' }, { code: 'th', label: 'ภาษาไทย' },
-];
-
 export default function StudentPortal() {
   const navigate = useNavigate();
-  const handleLogout = async () => { await supabase.auth.signOut(); window.location.href = '/'; };
   const location = useLocation();
   const { user } = useAuth();
-  const { language, setLanguage } = useLanguage();
+  const { language } = useLanguage();
   const { progress: overallProgress } = useProgress(user?.id);
-  const { isPhone } = useBreakpoint();
+  const { isPhone, isDesktop } = useBreakpoint();
   // Founder God Mode: unrestricted only when the founder has the toggle ON.
   // When OFF, the founder sees the real student experience (gates apply).
   const { godMode } = useFounderMode();
@@ -156,7 +148,6 @@ export default function StudentPortal() {
   const [courses, setCourses] = useState<any[]>([]);
   const [certCount, setCertCount] = useState(0);
   const [activeSchool, setActiveSchool] = useState('AI Engineering');
-  const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [streakModal, setStreakModal] = useState(false);
   const [pointsModal, setPointsModal] = useState(false);
   const [labsModal, setLabsModal] = useState(false);
@@ -165,8 +156,12 @@ export default function StudentPortal() {
   const [profLoading, setProfLoading] = useState(false);
   const [profileRow, setProfileRow] = useState<any | null>(null); // extended profiles row (recap-state cols); consumers (mute/DB day-gate) land in a follow-up
   const [recap, setRecap] = useState<any | null>(null);           // get-student-recap response (Option-A contract); text-only this step
-  const [talentScore] = useState(612);
-  const [hoursLeft] = useState(412);
+  // Talent Score — single source of truth (derived from real quiz progress).
+  // Same formula the Talent Score page uses, so the two screens always agree.
+  const talentScore = talentScoreFromProgress(overallProgress);
+  // "Hours to employable" derived from real progress against a 600-hour program
+  // target (was a hardcoded 412 placeholder).
+  const hoursLeft = Math.round(((100 - Math.max(0, Math.min(100, overallProgress))) / 100) * 600);
 
   const T = (key: string) => overviewT(language || 'en', key);
 
@@ -408,7 +403,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
     }
   };
 
-  const userName = user?.email?.split('@')[0] || 'Student';
+  const userName = displayNameFromEmail(user?.email);
   const displayName = userName.length > 12 ? userName.slice(0, 12) : userName;
   const initials = (userName[0] || 'A').toUpperCase() + (userName[1] || '').toUpperCase();
 
@@ -450,7 +445,9 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
   );
 
   // ── Phone only (< 768px): the redesigned mobile shell. Tablet & desktop below are untouched. ──
-  if (isPhone) {
+  // Tablet/iPad (<1024) gets the responsive MobileHome too, matching the rest of
+  // the portal (which hides the fixed sidebar <=1024). Desktop keeps the 3-col.
+  if (!isDesktop) {
     return (
       <MobileHome
         name={displayName}
@@ -468,44 +465,10 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
       {/* Gradient overlay */}
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1, pointerEvents: 'none', background: 'linear-gradient(to right,rgba(2,8,23,.97) 0%,rgba(2,8,23,.9) 14%,rgba(2,8,23,.58) 36%,rgba(2,8,23,.1) 62%,rgba(2,8,23,0) 100%)' }} />
 
-      {/* ── TOP NAV ── */}
-      <nav style={{ position: 'relative', zIndex: 20, height: 70, flexShrink: 0, background: 'rgba(2,8,23,.9)', borderBottom: '1px solid rgba(255,255,255,.07)', backdropFilter: 'blur(24px)', display: 'grid', gridTemplateColumns: '200px 1fr auto', alignItems: 'center', padding: '0 22px' }}>
-        <div onClick={() => navigate('/portal')} style={{ cursor: 'pointer' }}><Logo variant="full" style={{ height: 44 }} /></div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-          {[T('nav_my_portal'), T('nav_courses'), 'Simulations', T('nav_talent_score'), T('nav_career'), T('nav_community'), T('nav_resources')].map((item, i) => (
-            <button key={item} onClick={() => {
-              if (i === 0) navigate('/portal');
-              else if (i === 1) navigate('/portal/courses');
-              else if (i === 2) navigate('/portal/simulations');
-              else if (i === 3) navigate('/portal/talent-score');
-              else if (i === 4) navigate('/portal/career');
-              else if (i === 5) navigate('/community');
-              else if (i === 6) navigate('/portal/resources');
-              else navigate('/portal');
-            }} style={{ background: 'none', border: 'none', borderBottom: i === 0 ? '2.5px solid #3b82f6' : '2.5px solid transparent', color: i === 0 ? '#fff' : '#5a6a8a', fontSize: 14, fontWeight: i === 0 ? 700 : 500, padding: '0 16px', height: 56, cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap', transition: 'color .15s' }}>
-              {item}
-            </button>
-          ))}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {/* Language */}
-          <div style={{ position: 'relative' }}>
-            <button onClick={() => setLangMenuOpen(!langMenuOpen)} style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.13)', color: '#cbd5e1', borderRadius: 8, padding: '6px 12px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
-              {(language || 'en').toUpperCase()} <span style={{ fontSize: 10 }}>▾</span>
-            </button>
-            {langMenuOpen && (
-              <div style={{ position: 'absolute', top: '110%', right: 0, background: '#0d1829', border: '1px solid rgba(255,255,255,.1)', borderRadius: 10, padding: 6, zIndex: 200, minWidth: 140, maxHeight: 320, overflowY: 'auto' }}>
-                {OVERVIEW_LANGS.map(l => (
-                  <button key={l.code} onClick={() => { setLanguage(l.code as any); setLangMenuOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', textAlign: 'left', padding: '7px 12px', background: language === l.code ? 'rgba(59,130,246,.2)' : 'none', border: 'none', color: '#e2e8f8', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', borderRadius: 6, fontFamily: 'inherit' }}>
-                    <span style={{ opacity: .55, fontSize: 11, minWidth: 20 }}>{l.code.toUpperCase()}</span>{l.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: '#f97316', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Done for the Day</button>
-        </div>
-      </nav>
+      {/* ── TOP NAV ── the one shared Header (fixed, 70px). Spacer below reserves
+          its space in the flex column, mirroring PortalShell's paddingTop:70. */}
+      <Header />
+      <div style={{ height: 70, flexShrink: 0 }} />
 
       {/* ── SECOND BAR ── */}
       <div style={{ position: 'relative', zIndex: 10, height: 44, flexShrink: 0, background: 'rgba(2,8,23,.82)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,.05)', display: 'flex', alignItems: 'center', padding: '0 22px' }}>
@@ -520,81 +483,9 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
       </div>
 
       {/* ── BODY ── */}
-      <div style={{ position: 'relative', zIndex: 5, display: 'grid', gridTemplateColumns: '200px 1fr 310px', flex: 1, overflow: 'hidden', minHeight: 0 }}>
+      <div style={{ position: 'relative', zIndex: 5, display: 'grid', gridTemplateColumns: '260px 1fr 310px', flex: 1, overflow: 'hidden', minHeight: 0 }}>
 
-        {/* ── SIDEBAR ── */}
-        <aside style={{ background: 'rgba(2,6,18,.72)', backdropFilter: 'blur(20px)', display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRight: 'none', position: 'relative', zIndex: 5 }}>
-          {/* User block */}
-          <div style={{ padding: '20px 14px 16px', borderBottom: '1px solid rgba(255,255,255,.06)', flexShrink: 0 }}>
-            <div style={{ position: 'relative', width: 64, height: 64, marginBottom: 12 }}>
-              <div style={{ position: 'absolute', inset: -3, borderRadius: '50%', background: 'linear-gradient(135deg,#3b82f6,#7c3aed,#a855f7)', boxShadow: '0 0 18px rgba(59,130,246,.75),0 0 35px rgba(124,58,237,.5)' }} />
-              <div style={{ position: 'absolute', inset: 3, borderRadius: '50%', background: 'linear-gradient(160deg,#1a2550,#0d1535,#080d28)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 800, color: '#fff' }}>
-                {initials}
-              </div>
-            </div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 7 }}>{displayName}</div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(10,20,55,.75)', border: '1px solid rgba(255,255,255,.11)', color: '#c7d2fe', padding: '5px 10px', borderRadius: 8, fontSize: 12, fontWeight: 500, marginBottom: 5 }}>
-              {T('pro_member')} <span style={{ color: '#818cf8' }}>◆</span>
-            </div>
-            <div style={{ fontSize: 12, color: '#64748b', marginBottom: 13 }}>Plan: <b style={{ color: '#e2e8f8' }}>{T('all_access')}</b></div>
-            <div style={{ background: 'rgba(5,15,40,.65)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 10, padding: '10px 12px' }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 7, marginBottom: 7 }}>
-                <span style={{ fontSize: 24, fontWeight: 900, color: '#f97316', textShadow: '0 0 18px rgba(249,115,22,.5)' }}>{hoursLeft}</span>
-                <span style={{ fontSize: 11.5, color: '#94a3b8' }}>{T('hours_employable')}</span>
-              </div>
-              <div style={{ height: 5, background: 'rgba(255,255,255,.08)', borderRadius: 99, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${(hoursLeft / 600) * 100}%`, background: 'linear-gradient(90deg,#f97316,#fb923c)', borderRadius: 99, boxShadow: '0 0 10px rgba(249,115,22,.5)' }} />
-              </div>
-            </div>
-          </div>
-
-          {/* Nav links */}
-          <div style={{ flex: 1, overflow: 'hidden' }}>
-            {[
-              { icon: '🏠', lbl: T('overview'), path: '/portal', exact: true },
-              { icon: '📚', lbl: T('my_academy'), path: '/portal/courses', badge: courses.length || undefined },
-              { icon: '🎯', lbl: T('my_career'), path: '/portal/my-career-path' },
-              { icon: '🌐', lbl: 'Simulations', path: '/portal/simulations' },
-              { icon: '⭐', lbl: T('talent'), path: '/portal/talent-score' },
-              { icon: '🏅', lbl: T('certs'), path: '/portal/certifications' },
-              { icon: '💼', lbl: T('career_tools'), path: '/portal/career' },
-              { icon: '🗂️', lbl: T('portfolio'), path: '/portal/portfolio' },
-              { icon: '🧪', lbl: T('labs'), path: '/portal' },
-              { icon: '🤖', lbl: 'AI Mentor', path: '/portal' },
-              { icon: '👥', lbl: T('community'), path: '/community' },
-              { icon: '🏆', lbl: T('leaderboard'), path: '/portal/talent-score' },
-              { icon: '📅', lbl: T('events'), path: '/community' },
-            ].map(link => {
-              const isOn = link.exact ? location.pathname === '/portal' : location.pathname === link.path;
-              return (
-                <button key={link.lbl} onClick={() => navigate(link.path)} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: isOn ? '#fff' : '#64748b', fontSize: 13, fontWeight: isOn ? 700 : 500, cursor: 'pointer', border: 'none', background: isOn ? 'linear-gradient(90deg,rgba(59,130,246,.22),rgba(99,102,241,.05))' : 'none', borderLeft: `3px solid ${isOn ? '#3b82f6' : 'transparent'}`, width: '100%', textAlign: 'left', fontFamily: 'inherit', transition: 'all .15s' }}>
-                  <span style={{ fontSize: 15, width: 18, textAlign: 'center', flexShrink: 0 }}>{link.icon}</span>
-                  {link.lbl}
-                  {link.badge && <span style={{ marginLeft: 'auto', background: '#f97316', color: '#fff', borderRadius: 99, fontSize: 10, padding: '2px 7px', fontWeight: 800 }}>{link.badge}</span>}
-                </button>
-              );
-            })}
-            <div style={{ padding: '12px 15px 4px', fontSize: 9, fontWeight: 700, letterSpacing: '.18em', textTransform: 'uppercase', color: '#2a3a55' }}>{T('account')}</div>
-            <button onClick={() => navigate('/portal/settings')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
-              <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>⚙️</span>{T('settings')}
-            </button>
-            <a href="https://www.aladiahmanagement.com" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, textDecoration: 'none' }}>
-              <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>🏢</span>{T('management')}
-            </a>
-            <button onClick={() => navigate('/portal')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
-              <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>❓</span>Help &amp; Support
-            </button>
-          </div>
-
-          {/* Refer & Earn */}
-          <div style={{ margin: '12px 10px 14px', padding: 13, background: 'linear-gradient(135deg,rgba(37,99,235,.28),rgba(124,58,237,.32))', border: '1px solid rgba(99,102,241,.28)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexShrink: 0 }}>
-            <div>
-              <div style={{ fontSize: 12.5, fontWeight: 700, color: '#fff', marginBottom: 3 }}>🎁 {T('refer')}</div>
-              <div style={{ fontSize: 10.5, color: '#93c5fd', lineHeight: 1.4 }}>{T('refer_sub')}</div>
-            </div>
-            <span style={{ fontSize: 24 }}>🎁</span>
-          </div>
-        </aside>
+        <PortalSidebar />
 
         {/* ── MAIN ── */}
         <main style={{ overflow: 'hidden', background: 'transparent', position: 'relative', zIndex: 5, display: 'flex', flexDirection: 'column' }}>
@@ -687,7 +578,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                 <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 38, opacity: .55 }}>🎯</div>
                 <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>{T('daily_challenge')}</div>
                 <div style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.6, marginBottom: 13 }}>{T('daily_challenge_sub')}</div>
-                <button style={{ border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, padding: '8px 16px', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(90deg,#16a34a,#15803d)', color: '#fff' }}>
+                <button onClick={() => navigate('/portal/simulations')} style={{ border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, padding: '8px 16px', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(90deg,#16a34a,#15803d)', color: '#fff' }}>
                   {T('start_challenge')}
                 </button>
               </div>
@@ -708,9 +599,8 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                         {['S', 'D', 'A'][i]}
                       </div>
                     ))}
-                    <span style={{ fontSize: 9, color: '#475569', marginLeft: 5, alignSelf: 'center' }}>+142</span>
                   </div>
-                  <button style={{ border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, padding: '8px 14px', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(90deg,#dc2626,#b91c1c)', color: '#fff' }}>
+                  <button onClick={() => navigate('/community')} style={{ border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, padding: '8px 14px', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(90deg,#dc2626,#b91c1c)', color: '#fff' }}>
                     {T('join_now')}
                   </button>
                 </div>
@@ -720,11 +610,11 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
             {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', background: 'linear-gradient(155deg,rgba(8,20,52,.85),rgba(5,13,38,.9))', border: '1px solid rgba(255,255,255,.08)', borderRadius: 16, overflow: 'hidden', backdropFilter: 'blur(28px)', marginBottom: 14 }}>
               {[
-                { val: `${overallPct}%`, lbl: T('overall_progress'), sub: T('keep_going'), color: '#6366f1', onClick: () => { } },
+                { val: `${overallPct}%`, lbl: T('overall_progress'), sub: T('keep_going'), color: '#6366f1', onClick: () => navigate('/portal/my-career-path') },
                 { val: streak, lbl: `${T('day_streak')} 🔥`, sub: T('amazing'), color: '#f97316', onClick: () => setStreakModal(true) },
                 { val: totalPoints.toLocaleString(), lbl: T('points_earned'), sub: T('this_week'), color: '#f59e0b', onClick: () => setPointsModal(true) },
                 { val: labs.filter((l: any) => l.completed).length, lbl: T('labs_completed'), sub: T('labs_week'), color: '#34d399', onClick: () => setLabsModal(true) },
-                { val: certCount, lbl: T('certifications'), sub: T('in_progress'), color: '#a855f7', onClick: () => { } },
+                { val: certCount, lbl: T('certifications'), sub: T('in_progress'), color: '#a855f7', onClick: () => navigate('/portal/certifications') },
               ].map((s, i) => (
                 <div key={i} onClick={s.onClick} style={{ padding: '20px 10px', textAlign: 'center', borderRight: i < 4 ? '1px solid rgba(255,255,255,.06)' : 'none', cursor: 'pointer' }}>
                   <div style={{ fontSize: '2rem', fontWeight: 800, lineHeight: 1, marginBottom: 5, color: s.color, letterSpacing: '-.5px' }}>{s.val}</div>
@@ -877,17 +767,21 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               {T('view_breakdown')}
             </button>
             <div style={{ fontSize: 11.5, fontWeight: 700, marginBottom: 9, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,.06)' }}>{T('top_skills')}</div>
-            {SKILLS.map((sk, i) => (
+            {SKILLS.map((sk, i) => {
+              // Scale the aspirational target by REAL overall progress so the bar
+              // reflects actual learning (0 progress → 0%), never a fabricated value.
+              const pct = Math.round((sk.pct * overallProgress) / 100);
+              return (
               <div key={i} style={{ marginBottom: i < 4 ? 8 : 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, fontSize: 10.5 }}>
                   <span style={{ color: '#64748b' }}>{sk.label}</span>
-                  <span style={{ fontWeight: 700, color: sk.color }}>{sk.pct}%</span>
+                  <span style={{ fontWeight: 700, color: sk.color }}>{pct}%</span>
                 </div>
                 <div style={{ height: 4, background: 'rgba(255,255,255,.07)', borderRadius: 99, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${sk.pct}%`, background: sk.color, borderRadius: 99, opacity: .9 }} />
+                  <div style={{ height: '100%', width: `${pct}%`, background: sk.color, borderRadius: 99, opacity: .9 }} />
                 </div>
               </div>
-            ))}
+            );})}
           </div>
 
           {/* 3. CAREER MOMENTUM */}
@@ -921,6 +815,9 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                 </div>
               </div>
             ))}
+            {MOMENTUM.length === 0 && (
+              <div style={{ fontSize: 11, color: '#64748b', lineHeight: 1.5 }}>Verified graduate outcomes will appear here as our community grows.</div>
+            )}
           </div>
 
           {/* 4. FUTURE READY */}

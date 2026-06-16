@@ -2,8 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import Header from '@/components/Header';
-import PortalSidebar from '@/components/PortalSidebar';
+import PortalShell from '@/components/portal/PortalShell';
 import { Save, Download, Sparkles, CheckCircle, Loader2, LayoutTemplate, X, Palette } from 'lucide-react';
 
 interface ResumeData {
@@ -371,10 +370,7 @@ const ResumeStudio = () => {
   });
 
   return (
-    <div style={{ minHeight:'100vh', background:DS.bg, fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif", color:DS.fg }}>
-      <Header />
-      <div style={{ display:'grid', gridTemplateColumns:'260px 1fr', minHeight:'100vh', paddingTop:70 }}>
-        <PortalSidebar />
+    <PortalShell background={DS.bg}>
         <main style={{ padding:'2rem', background:DS.bg, overflowX:'hidden', minWidth:0, width:'100%' }}>
 
           <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:'1.25rem', gap:'1rem', flexWrap:'wrap' as const }}>
@@ -524,8 +520,7 @@ const ResumeStudio = () => {
 
           <p style={{ fontSize:11, color:DS.fm, textAlign:'center' as const, marginTop:12 }}>All changes save automatically · Click Download to export</p>
         </main>
-      </div>
-    </div>
+    </PortalShell>
   );
 };
 

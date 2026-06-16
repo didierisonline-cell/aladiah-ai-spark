@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import Header from '@/components/Header';
-import PortalSidebar from '@/components/PortalSidebar';
+import PortalShell from '@/components/portal/PortalShell';
 import { RESOURCE_TRACKS } from '@/data/resourcesData';
 
 const DS = {
@@ -94,10 +93,7 @@ export default function MyCareerPath() {
   );
 
   return (
-    <div style={{minHeight:'100vh',background:DS.bg,fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif",color:DS.fg}}>
-      <Header/>
-      <div style={{display:'grid',gridTemplateColumns:'260px 1fr',minHeight:'100vh',paddingTop:70}}>
-        <PortalSidebar/>
+    <PortalShell background={DS.bg}>
         <main style={{padding:'2rem',background:DS.bg,minWidth:0}}>
           <div style={{marginBottom:'1.75rem'}}>
             <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:'uppercase' as const,color:DS.fm,marginBottom:'.3rem'}}>CAREER FOCUS</div>
@@ -195,7 +191,7 @@ export default function MyCareerPath() {
                           </div>
                         ))}
                         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'.75rem',marginTop:'1.5rem'}}>
-                          {[{icon:'🧪',label:'Labs',desc:'Apply everything learned',go:()=>navigate('/portal#labs')},{icon:'🎮',label:'Simulations',desc:'Live AI-graded exercises',go:()=>navigate('/simulation')},{icon:'📋',label:'Case Studies',desc:'Real-world incidents',go:()=>navigate('/portal/cases')}].map(x=>(
+                          {[{icon:'🧪',label:'Labs',desc:'Apply everything learned',go:()=>navigate('/portal/simulations')},{icon:'🎮',label:'Simulations',desc:'Live AI-graded exercises',go:()=>navigate('/portal/simulations')},{icon:'📋',label:'Case Studies',desc:'Real-world incidents',go:()=>navigate('/portal/resources')}].map(x=>(
                             <button key={x.label} onClick={x.go} style={{padding:'1rem',background:DS.card2,border:`1px solid ${DS.border}`,borderRadius:'.75rem',cursor:'pointer',textAlign:'left' as const,transition:'all .15s'}}
                               onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.borderColor=DS.blue+'60';}}
                               onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.borderColor=DS.border;}}>
@@ -303,7 +299,6 @@ export default function MyCareerPath() {
             )}
           </div>
         </main>
-      </div>
-    </div>
+    </PortalShell>
   );
 }

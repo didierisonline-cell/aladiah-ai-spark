@@ -1,5 +1,4 @@
-import Header from '@/components/Header';
-import WorkforceNav from '@/components/admin/WorkforceNav';
+import FounderShell from '@/components/founder/FounderShell';
 import ApprovalsHub from '@/components/admin/workforce/ApprovalsHub';
 
 /**
@@ -8,13 +7,9 @@ import ApprovalsHub from '@/components/admin/workforce/ApprovalsHub';
  * agent (Product, Marketing, Admissions, Student Success, Placement).
  */
 const Approvals = () => (
-  <div className="min-h-screen bg-background">
-    <Header />
-    <main className="max-w-7xl mx-auto px-4 py-8">
-      <WorkforceNav />
+  <FounderShell>
       <ApprovalsHub />
-    </main>
-  </div>
+    </FounderShell>
 );
 
 export default Approvals;

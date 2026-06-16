@@ -2,6 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import MobileShell from '@/components/mobile/MobileShell';
+import PortalShell from '@/components/portal/PortalShell';
+import { useBreakpoint } from '@/hooks/useBreakpoint';
+import { displayNameFromEmail, initialsFromEmail } from '@/lib/avatar';
 
 const C = { fg: '#EDF2F7', fm: '#8596AD', card: 'rgba(8,20,52,.7)', border: 'rgba(255,255,255,.08)' };
 
@@ -31,8 +34,9 @@ const GROUPS: { title: string; items: { icon: string; label: string; to?: string
 export default function ProfileHub() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const name = user?.email?.split('@')[0] || 'Student';
-  const initials = (name.slice(0, 1) + (name.slice(1, 2) || '')).toUpperCase();
+  const { isPhone } = useBreakpoint();
+  const name = displayNameFromEmail(user?.email);
+  const initials = initialsFromEmail(user?.email);
 
   const logout = async () => {
     try { await supabase.auth.signOut(); } catch { /* ignore */ }
@@ -41,8 +45,7 @@ export default function ProfileHub() {
     window.location.href = '/auth';
   };
 
-  return (
-    <MobileShell title="Profile">
+  const body = (
       <div style={{ padding: '18px 16px 8px', maxWidth: 620, margin: '0 auto' }}>
         {/* Identity */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
@@ -80,6 +83,10 @@ export default function ProfileHub() {
           Log out
         </button>
       </div>
-    </MobileShell>
   );
+
+  // Phone keeps the native mobile shell; desktop/tablet folds into the one
+  // PortalShell (Header + sidebar) so the profile surface matches every other page.
+  if (isPhone) return <MobileShell title="Profile">{body}</MobileShell>;
+  return <PortalShell>{body}</PortalShell>;
 }
