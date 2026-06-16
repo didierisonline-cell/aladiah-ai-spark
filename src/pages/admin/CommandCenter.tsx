@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '@/components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import CommandCenterDashboard from '@/components/admin/CommandCenterDashboard';
-import WorkforceNav from '@/components/admin/WorkforceNav';
+import FounderShell from '@/components/founder/FounderShell';
 import {
   getLatestReport,
   runCeoChiefOfStaffAgent,
@@ -66,18 +65,14 @@ const CommandCenter = () => {
   }, [toast]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <WorkforceNav />
+    <FounderShell>
         <CommandCenterDashboard
           report={report}
           loading={loading}
           generating={generating}
           onGenerate={handleGenerate}
         />
-      </main>
-    </div>
+      </FounderShell>
   );
 };
 
