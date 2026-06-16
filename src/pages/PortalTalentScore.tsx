@@ -16,7 +16,7 @@ const DS = {
 export default function PortalTalentScore() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const initials = initialsFromEmail(user?.email);
+  const initials = initialsFromEmail(user?.email, user?.user_metadata?.full_name);
   const pathname = '/portal/talent-score';
 
   // Single source of truth — same hook/formula the dashboard uses.

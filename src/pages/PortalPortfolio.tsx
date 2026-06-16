@@ -14,7 +14,7 @@ const DS = {
 export default function PortalPortfolio() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const initials = initialsFromEmail(user?.email);
+  const initials = initialsFromEmail(user?.email, user?.user_metadata?.full_name);
   const pathname = '/portal/portfolio';
 
   return (

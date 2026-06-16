@@ -54,7 +54,7 @@ export default function PortalCourseDetail() {
         // Completed modules = chapters whose chapter_end quiz the student has passed.
         Promise.all([
           supabase.from('quizzes').select('id, chapter_id, quiz_type').in('chapter_id', chapterIds).eq('quiz_type', 'chapter_end'),
-          supabase.from('user_progress').select('quiz_id').not('quiz_id', 'is', null),
+          supabase.from('user_progress').select('quiz_id').eq('user_id', user.id).not('quiz_id', 'is', null),
         ]).then(([qz, pr]) => {
           const passed = new Set((pr.data || []).map((p: any) => p.quiz_id));
           const done = new Set<string>();

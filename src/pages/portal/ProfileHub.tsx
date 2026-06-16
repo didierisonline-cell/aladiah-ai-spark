@@ -35,8 +35,8 @@ export default function ProfileHub() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isPhone } = useBreakpoint();
-  const name = displayNameFromEmail(user?.email);
-  const initials = initialsFromEmail(user?.email);
+  const name = displayNameFromEmail(user?.email, user?.user_metadata?.full_name);
+  const initials = initialsFromEmail(user?.email, user?.user_metadata?.full_name);
 
   const logout = async () => {
     try { await supabase.auth.signOut(); } catch { /* ignore */ }

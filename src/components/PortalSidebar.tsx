@@ -24,8 +24,8 @@ export default function PortalSidebar({ hoursLeft, coursesCount }: PortalSidebar
   const { language } = useLanguage();
   const T = (key: string) => overviewT(language || 'en', key);
 
-  const displayName = displayNameFromEmail(user?.email);
-  const initials = initialsFromEmail(user?.email);
+  const displayName = displayNameFromEmail(user?.email, user?.user_metadata?.full_name);
+  const initials = initialsFromEmail(user?.email, user?.user_metadata?.full_name);
 
   const LINKS: { icon: string; lbl: string; path: string; exact?: boolean; badge?: number }[] = [
     { icon: '🏠', lbl: T('overview'), path: '/portal', exact: true },

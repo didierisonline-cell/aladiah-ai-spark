@@ -403,7 +403,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
     }
   };
 
-  const userName = displayNameFromEmail(user?.email);
+  const userName = displayNameFromEmail(user?.email, user?.user_metadata?.full_name);
   const displayName = userName.length > 12 ? userName.slice(0, 12) : userName;
   const initials = (userName[0] || 'A').toUpperCase() + (userName[1] || '').toUpperCase();
 

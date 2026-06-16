@@ -51,7 +51,7 @@ export default function PortalSimulations() {
   const [viewMode, setViewMode] = useState<'grid' | 'program'>('program');
   const [completedMap, setCompletedMap] = useState<Record<string, number>>(completedSims);
 
-  const userName = displayNameFromEmail(user?.email);
+  const userName = displayNameFromEmail(user?.email, user?.user_metadata?.full_name);
 
   // ── Filtered simulations ──────────────────────────────────────
   const filteredSims = useMemo(() => {

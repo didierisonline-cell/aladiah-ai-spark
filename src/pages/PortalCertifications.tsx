@@ -24,7 +24,7 @@ const PLATFORM_EXAMPLES = [
 
 export default function PortalCertifications() {
   const { user } = useAuth();
-  const displayName = displayNameFromEmail(user?.email);
+  const displayName = displayNameFromEmail(user?.email, user?.user_metadata?.full_name);
 
   return (
     <PortalShell background={DS.bg}>
