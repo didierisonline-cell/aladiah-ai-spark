@@ -136,8 +136,8 @@ export const BASAA_SOURCES: BasaaSource[] = [
   {
     id: "basaa-orthographic-conversion",
     title: "Orthographic Conversion Research for Bàsàá",
-    author: "Academic (to be confirmed during license review)",
-    url: "",
+    author: "Academic NLP researchers (Bantu documentation community) — see research/source-inventory.md",
+    url: "https://aclanthology.org/2023.rail-1.11/ , https://arxiv.org/abs/2210.06986",
     contentType: "orthography-research",
     priority: 5,
     extractionValue:
