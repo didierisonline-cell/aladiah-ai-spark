@@ -409,9 +409,17 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
   const userName = firstName;
   const displayName = firstName;
 
-  // Step 3 (text-only): mode-aware mentor-card copy. Falls back to displayName + the
-  // generic greeting while the recap is still loading (recap === null). No voice.
-  const recapName = recap?.student_name || displayName;
+  // Step 3 (text-only): mode-aware mentor-card copy. The Prof. Didier card ALWAYS
+  // greets with the CURRENT student's first name (useIdentity) — never a stale/old
+  // recap value, and never a prior/test name.
+  const recapName = firstName;
+  // The server-composed first_message embeds the student's full name; rewrite any
+  // occurrence of the server's name to the live FIRST name, so the program-confirmation
+  // message reads e.g. "Congratulations, Test2Real!" / "Congratulations, Didier!" and
+  // can never surface an old/test name carried by the recap payload.
+  const profFirstMessage = recap?.first_message
+    ? (recap?.student_name ? String(recap.first_message).split(recap.student_name).join(firstName) : recap.first_message)
+    : T('prof_analyzed');
   const modeGreeting =
     recap?.mode === 'onboarding' ? T('prof_greet_onboarding') :
     recap?.mode === 'daily_briefing' ? T('prof_greet_daily') :
@@ -741,7 +749,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               </div>
               {/* Step 2: data-driven recap (first_message) with static fallback — never blank */}
               <p style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.55, marginBottom: recap?.recommendation ? 5 : 10 }}>
-                {recap?.first_message || T('prof_analyzed')}
+                {profFirstMessage}
               </p>
               {recap?.recommendation && (
                 <p style={{ fontSize: 11, color: '#67e8f9', fontWeight: 600, lineHeight: 1.5, marginBottom: 10 }}>
