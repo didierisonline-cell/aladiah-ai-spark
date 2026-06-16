@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import PortalShell from '@/components/portal/PortalShell';
 import { useAuth } from '@/hooks/useAuth';
-import { displayNameFromEmail } from '@/lib/avatar';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', border:'#1E2D47', fg:'#EDF2F7', fm:'#8596AD',
@@ -24,7 +23,6 @@ const PLATFORM_EXAMPLES = [
 
 export default function PortalCertifications() {
   const { user } = useAuth();
-  const displayName = displayNameFromEmail(user?.email);
 
   return (
     <PortalShell background={DS.bg}>

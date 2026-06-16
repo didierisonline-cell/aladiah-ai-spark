@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import PortalShell from '@/components/portal/PortalShell';
 import SimEngine from '@/components/SimEngine';
 import { useAuth } from '@/hooks/useAuth';
-import { displayNameFromEmail } from '@/lib/avatar';
 import {
   ALL_SIMULATIONS, PROGRAMS, SCHOOLS,
   getSimsForProgram, type Simulation, type SimType,
@@ -50,8 +49,6 @@ export default function PortalSimulations() {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'program'>('program');
   const [completedMap, setCompletedMap] = useState<Record<string, number>>(completedSims);
-
-  const userName = displayNameFromEmail(user?.email);
 
   // ── Filtered simulations ──────────────────────────────────────
   const filteredSims = useMemo(() => {

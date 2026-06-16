@@ -6,7 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { useProgress } from '@/hooks/useProgress';
 import { talentScoreFromProgress } from '@/hooks/useTalentScore';
-import { displayNameFromEmail } from '@/lib/avatar';
+import { useIdentity } from '@/hooks/useIdentity';
 import { activeHref } from '@/lib/nav';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { isFounderEmail } from '@/lib/roles';
@@ -403,9 +403,11 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
     }
   };
 
-  const userName = displayNameFromEmail(user?.email);
-  const displayName = userName.length > 12 ? userName.slice(0, 12) : userName;
-  const initials = (userName[0] || 'A').toUpperCase() + (userName[1] || '').toUpperCase();
+  // Identity = the authenticated user's OWN profile (profiles.full_name → auth
+  // metadata → email prefix only if no name). Greetings show the first name only.
+  const { firstName } = useIdentity();
+  const userName = firstName;
+  const displayName = firstName;
 
   // Step 3 (text-only): mode-aware mentor-card copy. Falls back to displayName + the
   // generic greeting while the recap is still loading (recap === null). No voice.

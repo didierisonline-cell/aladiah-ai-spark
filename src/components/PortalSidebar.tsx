@@ -5,7 +5,7 @@ import { useProgress } from '@/hooks/useProgress';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { activeHref } from '@/lib/nav';
-import { displayNameFromEmail, initialsFromEmail } from '@/lib/avatar';
+import { useIdentity } from '@/hooks/useIdentity';
 
 interface PortalSidebarProps {
   hoursLeft?: number;
@@ -24,8 +24,7 @@ export default function PortalSidebar({ hoursLeft, coursesCount }: PortalSidebar
   const { language } = useLanguage();
   const T = (key: string) => overviewT(language || 'en', key);
 
-  const displayName = displayNameFromEmail(user?.email);
-  const initials = initialsFromEmail(user?.email);
+  const { displayName, initials } = useIdentity();
 
   const LINKS: { icon: string; lbl: string; path: string; exact?: boolean; badge?: number }[] = [
     { icon: '🏠', lbl: T('overview'), path: '/portal', exact: true },

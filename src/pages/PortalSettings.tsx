@@ -4,7 +4,7 @@ import PortalShell from '@/components/portal/PortalShell';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { displayNameFromEmail, initialsFromEmail } from '@/lib/avatar';
+import { useIdentity } from '@/hooks/useIdentity';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', muted:'#18243A', border:'#1E2D47',
@@ -107,11 +107,10 @@ export default function PortalSettings() {
   const { user } = useAuth();
   const { language, setLanguage, t } = useLanguage();
 
-  const initials = initialsFromEmail(user?.email, user?.user_metadata?.full_name);
-  const displayName = displayNameFromEmail(user?.email, user?.user_metadata?.full_name);
+  const { displayName, initials, name: realName } = useIdentity();
 
-  // Form state
-  const [name, setName] = useState(displayName);
+  // Form state — seed the editable field with the real name (never the email prefix).
+  const [name, setName] = useState(realName ?? '');
   const [country, setCountry] = useState('🇩🇴 Dominican Republic');
   const [linkedin, setLinkedin] = useState('');
   const [github, setGithub] = useState('');
@@ -122,6 +121,10 @@ export default function PortalSettings() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState('');
 
+  // If the real name resolves after mount (e.g. metadata absent, profiles row
+  // loads), seed the still-empty field once. Never clobbers a value the user typed.
+  useEffect(() => { if (realName && !name) setName(realName); /* eslint-disable-next-line */ }, [realName]);
+
   // Days remaining (mock — {daysRemaining} {t('portal.settings.days')})
   const daysRemaining = 31;
   const cyclePercent = Math.round((daysRemaining / 30) * 100);
@@ -129,7 +132,10 @@ export default function PortalSettings() {
   const handleSaveProfile = async () => {
     setSaving(true);
     try {
+      // Keep BOTH sources in sync so profiles.full_name (the source of truth read
+      // first by useIdentity) never goes stale relative to the auth metadata.
       await supabase.auth.updateUser({ data: { full_name: name } });
+      if (user?.id) await supabase.from('profiles').update({ full_name: name }).eq('user_id', user.id);
       setSaved('profile');
       setTimeout(() => setSaved(''), 2000);
     } catch {}
