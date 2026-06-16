@@ -76,7 +76,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
   const currentHref = activeHref(pathname, navItems.map((i) => i.href));
 
   return (
-    <header style={{
+    <header className="site-header" style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
       height: 70,
       background: 'rgba(11,17,30,0.92)',
@@ -114,6 +114,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
         {!isPortal && (
           <a
+            className="hide-mobile"
             href="https://www.aladiahmanagement.com"
             target="_blank"
             rel="noopener noreferrer"
@@ -154,7 +155,10 @@ const Header = ({ onProfileClick }: HeaderProps) => {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <AuthNavButton navigate={navigate} isPortal={isPortal} />
+        {/* Desktop auth actions; on mobile these live in the hamburger menu below. */}
+        <span className="hide-mobile" style={{ display: 'flex', alignItems: 'center' }}>
+          <AuthNavButton navigate={navigate} isPortal={isPortal} />
+        </span>
 
         {/* Founder-only: always-visible Command Center entry (until routing is confirmed) */}
         {isFounder && (
@@ -211,7 +215,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
       )}
 
       <style>{`
-        @media(max-width:900px){.hide-mobile{display:none!important}.show-mobile{display:flex!important}}
+        @media(max-width:900px){.hide-mobile{display:none!important}.show-mobile{display:flex!important}.site-header{padding:0 1rem!important}}
         @media(min-width:901px){.show-mobile{display:none!important}}
       `}</style>
     </header>

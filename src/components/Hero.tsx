@@ -66,9 +66,9 @@ const Hero = () => {
   };
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center pt-20 lg:pt-0 overflow-hidden bg-gradient-hero">
+    <section id="home" className="relative min-h-screen flex items-start lg:items-center pt-24 lg:pt-0 pb-32 lg:pb-0 overflow-hidden bg-gradient-hero">
       {/* Dominican Republic Flag Background */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-[0.15] pointer-events-none">
+      <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] sm:opacity-[0.15] pointer-events-none">
         <svg viewBox="0 0 900 600" className="w-full h-full max-w-[1400px]" preserveAspectRatio="xMidYMid slice">
           <rect x="0" y="0" width="450" height="300" fill="#002D62"/>
           <rect x="450" y="300" width="450" height="300" fill="#002D62"/>
@@ -81,9 +81,9 @@ const Hero = () => {
 
       {/* Background Elements — more dramatic */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 right-10 w-96 h-96 bg-secondary/8 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 left-10 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute top-1/3 left-1/3 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-10 w-56 h-56 sm:w-96 sm:h-96 bg-secondary/8 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 left-10 w-72 h-72 sm:w-[500px] sm:h-[500px] bg-primary/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/3 left-1/3 w-72 h-72 sm:w-[600px] sm:h-[600px] bg-accent/5 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4 py-12 lg:py-0 relative z-10">
@@ -120,7 +120,7 @@ const Hero = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-[1.1]"
+              className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-[1.15] sm:leading-[1.1] break-words"
             >
               <span className="text-foreground">{t('hero.title.line1')}</span>
               <br />
