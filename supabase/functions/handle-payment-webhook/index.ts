@@ -8,23 +8,49 @@ Deno.serve(async (req) => {
   try {
     const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
     const STRIPE_WEBHOOK_SECRET = Deno.env.get("STRIPE_WEBHOOK_SECRET");
-    if (!STRIPE_SECRET_KEY) throw new Error("Stripe not configured");
+    // SEC-C1: FAIL CLOSED. We never trust an unsigned body. If either secret is
+    // missing the endpoint refuses to process anything (no forged-event path).
+    if (!STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET) {
+      console.error("Webhook misconfigured: missing STRIPE_SECRET_KEY or STRIPE_WEBHOOK_SECRET");
+      return new Response(JSON.stringify({ error: "webhook not configured" }), { status: 500, headers: { "Content-Type": "application/json" } });
+    }
     const stripe = new Stripe(STRIPE_SECRET_KEY, {
       apiVersion: "2023-10-16",
       httpClient: Stripe.createFetchHttpClient(),
     });
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const body = await req.text();
+    const sig = req.headers.get("stripe-signature");
+    if (!sig) {
+      return new Response(JSON.stringify({ error: "missing signature" }), { status: 400, headers: { "Content-Type": "application/json" } });
+    }
+    // Verifies the HMAC signature AND the signature timestamp tolerance (Stripe's
+    // default 300s) — forged OR replayed payloads are rejected here. Stripe's own
+    // retries are re-signed with a fresh timestamp, so legitimate retries pass.
     let event: Stripe.Event;
-    if (STRIPE_WEBHOOK_SECRET) {
-      const sig = req.headers.get("stripe-signature");
-      if (!sig) throw new Error("Missing stripe-signature header");
+    try {
       event = await stripe.webhooks.constructEventAsync(body, sig, STRIPE_WEBHOOK_SECRET);
-    } else {
-      event = JSON.parse(body);
+    } catch (err: any) {
+      console.error("Signature verification failed:", err?.message);
+      return new Response(JSON.stringify({ error: "invalid signature" }), { status: 400, headers: { "Content-Type": "application/json" } });
     }
 
-    console.log(`Stripe event: ${event.type}`);
+    // SEC-C1: idempotency. Record the event id once; a duplicate (Stripe retry or
+    // replay) is acknowledged without re-running side effects. If the dedup table
+    // is unavailable we proceed (the event is already signature-verified) rather
+    // than drop a real payment.
+    const { error: dedupErr } = await supabase
+      .from("processed_stripe_events")
+      .insert({ event_id: event.id, type: event.type });
+    if (dedupErr) {
+      if ((dedupErr as any).code === "23505") {
+        console.log(`Duplicate event ${event.id} — already processed, skipping.`);
+        return new Response(JSON.stringify({ received: true, duplicate: true }), { status: 200, headers: { "Content-Type": "application/json" } });
+      }
+      console.error("Dedup insert error (proceeding, event is signature-verified):", dedupErr.message);
+    }
+
+    console.log(`Stripe event: ${event.type} (${event.id})`);
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;

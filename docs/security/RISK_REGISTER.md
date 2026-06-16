@@ -17,15 +17,15 @@ Legend: ☐ open · ◐ mitigated · ☑ closed.
 - **Where:** `supabase/functions/handle-payment-webhook/index.ts` (signature branch); `config.toml` sets `verify_jwt = false` for this function (correct — Stripe is the caller).
 - **Risk:** If `STRIPE_WEBHOOK_SECRET` is missing/empty in the function env, the handler falls back to `JSON.parse(body)` and trusts it. An attacker can POST a forged `checkout.session.completed` to unlock paid tiers without paying, or `customer.subscription.deleted` to cancel paying users. No `event.id` dedup or `event.created` staleness check → replay.
 - **Impact:** Revenue theft, entitlement forgery, customer disruption. **Tier-1 (payments).**
-- **Status:** ☐ open. **[verify-console]** confirm `STRIPE_WEBHOOK_SECRET` is set in prod.
-- **Remediation:** Fail-closed — if the secret is absent, reject with 500 and do nothing. Always verify the signature. Add a `processed_stripe_events(event_id)` table + insert-or-skip for idempotency. Reject events older than ~5 min. *(Additive; reviewable migration + function edit. Founder-approval required — payments.)*
+- **Status:** ◐ **CODE-COMPLETE** (this PR). `handle-payment-webhook` now fails closed (no unsigned path), always verifies signature (which also enforces Stripe's 300s timestamp tolerance → replay protection), and dedups on `event.id` via `processed_stripe_events`. **Pending to CLOSE:** apply migration `20260616030000_processed_stripe_events.sql`, deploy the function, confirm `STRIPE_WEBHOOK_SECRET` set in prod, and Stripe-CLI test (signed ✓ / unsigned ✗ / duplicate no-op).
+- **Remediation:** ✅ done in code: fail-closed + signature + `event.id` idempotency. (No `event.created` cutoff — that would drop legitimate Stripe retries; the signature timestamp tolerance is the correct replay control.) *(Founder deploys + verifies.)*
 
 ### SEC-C2 — Founder auto-admin trigger grants admin to ANY founder email on signup
 - **Where:** `auto_assign_admin()` trigger (migrations `…founder_email_*`, `…founder_role_alignment`); allowlist `didier@aladiahacademy.com`, `didierisonline@gmail.com`, `didiermbok@yahoo.com`.
 - **Risk:** The trigger fires `AFTER INSERT ON auth.users` and grants `user_roles.admin` for any of those emails. If **email confirmation is OFF**, or if any founder address is **not yet registered/owned**, an attacker who signs up with that address gains admin (RLS-level) via `aos_is_admin()`.
 - **Impact:** Full admin/founder takeover, data exposure, content tampering. **Tier-1 (founder/admin).**
-- **Status:** ☐ open. **[verify-console]** "Confirm email" = ON; all 3 addresses registered & owned.
-- **Remediation:** Enforce email confirmation; confirm ownership of all founder emails; remove the legacy `…@yahoo.com` post-cutover; consider gating the grant to confirmed users only. *(Founder-approval — auth.)*
+- **Status:** ◐ **CODE-COMPLETE** (this PR). Migration `20260616031000_founder_admin_hardening.sql` removes **both** automatic admin paths: `aos_is_admin()` now keys **only** on an explicit `user_roles.admin` grant (no JWT-email bypass), and the signup auto-grant trigger is dropped. Admin is conferred only by hand, guarded on `email_confirmed_at`. **Pending to CLOSE:** apply the migration (set it to your owned/confirmed founder email), confirm Supabase "Confirm email" = ON, run the verification SELECTs.
+- **Remediation:** ✅ done in code: explicit-grant-only authorization + no auto-escalation. *(Founder applies the reviewable migration + verifies.)* Residual: edge fns `generate-question-bank`/`translate-content` still check founder email directly (needs a confirmed owned session) — tighten to require `user_roles` in a follow-up (HIGH, not blocker).
 
 ---
 
@@ -93,11 +93,14 @@ Legend: ☐ open · ◐ mitigated · ☑ closed.
 ---
 
 ## Launch gate
-| Severity | Open | Must close before launch? |
-|---|---|---|
-| CRITICAL | 2 (C1, C2) | **YES — hard blocker** |
-| HIGH | 5 | Strongly recommended (H1, H4 especially) |
-| MEDIUM | 6 | Best-effort |
-| LOW | 5 | Post-launch |
+| Severity | Open | State | Must close before launch? |
+|---|---|---|---|
+| CRITICAL | 2 (C1, C2) | ◐ code-complete — pending deploy + console verify | **YES — hard blocker** |
+| HIGH | 5 | open | Strongly recommended (H1, H4) |
+| MEDIUM | 6 | open | Best-effort |
+| LOW | 5 | open | Post-launch |
 
-**Go/No-Go: NO-GO until SEC-C1 and SEC-C2 are CLOSED.**
+**Go/No-Go: still NO-GO.** Both CRITICALs are CODE-COMPLETE on this PR but only
+**CLOSE** once the founder (1) applies the two migrations, (2) deploys the webhook,
+(3) confirms `STRIPE_WEBHOOK_SECRET` is set and Supabase email-confirmation is ON,
+and (4) runs the verification steps. → GO when those are ✅ and CRITICAL count = 0.
