@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import Header from '@/components/Header';
-import PortalSidebar from '@/components/PortalSidebar';
+import PortalShell from '@/components/portal/PortalShell';
 import { useAuth } from '@/hooks/useAuth';
 import { useTalentScore } from '@/hooks/useTalentScore';
 import { initialsFromEmail } from '@/lib/avatar';
@@ -26,12 +25,7 @@ export default function PortalTalentScore() {
   const filled = max > 0 ? (overall / max) * C : 0;
 
   return (
-    <div style={{ background: DS.bg, minHeight: '100vh', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif", color: DS.fg }}>
-      <Header />
-      <div className="portal-shell" style={{ display: 'grid', gridTemplateColumns: '260px 1fr', minHeight: '100vh', paddingTop: 70 }}>
-        {/* Sidebar */}
-        <PortalSidebar />
-
+    <PortalShell background={DS.bg}>
         {/* Main */}
         <main style={{ padding: '2rem', background: DS.bg }}>
           <div style={{ marginBottom: '1.75rem' }}>
@@ -97,7 +91,6 @@ export default function PortalTalentScore() {
             </div>
           </div>
         </main>
-      </div>
-    </div>
+    </PortalShell>
   );
 }

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '@/components/Header';
-import PortalSidebar from '@/components/PortalSidebar';
+import PortalShell from '@/components/portal/PortalShell';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { displayNameFromEmail, initialsFromEmail } from '@/lib/avatar';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', muted:'#18243A', border:'#1E2D47',
@@ -107,8 +107,8 @@ export default function PortalSettings() {
   const { user } = useAuth();
   const { language, setLanguage, t } = useLanguage();
 
-  const initials = (user?.email?.slice(0,1) || 'A').toUpperCase() + (user?.email?.split('@')[0]?.slice(1,2) || '').toUpperCase();
-  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || '';
+  const initials = initialsFromEmail(user?.email, user?.user_metadata?.full_name);
+  const displayName = displayNameFromEmail(user?.email, user?.user_metadata?.full_name);
 
   // Form state
   const [name, setName] = useState(displayName);
@@ -172,12 +172,7 @@ export default function PortalSettings() {
 
 
   return (
-    <div style={{ background:DS.bg, minHeight:'100vh', fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif", color:DS.fg }}>
-      <Header />
-      <div className="portal-shell" style={{ display:'grid', gridTemplateColumns:'260px 1fr', minHeight:'100vh', paddingTop:70 }}>
-
-        {/* ── Sidebar ── */}
-        <PortalSidebar />
+    <PortalShell background={DS.bg}>
 
         {/* ── Main ── */}
         <main style={{ padding:'2rem', background:DS.bg, overflowY:'auto' }}>
@@ -348,7 +343,6 @@ export default function PortalSettings() {
             </div>
           </div>
         </main>
-      </div>
-    </div>
+    </PortalShell>
   );
 }

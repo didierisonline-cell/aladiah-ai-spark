@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '@/components/Header';
-import PortalSidebar from '@/components/PortalSidebar';
+import PortalShell from '@/components/portal/PortalShell';
 import SimEngine from '@/components/SimEngine';
 import { useAuth } from '@/hooks/useAuth';
+import { displayNameFromEmail } from '@/lib/avatar';
 import {
   ALL_SIMULATIONS, PROGRAMS, SCHOOLS,
   getSimsForProgram, type Simulation, type SimType,
@@ -51,7 +51,7 @@ export default function PortalSimulations() {
   const [viewMode, setViewMode] = useState<'grid' | 'program'>('program');
   const [completedMap, setCompletedMap] = useState<Record<string, number>>(completedSims);
 
-  const userName = user?.email?.split('@')[0] || 'Student';
+  const userName = displayNameFromEmail(user?.email);
 
   // ── Filtered simulations ──────────────────────────────────────
   const filteredSims = useMemo(() => {
@@ -115,11 +115,7 @@ export default function PortalSimulations() {
   }
 
   return (
-    <div style={{ background: DS.bg, minHeight:'100vh', fontFamily: '"Inter",system-ui,sans-serif' }}>
-      <Header />
-      <div className="portal-shell" style={{ display:'flex' }}>
-        <PortalSidebar />
-
+    <PortalShell background={DS.bg}>
         {/* Main content */}
         <div style={{ flex:1, minHeight:'calc(100vh - 70px)', overflowX:'hidden' }}>
 
@@ -323,8 +319,7 @@ export default function PortalSimulations() {
             )}
           </div>
         </div>
-      </div>
-    </div>
+    </PortalShell>
   );
 }
 

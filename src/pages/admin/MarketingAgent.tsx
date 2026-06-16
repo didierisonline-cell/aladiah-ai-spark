@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '@/components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import MarketingAgentDashboard from '@/components/admin/marketing/MarketingAgentDashboard';
-import WorkforceNav from '@/components/admin/WorkforceNav';
+import FounderShell from '@/components/founder/FounderShell';
 
 /**
  * /admin/marketing-agent
@@ -18,13 +17,9 @@ const MarketingAgent = () => {
   }, [loading, user, navigate]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <WorkforceNav />
+    <FounderShell>
         <MarketingAgentDashboard />
-      </main>
-    </div>
+      </FounderShell>
   );
 };
 

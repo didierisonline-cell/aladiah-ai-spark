@@ -1,6 +1,5 @@
-import Header from '@/components/Header';
 import { Link } from 'react-router-dom';
-import FounderNav from '@/components/founder/FounderNav';
+import FounderShell from '@/components/founder/FounderShell';
 import QuestionReviewQueue from '@/components/founder/QuestionReviewQueue';
 import ModuleReadinessPanel from '@/components/founder/ModuleReadinessPanel';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -13,10 +12,7 @@ import { ClipboardCheck, GaugeCircle, BookOpen } from 'lucide-react';
  * Founder-only via <FounderRoute>.
  */
 const FounderCurriculum = () => (
-  <div className="min-h-screen bg-background">
-    <Header />
-    <main className="max-w-7xl mx-auto px-4 py-8">
-      <FounderNav />
+  <FounderShell>
       <div className="mb-6 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -40,8 +36,7 @@ const FounderCurriculum = () => (
         <TabsContent value="review"><QuestionReviewQueue /></TabsContent>
         <TabsContent value="readiness"><ModuleReadinessPanel /></TabsContent>
       </Tabs>
-    </main>
-  </div>
+  </FounderShell>
 );
 
 export default FounderCurriculum;

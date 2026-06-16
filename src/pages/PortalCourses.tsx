@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import Header from '@/components/Header';
-import PortalSidebar from '@/components/PortalSidebar';
+import PortalShell from '@/components/portal/PortalShell';
 import { useAuth } from '@/hooks/useAuth';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -76,10 +75,7 @@ export default function PortalCourses() {
   if (isPhone) return <MobileLearn courses={courses} loading={loading} />;
 
   return (
-    <div style={{ background: DS.bg, minHeight: '100vh', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif", color: DS.fg }}>
-      <Header />
-      <div className="portal-shell" style={{ display: 'grid', gridTemplateColumns: '260px 1fr', minHeight: '100vh', paddingTop: 70 }}>
-        <PortalSidebar />
+    <PortalShell background={DS.bg}>
         <main style={{ padding: '2rem', background: DS.bg }}>
           <div style={{ marginBottom: '1.75rem', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
             <div>
@@ -124,7 +120,6 @@ export default function PortalCourses() {
             </div>
           )}
         </main>
-      </div>
-    </div>
+    </PortalShell>
   );
 }

@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import Header from '@/components/Header';
-import PortalSidebar from '@/components/PortalSidebar';
+import PortalShell from '@/components/portal/PortalShell';
 import { RESOURCE_TRACKS } from '@/data/resourcesData';
 
 const DS = {
@@ -94,10 +93,7 @@ export default function MyCareerPath() {
   );
 
   return (
-    <div style={{minHeight:'100vh',background:DS.bg,fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif",color:DS.fg}}>
-      <Header/>
-      <div className="portal-shell" style={{display:'grid',gridTemplateColumns:'260px 1fr',minHeight:'100vh',paddingTop:70}}>
-        <PortalSidebar/>
+    <PortalShell background={DS.bg}>
         <main style={{padding:'2rem',background:DS.bg,minWidth:0}}>
           <div style={{marginBottom:'1.75rem'}}>
             <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:'uppercase' as const,color:DS.fm,marginBottom:'.3rem'}}>CAREER FOCUS</div>
@@ -303,7 +299,6 @@ export default function MyCareerPath() {
             )}
           </div>
         </main>
-      </div>
-    </div>
+    </PortalShell>
   );
 }
