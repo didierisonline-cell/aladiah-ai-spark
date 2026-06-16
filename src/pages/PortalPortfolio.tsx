@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import PortalShell from '@/components/portal/PortalShell';
 import { useAuth } from '@/hooks/useAuth';
-import { initialsFromEmail } from '@/lib/avatar';
+import { useIdentity } from '@/hooks/useIdentity';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', border:'#1E2D47', fg:'#EDF2F7', fm:'#8596AD',
@@ -14,7 +14,7 @@ const DS = {
 export default function PortalPortfolio() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const initials = initialsFromEmail(user?.email);
+  const { initials } = useIdentity();
   const pathname = '/portal/portfolio';
 
   return (

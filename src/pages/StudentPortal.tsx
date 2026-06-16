@@ -6,7 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { useProgress } from '@/hooks/useProgress';
 import { talentScoreFromProgress } from '@/hooks/useTalentScore';
-import { displayNameFromEmail } from '@/lib/avatar';
+import { useIdentity } from '@/hooks/useIdentity';
 import { activeHref } from '@/lib/nav';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { isFounderEmail } from '@/lib/roles';
@@ -403,13 +403,23 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
     }
   };
 
-  const userName = displayNameFromEmail(user?.email);
-  const displayName = userName.length > 12 ? userName.slice(0, 12) : userName;
-  const initials = (userName[0] || 'A').toUpperCase() + (userName[1] || '').toUpperCase();
+  // Identity = the authenticated user's OWN profile (profiles.full_name → auth
+  // metadata → email prefix only if no name). Greetings show the first name only.
+  const { firstName } = useIdentity();
+  const userName = firstName;
+  const displayName = firstName;
 
-  // Step 3 (text-only): mode-aware mentor-card copy. Falls back to displayName + the
-  // generic greeting while the recap is still loading (recap === null). No voice.
-  const recapName = recap?.student_name || displayName;
+  // Step 3 (text-only): mode-aware mentor-card copy. The Prof. Didier card ALWAYS
+  // greets with the CURRENT student's first name (useIdentity) — never a stale/old
+  // recap value, and never a prior/test name.
+  const recapName = firstName;
+  // The server-composed first_message embeds the student's full name; rewrite any
+  // occurrence of the server's name to the live FIRST name, so the program-confirmation
+  // message reads e.g. "Congratulations, Test2Real!" / "Congratulations, Didier!" and
+  // can never surface an old/test name carried by the recap payload.
+  const profFirstMessage = recap?.first_message
+    ? (recap?.student_name ? String(recap.first_message).split(recap.student_name).join(firstName) : recap.first_message)
+    : T('prof_analyzed');
   const modeGreeting =
     recap?.mode === 'onboarding' ? T('prof_greet_onboarding') :
     recap?.mode === 'daily_briefing' ? T('prof_greet_daily') :
@@ -421,15 +431,25 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
     recap?.mode === 'upgrade_coach' ? T('prof_rec_upgrade') :
     null;
   const topCourse = courses.find(c => c.pct > 0 && c.pct < 100) || courses[0];
-  // "Your Next Action" source: prefer the student's actually-selected program
-  // (recap.current_course) over topCourse's courses[0] fallback. No new fetch —
-  // if the selected program matches a loaded `courses` entry, reuse its real
-  // progress (done/total/pct); otherwise render title-only (no fabricated numbers).
+  // "Your Next Action" source of truth = the student's SELECTED program
+  // (profiles.free_course_id, already loaded into profileRow — no extra fetch).
+  // The home, Learn tab, and program detail must all reflect the SAME program the
+  // student chose, so the selection wins over any progress-based default. When a
+  // program is selected we never fall back to courses[0] (that was the bug: a fresh
+  // free student with no progress saw an arbitrary default instead of their pick).
+  // recap.current_course (also derived from free_course_id) and topCourse remain
+  // fallbacks ONLY when no program has been selected (e.g. All-Access students).
   const recapCourse = recap?.current_course;
   const recapCourseProg = recapCourse?.id ? courses.find((c: any) => c.id === recapCourse.id) : null;
-  const nextActionCourse = recapCourse?.id
-    ? { id: recapCourse.id, title: recapCourse.title || recapCourseProg?.title || '', prog: recapCourseProg }
-    : (topCourse ? { id: topCourse.id, title: topCourse.title, prog: topCourse } : null);
+  const selectedProgramId = profileRow?.free_course_id || null;
+  const selectedProgram = selectedProgramId ? courses.find((c: any) => c.id === selectedProgramId) : null;
+  const nextActionCourse = selectedProgramId
+    ? (selectedProgram
+        ? { id: selectedProgram.id, title: selectedProgram.title, prog: selectedProgram }
+        : { id: selectedProgramId, title: recapCourse?.id === selectedProgramId ? (recapCourse.title || '') : '', prog: null })
+    : (recapCourse?.id
+        ? { id: recapCourse.id, title: recapCourse.title || recapCourseProg?.title || '', prog: recapCourseProg }
+        : (topCourse ? { id: topCourse.id, title: topCourse.title, prog: topCourse } : null));
   const nextActionHasProgress = !!(nextActionCourse?.prog && (nextActionCourse.prog.total ?? 0) > 0);
   const overallPct = courses.length > 0 ? Math.round(courses.reduce((s, c) => s + c.pct, 0) / courses.length) : 0;
   const ALL_SCHOOLS = ['AI Engineering', 'AI Business', 'Governance & Risk', 'Human-AI Experience'];
@@ -729,7 +749,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               </div>
               {/* Step 2: data-driven recap (first_message) with static fallback — never blank */}
               <p style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.55, marginBottom: recap?.recommendation ? 5 : 10 }}>
-                {recap?.first_message || T('prof_analyzed')}
+                {profFirstMessage}
               </p>
               {recap?.recommendation && (
                 <p style={{ fontSize: 11, color: '#67e8f9', fontWeight: 600, lineHeight: 1.5, marginBottom: 10 }}>

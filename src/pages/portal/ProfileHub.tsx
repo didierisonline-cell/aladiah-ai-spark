@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import MobileShell from '@/components/mobile/MobileShell';
 import PortalShell from '@/components/portal/PortalShell';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
-import { displayNameFromEmail, initialsFromEmail } from '@/lib/avatar';
+import { useIdentity } from '@/hooks/useIdentity';
 
 const C = { fg: '#EDF2F7', fm: '#8596AD', card: 'rgba(8,20,52,.7)', border: 'rgba(255,255,255,.08)' };
 
@@ -35,8 +35,7 @@ export default function ProfileHub() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isPhone } = useBreakpoint();
-  const name = displayNameFromEmail(user?.email);
-  const initials = initialsFromEmail(user?.email);
+  const { displayName: name, initials } = useIdentity();
 
   const logout = async () => {
     try { await supabase.auth.signOut(); } catch { /* ignore */ }

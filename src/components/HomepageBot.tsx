@@ -4,10 +4,10 @@ import { X, Send, Loader2 } from 'lucide-react';
 interface Message { role: 'user' | 'assistant'; content: string; }
 
 const FALLBACKS: Record<string, string> = {
-  price: 'We have one simple plan: $99.99/month — full access to all 8 courses, Prof. Didier AI voice instructor, AI Interview Coach, Resume Builder, and everything in 7 languages. Click Get Busy above to start! 🚀',
-  course: 'We offer 8 world-class programs: Scrum Master, PMP, AI for Project Managers, Data Analytics, Cybersecurity, DevOps, Solution Architect, and Business Analysis. Each includes AI instruction, quizzes, and certification prep. Which interests you?',
+  price: 'We have one simple plan: $99.99/month — full access to all programs, Prof. Didier AI voice instructor, AI Interview Coach, Resume Builder, and everything in 7 languages. Click Get Busy above to start! 🚀',
+  course: 'We offer world-class programs including Scrum Master, PMP, AI for Project Managers, Data Analytics, Cybersecurity, DevOps, Solution Architect, and Business Analysis. Each includes AI instruction, quizzes, and certification prep. Which interests you?',
   enroll: 'Getting started is easy — click Get Busy at the top! You can start and upgrade anytime. Prof. Didier will personally guide your first lesson. 🎓',
-  certif: 'Our courses prep you for PSM I/II/III, PMP, PMI-ACP, CSM, and more. Enroll now and get certified faster!',
+  certif: 'Our programs prep you for PSM I/II/III, PMP, PMI-ACP, CSM, and more. Enroll now and get certified faster!',
   language: 'Prof. Didier teaches in 7 languages: English, French, Spanish, German, Mandarin, Arabic, and Japanese. Switch anytime during a lesson. 🌍',
   default: 'Aladiah Academy offers AI-powered professional training for Scrum Masters and Project Managers. Prof. Didier teaches you personally using the Socratic method. Want to know about programs or pricing?',
 };
@@ -76,7 +76,7 @@ export default function HomepageBot() {
     setLoading(false);
   };
 
-  const quick = ['Pricing?', 'What courses?', 'How to enroll?', 'Certifications?'];
+  const quick = ['Pricing?', 'What programs?', 'How to enroll?', 'Certifications?'];
 
   return (
     <>
