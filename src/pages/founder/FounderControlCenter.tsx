@@ -1,5 +1,4 @@
-import Header from '@/components/Header';
-import FounderNav from '@/components/founder/FounderNav';
+import FounderShell from '@/components/founder/FounderShell';
 import AIWorkforceDashboard from '@/components/admin/workforce/AIWorkforceDashboard';
 
 /**
@@ -7,13 +6,9 @@ import AIWorkforceDashboard from '@/components/admin/workforce/AIWorkforceDashbo
  * communications, reports, approvals). Founder-only via <FounderRoute>.
  */
 const FounderControlCenter = () => (
-  <div className="min-h-screen bg-background">
-    <Header />
-    <main className="max-w-7xl mx-auto px-4 py-8">
-      <FounderNav />
-      <AIWorkforceDashboard />
-    </main>
-  </div>
+  <FounderShell>
+    <AIWorkforceDashboard />
+  </FounderShell>
 );
 
 export default FounderControlCenter;

@@ -1,6 +1,5 @@
-import Header from '@/components/Header';
 import { Link } from 'react-router-dom';
-import FounderNav from '@/components/founder/FounderNav';
+import FounderShell from '@/components/founder/FounderShell';
 import CurriculumReadinessDashboard from '@/components/founder/CurriculumReadinessDashboard';
 import { GaugeCircle } from 'lucide-react';
 
@@ -11,10 +10,7 @@ import { GaugeCircle } from 'lucide-react';
  * Founder-only via <FounderRoute>.
  */
 const FounderReadiness = () => (
-  <div className="min-h-screen bg-background">
-    <Header />
-    <main className="max-w-[88rem] mx-auto px-4 py-8">
-      <FounderNav />
+  <FounderShell wide>
       <div className="mb-6 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -28,8 +24,7 @@ const FounderReadiness = () => (
         <Link to="/founder/curriculum" className="text-sm text-muted-foreground hover:text-foreground">Question Review →</Link>
       </div>
       <CurriculumReadinessDashboard />
-    </main>
-  </div>
+  </FounderShell>
 );
 
 export default FounderReadiness;

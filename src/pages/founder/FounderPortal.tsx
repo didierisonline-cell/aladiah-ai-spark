@@ -1,6 +1,5 @@
-import Header from '@/components/Header';
 import { Link } from 'react-router-dom';
-import FounderNav from '@/components/founder/FounderNav';
+import FounderShell from '@/components/founder/FounderShell';
 import CEOStatusBoard from '@/components/admin/ceo/CEOStatusBoard';
 import WorkforceLaunchpad from '@/components/admin/workforce/WorkforceLaunchpad';
 import { Crown } from 'lucide-react';
@@ -12,10 +11,7 @@ import { Crown } from 'lucide-react';
  * Founder-only; students are redirected to /portal by <FounderRoute>.
  */
 const FounderPortal = () => (
-  <div className="min-h-screen bg-background">
-    <Header />
-    <main className="max-w-7xl mx-auto px-4 py-8">
-      <FounderNav />
+  <FounderShell>
       <div className="mb-6 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -36,8 +32,7 @@ const FounderPortal = () => (
       <div className="mt-10">
         <WorkforceLaunchpad />
       </div>
-    </main>
-  </div>
+  </FounderShell>
 );
 
 export default FounderPortal;
