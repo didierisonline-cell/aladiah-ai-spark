@@ -1,0 +1,126 @@
+{
+  "generatedAt": "2026-06-16T15:38:59.870Z",
+  "scannerVersion": "0.2-db",
+  "scope": "db-content (courses/chapters/videos translations + quiz_questions probe)",
+  "baseline": "en",
+  "supabaseUrl": "vgujnkxylipfwmkpwzvb.supabase.co",
+  "reachable": false,
+  "tables": {
+    "courses": {
+      "ok": false,
+      "status": 403,
+      "error": "egress-blocked"
+    }
+  },
+  "perSurface": [],
+  "notes": [
+    "Supabase host is NOT reachable from this environment (network egress allowlist). Add the Supabase host to the environment egress settings, or run this scanner where outbound access to *.supabase.co is allowed. No DB coverage was measured."
+  ],
+  "perLanguageDbOverall": [
+    {
+      "language": "fr",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "es",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "zh",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "ar",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "de",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "ja",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "pt",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "hi",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "ko",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "it",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "ru",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "nl",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "pl",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "tr",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "sw",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "yo",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "ha",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "ig",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "vi",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "th",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    },
+    {
+      "language": "bas",
+      "dbCoveragePct": null,
+      "surfacesMeasured": 0
+    }
+  ]
+}

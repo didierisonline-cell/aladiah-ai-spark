@@ -62,6 +62,23 @@ global-language-adaptation/
   QA-CHECKLIST.md
 ```
 
+## Rollout priority
+
+**English and French come first** (primary launch languages); the other UI languages are
+secondary; **Basaa is an add-on**, layered on after the primary experience is solid. The
+scanner, dashboard, and translation backlog order work by this tiering (`LANGUAGE_PRIORITY`
+/ `PRIORITY_ORDER` in `global-language-config.ts`).
+
+## Scanners
+
+- **`scanner/coverage-scanner.mjs`** (v0.1, static) — UI-string key coverage, dangling
+  `t()` refs, hardcoded-English candidates. Runs offline. Baseline in `reports/`.
+- **`scanner/db-coverage-scanner.mjs`** (v0.2-db) — DB content coverage for
+  `courses`/`chapters`/`videos` `translations`, plus a `quiz_questions` schema probe.
+  Read-only SELECTs via the publishable key. **Requires egress to `*.supabase.co`**; in this
+  remote environment that host must be added to the network egress allowlist, otherwise the
+  scanner reports `reachable:false` and measures nothing (it never fabricates coverage).
+
 ## Language Completeness Rules
 
 A language is **not "active"** unless every activation-blocking surface is **100%**:
@@ -89,7 +106,8 @@ become official Aladiah vocabulary. Details in `workflows/student-submission-gov
 2. ✅ Database plan + schemas + missing-translation registry.
 3. ✅ Dashboard route plan (Language Quality Command Center).
 4. ✅ Basaa learning-memory workflow + Basaa Agent integration points.
-5. ⏭ Later: DB/diagram scanner phases, runtime fallback logger, then actual translation.
+5. ✅ DB content scanner (Phase 2) — courses/chapters/videos + quiz schema probe.
+6. ⏭ Later: diagram scanner phase, runtime fallback logger, then actual translation.
 
 ## Canon alignment
 

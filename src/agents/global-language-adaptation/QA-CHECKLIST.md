@@ -21,6 +21,13 @@ Acceptance gates for this agent. Grouped by phase. ☐ = not started, ✅ = done
 - ☐ Hardcoded-candidate list sampled; false-positive rate acceptable; ignore-list added.
 - ☐ Scanner runs in CI without network access; exits non-zero if an "active" language regresses below 100%.
 
+## Phase 1b — DB content scanner (this delivery)
+- ✅ `db-coverage-scanner.mjs` runnable; scores courses/chapters/videos `translations`.
+- ✅ Probes `quiz_questions` for a `translations` column (schema-pending handling).
+- ✅ Measures English/French first, Basaa last (priority order).
+- ✅ Reports `reachable:false` and fabricates no coverage when egress is blocked.
+- ☐ Re-run where `*.supabase.co` egress is allowed; confirm real per-surface coverage.
+
 ## Phase 2 — Database
 - ☐ Migration SQL reviewed by founder; no destructive changes.
 - ☐ Tables created in Supabase; `select` confirms all 6 `language_*` tables exist.

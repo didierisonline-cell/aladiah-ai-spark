@@ -36,6 +36,35 @@ export type LanguageCode = UiLanguage | PendingLanguage;
 export const BASELINE_LANGUAGE: UiLanguage = 'en';
 
 /**
+ * Rollout priority. English and French come FIRST (primary launch languages); the
+ * remaining UI languages are secondary; Basaa is an add-on target layered on after the
+ * primary experience is solid. The scanner, dashboard, and translation backlog order
+ * work by this tiering.
+ */
+export const LANGUAGE_PRIORITY = {
+  primary: ['en', 'fr'] as LanguageCode[],
+  secondary: [
+    'es', 'zh', 'ar', 'de', 'ja', 'pt', 'hi', 'ko', 'it',
+    'ru', 'nl', 'pl', 'tr', 'sw', 'yo', 'ha', 'ig', 'vi', 'th',
+  ] as LanguageCode[],
+  addon: ['bas'] as LanguageCode[], // Basaa — add-on, layered on after primary languages
+} as const;
+
+/** Languages in rollout-priority order: primary → secondary → add-on. */
+export const PRIORITY_ORDER: LanguageCode[] = [
+  ...LANGUAGE_PRIORITY.primary,
+  ...LANGUAGE_PRIORITY.secondary,
+  ...LANGUAGE_PRIORITY.addon,
+];
+
+/** Tier of a language for prioritization. */
+export function languageTier(lang: LanguageCode): 'primary' | 'secondary' | 'addon' {
+  if (LANGUAGE_PRIORITY.primary.includes(lang)) return 'primary';
+  if (LANGUAGE_PRIORITY.addon.includes(lang)) return 'addon';
+  return 'secondary';
+}
+
+/**
  * Translatable surfaces of the platform. Each surface is independently scored; a language
  * is only "active" when ALL required surfaces hit 100% (see ACTIVATION_RULES).
  */
@@ -128,6 +157,8 @@ export const GLOBAL_LANGUAGE_AGENT = {
   baseline: BASELINE_LANGUAGE,
   uiLanguages: UI_LANGUAGES,
   pendingLanguages: PENDING_LANGUAGES,
+  priority: LANGUAGE_PRIORITY,
+  priorityOrder: PRIORITY_ORDER,
   activationRules: ACTIVATION_RULES,
   fallback: FALLBACK_POLICY,
   reviewStates: REVIEW_STATES,

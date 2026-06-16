@@ -31,13 +31,26 @@ Output: console summary + `--json` + `--md` reports (committed under `reports/`)
 **First-run baseline (committed):** 571 `en` keys; only `es`/`fr` at 100%; a cluster at
 ~65%; `yo` at 47.5%; 83 dangling refs; ~1,013 hardcoded candidates. Basaa absent (0%).
 
-### Phase 2 — DB content (planned)
-Add a read-only Supabase mode (anon/publishable key, SELECT-only) to score:
+### Phase 2 — DB content (✅ implemented, v0.2-db → `db-coverage-scanner.mjs`)
+Read-only Supabase mode (anon/publishable key from `client.ts`, SELECT-only via PostgREST):
 - `courses.translations`, `chapters.translations`, `videos.translations` — % of rows with a
-  non-empty entry for each language (title vs body sub-fields scored separately).
-- `quiz_questions` — **blocked on schema**: needs a translations mechanism first
-  (see `database/database-migration-plan.md`). Until then, report quizzes as 0% for all
-  non-baseline languages.
+  non-empty entry for each language (title vs body sub-fields scored separately). Handles
+  both `{lang:{title,…}}` and `{title:{lang}}` JSON shapes. Denominator = rows whose
+  baseline (`en`) field is non-empty.
+- `quiz_questions` — probes for a `translations` column. It does **not** exist yet, so when
+  reachable the scanner marks quiz surfaces **schema-pending → 0%** for non-baseline
+  languages until the additive migration (`database/database-migration-plan.md`) is applied.
+- Languages are measured **English/French first** (primary), then secondary, then **Basaa**
+  (add-on), mirroring `PRIORITY_ORDER` in `global-language-config.ts`.
+
+> **Network requirement:** this scanner needs outbound access to `*.supabase.co`. In the
+> remote web environment the host must be on the **egress allowlist**; otherwise the scanner
+> reports `reachable: false` and measures nothing (it never fabricates coverage). It also
+> degrades gracefully (exit 0) so it is CI-safe without creds. Run:
+> ```bash
+> node src/agents/global-language-adaptation/scanner/db-coverage-scanner.mjs \
+>   --json .../reports/db-coverage.json --md .../reports/db-coverage.md
+> ```
 
 ### Phase 3 — Static data & diagrams (planned)
 - `src/data/simulations.ts` — detect language fields (none today → 0% non-en) and size the
