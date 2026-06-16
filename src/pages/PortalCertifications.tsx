@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import Header from '@/components/Header';
-import PortalSidebar from '@/components/PortalSidebar';
+import PortalShell from '@/components/portal/PortalShell';
 import { useAuth } from '@/hooks/useAuth';
 
 const DS = {
@@ -27,10 +26,7 @@ export default function PortalCertifications() {
   const displayName = user?.email?.split('@')[0] || 'Student';
 
   return (
-    <div style={{ background: DS.bg, minHeight: '100vh', fontFamily: '"Inter",system-ui,sans-serif' }}>
-      <Header />
-      <div className="portal-shell" style={{ display: 'flex' }}>
-        <PortalSidebar />
+    <PortalShell background={DS.bg}>
         <div style={{ flex: 1, padding: '40px 48px', minHeight: 'calc(100vh - 70px)' }}>
 
           {/* Page header */}
@@ -139,8 +135,7 @@ export default function PortalCertifications() {
           </div>
 
         </div>
-      </div>
       <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}`}</style>
-    </div>
+    </PortalShell>
   );
 }
