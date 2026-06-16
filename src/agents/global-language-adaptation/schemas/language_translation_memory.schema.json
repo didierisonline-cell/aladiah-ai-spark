@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aladiah.com/schemas/language/language_translation_memory.schema.json",
+  "title": "Language Translation Memory",
+  "description": "Reusable source→target translation segments shared across all languages. Powers fallback resolution, consistency, and pre-fill for human translators. Maps to language_translation_memory.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["source_language", "target_language", "source_text", "target_text"],
+  "properties": {
+    "id": { "type": "string", "description": "UUID; assigned at insert." },
+    "source_language": { "type": "string", "description": "ISO code of source (usually 'en')." },
+    "target_language": { "type": "string", "description": "ISO code of target (e.g. 'bas', 'fr')." },
+    "source_text": { "type": "string", "minLength": 1 },
+    "target_text": { "type": "string", "minLength": 1 },
+    "surface": {
+      "type": "string",
+      "description": "Surface this segment belongs to.",
+      "enum": ["navigation","buttons","ui-labels","alerts-feedback","course-titles","lesson-titles","lesson-body","quiz-questions","quiz-answers","quiz-feedback","simulations","diagrams","transcripts","ai-tutor"]
+    },
+    "translation_key": { "type": ["string","null"], "description": "LanguageContext key if applicable." },
+    "context": { "type": "string", "description": "Course/lesson/concept context for disambiguation." },
+    "origin": { "type": "string", "enum": ["human","ai","student-approved","import"], "default": "human" },
+    "quality": { "type": "string", "enum": ["draft","reviewed","approved"], "default": "draft" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "usage_count": { "type": "integer", "minimum": 0, "default": 0 },
+    "notes": { "type": "string" }
+  }
+}

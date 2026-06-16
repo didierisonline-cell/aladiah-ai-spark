@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aladiah.com/schemas/language/diagram_label_set.schema.json",
+  "title": "Diagram Label Set",
+  "description": "Translatable label metadata for a diagram. Decouples diagram labels from hardcoded SVG <text> so diagrams render in the active language (or show translated captions). One label set per diagram; translations keyed by language. Supports responsibility #8 (diagrams).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["diagram_id", "baseline_language", "labels"],
+  "properties": {
+    "diagram_id": { "type": "string", "description": "Stable id matching the diagram registry (e.g. 'aws-vpc-architecture')." },
+    "title": { "type": "string" },
+    "baseline_language": { "type": "string", "default": "en" },
+    "render_strategy": {
+      "type": "string",
+      "description": "How localization is achieved for this diagram.",
+      "enum": ["dynamic-svg-text","translated-asset","caption-overlay"],
+      "default": "dynamic-svg-text"
+    },
+    "labels": {
+      "type": "array",
+      "description": "Each positioned label and its translations.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label_id", "baseline_text", "translations"],
+        "properties": {
+          "label_id": { "type": "string", "description": "Stable id for this label within the diagram." },
+          "baseline_text": { "type": "string", "description": "English source text." },
+          "position": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": { "x": { "type": "number" }, "y": { "type": "number" } }
+          },
+          "translations": {
+            "type": "object",
+            "description": "Map of language code -> translated label text.",
+            "additionalProperties": { "type": "string" }
+          }
+        }
+      }
+    },
+    "localized_assets": {
+      "type": "object",
+      "description": "Optional map of language code -> pre-rendered image/SVG URL when render_strategy = translated-asset.",
+      "additionalProperties": { "type": "string" }
+    }
+  }
+}

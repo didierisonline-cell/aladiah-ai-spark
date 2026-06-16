@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aladiah.com/schemas/language/language_vocabulary_entries.schema.json",
+  "title": "Language Vocabulary Entry",
+  "description": "Official, approved vocabulary term for a language (the canonical lexicon used by the platform). Only entries that reach review_state 'approved' belong here. For Basaa, approved entries also enrich the Basaa Agent tables. Maps to language_vocabulary_entries.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["language", "term", "review_state"],
+  "properties": {
+    "id": { "type": "string", "description": "UUID." },
+    "language": { "type": "string", "description": "ISO code, e.g. 'bas'." },
+    "term": { "type": "string", "minLength": 1, "description": "The term in the target language (tone diacritics preserved for Basaa)." },
+    "term_normalized": { "type": "string", "description": "Toneless/folded form for search." },
+    "part_of_speech": { "type": "string" },
+    "english_equivalent": { "type": "string" },
+    "french_equivalent": { "type": "string" },
+    "pronunciation": { "type": "string", "description": "Pronunciation notes / IPA." },
+    "domain": { "type": "string", "description": "e.g. 'technology','health','general'." },
+    "context": { "type": "string", "description": "Course/lesson/concept where it applies." },
+    "source_submission_id": { "type": ["string","null"], "description": "language_student_submissions.id if student-originated." },
+    "review_state": {
+      "type": "string",
+      "enum": ["unreviewed","ai-reviewed","human-reviewed","approved","rejected"]
+    },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "notes": { "type": "string" }
+  }
+}

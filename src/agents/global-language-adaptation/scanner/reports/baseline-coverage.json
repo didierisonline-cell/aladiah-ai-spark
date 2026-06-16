@@ -1,0 +1,465 @@
+{
+  "generatedAt": "2026-06-16T14:13:32.788Z",
+  "scannerVersion": "0.1",
+  "scope": "static-source (LanguageContext keys + t() refs + hardcoded JSX heuristic)",
+  "baseline": {
+    "language": "en",
+    "keys": 571
+  },
+  "declaredLanguages": 21,
+  "languagesWithTranslationBlock": [
+    "en",
+    "es",
+    "zh",
+    "ar",
+    "fr",
+    "de",
+    "ja",
+    "pt",
+    "hi",
+    "ko",
+    "it",
+    "ru",
+    "nl",
+    "pl",
+    "tr",
+    "sw",
+    "yo",
+    "ha",
+    "ig",
+    "vi",
+    "th"
+  ],
+  "perLanguage": [
+    {
+      "language": "en",
+      "definedKeys": 571,
+      "coveredBaselineKeys": 571,
+      "baselineKeys": 571,
+      "keyCoveragePct": 100,
+      "hasBlock": true,
+      "activeEligibleStatic": true
+    },
+    {
+      "language": "es",
+      "definedKeys": 571,
+      "coveredBaselineKeys": 571,
+      "baselineKeys": 571,
+      "keyCoveragePct": 100,
+      "hasBlock": true,
+      "activeEligibleStatic": true
+    },
+    {
+      "language": "zh",
+      "definedKeys": 562,
+      "coveredBaselineKeys": 562,
+      "baselineKeys": 571,
+      "keyCoveragePct": 98.4,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "ar",
+      "definedKeys": 562,
+      "coveredBaselineKeys": 562,
+      "baselineKeys": 571,
+      "keyCoveragePct": 98.4,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "fr",
+      "definedKeys": 571,
+      "coveredBaselineKeys": 571,
+      "baselineKeys": 571,
+      "keyCoveragePct": 100,
+      "hasBlock": true,
+      "activeEligibleStatic": true
+    },
+    {
+      "language": "de",
+      "definedKeys": 570,
+      "coveredBaselineKeys": 570,
+      "baselineKeys": 571,
+      "keyCoveragePct": 99.8,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "ja",
+      "definedKeys": 562,
+      "coveredBaselineKeys": 562,
+      "baselineKeys": 571,
+      "keyCoveragePct": 98.4,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "pt",
+      "definedKeys": 379,
+      "coveredBaselineKeys": 379,
+      "baselineKeys": 571,
+      "keyCoveragePct": 66.4,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "hi",
+      "definedKeys": 371,
+      "coveredBaselineKeys": 371,
+      "baselineKeys": 571,
+      "keyCoveragePct": 65,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "ko",
+      "definedKeys": 371,
+      "coveredBaselineKeys": 371,
+      "baselineKeys": 571,
+      "keyCoveragePct": 65,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "it",
+      "definedKeys": 379,
+      "coveredBaselineKeys": 379,
+      "baselineKeys": 571,
+      "keyCoveragePct": 66.4,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "ru",
+      "definedKeys": 379,
+      "coveredBaselineKeys": 379,
+      "baselineKeys": 571,
+      "keyCoveragePct": 66.4,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "nl",
+      "definedKeys": 371,
+      "coveredBaselineKeys": 371,
+      "baselineKeys": 571,
+      "keyCoveragePct": 65,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "pl",
+      "definedKeys": 371,
+      "coveredBaselineKeys": 371,
+      "baselineKeys": 571,
+      "keyCoveragePct": 65,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "tr",
+      "definedKeys": 371,
+      "coveredBaselineKeys": 371,
+      "baselineKeys": 571,
+      "keyCoveragePct": 65,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "sw",
+      "definedKeys": 371,
+      "coveredBaselineKeys": 371,
+      "baselineKeys": 571,
+      "keyCoveragePct": 65,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "yo",
+      "definedKeys": 271,
+      "coveredBaselineKeys": 271,
+      "baselineKeys": 571,
+      "keyCoveragePct": 47.5,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "ha",
+      "definedKeys": 371,
+      "coveredBaselineKeys": 371,
+      "baselineKeys": 571,
+      "keyCoveragePct": 65,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "ig",
+      "definedKeys": 371,
+      "coveredBaselineKeys": 371,
+      "baselineKeys": 571,
+      "keyCoveragePct": 65,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "vi",
+      "definedKeys": 371,
+      "coveredBaselineKeys": 371,
+      "baselineKeys": 571,
+      "keyCoveragePct": 65,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    },
+    {
+      "language": "th",
+      "definedKeys": 371,
+      "coveredBaselineKeys": 371,
+      "baselineKeys": 571,
+      "keyCoveragePct": 65,
+      "hasBlock": true,
+      "activeEligibleStatic": false
+    }
+  ],
+  "referencedKeysMissingFromBaseline": {
+    "count": 83,
+    "keys": [
+      "account",
+      "ago",
+      "ai_mentor",
+      "ai_mentor_sub",
+      "ai_workforce",
+      "all_access",
+      "amazing",
+      "at",
+      "career_momentum",
+      "career_tools",
+      "certifications",
+      "certs",
+      "chat_now",
+      "community",
+      "completed",
+      "continue",
+      "continue_learning",
+      "countries_community",
+      "daily_challenge",
+      "daily_challenge_sub",
+      "day_streak",
+      "earned",
+      "events",
+      "fastest_path",
+      "future_ready",
+      "future_sub",
+      "got_hired",
+      "hero.scene${i + 1}",
+      "hours_employable",
+      "in_progress",
+      "join_now",
+      "keep_going",
+      "labs",
+      "labs_completed",
+      "labs_week",
+      "leaderboard",
+      "lessons",
+      "live_feed",
+      "live_session",
+      "live_session_sub",
+      "management",
+      "my_academy",
+      "my_career",
+      "nav_career",
+      "nav_community",
+      "nav_courses",
+      "nav_my_portal",
+      "nav_resources",
+      "nav_talent_score",
+      "new"
+    ]
+  },
+  "hardcodedEnglishCandidates": {
+    "total": 1013,
+    "note": "HEURISTIC — requires human triage. JSX text not wrapped in t()/T().",
+    "topFiles": [
+      {
+        "file": "src/components/simulation/ArchitectureDiagramViewer.tsx",
+        "count": 29,
+        "samples": [
+          "VPC: 10.0.0.0/16 — nebula-prod-vpc",
+          "Public Subnet — AZ us-east-1a",
+          "Auth Service"
+        ]
+      },
+      {
+        "file": "src/pages/AdminDashboard.tsx",
+        "count": 24,
+        "samples": [
+          "Loading command center...",
+          "Command Center",
+          "Aladiah Academy · Live Dashboard"
+        ]
+      },
+      {
+        "file": "src/components/admin/content/ContentAuthoringCenter.tsx",
+        "count": 23,
+        "samples": [
+          "Content Authoring Center",
+          "Single source of truth for curriculum creation · curriculum ",
+          "No programs"
+        ]
+      },
+      {
+        "file": "src/components/admin/curriculum/CurriculumExcellenceDashboard.tsx",
+        "count": 23,
+        "samples": [
+          "Curriculum Excellence",
+          "Refresh",
+          "Run Audit"
+        ]
+      },
+      {
+        "file": "src/components/admin/operations/OperationsDashboard.tsx",
+        "count": 23,
+        "samples": [
+          "No components.",
+          "No findings.",
+          "Acknowledge"
+        ]
+      },
+      {
+        "file": "src/components/admin/curriculum/AcademyProduction.tsx",
+        "count": 21,
+        "samples": [
+          "Academy Production",
+          "Lifecycle status · completion heatmap · production queue · f",
+          "Refresh"
+        ]
+      },
+      {
+        "file": "src/components/simulation/TicketDetailModal.tsx",
+        "count": 21,
+        "samples": [
+          "User Story",
+          "Details",
+          "Description"
+        ]
+      },
+      {
+        "file": "src/pages/InterviewSimulator.tsx",
+        "count": 19,
+        "samples": [
+          "AI Interview Coach",
+          "Access your AI Interview Simulator below.",
+          "View Plans"
+        ]
+      },
+      {
+        "file": "src/components/portal/CareerTools.tsx",
+        "count": 18,
+        "samples": [
+          "Career Roadmap",
+          "Track your path to career readiness",
+          "AI Resume Builder"
+        ]
+      },
+      {
+        "file": "src/components/founder/CurriculumReadinessDashboard.tsx",
+        "count": 17,
+        "samples": [
+          "Launch Ready",
+          "In Development",
+          "Program-level readiness · launch gate · live Supabase"
+        ]
+      },
+      {
+        "file": "src/components/portal/StatDetailModals.tsx",
+        "count": 17,
+        "samples": [
+          "Your Progress Details",
+          "Overall Completion",
+          "Chapter Progress"
+        ]
+      },
+      {
+        "file": "src/components/admin/analytics/AnalyticsDashboard.tsx",
+        "count": 16,
+        "samples": [
+          "Analytics &amp; Executive Intelligence",
+          "Source of truth · master KPI: Career Transformation Impact S",
+          "Refresh"
+        ]
+      },
+      {
+        "file": "src/components/simulation/EmailInbox.tsx",
+        "count": 16,
+        "samples": [
+          "SM Guidance",
+          "How to Register This Risk",
+          "Send Reply"
+        ]
+      },
+      {
+        "file": "src/components/admin/curriculum/AcademyReadinessPanel.tsx",
+        "count": 15,
+        "samples": [
+          "Module readiness",
+          "Missing content by module",
+          "All modules have lessons + quiz."
+        ]
+      },
+      {
+        "file": "src/pages/MyCareerPath.tsx",
+        "count": 15,
+        "samples": [
+          "CAREER FOCUS",
+          "My Career Path",
+          "Choose your target program. See your full roadmap, resources"
+        ]
+      },
+      {
+        "file": "src/pages/Certifications.tsx",
+        "count": 14,
+        "samples": [
+          "Seven Levels of",
+          "Verified Mastery.",
+          "Not a participation certificate. Multi-modal evaluation at e"
+        ]
+      },
+      {
+        "file": "src/components/admin/marketing/ContentGeneratorPanel.tsx",
+        "count": 13,
+        "samples": [
+          "Promise",
+          "Content Generator",
+          "One idea in — assets out, straight to the approval queue."
+        ]
+      },
+      {
+        "file": "src/pages/Auth.tsx",
+        "count": 13,
+        "samples": [
+          "Check your email",
+          "If an account exists for that address, a reset link is on it",
+          "The link opens the reset page and expires after a single use"
+        ]
+      },
+      {
+        "file": "src/pages/Enroll.tsx",
+        "count": 13,
+        "samples": [
+          "Back to Home",
+          "Aladiah Academy",
+          "Professional Enrollment Application"
+        ]
+      },
+      {
+        "file": "src/components/portal/PortalCareerPanel.tsx",
+        "count": 12,
+        "samples": [
+          "Career Path Recommendations",
+          "Based on your Talent Score™ and course progress, Prof. Didie",
+          "Skill Gap Analysis"
+        ]
+      }
+    ]
+  }
+}

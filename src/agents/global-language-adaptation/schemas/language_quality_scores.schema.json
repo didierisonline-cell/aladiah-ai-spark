@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aladiah.com/schemas/language/language_quality_scores.schema.json",
+  "title": "Language Quality Score",
+  "description": "A per-language, per-surface coverage snapshot produced by the coverage scanner. One row per (language, surface, scan). The dashboard reads the latest scan. Maps to language_quality_scores.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["language", "surface", "coverage_pct", "scanned_at"],
+  "properties": {
+    "id": { "type": "string", "description": "UUID." },
+    "language": { "type": "string" },
+    "surface": {
+      "type": "string",
+      "enum": ["navigation","buttons","ui-labels","alerts-feedback","course-titles","lesson-titles","lesson-body","quiz-questions","quiz-answers","quiz-feedback","simulations","diagrams","transcripts","ai-tutor","overall"]
+    },
+    "total_strings": { "type": "integer", "minimum": 0 },
+    "translated_strings": { "type": "integer", "minimum": 0 },
+    "missing_strings": { "type": "integer", "minimum": 0 },
+    "coverage_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+    "meets_activation_threshold": { "type": "boolean", "description": "true when coverage_pct == 100 for an activation-blocking surface." },
+    "scanner_version": { "type": "string" },
+    "scanned_at": { "type": "string", "format": "date-time" }
+  }
+}
