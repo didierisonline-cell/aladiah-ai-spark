@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PortalShell from '@/components/portal/PortalShell';
 import SimEngine from '@/components/SimEngine';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   ALL_SIMULATIONS, PROGRAMS, SCHOOLS,
   getSimsForProgram, type Simulation, type SimType,
@@ -32,28 +33,26 @@ const TYPE_ICONS: Record<string, string> = {
   ethics:'⚖️', coaching:'👥',
 };
 
-// ─── Completion state (in-memory, could be persisted to Supabase) ──
 const completedSims: Record<string, number> = {};
 
 // ─── Component ─────────────────────────────────────────────────
 export default function PortalSimulations() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   const [activeSim, setActiveSim] = useState<Simulation | null>(null);
   const [selectedSchool, setSelectedSchool] = useState<string>('All');
   const [selectedProgram, setSelectedProgram] = useState<string>('All');
-  const [selectedModule, setSelectedModule] = useState<number>(0);  // 0 = all
+  const [selectedModule, setSelectedModule] = useState<number>(0);
   const [selectedDiff, setSelectedDiff] = useState<string>('All');
   const [selectedType, setSelectedType] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'program'>('program');
   const [completedMap, setCompletedMap] = useState<Record<string, number>>(completedSims);
 
-  // ── Filtered simulations ──────────────────────────────────────
   const filteredSims = useMemo(() => {
     let sims = ALL_SIMULATIONS;
-
     if (selectedSchool !== 'All') {
       const schoolPrograms = PROGRAMS.filter(p => p.school === selectedSchool).map(p => p.key);
       sims = sims.filter(s => schoolPrograms.includes(s.programKey));
@@ -75,29 +74,23 @@ export default function PortalSimulations() {
       sims = sims.filter(s =>
         s.title.toLowerCase().includes(q) ||
         s.subtitle.toLowerCase().includes(q) ||
-        s.tags.some(t => t.includes(q))
+        s.tags.some(tag => tag.includes(q))
       );
     }
     return sims;
   }, [selectedSchool, selectedProgram, selectedModule, selectedDiff, selectedType, searchQuery]);
 
-  // ── Stats ─────────────────────────────────────────────────────
   const completedCount = Object.keys(completedMap).length;
   const totalXP = Object.values(completedMap).reduce((a,b) => a+b, 0);
-  const avgScore = completedCount > 0
-    ? Math.round(Object.values(completedMap).reduce((a,b) => a+b, 0) / completedCount)
-    : 0;
 
   const programsForSchool = selectedSchool === 'All'
     ? PROGRAMS
     : PROGRAMS.filter(p => p.school === selectedSchool);
 
-  // ── Handle completion ─────────────────────────────────────────
   const handleComplete = (simId: string, xpEarned: number) => {
     setCompletedMap(prev => ({ ...prev, [simId]: xpEarned }));
   };
 
-  // ── If simulation is active, show engine ─────────────────────
   if (activeSim) {
     return (
       <SimEngine
@@ -113,7 +106,6 @@ export default function PortalSimulations() {
 
   return (
     <PortalShell background={DS.bg}>
-        {/* Main content */}
         <div style={{ flex:1, minHeight:'calc(100vh - 70px)', overflowX:'hidden' }}>
 
           {/* ── HERO BANNER ────────────────────────────────────── */}
@@ -123,13 +115,10 @@ export default function PortalSimulations() {
             backgroundSize:'cover', backgroundPosition:'center right',
             overflow:'hidden',
           }}>
-            {/* Dark overlay */}
             <div style={{
               position:'absolute', inset:0,
               background:'linear-gradient(105deg, rgba(4,8,20,.95) 0%, rgba(4,8,20,.85) 45%, rgba(4,8,20,.4) 100%)',
             }}/>
-
-            {/* Content */}
             <div style={{ position:'relative', zIndex:2, padding:'44px 48px' }}>
               <div style={{
                 display:'inline-flex', alignItems:'center', gap:8,
@@ -139,35 +128,34 @@ export default function PortalSimulations() {
                 fontSize:10, color:DS.blue, fontWeight:700,
                 letterSpacing:2, marginBottom:16,
               }}>
-                🌐 WORLD-CLASS AI SIMULATIONS
+                {t('sim.badge')}
               </div>
 
               <h1 style={{
                 fontSize:40, fontWeight:900, color:'#fff',
                 lineHeight:1.1, marginBottom:12, letterSpacing:'-1px',
               }}>
-                The Simulation<br/>
+                {t('sim.h1a')}<br/>
                 <span style={{
                   background:'linear-gradient(90deg,#4A90F5,#A78BFA)',
                   WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
-                }}>Command Center</span>
+                }}>{t('sim.h1b')}</span>
               </h1>
 
               <p style={{ fontSize:14, color:'rgba(255,255,255,.6)', maxWidth:480, lineHeight:1.6, marginBottom:24 }}>
-                2,800 real-world scenarios across 28 AI programs. Every simulation mirrors actual production environments — the same crises, decisions, and stakes you'll face in your career.
+                {t('sim.sub')}
               </p>
 
-              {/* Hero stats */}
               <div style={{ display:'flex', gap:20 }}>
                 {[
-                  { val:'2,800', label:'Total Simulations', color:DS.blue },
-                  { val:'28',    label:'Programs',          color:DS.purple },
-                  { val:`${completedCount}`,  label:'Completed',         color:DS.green },
-                  { val:`${totalXP.toLocaleString()}`, label:'XP Earned', color:DS.gold },
+                  { val:'2,800', labelKey:'sim.stat0', color:DS.blue },
+                  { val:'28',    labelKey:'sim.stat1', color:DS.purple },
+                  { val:`${completedCount}`, labelKey:'sim.stat2', color:DS.green },
+                  { val:`${totalXP.toLocaleString()}`, labelKey:'sim.stat3', color:DS.gold },
                 ].map((stat, i) => (
                   <div key={i}>
                     <div style={{ fontSize:22, fontWeight:800, color:stat.color }}>{stat.val}</div>
-                    <div style={{ fontSize:10, color:'rgba(255,255,255,.4)', letterSpacing:1 }}>{stat.label}</div>
+                    <div style={{ fontSize:10, color:'rgba(255,255,255,.4)', letterSpacing:1 }}>{t(stat.labelKey)}</div>
                   </div>
                 ))}
               </div>
@@ -181,14 +169,14 @@ export default function PortalSimulations() {
               display:'flex', gap:8, overflowX:'auto', paddingBottom:4,
               margin:'20px 0 16px', scrollbarWidth:'none',
             }}>
-              {[{label:'All Schools',color:'#8596AD',bg:'rgba(133,150,173,.12)'}, ...SCHOOLS.map(s => ({label:s.label,color:s.color,bg:s.bg}))].map((s, i) => (
+              {[{label:t('sim.all_schools'),color:'#8596AD',bg:'rgba(133,150,173,.12)'}, ...SCHOOLS.map(s => ({label:s.label,color:s.color,bg:s.bg}))].map((s, i) => (
                 <button key={i}
-                  onClick={() => { setSelectedSchool(i === 0 ? 'All' : s.label); setSelectedProgram('All'); setSelectedModule(0); }}
+                  onClick={() => { setSelectedSchool(i === 0 ? 'All' : SCHOOLS[i-1].label); setSelectedProgram('All'); setSelectedModule(0); }}
                   style={{
                     flexShrink:0, padding:'8px 16px',
-                    background: (i === 0 ? selectedSchool === 'All' : selectedSchool === s.label) ? s.bg : 'transparent',
-                    border:`1px solid ${(i === 0 ? selectedSchool === 'All' : selectedSchool === s.label) ? s.color : 'rgba(255,255,255,.08)'}`,
-                    borderRadius:20, color:(i === 0 ? selectedSchool === 'All' : selectedSchool === s.label) ? s.color : DS.fm,
+                    background: (i === 0 ? selectedSchool === 'All' : selectedSchool === SCHOOLS[i-1]?.label) ? s.bg : 'transparent',
+                    border:`1px solid ${(i === 0 ? selectedSchool === 'All' : selectedSchool === SCHOOLS[i-1]?.label) ? s.color : 'rgba(255,255,255,.08)'}`,
+                    borderRadius:20, color:(i === 0 ? selectedSchool === 'All' : selectedSchool === SCHOOLS[i-1]?.label) ? s.color : DS.fm,
                     fontSize:12, fontWeight:700, cursor:'pointer', fontFamily:'inherit',
                     transition:'all .2s', whiteSpace:'nowrap',
                   }}>
@@ -206,13 +194,12 @@ export default function PortalSimulations() {
               borderRadius:12, marginBottom:24,
               flexWrap:'wrap',
             }}>
-              {/* Search */}
               <div style={{ flex:'1 1 200px', position:'relative' }}>
                 <span style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', fontSize:12, color:DS.fd }}>🔍</span>
                 <input
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  placeholder="Search simulations..."
+                  placeholder={t('sim.search')}
                   style={{
                     width:'100%', background:'rgba(255,255,255,.04)',
                     border:'1px solid rgba(255,255,255,.08)', borderRadius:8,
@@ -222,48 +209,42 @@ export default function PortalSimulations() {
                 />
               </div>
 
-              {/* Program filter */}
               <select
                 value={selectedProgram}
                 onChange={e => { setSelectedProgram(e.target.value); setSelectedModule(0); }}
                 style={{ background:'rgba(255,255,255,.04)', border:'1px solid rgba(255,255,255,.08)', borderRadius:8, color:DS.fg, fontSize:12, padding:'8px 10px', fontFamily:'inherit', cursor:'pointer', flexShrink:0 }}>
-                <option value="All">All Programs</option>
+                <option value="All">{t('sim.all_programs')}</option>
                 {programsForSchool.map(p => <option key={p.key} value={p.key}>{p.label}</option>)}
               </select>
 
-              {/* Module filter */}
               <select
                 value={selectedModule}
                 onChange={e => setSelectedModule(Number(e.target.value))}
                 style={{ background:'rgba(255,255,255,.04)', border:'1px solid rgba(255,255,255,.08)', borderRadius:8, color:DS.fg, fontSize:12, padding:'8px 10px', fontFamily:'inherit', cursor:'pointer', flexShrink:0 }}>
-                <option value={0}>All Modules</option>
-                {Array.from({length:10}, (_,i) => <option key={i+1} value={i+1}>Module {i+1}</option>)}
+                <option value={0}>{t('sim.all_modules')}</option>
+                {Array.from({length:10}, (_,i) => <option key={i+1} value={i+1}>{t('sim.module')} {i+1}</option>)}
               </select>
 
-              {/* Difficulty */}
               <select
                 value={selectedDiff}
                 onChange={e => setSelectedDiff(e.target.value)}
                 style={{ background:'rgba(255,255,255,.04)', border:'1px solid rgba(255,255,255,.08)', borderRadius:8, color:DS.fg, fontSize:12, padding:'8px 10px', fontFamily:'inherit', cursor:'pointer', flexShrink:0 }}>
-                <option value="All">All Levels</option>
+                <option value="All">{t('sim.all_levels')}</option>
                 {['Starter','Practitioner','Expert','Elite'].map(d => <option key={d} value={d}>{d}</option>)}
               </select>
 
-              {/* Type */}
               <select
                 value={selectedType}
                 onChange={e => setSelectedType(e.target.value)}
                 style={{ background:'rgba(255,255,255,.04)', border:'1px solid rgba(255,255,255,.08)', borderRadius:8, color:DS.fg, fontSize:12, padding:'8px 10px', fontFamily:'inherit', cursor:'pointer', flexShrink:0 }}>
-                <option value="All">All Types</option>
-                {Object.entries(TYPE_ICONS).map(([t,icon]) => <option key={t} value={t}>{icon} {t.charAt(0).toUpperCase()+t.slice(1)}</option>)}
+                <option value="All">{t('sim.all_types')}</option>
+                {Object.entries(TYPE_ICONS).map(([type,icon]) => <option key={type} value={type}>{icon} {type.charAt(0).toUpperCase()+type.slice(1)}</option>)}
               </select>
 
-              {/* Result count */}
               <div style={{ fontSize:11, color:DS.fm, flexShrink:0, marginLeft:'auto' }}>
-                <span style={{ color:DS.blue, fontWeight:700 }}>{filteredSims.length.toLocaleString()}</span> simulations
+                <span style={{ color:DS.blue, fontWeight:700 }}>{filteredSims.length.toLocaleString()}</span> {t('sim.count_label')}
               </div>
 
-              {/* View mode */}
               <div style={{ display:'flex', gap:4 }}>
                 {([['grid','⊞'],['program','☰']] as [string,string][]).map(([mode, icon]) => (
                   <button key={mode} onClick={() => setViewMode(mode as any)}
@@ -288,13 +269,12 @@ export default function PortalSimulations() {
                 selectedModule={selectedModule}
               />
             ) : (
-              /* ── GRID VIEW ───────────────────────────────────── */
               <div>
                 {filteredSims.length === 0 ? (
                   <div style={{ textAlign:'center', padding:'60px 0', color:DS.fm }}>
                     <div style={{ fontSize:32, marginBottom:12 }}>🔍</div>
-                    <div style={{ fontSize:14, fontWeight:600 }}>No simulations match your filters</div>
-                    <div style={{ fontSize:12, marginTop:4, color:DS.fd }}>Try adjusting your search or filters</div>
+                    <div style={{ fontSize:14, fontWeight:600 }}>{t('sim.no_results')}</div>
+                    <div style={{ fontSize:12, marginTop:4, color:DS.fd }}>{t('sim.no_results_sub')}</div>
                   </div>
                 ) : (
                   <div style={{
@@ -309,7 +289,7 @@ export default function PortalSimulations() {
                 )}
                 {filteredSims.length > 60 && (
                   <div style={{ textAlign:'center', marginTop:20, color:DS.fm, fontSize:12 }}>
-                    Showing 60 of {filteredSims.length.toLocaleString()} simulations. Use filters to narrow down.
+                    {t('sim.showing_pre')}{filteredSims.length.toLocaleString()}{t('sim.showing_post')}
                   </div>
                 )}
               </div>
@@ -327,6 +307,7 @@ function ProgramView({ programs, completedMap, onSelectSim, selectedModule }: {
   onSelectSim: (s: Simulation) => void;
   selectedModule: number;
 }) {
+  const { t } = useLanguage();
   const [expandedProgram, setExpandedProgram] = useState<string | null>(null);
 
   return (
@@ -345,7 +326,6 @@ function ProgramView({ programs, completedMap, onSelectSim, selectedModule }: {
             borderRadius:14, overflow:'hidden',
             transition:'border-color .2s',
           }}>
-            {/* Program header */}
             <div
               onClick={() => setExpandedProgram(isExpanded ? null : prog.key)}
               style={{
@@ -364,13 +344,12 @@ function ProgramView({ programs, completedMap, onSelectSim, selectedModule }: {
               <div style={{ flex:1 }}>
                 <div style={{ fontSize:13, fontWeight:700, color:DS.fg }}>{prog.label}</div>
                 <div style={{ fontSize:10, color:DS.fm, marginTop:1 }}>
-                  {sims.length} simulations · 10 modules
+                  {sims.length}{t('sim.prog_sims')}
                 </div>
               </div>
-              {/* Progress bar */}
               <div style={{ width:100, marginRight:8 }}>
                 <div style={{ display:'flex', justifyContent:'space-between', marginBottom:4 }}>
-                  <span style={{ fontSize:9, color:DS.fm }}>{done}/{sims.length} done</span>
+                  <span style={{ fontSize:9, color:DS.fm }}>{done}/{sims.length} {t('sim.done')}</span>
                   <span style={{ fontSize:9, color:prog.color }}>{Math.round(done/sims.length*100)}%</span>
                 </div>
                 <div style={{ height:3, background:'rgba(255,255,255,.06)', borderRadius:2 }}>
@@ -380,7 +359,6 @@ function ProgramView({ programs, completedMap, onSelectSim, selectedModule }: {
               <div style={{ fontSize:18, color:DS.fm, transition:'transform .2s', transform: isExpanded ? 'rotate(180deg)' : 'rotate(0)' }}>⌄</div>
             </div>
 
-            {/* Module breakdown (expanded) */}
             {isExpanded && (
               <div style={{ borderTop:`1px solid rgba(255,255,255,.05)`, padding:'12px 18px' }}>
                 <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', gap:10 }}>
@@ -418,8 +396,8 @@ function ModuleCard({ moduleNum, sims, done, color, onSelectSim, completedMap }:
   onSelectSim: (s: Simulation) => void;
   completedMap: Record<string,number>;
 }) {
+  const { t } = useLanguage();
   const [expanded, setExpanded] = useState(false);
-  const moduleName = sims[0]?.title?.replace(/ — .*/, '').replace(/^[^:]+: /, '') || `Module ${moduleNum}`;
 
   return (
     <div style={{
@@ -442,10 +420,9 @@ function ModuleCard({ moduleNum, sims, done, color, onSelectSim, completedMap }:
           {moduleNum}
         </div>
         <div style={{ flex:1 }}>
-          <div style={{ fontSize:11, fontWeight:600, color:DS.fg }}>Module {moduleNum}</div>
+          <div style={{ fontSize:11, fontWeight:600, color:DS.fg }}>{t('sim.module')} {moduleNum}</div>
           <div style={{ fontSize:9, color:DS.fm }}>{done}/{sims.length} · {sims[0]?.difficulty}</div>
         </div>
-        {/* Mini progress dots */}
         <div style={{ display:'flex', gap:2 }}>
           {sims.slice(0,10).map((s,i) => (
             <div key={i} style={{
@@ -506,6 +483,7 @@ function SimCard({ sim, completed, onStart }: {
   completed?: number;
   onStart: () => void;
 }) {
+  const { t } = useLanguage();
   const prog = PROGRAMS.find(p => p.key === sim.programKey);
   const diff = DIFF_META[sim.difficulty];
   const [hovered, setHovered] = useState(false);
@@ -523,7 +501,6 @@ function SimCard({ sim, completed, onStart }: {
       }}
       onClick={onStart}
     >
-      {/* Top row */}
       <div style={{ display:'flex', alignItems:'flex-start', gap:10, marginBottom:10 }}>
         <div style={{
           width:36, height:36, borderRadius:8, flexShrink:0,
@@ -545,13 +522,12 @@ function SimCard({ sim, completed, onStart }: {
 
       <div style={{ fontSize:11, color:DS.fm, lineHeight:1.5, marginBottom:12 }}>{sim.subtitle}</div>
 
-      {/* Tags row */}
       <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:12 }}>
         <span style={{ fontSize:8, fontWeight:700, padding:'2px 7px', borderRadius:3, color:diff.color, background:diff.bg, border:`1px solid ${diff.color}33` }}>
           {diff.label.toUpperCase()}
         </span>
         <span style={{ fontSize:8, fontWeight:700, padding:'2px 7px', borderRadius:3, color:'#8596AD', background:'rgba(133,150,173,.12)' }}>
-          MOD {sim.module}
+          {t('sim.mod')} {sim.module}
         </span>
         {sim.tags.slice(0,3).map((tag,i) => (
           <span key={i} style={{ fontSize:8, padding:'2px 7px', borderRadius:3, color:DS.fm, background:'rgba(255,255,255,.05)' }}>
@@ -560,7 +536,6 @@ function SimCard({ sim, completed, onStart }: {
         ))}
       </div>
 
-      {/* Bottom row */}
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', gap:12 }}>
           <span style={{ fontSize:10, color:DS.fm }}>⏱ {sim.durationMin}min</span>
@@ -577,10 +552,9 @@ function SimCard({ sim, completed, onStart }: {
             fontSize:10, fontWeight:700, cursor:'pointer', fontFamily:'inherit',
             transition:'all .2s',
           }}>
-          {completed ? 'RETRY' : 'LAUNCH'} →
+          {completed ? t('sim.retry') : t('sim.launch')}
         </button>
       </div>
     </div>
   );
 }
-// Sat May 30 07:03:49 UTC 2026

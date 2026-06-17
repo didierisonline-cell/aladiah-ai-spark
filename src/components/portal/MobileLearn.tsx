@@ -16,7 +16,7 @@ const ICONS: Record<string, string> = {
 export default function MobileLearn({ courses, loading, selectedId }: { courses: any[]; loading: boolean; selectedId?: string | null }) {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const { progress } = useProgress(user?.id);
   // Continue with the student's SELECTED program (source of truth), not courses[0].
   const top = (selectedId && courses.find(c => c.id === selectedId)) || courses[0];
@@ -26,19 +26,19 @@ export default function MobileLearn({ courses, loading, selectedId }: { courses:
     <MobileShell title="Learn" score={progress}>
       <div style={{ padding: '18px 16px 8px', maxWidth: 620, margin: '0 auto' }}>
         {loading ? (
-          <div style={{ color: C.fm, fontSize: 14, padding: 20 }}>Loading your programs…</div>
+          <div style={{ color: C.fm, fontSize: 14, padding: 20 }}>{t('mobile.learn.loading')}</div>
         ) : courses.length === 0 ? (
           <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: 28, textAlign: 'center' }}>
             <div style={{ fontSize: 30, marginBottom: 8 }}>📚</div>
-            <div style={{ fontSize: 14, fontWeight: 700 }}>No programs yet</div>
-            <div style={{ fontSize: 12.5, color: C.fm, marginTop: 4 }}>Programs are being added — check back soon.</div>
+            <div style={{ fontSize: 14, fontWeight: 700 }}>{t('mobile.learn.empty_h')}</div>
+            <div style={{ fontSize: 12.5, color: C.fm, marginTop: 4 }}>{t('mobile.learn.empty_sub')}</div>
           </div>
         ) : (
           <>
             {/* Continue where you left off */}
             {top && (
               <div style={{ background: 'linear-gradient(150deg,rgba(37,99,235,.28),rgba(124,58,237,.22))', border: '1px solid rgba(99,102,241,.3)', borderRadius: 20, padding: 18, marginBottom: 18 }}>
-                <div style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase', color: '#a5b4fc', marginBottom: 8 }}>Continue where you left off</div>
+                <div style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase', color: '#a5b4fc', marginBottom: 8 }}>{t('mobile.learn.continue')}</div>
                 <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', lineHeight: 1.25 }}>{titleOf(top)}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '12px 0 2px' }}>
                   <div style={{ flex: 1, height: 8, background: 'rgba(255,255,255,.12)', borderRadius: 99, overflow: 'hidden' }}>
@@ -46,11 +46,11 @@ export default function MobileLearn({ courses, loading, selectedId }: { courses:
                   </div>
                   <span style={{ fontSize: 12.5, fontWeight: 800, color: '#fff' }}>{progress}%</span>
                 </div>
-                <button onClick={() => navigate(`/portal/course/${top.id}`)} className="app-tap tap-target" style={{ marginTop: 14, width: '100%', height: 52, border: 'none', borderRadius: 14, background: 'linear-gradient(90deg,#2563eb,#4A90F5)', color: '#fff', fontSize: 16, fontWeight: 900, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 6px 20px rgba(37,99,235,.45)' }}>Continue →</button>
+                <button onClick={() => navigate(`/portal/course/${top.id}`)} className="app-tap tap-target" style={{ marginTop: 14, width: '100%', height: 52, border: 'none', borderRadius: 14, background: 'linear-gradient(90deg,#2563eb,#4A90F5)', color: '#fff', fontSize: 16, fontWeight: 900, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 6px 20px rgba(37,99,235,.45)' }}>{t('mobile.learn.continue_btn')}</button>
               </div>
             )}
 
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#fff', margin: '4px 4px 10px' }}>Your programs</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#fff', margin: '4px 4px 10px' }}>{t('mobile.learn.your_programs')}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {courses.map(c => (
                 <button key={c.id} onClick={() => navigate(`/portal/course/${c.id}`)} className="app-tap" style={{ display: 'flex', alignItems: 'center', gap: 13, textAlign: 'left', background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: 14, cursor: 'pointer', fontFamily: 'inherit', width: '100%' }}>
