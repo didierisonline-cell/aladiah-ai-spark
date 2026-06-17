@@ -16,6 +16,7 @@ import { useProgress } from './useProgress';
 export interface TalentDimension {
   key: string;
   label: string;
+  labelKey: string;
   score: number;
   max: number;
   color: string;
@@ -34,12 +35,12 @@ const clampPct = (n: number) => Math.max(0, Math.min(100, n));
 export function talentDimensionsFromProgress(progress: number): TalentDimension[] {
   const knowledge = Math.round((clampPct(progress) / 100) * 300);
   return [
-    { key: 'knowledge', label: 'Knowledge Mastery', score: knowledge, max: 300, color: '#4A90F5' },
-    { key: 'project', label: 'Project Quality', score: 0, max: 200, color: '#F0622A' },
-    { key: 'certs', label: 'Certifications', score: 0, max: 150, color: '#F5B81A' },
-    { key: 'simulation', label: 'Enterprise Simulation', score: 0, max: 200, color: '#22C98A' },
-    { key: 'peer', label: 'Peer Review Score', score: 0, max: 100, color: '#A78BFA' },
-    { key: 'streak', label: 'Consistency & Streak', score: 0, max: 50, color: '#F472B6' },
+    { key: 'knowledge', label: 'Knowledge Mastery', labelKey: 'ts.dim_knowledge', score: knowledge, max: 300, color: '#4A90F5' },
+    { key: 'project', label: 'Project Quality', labelKey: 'ts.dim_project', score: 0, max: 200, color: '#F0622A' },
+    { key: 'certs', label: 'Certifications', labelKey: 'ts.dim_certs', score: 0, max: 150, color: '#F5B81A' },
+    { key: 'simulation', label: 'Enterprise Simulation', labelKey: 'ts.dim_simulation', score: 0, max: 200, color: '#22C98A' },
+    { key: 'peer', label: 'Peer Review Score', labelKey: 'ts.dim_peer', score: 0, max: 100, color: '#A78BFA' },
+    { key: 'streak', label: 'Consistency & Streak', labelKey: 'ts.dim_streak', score: 0, max: 50, color: '#F472B6' },
   ];
 }
 

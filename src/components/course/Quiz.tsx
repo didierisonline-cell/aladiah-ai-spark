@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   ArrowLeft, ArrowRight, CheckCircle, XCircle, 
@@ -50,6 +51,7 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
   const [submitting, setSubmitting] = useState(false);
   const [showingResults, setShowingResults] = useState(false);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     loadQuestions();
@@ -75,7 +77,7 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
       setAnswers(new Array(parsedQuestions.length).fill(null));
     } catch (error: any) {
       toast({
-        title: 'Error loading questions',
+        title: t('quiz.err_load'),
         description: error.message,
         variant: 'destructive',
       });
@@ -105,8 +107,8 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
   const handleSubmit = async () => {
     if (answers.some(a => a === null)) {
       toast({
-        title: 'Please answer all questions',
-        description: 'You must answer every question before submitting.',
+        title: t('quiz.answer_all'),
+        description: t('quiz.answer_all_desc'),
         variant: 'destructive',
       });
       return;
@@ -210,19 +212,19 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
 
       if (passed) {
         toast({
-          title: '🎉 Congratulations!',
-          description: `You scored ${score}%! You passed the quiz.`,
+          title: t('quiz.congrats'),
+          description: t('quiz.passed_desc').replace('{score}', String(score)),
         });
       } else {
         toast({
-          title: 'Not quite there yet',
-          description: `You scored ${score}%. You need ${passingScore}% to pass. Try again!`,
+          title: t('quiz.not_yet'),
+          description: t('quiz.not_yet_desc').replace('{score}', String(score)).replace('{pass}', String(passingScore)),
           variant: 'destructive',
         });
       }
     } catch (error: any) {
       toast({
-        title: 'Error submitting quiz',
+        title: t('quiz.err_submit'),
         description: error.message,
         variant: 'destructive',
       });
@@ -244,7 +246,7 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <BookOpen className="w-12 h-12 text-primary animate-pulse mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading quiz...</p>
+          <p className="text-muted-foreground">{t('quiz.loading')}</p>
         </div>
       </div>
     );
@@ -262,18 +264,18 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
             <Trophy className="w-12 h-12 text-green-500" />
           </div>
           <h1 className="text-3xl font-display font-bold text-foreground mb-4">
-            Quiz Passed! 🎉
+            {t('quiz.passed_title')}
           </h1>
           <p className="text-lg text-muted-foreground mb-2">
-            You scored {score}%
+            {t('quiz.you_scored').replace('{score}', String(score))}
           </p>
           <p className="text-muted-foreground mb-8">
-            {quizType === 'chapter_end' 
-              ? 'Congratulations on completing the chapter!'
-              : 'Great job! Continue to the next video.'}
+            {quizType === 'chapter_end'
+              ? t('quiz.chapter_done')
+              : t('quiz.video_done')}
           </p>
           <Button onClick={() => onComplete(true)} variant="coral" size="lg">
-            Continue
+            {t('quiz.continue')}
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </motion.div>
@@ -294,11 +296,11 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-destructive">
                 <XCircle className="w-5 h-5" />
-                <span className="font-semibold">Score: {score}% — Need 100% to pass</span>
+                <span className="font-semibold">{t('quiz.score_need').replace('{score}', String(score))}</span>
               </div>
               <Button onClick={handleRetry} variant="coral">
                 <RefreshCw className="w-4 h-4 mr-2" />
-                Try Again
+                {t('quiz.try_again')}
               </Button>
             </div>
           </div>
@@ -311,9 +313,12 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5" />
                 <div>
-                  <h3 className="font-display font-bold text-lg mb-1">Remediation Focus</h3>
+                  <h3 className="font-display font-bold text-lg mb-1">{t('quiz.remediation')}</h3>
                   <p className="text-sm text-muted-foreground mb-3">
-                    You got {correctCount}/{questions.length} correct. Review the {incorrectResults.length} question{incorrectResults.length !== 1 ? 's' : ''} you missed below, then retry.
+                    {t('quiz.remediation_desc')
+                      .replace('{correct}', String(correctCount))
+                      .replace('{total}', String(questions.length))
+                      .replace('{missed}', String(incorrectResults.length))}
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {results.map((r, idx) => (
@@ -341,8 +346,8 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
 
           <div className="mb-6">
             <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
-              <span>Reviewing answers</span>
-              <span>{currentIndex + 1} of {questions.length}</span>
+              <span>{t('quiz.reviewing')}</span>
+              <span>{currentIndex + 1} {t('quiz.of')} {questions.length}</span>
             </div>
             <Progress value={((currentIndex + 1) / questions.length) * 100} className="h-2" />
           </div>
@@ -363,13 +368,13 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
                       <XCircle className="w-5 h-5 text-destructive" />
                     )}
                     <span className={`text-sm font-medium ${currentResult?.isCorrect ? 'text-green-500' : 'text-destructive'}`}>
-                      {currentResult?.isCorrect ? 'Correct' : 'Incorrect — Review this!'}
+                      {currentResult?.isCorrect ? t('quiz.correct') : t('quiz.incorrect')}
                     </span>
                   </div>
                   {currentQuestion?.scenario_context && (
                     <div className="bg-muted/50 rounded-lg p-4 mb-4">
                       <p className="text-sm text-muted-foreground italic">
-                        📋 Scenario: {currentQuestion.scenario_context}
+                        📋 {t('quiz.scenario')}: {currentQuestion.scenario_context}
                       </p>
                     </div>
                   )}
@@ -406,7 +411,7 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
 
                   {currentResult?.explanation && (
                     <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                      <p className="text-sm font-medium text-primary mb-1">💡 Explanation:</p>
+                      <p className="text-sm font-medium text-primary mb-1">💡 {t('quiz.explanation')}:</p>
                       <p className="text-sm text-muted-foreground">{currentResult.explanation}</p>
                     </div>
                   )}
@@ -418,17 +423,17 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
                       disabled={currentIndex === 0}
                     >
                       <ArrowLeft className="w-4 h-4 mr-2" />
-                      Previous
+                      {t('quiz.previous')}
                     </Button>
                     {currentIndex < questions.length - 1 ? (
                       <Button onClick={handleNext}>
-                        Next
+                        {t('quiz.next')}
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
                     ) : (
                       <Button onClick={handleRetry} variant="coral">
                         <RefreshCw className="w-4 h-4 mr-2" />
-                        Retry Quiz
+                        {t('quiz.retry')}
                       </Button>
                     )}
                   </div>
@@ -451,16 +456,16 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
           <div className="flex items-center justify-between">
             <Button variant="ghost" onClick={onBack} className="gap-2">
               <ArrowLeft className="w-4 h-4" />
-              Back
+              {t('quiz.back')}
             </Button>
             <div className="flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-primary" />
               <span className="font-semibold">
-                {quizType === 'chapter_end' ? 'Chapter Final Quiz' : 'Video Quiz'}
+                {quizType === 'chapter_end' ? t('quiz.chapter_quiz') : t('quiz.video_quiz')}
               </span>
             </div>
             <div className="text-sm text-muted-foreground">
-              {quizType === 'chapter_end' ? '40 questions' : '5 questions'}
+              {quizType === 'chapter_end' ? t('quiz.q_count_chapter') : t('quiz.q_count_video')}
             </div>
           </div>
         </div>
@@ -469,8 +474,8 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
       <main className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="mb-6">
           <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
-            <span>Question {currentIndex + 1} of {questions.length}</span>
-            <span>{answers.filter(a => a !== null).length} answered</span>
+            <span>{t('quiz.question_n').replace('{i}', String(currentIndex + 1)).replace('{n}', String(questions.length))}</span>
+            <span>{t('quiz.answered').replace('{n}', String(answers.filter(a => a !== null).length))}</span>
           </div>
           <Progress value={((currentIndex + 1) / questions.length) * 100} className="h-2" />
         </div>
@@ -506,7 +511,7 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
                 {currentQuestion?.scenario_context && (
                   <div className="bg-muted/50 rounded-lg p-4 mb-4">
                     <p className="text-sm text-muted-foreground italic">
-                      📋 Scenario: {currentQuestion.scenario_context}
+                      📋 {t('quiz.scenario')}: {currentQuestion.scenario_context}
                     </p>
                   </div>
                 )}
@@ -548,21 +553,21 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
                     disabled={currentIndex === 0}
                   >
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Previous
+                    {t('quiz.previous')}
                   </Button>
 
                   {currentIndex < questions.length - 1 ? (
                     <Button onClick={handleNext} disabled={answers[currentIndex] === null}>
-                      Next
+                      {t('quiz.next')}
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   ) : (
-                    <Button 
-                      onClick={handleSubmit} 
+                    <Button
+                      onClick={handleSubmit}
                       variant="coral"
                       disabled={!allAnswered || submitting}
                     >
-                      {submitting ? 'Submitting...' : 'Submit Quiz'}
+                      {submitting ? t('quiz.submitting') : t('quiz.submit')}
                       {!submitting && <CheckCircle className="w-4 h-4 ml-2" />}
                     </Button>
                   )}
@@ -571,7 +576,7 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
                 {!allAnswered && currentIndex === questions.length - 1 && (
                   <div className="flex items-center gap-2 mt-4 text-amber-500 text-sm">
                     <AlertTriangle className="w-4 h-4" />
-                    Please answer all questions before submitting
+                    {t('quiz.answer_all_inline')}
                   </div>
                 )}
               </CardContent>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { RESOURCE_TRACKS } from '@/data/resourcesData';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', muted:'#18243A', border:'#1E2D47',
@@ -50,13 +51,14 @@ function ProgramCard({ track, isSelected, onClick }: { track: any; isSelected: b
 }
 
 function ResourceDetail({ track }: { track: any }) {
+  const { t } = useLanguage();
   const [glossaryOpen, setGlossaryOpen] = useState(false);
   const [glossarySearch, setGlossarySearch] = useState('');
 
-  const filteredGlossary = track.glossary.filter((t: any) =>
+  const filteredGlossary = track.glossary.filter((item: any) =>
     glossarySearch === '' ||
-    t.term.toLowerCase().includes(glossarySearch.toLowerCase()) ||
-    t.def.toLowerCase().includes(glossarySearch.toLowerCase())
+    item.term.toLowerCase().includes(glossarySearch.toLowerCase()) ||
+    item.def.toLowerCase().includes(glossarySearch.toLowerCase())
   );
 
   return (
@@ -75,13 +77,13 @@ function ResourceDetail({ track }: { track: any }) {
         </div>
         <div style={{ display: 'flex', gap: '.75rem', marginTop: '.5rem' }}>
           <span style={{ fontSize: 11, color: DS.fm }}>
-            <span style={{ color: track.color, fontWeight: 700 }}>{track.resources.length}</span> resources
+            <span style={{ color: track.color, fontWeight: 700 }}>{track.resources.length}</span> {t('res.resources')}
           </span>
           <span style={{ fontSize: 11, color: DS.fm }}>
-            <span style={{ color: track.color, fontWeight: 700 }}>{track.glossary.length}</span> glossary terms
+            <span style={{ color: track.color, fontWeight: 700 }}>{track.glossary.length}</span> {t('res.glossary_terms')}
           </span>
           <span style={{ fontSize: 11, color: DS.fm }}>
-            <span style={{ color: DS.green, fontWeight: 700 }}>{track.resources.filter((r: any) => r.free).length}</span> free
+            <span style={{ color: DS.green, fontWeight: 700 }}>{track.resources.filter((r: any) => r.free).length}</span> {t('res.free')}
           </span>
         </div>
       </div>
@@ -89,7 +91,7 @@ function ResourceDetail({ track }: { track: any }) {
       {/* Resources list */}
       <div style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', overflow: 'hidden' }}>
         <div style={{ padding: '10px 14px', borderBottom: `1px solid ${DS.border}`, background: 'rgba(255,255,255,.03)' }}>
-          <span style={{ fontSize: 11, fontWeight: 700, color: DS.fm, textTransform: 'uppercase' as const, letterSpacing: '.08em' }}>RESOURCES</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: DS.fm, textTransform: 'uppercase' as const, letterSpacing: '.08em' }}>{t('res.resources_label')}</span>
         </div>
         <div style={{ padding: '.75rem', display: 'flex', flexDirection: 'column' as const, gap: '.4rem' }}>
           {track.resources.map((res: any, i: number) => (
@@ -108,7 +110,7 @@ function ResourceDetail({ track }: { track: any }) {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '.4rem', flexShrink: 0 }}>
                 {res.free && (
-                  <span style={{ fontSize: 9, fontWeight: 700, color: DS.green, background: 'rgba(34,201,138,.12)', border: '1px solid rgba(34,201,138,.28)', borderRadius: 999, padding: '1px 6px' }}>FREE</span>
+                  <span style={{ fontSize: 9, fontWeight: 700, color: DS.green, background: 'rgba(34,201,138,.12)', border: '1px solid rgba(34,201,138,.28)', borderRadius: 999, padding: '1px 6px' }}>{t('res.free_badge')}</span>
                 )}
                 <span style={{
                   fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, whiteSpace: 'nowrap' as const,
@@ -132,10 +134,10 @@ function ResourceDetail({ track }: { track: any }) {
           }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
             <span style={{ fontSize: 14 }}>📖</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: track.color, letterSpacing: '.05em' }}>GLOSSARY</span>
-            <span style={{ fontSize: 11, color: DS.fm }}>— {track.glossary.length} key terms</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: track.color, letterSpacing: '.05em' }}>{t('res.glossary_label')}</span>
+            <span style={{ fontSize: 11, color: DS.fm }}>— {track.glossary.length} {t('res.key_terms')}</span>
           </div>
-          <span style={{ fontSize: 11, color: track.color }}>{glossaryOpen ? '▲ Hide' : '▼ Show terms'}</span>
+          <span style={{ fontSize: 11, color: track.color }}>{glossaryOpen ? t('res.hide') : t('res.show_terms')}</span>
         </button>
 
         {glossaryOpen && (
@@ -143,7 +145,7 @@ function ResourceDetail({ track }: { track: any }) {
             <input
               value={glossarySearch}
               onChange={e => setGlossarySearch(e.target.value)}
-              placeholder={`Search ${track.glossary.length} terms...`}
+              placeholder={`${t('res.glossary_search_pre')}${track.glossary.length}${t('res.glossary_search_post')}`}
               style={{
                 width: '100%', background: DS.muted, border: `1px solid ${DS.border}`,
                 borderRadius: '.5rem', padding: '7px 10px', color: DS.fg,
@@ -153,7 +155,7 @@ function ResourceDetail({ track }: { track: any }) {
             />
             <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '.4rem', maxHeight: 320, overflowY: 'auto' as const }}>
               {filteredGlossary.length === 0 ? (
-                <div style={{ fontSize: 12, color: DS.fm, textAlign: 'center' as const, padding: '1rem' }}>No terms matching "{glossarySearch}"</div>
+                <div style={{ fontSize: 12, color: DS.fm, textAlign: 'center' as const, padding: '1rem' }}>{t('res.no_terms_pre')}{glossarySearch}{t('res.no_terms_post')}</div>
               ) : filteredGlossary.map((term: any) => (
                 <div key={term.term} style={{ padding: '8px 12px', background: 'rgba(255,255,255,.03)', borderRadius: '.45rem', borderLeft: `3px solid ${track.color}70` }}>
                   <div style={{ fontSize: 12, fontWeight: 700, color: track.color, marginBottom: 3 }}>{term.term}</div>
@@ -171,48 +173,46 @@ function ResourceDetail({ track }: { track: any }) {
 interface Props { tier?: string; onUpgrade?: () => void; }
 
 const ResourcesLibrary = ({ tier = 'active' }: Props) => {
+  const { t } = useLanguage();
   const [selectedSchool, setSelectedSchool] = useState('⚙️ AI Engineering');
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
 
-  // Build school → programs map
-  const schoolTracks = RESOURCE_TRACKS.filter(t => t.school === selectedSchool);
+  const schoolTracks = RESOURCE_TRACKS.filter(track => track.school === selectedSchool);
 
-  // Filter by search
   const filteredTracks = search === ''
     ? schoolTracks
-    : RESOURCE_TRACKS.filter(t =>
-        t.programs[0].toLowerCase().includes(search.toLowerCase()) ||
-        t.resources.some(r => r.label.toLowerCase().includes(search.toLowerCase())) ||
-        t.glossary.some(g => g.term.toLowerCase().includes(search.toLowerCase()))
+    : RESOURCE_TRACKS.filter(track =>
+        track.programs[0].toLowerCase().includes(search.toLowerCase()) ||
+        track.resources.some(r => r.label.toLowerCase().includes(search.toLowerCase())) ||
+        track.glossary.some(g => g.term.toLowerCase().includes(search.toLowerCase()))
       );
 
   const displayTracks = search !== '' ? filteredTracks : schoolTracks;
 
   const selectedTrack = selectedTrackId
-    ? RESOURCE_TRACKS.find(t => t.id === selectedTrackId)
+    ? RESOURCE_TRACKS.find(track => track.id === selectedTrackId)
     : (displayTracks.length > 0 ? displayTracks[0] : null);
 
-  // Auto-select first track when school changes
   const handleSchoolChange = (school: string) => {
     setSelectedSchool(school);
     setSearch('');
-    const firstInSchool = RESOURCE_TRACKS.find(t => t.school === school);
+    const firstInSchool = RESOURCE_TRACKS.find(track => track.school === school);
     setSelectedTrackId(firstInSchool ? firstInSchool.id : null);
   };
 
-  const totalResources = RESOURCE_TRACKS.reduce((s, t) => s + t.resources.length, 0);
-  const totalTerms = RESOURCE_TRACKS.reduce((s, t) => s + t.glossary.length, 0);
+  const totalResources = RESOURCE_TRACKS.reduce((s, track) => s + track.resources.length, 0);
+  const totalTerms = RESOURCE_TRACKS.reduce((s, track) => s + track.glossary.length, 0);
 
   return (
     <div style={{ fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif" }}>
       {/* Header */}
       <div style={{ marginBottom: '1.5rem' }}>
         <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: DS.fg, margin: '0 0 .25rem 0' }}>
-          📚 Resources Library
+          {t('res.title')}
         </h2>
         <div style={{ fontSize: 12, color: DS.fm }}>
-          Official sources only · {totalResources} curated resources · {totalTerms} glossary terms · Organized by program
+          {totalResources} {t('res.curated')} · {totalTerms} {t('res.glossary_terms')} · {t('res.organized')}
         </div>
       </div>
 
@@ -220,7 +220,7 @@ const ResourcesLibrary = ({ tier = 'active' }: Props) => {
       <input
         value={search}
         onChange={e => { setSearch(e.target.value); setSelectedTrackId(null); }}
-        placeholder="Search any program, resource, or glossary term..."
+        placeholder={t('res.search')}
         style={{
           width: '100%', background: DS.muted, border: `1px solid ${DS.border}`,
           borderRadius: '.65rem', padding: '.65rem 1rem', color: DS.fg,
@@ -254,24 +254,24 @@ const ResourcesLibrary = ({ tier = 'active' }: Props) => {
       {/* Search results notice */}
       {search !== '' && (
         <div style={{ fontSize: 12, color: DS.fm, marginBottom: '.75rem' }}>
-          {filteredTracks.length} program{filteredTracks.length !== 1 ? 's' : ''} matching "{search}"
-          <button onClick={() => setSearch('')} style={{ marginLeft: '.5rem', fontSize: 11, color: DS.blue, background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Clear</button>
+          {filteredTracks.length} {t('res.matching')} "{search}"
+          <button onClick={() => setSearch('')} style={{ marginLeft: '.5rem', fontSize: 11, color: DS.blue, background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>{t('res.clear')}</button>
         </div>
       )}
 
-      {/* Two-column layout: program list + detail */}
+      {/* Two-column layout */}
       <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: '1rem', alignItems: 'start' }}>
 
         {/* Left: Program list */}
         <div style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', overflow: 'hidden' }}>
           <div style={{ padding: '8px 12px', borderBottom: `1px solid ${DS.border}`, background: 'rgba(255,255,255,.03)' }}>
             <span style={{ fontSize: 10, fontWeight: 700, color: DS.fm, textTransform: 'uppercase' as const, letterSpacing: '.1em' }}>
-              {search !== '' ? 'SEARCH RESULTS' : `${displayTracks.length} PROGRAMS`}
+              {search !== '' ? t('res.search_results') : `${displayTracks.length} ${t('res.programs_label')}`}
             </span>
           </div>
           <div style={{ padding: '.5rem', display: 'flex', flexDirection: 'column' as const, gap: '.3rem', maxHeight: 600, overflowY: 'auto' as const }}>
             {displayTracks.length === 0 ? (
-              <div style={{ padding: '1.5rem', textAlign: 'center' as const, color: DS.fm, fontSize: 12 }}>No programs found</div>
+              <div style={{ padding: '1.5rem', textAlign: 'center' as const, color: DS.fm, fontSize: 12 }}>{t('res.no_programs')}</div>
             ) : displayTracks.map(track => (
               <ProgramCard
                 key={track.id}
@@ -290,14 +290,14 @@ const ResourcesLibrary = ({ tier = 'active' }: Props) => {
           ) : (
             <div style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', padding: '3rem', textAlign: 'center' as const, color: DS.fm }}>
               <div style={{ fontSize: 32, marginBottom: '.75rem' }}>📚</div>
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Select a program to see its resources</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('res.select_program')}</div>
             </div>
           )}
         </div>
       </div>
 
       <p style={{ fontSize: 10, color: DS.fd, textAlign: 'center' as const, marginTop: '1.5rem', lineHeight: 1.6 }}>
-        All resources link to official sources — AWS, Google, Microsoft, NIST, ISO, EU, IIBA, PMI, SAFe. Educational reference only.
+        {t('res.footer')}
       </p>
     </div>
   );

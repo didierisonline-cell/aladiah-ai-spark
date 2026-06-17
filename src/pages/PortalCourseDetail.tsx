@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import MobileCourse from '@/components/portal/MobileCourse';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', border:'#1E2D47', fg:'#EDF2F7', fm:'#8596AD',
@@ -24,6 +25,7 @@ export default function PortalCourseDetail() {
   const [lessonCounts, setLessonCounts] = useState<Record<string, number>>({});
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
   const { isPhone } = useBreakpoint();
 
   useEffect(() => {
@@ -68,7 +70,7 @@ export default function PortalCourseDetail() {
 
   if (loading) return (
     <div style={{ background: DS.bg, minHeight: '100vh', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif", color: DS.fg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      Loading...
+      {t('course.loading')}
     </div>
   );
 
@@ -83,7 +85,7 @@ export default function PortalCourseDetail() {
             onClick={() => navigate('/portal/courses')}
             style={{ display: 'flex', alignItems: 'center', gap: '.4rem', fontSize: 13, color: DS.fm, background: 'none', border: 'none', cursor: 'pointer', marginBottom: '1.5rem', padding: 0 }}
           >
-            ← Back to Courses
+            {t('course.back')}
           </button>
 
           {/* Course Hero */}
@@ -93,12 +95,12 @@ export default function PortalCourseDetail() {
               <p style={{ fontSize: 14, color: DS.fm, lineHeight: 1.7, maxWidth: 680 }}>{course.description}</p>
               <div style={{ display: 'flex', gap: '1.5rem', marginTop: '.75rem' }}>
                 <div style={{ fontSize: 13, color: DS.fm }}>
-                  <span style={{ color: DS.orange, fontWeight: 700 }}>{chapters.length}</span> modules
+                  <span style={{ color: DS.orange, fontWeight: 700 }}>{chapters.length}</span> {t('course.modules')}
                 </div>
                 <div style={{ fontSize: 13, color: DS.fm }}>
                   <span style={{ color: DS.green, fontWeight: 700 }}>
                     {Object.values(lessonCounts).reduce((a, b) => a + b, 0)}
-                  </span> lessons
+                  </span> {t('course.lessons')}
                 </div>
               </div>
             </div>
@@ -109,7 +111,7 @@ export default function PortalCourseDetail() {
 
           {/* Modules */}
           <div style={{ fontSize: 11, fontWeight: 700, color: DS.fm, textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: '.875rem' }}>
-            COURSE MODULES
+            {t('course.module_header')}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '.75rem' }}>
@@ -158,7 +160,7 @@ export default function PortalCourseDetail() {
                     )}
                     {lessonCount > 0 && (
                       <div style={{ fontSize: 11, color: DS.green, marginTop: 4, fontWeight: 600 }}>
-                        {lessonCount} lessons
+                        {lessonCount} {t('course.lessons')}
                       </div>
                     )}
                   </div>
@@ -173,7 +175,7 @@ export default function PortalCourseDetail() {
           {chapters.length === 0 && (
             <div style={{ textAlign: 'center', padding: '3rem', color: DS.fm }}>
               <div style={{ fontSize: 32, marginBottom: '.75rem' }}>📚</div>
-              <div style={{ fontSize: 14 }}>Modules are being prepared. Check back soon.</div>
+              <div style={{ fontSize: 14 }}>{t('course.modules_preparing')}</div>
             </div>
           )}
         </main>

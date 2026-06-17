@@ -155,7 +155,7 @@ const Auth = () => {
         if (checkoutError || !checkoutData?.url) {
           registering.current = false;
           await supabase.auth.signOut();
-          toast({ title: t('auth.error'), description: 'Payment system unavailable. Try again later.', variant: 'destructive' });
+          toast({ title: t('auth.error'), description: t('auth.err.payment_unavailable'), variant: 'destructive' });
           return;
         }
 
@@ -164,8 +164,8 @@ const Auth = () => {
     } catch (error: any) {
       registering.current = false;
       const msg = /invalid login credentials/i.test(error?.message || '')
-        ? 'Incorrect email or password. Please try again.'
-        : (error?.message || 'Something went wrong. Please try again.');
+        ? t('auth.err.invalid_creds')
+        : (error?.message || t('auth.err.generic'));
       setAuthError(msg);
       toast({ title: t('auth.error'), description: msg, variant: 'destructive' });
     } finally {
@@ -185,7 +185,7 @@ const Auth = () => {
       if (error) throw error;
       setForgotSent(true);
     } catch (error: any) {
-      setAuthError(error?.message || 'Could not send reset email. Please try again.');
+      setAuthError(error?.message || t('auth.err.reset_failed'));
     } finally {
       setForgotLoading(false);
     }
@@ -202,7 +202,7 @@ const Auth = () => {
       });
       if (error) throw error;
     } catch (error: any) {
-      setAuthError(error?.message || 'Google sign-in is unavailable right now.');
+      setAuthError(error?.message || t('auth.err.google_unavailable'));
       setGoogleLoading(false);
     }
   };
@@ -229,16 +229,16 @@ const Auth = () => {
                     <div className="mx-auto w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4">
                       <MailCheck className="w-8 h-8 text-green-400" />
                     </div>
-                    <CardTitle className="text-2xl font-display">Check your email</CardTitle>
-                    <CardDescription>If an account exists for that address, a reset link is on its way.</CardDescription>
+                    <CardTitle className="text-2xl font-display">{t('auth.forgot.sent_title')}</CardTitle>
+                    <CardDescription>{t('auth.forgot.sent_sub')}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4 text-center">
                     <div style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 12, padding: 16 }}>
-                      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', margin: 0 }}>We sent a password reset link to:</p>
+                      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', margin: 0 }}>{t('auth.forgot.sent_to')}</p>
                       <p style={{ fontSize: 15, fontWeight: 700, color: '#fff', margin: '6px 0 0' }}>{forgotEmail}</p>
                     </div>
-                    <p className="text-[11px] text-muted-foreground">The link opens the reset page and expires after a single use. Check spam if you don't see it.</p>
-                    <Button variant="outline" className="w-full" onClick={() => { setForgotMode(false); setForgotSent(false); }}>← Back to Sign In</Button>
+                    <p className="text-[11px] text-muted-foreground">{t('auth.forgot.sent_note')}</p>
+                    <Button variant="outline" className="w-full" onClick={() => { setForgotMode(false); setForgotSent(false); }}>{t('auth.back_signin')}</Button>
                   </CardContent>
                 </>
               ) : (
@@ -247,13 +247,13 @@ const Auth = () => {
                     <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                       <KeyRound className="w-8 h-8 text-primary" />
                     </div>
-                    <CardTitle className="text-2xl font-display">Forgot your password?</CardTitle>
-                    <CardDescription>Enter your email and we'll send you a reset link.</CardDescription>
+                    <CardTitle className="text-2xl font-display">{t('auth.forgot.title')}</CardTitle>
+                    <CardDescription>{t('auth.forgot.sub')}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleForgot} className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="forgot-email">Email</Label>
+                        <Label htmlFor="forgot-email">{t('auth.email')}</Label>
                         <div className="relative">
                           <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                           <Input id="forgot-email" type="email" placeholder="you@example.com" value={forgotEmail}
@@ -267,11 +267,11 @@ const Auth = () => {
                         </div>
                       )}
                       <Button type="submit" className="w-full" variant="coral" disabled={forgotLoading}>
-                        {forgotLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending…</> : 'Send Reset Link'}
+                        {forgotLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t('auth.forgot.sending')}</> : t('auth.forgot.send')}
                       </Button>
                       <button type="button" onClick={() => { setForgotMode(false); setAuthError(''); }}
                         className="w-full text-sm text-muted-foreground hover:text-primary transition-colors">
-                        ← Back to Sign In
+                        {t('auth.back_signin')}
                       </button>
                     </form>
                   </CardContent>
@@ -297,13 +297,13 @@ const Auth = () => {
                 <div className="mx-auto w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4">
                   <MailCheck className="w-8 h-8 text-green-400" />
                 </div>
-                <CardTitle className="text-2xl font-display">Check Your Email</CardTitle>
-                <CardDescription>One more step to activate your free account</CardDescription>
+                <CardTitle className="text-2xl font-display">{t('auth.confirm.title')}</CardTitle>
+                <CardDescription>{t('auth.confirm.sub')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-5 text-center">
                 <div style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '12px', padding: '16px' }}>
                   <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', margin: 0 }}>
-                    We sent a confirmation link to:
+                    {t('auth.confirm.sent_to')}
                   </p>
                   <p style={{ fontSize: '15px', fontWeight: 700, color: '#fff', margin: '6px 0 0 0' }}>
                     {confirmedEmail}
@@ -311,10 +311,10 @@ const Auth = () => {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'left' }}>
                   {[
-                    'Open your email inbox',
-                    'Click the confirmation link from Aladiah Academy',
-                    'You\'ll be taken directly to the student portal',
-                    'Choose your free course and start learning',
+                    t('auth.confirm.step1'),
+                    t('auth.confirm.step2'),
+                    t('auth.confirm.step3'),
+                    t('auth.confirm.step4'),
                   ].map((step, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
                       <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>
@@ -325,15 +325,15 @@ const Auth = () => {
                   ))}
                 </div>
                 <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '8px' }}>
-                  Didn't receive it? Check your spam folder or{' '}
+                  {t('auth.confirm.spam')}{' '}
                   <button
                     onClick={async () => {
                       await supabase.auth.resend({ type: 'signup', email: confirmedEmail });
-                      toast({ title: 'Email resent!', description: 'Check your inbox again.' });
+                      toast({ title: t('auth.resent_title'), description: t('auth.resent_sub') });
                     }}
                     style={{ color: '#818cf8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontSize: '11px' }}
                   >
-                    resend the email
+                    {t('auth.confirm.resend')}
                   </button>
                 </p>
               </CardContent>
@@ -396,17 +396,17 @@ const Auth = () => {
 
                     {/* TIER SELECTION */}
                     <div className="space-y-3">
-                      <Label className="text-sm font-semibold">Choose Your Plan</Label>
+                      <Label className="text-sm font-semibold">{t('auth.plan.choose')}</Label>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {/* FREE */}
                         <div onClick={() => setSelectedTier('free')} style={{ border: selectedTier === 'free' ? '2px solid rgba(99,102,241,0.8)' : '2px solid rgba(255,255,255,0.1)', borderRadius: '14px', padding: '16px', cursor: 'pointer', background: selectedTier === 'free' ? 'rgba(99,102,241,0.1)' : 'rgba(255,255,255,0.03)', transition: 'all 0.2s', position: 'relative' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                             <Zap style={{ width: '16px', height: '16px', color: '#6366f1' }} />
-                            <span style={{ fontWeight: 700, fontSize: '14px', color: '#fff' }}>Starter</span>
+                            <span style={{ fontWeight: 700, fontSize: '14px', color: '#fff' }}>{t('auth.plan.starter')}</span>
                           </div>
-                          <p style={{ fontSize: '22px', fontWeight: 800, color: '#fff', margin: '0 0 8px 0' }}>Free</p>
+                          <p style={{ fontSize: '22px', fontWeight: 800, color: '#fff', margin: '0 0 8px 0' }}>{t('auth.plan.free')}</p>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            {['1 course of your choice', 'Module 1 access only', 'Prof. Didier AI voice', 'Module quiz included'].map(f => (
+                            {[t('auth.plan.free_f1'), t('auth.plan.free_f2'), t('auth.plan.free_f3'), t('auth.plan.free_f4')].map(f => (
                               <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '5px' }}>
                                 <CheckCircle style={{ width: '10px', height: '10px', color: '#6366f1', flexShrink: 0, marginTop: '2px' }} />
                                 <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>{f}</span>
@@ -423,12 +423,12 @@ const Auth = () => {
                         <div onClick={() => setSelectedTier('paid')} style={{ border: selectedTier === 'paid' ? '2px solid rgba(245,158,11,0.8)' : '2px solid rgba(255,255,255,0.1)', borderRadius: '14px', padding: '16px', cursor: 'pointer', background: selectedTier === 'paid' ? 'rgba(245,158,11,0.1)' : 'rgba(255,255,255,0.03)', transition: 'all 0.2s', position: 'relative' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                             <Crown style={{ width: '16px', height: '16px', color: '#f59e0b' }} />
-                            <span style={{ fontWeight: 700, fontSize: '14px', color: '#fff' }}>All-Access Pass</span>
+                            <span style={{ fontWeight: 700, fontSize: '14px', color: '#fff' }}>{t('auth.plan.allaccess')}</span>
                           </div>
                           <p style={{ fontSize: '22px', fontWeight: 800, color: '#fff', margin: '0 0 2px 0' }}>$99.99</p>
-                          <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: '0 0 8px 0' }}>/month</p>
+                          <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: '0 0 8px 0' }}>{t('auth.plan.month')}</p>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            {['All 8 courses', 'All modules unlocked', 'Prof. Didier AI voice', 'Tools & resources', 'Certificates', 'Priority support'].map(f => (
+                            {[t('auth.plan.paid_f1'), t('auth.plan.paid_f2'), t('auth.plan.paid_f3'), t('auth.plan.paid_f4'), t('auth.plan.paid_f5'), t('auth.plan.paid_f6')].map(f => (
                               <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '5px' }}>
                                 <CheckCircle style={{ width: '10px', height: '10px', color: '#f59e0b', flexShrink: 0, marginTop: '2px' }} />
                                 <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>{f}</span>
@@ -460,12 +460,12 @@ const Auth = () => {
                       <Label htmlFor="password">{t('auth.password')}</Label>
                       <Popover>
                         <PopoverTrigger asChild>
-                          <button type="button" aria-label="Password requirements" className="text-muted-foreground hover:text-primary">
+                          <button type="button" aria-label={t('auth.aria.pwd_req')} className="text-muted-foreground hover:text-primary">
                             <Info className="w-3.5 h-3.5" />
                           </button>
                         </PopoverTrigger>
                         <PopoverContent className="w-64 text-xs">
-                          <p className="font-semibold mb-2">Password must contain:</p>
+                          <p className="font-semibold mb-2">{t('auth.pwd_requirements')}</p>
                           <ul className="space-y-1">
                             {PASSWORD_RULES.map((r) => (
                               <li key={r.key} className="flex items-center gap-2 text-muted-foreground">
@@ -480,7 +480,7 @@ const Auth = () => {
                       <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                       <Input id="password" type={showPassword ? 'text' : 'password'} placeholder="********" value={password}
                         onChange={(e) => setPassword(e.target.value)} required minLength={6} className="pl-9 pr-10" />
-                      <button type="button" onClick={() => setShowPassword((s) => !s)} aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      <button type="button" onClick={() => setShowPassword((s) => !s)} aria-label={showPassword ? t('auth.aria.hide_pwd') : t('auth.aria.show_pwd')}
                         className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -492,11 +492,11 @@ const Auth = () => {
                   <div className="flex items-center justify-between">
                     <label className="flex items-center gap-2 cursor-pointer select-none">
                       <Checkbox checked={rememberMe} onCheckedChange={(v) => setRememberMe(v === true)} />
-                      <span className="text-sm text-muted-foreground">Remember me</span>
+                      <span className="text-sm text-muted-foreground">{t('auth.remember')}</span>
                     </label>
                     <button type="button" onClick={() => { setForgotMode(true); setForgotEmail(email); setAuthError(''); }}
                       className="text-sm text-primary hover:underline">
-                      Forgot Password?
+                      {t('auth.forgot_link')}
                     </button>
                   </div>
                 )}
@@ -518,13 +518,13 @@ const Auth = () => {
                 <Button type="submit" className="w-full" variant="coral" disabled={loading || googleLoading}>
                   {loading
                     ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t('auth.loading')}</>
-                    : isLogin ? t('auth.signin.btn') : selectedTier === 'free' ? 'Create Free Account' : 'Continue to Payment →'}
+                    : isLogin ? t('auth.signin.btn') : selectedTier === 'free' ? t('auth.create_free') : t('auth.continue_payment')}
                 </Button>
 
                 {/* Optional Google OAuth (requires Google provider enabled in Supabase Auth) */}
                 <div className="flex items-center gap-3 py-1">
                   <div className="h-px flex-1 bg-border" />
-                  <span className="text-[11px] text-muted-foreground">or</span>
+                  <span className="text-[11px] text-muted-foreground">{t('auth.or')}</span>
                   <div className="h-px flex-1 bg-border" />
                 </div>
                 <Button type="button" variant="outline" className="w-full" onClick={handleGoogle} disabled={loading || googleLoading}>
@@ -536,14 +536,14 @@ const Auth = () => {
                       <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15A10.99 10.99 0 0 0 12 1 11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/>
                     </svg>
                   )}
-                  Continue with Google
+                  {t('auth.google')}
                 </Button>
 
                 {!isLogin && selectedTier === 'paid' && (
                   <p className="text-[11px] text-center text-muted-foreground">{t('auth.stripe.secure')}</p>
                 )}
                 {!isLogin && selectedTier === 'free' && (
-                  <p className="text-[11px] text-center text-muted-foreground">No credit card required · Email verification required</p>
+                  <p className="text-[11px] text-center text-muted-foreground">{t('auth.nocard')}</p>
                 )}
               </form>
               <div className="mt-6 text-center">

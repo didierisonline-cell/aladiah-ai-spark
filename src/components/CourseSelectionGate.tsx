@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { GraduationCap, CheckCircle, ArrowRight, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Course {
   id: string;
@@ -35,6 +36,7 @@ const getCourseIcon = (title: string) => {
 };
 
 export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
+  const { t } = useLanguage();
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -82,13 +84,13 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
       const { error } = await supabase.from('profiles').upsert(updateData, { onConflict: 'user_id' });
       if (error) {
         console.error('Course selection save failed:', error);
-        setSaveError('Could not save your program selection. Please try again.');
+        setSaveError(t('enroll.gate.save_error'));
         setLoading(false);
         return;
       }
     } catch (e) {
       console.error('Course selection save exception:', e);
-      setSaveError('Could not save your program selection. Please try again.');
+      setSaveError(t('enroll.gate.save_error'));
       setLoading(false);
       return;
     }
@@ -113,16 +115,16 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
             <GraduationCap className="w-8 h-8" style={{ color: '#818cf8' }} />
           </div>
           <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>
-            Choose Your Free Program
+            {t('enroll.gate.title')}
           </h1>
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', maxWidth: '400px', margin: '0 auto' }}>
-            Pick one program to explore — Module 1 free. You can change your selection once before you start.
+            {t('enroll.gate.subtitle')}
           </p>
           {currentSelection && (
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '12px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '100px', padding: '4px 14px' }}>
               <RefreshCw style={{ width: '12px', height: '12px', color: '#f59e0b' }} />
               <span style={{ fontSize: '11px', color: '#f59e0b', fontWeight: 600 }}>
-                {switchUsed ? 'Switch already used — this is your locked program' : 'You can change this one more time'}
+                {switchUsed ? t('enroll.gate.switch_locked') : t('enroll.gate.switch_once')}
               </span>
             </div>
           )}
@@ -159,7 +161,7 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
                       {course.title}
                     </p>
                     <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.4 }}>
-                      Module 1 free · All programs unlocked with All-Access Pass
+                      {t('enroll.gate.module_free')}
                     </p>
                   </div>
                 </div>
@@ -170,7 +172,7 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
                 )}
                 {isCurrent && !isSelected && (
                   <div style={{ position: 'absolute', top: '10px', right: '10px', background: '#f59e0b', borderRadius: '100px', padding: '2px 8px' }}>
-                    <span style={{ fontSize: '9px', fontWeight: 800, color: '#000' }}>CURRENT</span>
+                    <span style={{ fontSize: '9px', fontWeight: 800, color: '#000' }}>{t('enroll.gate.current')}</span>
                   </div>
                 )}
               </div>
@@ -185,15 +187,15 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
             disabled={!selectedCourse || loading}
             style={{ minWidth: '200px', height: '48px', fontSize: '15px', fontWeight: 700 }}
           >
-            {loading ? 'Saving...' : (
+            {loading ? t('enroll.gate.saving') : (
               <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {selectedCourseName ? `Start with ${selectedCourseName.split(':')[0]}` : 'Select a Program'}
+                {selectedCourseName ? t('enroll.gate.start_with').replace('{name}', selectedCourseName.split(':')[0]) : t('enroll.gate.select_program')}
                 <ArrowRight style={{ width: '16px', height: '16px' }} />
               </span>
             )}
           </Button>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '10px' }}>
-            Want access to all programs? Upgrade to All-Access Pass for $99.99/month
+            {t('enroll.gate.upgrade_hint')}
           </p>
           {saveError && (
             <p style={{ fontSize: '12px', color: '#f87171', marginTop: '10px' }}>{saveError}</p>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 /**
  * Aladiah Academy — Creed Acknowledgment Gate
@@ -25,29 +26,19 @@ import { Check, ChevronDown } from 'lucide-react';
  *   return <ActualPortalContent />;
  */
 
-const CREED_STANZAS: string[][] = [
-  [
-    'I am a student of Aladiah Academy.',
-    'I am a learner and a member of a global community.',
-    "I pursue knowledge and live the academy's values.",
-  ],
-  [
-    'I will always place growth first.',
-    'I will never accept mediocrity.',
-    'I will never quit.',
-    'I will never leave a fellow student behind.',
-  ],
-  [
-    'I am disciplined, mentally sharp and emotionally resilient,',
-    'trained and proficient in the craft I have chosen to master.',
-    'I invest daily in my mind, my skills, and my character.',
-    'I am a professional in the making and an expert in the becoming.',
-    'I stand ready to lead, to serve, and to create real impact',
-    'in my career, my family, and my community.',
-    'I am a guardian of knowledge and a builder of a better future.',
-    'I am a student of Aladiah Academy.',
-  ],
+// Creed lines are referenced by translation key (creed.* in LanguageContext);
+// the rendered text comes from t() so the creed displays in the student's language.
+const CREED_KEYS: string[][] = [
+  ['creed.s1l1', 'creed.s1l2', 'creed.s1l3'],
+  ['creed.s2l1', 'creed.s2l2', 'creed.s2l3', 'creed.s2l4'],
+  ['creed.s3l1', 'creed.s3l2', 'creed.s3l3', 'creed.s3l4', 'creed.s3l5', 'creed.s3l6', 'creed.s3l7', 'creed.s3l8'],
 ];
+
+// BCP-47 locale per launch language, for the localized date header.
+const DATE_LOCALES: Record<string, string> = {
+  en: 'en-US', es: 'es-ES', fr: 'fr-FR', pt: 'pt-BR',
+  de: 'de-DE', ar: 'ar', zh: 'zh-CN', hi: 'hi-IN',
+};
 
 const STORAGE_KEY = 'aladiah_creed_ack_date';
 
@@ -79,6 +70,7 @@ export const CreedAcknowledgmentGate = ({
   studentName,
   onAcknowledge,
 }: CreedAcknowledgmentGateProps) => {
+  const { t, language } = useLanguage();
   const [hasScrolledToEnd, setHasScrolledToEnd] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -118,7 +110,7 @@ export const CreedAcknowledgmentGate = ({
 
   const canAcknowledge = hasScrolledToEnd && isChecked && !isSubmitting;
 
-  const today = new Date().toLocaleDateString('en-US', {
+  const today = new Date().toLocaleDateString(DATE_LOCALES[language] || 'en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -190,7 +182,7 @@ export const CreedAcknowledgmentGate = ({
               className="text-lg sm:text-xl tracking-wider text-[#1a2a4a] mt-1 font-normal"
               style={{ fontFamily: 'Georgia, serif', letterSpacing: '0.1em' }}
             >
-              STUDENT CREED
+              {t('creed.heading')}
             </h2>
 
             <div className="flex items-center justify-center gap-2 my-4">
@@ -204,14 +196,14 @@ export const CreedAcknowledgmentGate = ({
                 className="text-sm sm:text-base text-[#1a2a4a] italic mb-2"
                 style={{ fontFamily: 'Georgia, serif' }}
               >
-                Welcome back, {studentName ? studentName.charAt(0).toUpperCase() + studentName.slice(1) : ''}.
+                {t('creed.welcome_back').replace('{name}', studentName ? studentName.charAt(0).toUpperCase() + studentName.slice(1) : '')}
               </p>
             )}
             <p
               className="text-xs sm:text-sm text-[#1a2a4a]/80 mb-4"
               style={{ fontFamily: 'Georgia, serif' }}
             >
-              Before entering the portal, take a moment to renew your commitment.
+              {t('creed.intro')}
             </p>
           </div>
 
@@ -228,14 +220,14 @@ export const CreedAcknowledgmentGate = ({
                 boxShadow: 'inset 0 8px 12px -8px rgba(26, 42, 74, 0.15), inset 0 -8px 12px -8px rgba(26, 42, 74, 0.15)',
               }}
             >
-              {CREED_STANZAS.map((stanza, stanzaIdx) => (
+              {CREED_KEYS.map((stanza, stanzaIdx) => (
                 <div key={stanzaIdx} className={stanzaIdx > 0 ? 'mt-5' : ''}>
-                  {stanza.map((line, lineIdx) => (
+                  {stanza.map((lineKey, lineIdx) => (
                     <p
                       key={lineIdx}
                       className="text-[15px] sm:text-[16px] leading-relaxed font-medium"
                     >
-                      {line}
+                      {t(lineKey)}
                     </p>
                   ))}
                 </div>
@@ -253,7 +245,7 @@ export const CreedAcknowledgmentGate = ({
                   className="text-[10px] sm:text-xs tracking-[0.2em] text-[#1a2a4a]/80 mt-2 font-medium"
                   style={{ fontFamily: 'Georgia, serif' }}
                 >
-                  KNOWLEDGE · DISCIPLINE · COMMUNITY · IMPACT
+                  {t('creed.values_line')}
                 </p>
               </div>
             </div>
@@ -271,7 +263,7 @@ export const CreedAcknowledgmentGate = ({
                 <div className="flex items-center gap-2 text-[#1a2a4a]/70 text-xs font-medium animate-bounce">
                   <ChevronDown className="w-4 h-4" />
                   <span style={{ fontFamily: 'Georgia, serif' }}>
-                    Scroll to read the full creed
+                    {t('creed.scroll_hint')}
                   </span>
                   <ChevronDown className="w-4 h-4" />
                 </div>
@@ -293,7 +285,7 @@ export const CreedAcknowledgmentGate = ({
                   disabled={!hasScrolledToEnd}
                   onChange={(e) => setIsChecked(e.target.checked)}
                   className="sr-only peer"
-                  aria-label="I have read and acknowledge the Aladiah Academy Student Creed"
+                  aria-label={t('creed.ack_aria')}
                 />
                 <div
                   className="w-5 h-5 border-2 border-[#1a2a4a] bg-[#f8f4ea] transition-colors peer-checked:bg-[#1a2a4a] flex items-center justify-center"
@@ -306,7 +298,7 @@ export const CreedAcknowledgmentGate = ({
                 className="text-sm sm:text-[15px] text-[#1a2a4a] leading-snug"
                 style={{ fontFamily: 'Georgia, serif' }}
               >
-                I have read the Aladiah Academy Student Creed and commit to living these values today.
+                {t('creed.ack_label')}
               </span>
             </label>
 
@@ -326,7 +318,7 @@ export const CreedAcknowledgmentGate = ({
                 borderRadius: '2px',
               }}
             >
-              {isSubmitting ? 'ENTERING PORTAL…' : 'I ACKNOWLEDGE — ENTER PORTAL'}
+              {isSubmitting ? t('creed.entering') : t('creed.enter_btn')}
             </button>
 
             {!hasScrolledToEnd && (
@@ -334,7 +326,7 @@ export const CreedAcknowledgmentGate = ({
                 className="text-[11px] text-center text-[#1a2a4a]/60 mt-3 italic"
                 style={{ fontFamily: 'Georgia, serif' }}
               >
-                Please read the full creed to continue
+                {t('creed.read_full')}
               </p>
             )}
           </div>
