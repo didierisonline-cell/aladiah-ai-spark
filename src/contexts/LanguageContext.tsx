@@ -33,6 +33,9 @@ export const languageNames: Record<Language, string> = {
   th: 'ภาษาไทย',
 };
 
+// Right-to-left languages. Add future RTL codes (e.g. 'he', 'fa', 'ur') here.
+export const RTL_LANGUAGES: string[] = ['ar'];
+
 const translations: Record<Language, Record<string, string>> = {
   en: {
     'chapter.visual_breakdown': "Visual Breakdown",
@@ -9332,6 +9335,16 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const stored = (typeof localStorage !== 'undefined' && localStorage.getItem('aladiah_lang')) as Language | null;
   const [language, setLanguage] = useState<Language>(stored || 'en');
+
+  // RTL languages render right-to-left. Setting dir/lang on <html> makes the
+  // browser mirror normal-flow layout (flex rows, text-align: start/end, logical
+  // margins) automatically — the foundation for native Arabic support.
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const isRtl = RTL_LANGUAGES.includes(language);
+    document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
+    document.documentElement.lang = language;
+  }, [language]);
 
   // Load from Supabase profile on auth
   useEffect(() => {

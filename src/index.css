@@ -37,6 +37,22 @@
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
 
+/* ============================================================================
+   RTL (Arabic) foundation — applies ONLY when <html dir="rtl"> (set by
+   LanguageContext for Arabic). The dir attribute already mirrors normal-flow
+   layout for free: flex rows lay out right-to-left, justify/align start-end
+   swap, logical margins flip, and unstyled text aligns to the right. These
+   rules fix the explicit *physical* utilities that do NOT auto-flip.
+   English / all LTR languages are completely unaffected.
+   ============================================================================ */
+[dir="rtl"] { text-align: right; }
+[dir="rtl"] .text-left  { text-align: right !important; }
+[dir="rtl"] .text-right { text-align: left  !important; }
+[dir="rtl"] input, [dir="rtl"] textarea, [dir="rtl"] select { text-align: right; }
+/* Mirror horizontal flips used for chevrons/arrows in nav affordances */
+[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
+
+
 @layer base {
   :root {
     /* Aladiah Academy - Dark Navy Theme */
