@@ -165,27 +165,50 @@ function AssetTable({ status }: { status?: string }) {
             )}
           </div>
           {a.hook && <p className="text-xs text-muted-foreground italic">"{a.hook}"</p>}
-          {/* V2 excellence scores */}
+          {/* V3 excellence scores — 12 gates */}
           {(a.kane_score != null || a.metadata?.excellence) && (
-            <div className="flex flex-wrap gap-2 text-xs mt-1">
-              {[
-                { label: 'Kane', val: a.kane_score },
-                { label: 'Hormozi', val: a.hormozi_score },
-                { label: 'Trust', val: a.trust_score },
-                { label: 'Transform', val: a.transformation_score },
-                { label: 'Employment', val: a.employment_score },
-                { label: 'Golden Rule', val: a.metadata?.golden_rule_score },
-                { label: 'Tanner', val: a.metadata?.tanner_score },
-                { label: 'Emotion', val: a.metadata?.emotional_trigger_score },
-              ].filter(({ val }) => val != null).map(({ label, val }) => (
-                <span key={label} className={`px-1.5 py-0.5 rounded text-xs font-mono ${
-                  (val ?? 0) >= 70 ? 'bg-green-50 text-green-700' :
-                  (val ?? 0) >= 50 ? 'bg-yellow-50 text-yellow-700' :
-                  'bg-red-50 text-red-700'
-                }`}>
-                  {label} {val ?? '—'}
-                </span>
-              ))}
+            <div className="space-y-1.5 mt-1">
+              {/* Mandatory 5-pillar check */}
+              {a.metadata?.mandatory_check && (
+                <div className="flex flex-wrap gap-1 text-xs">
+                  <span className="text-muted-foreground font-semibold">Required:</span>
+                  {[
+                    { label: 'Attention', pass: a.metadata.mandatory_check.attention },
+                    { label: 'Trust', pass: a.metadata.mandatory_check.trust },
+                    { label: 'Transform', pass: a.metadata.mandatory_check.transformation },
+                    { label: 'Proof', pass: a.metadata.mandatory_check.proof },
+                    { label: 'Employment', pass: a.metadata.mandatory_check.employment },
+                  ].map(({ label, pass }) => (
+                    <span key={label} className={`px-1.5 py-0.5 rounded font-mono ${pass ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {pass ? '✓' : '✗'} {label}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {/* All gate scores */}
+              <div className="flex flex-wrap gap-1.5 text-xs">
+                {[
+                  { label: 'Kane', val: a.kane_score },
+                  { label: 'Hormozi', val: a.hormozi_score },
+                  { label: 'Trust', val: a.trust_score },
+                  { label: 'Transform', val: a.transformation_score },
+                  { label: 'Employment', val: a.employment_score },
+                  { label: 'Proof', val: a.metadata?.proof_score },
+                  { label: 'Employer Demand', val: a.metadata?.employer_demand_score },
+                  { label: 'Africa/DR', val: a.metadata?.africa_opportunity_score },
+                  { label: 'Golden Rule', val: a.metadata?.golden_rule_score },
+                  { label: 'Tanner', val: a.metadata?.tanner_score },
+                  { label: 'Emotion', val: a.metadata?.emotional_trigger_score },
+                ].filter(({ val }) => val != null).map(({ label, val }) => (
+                  <span key={label} className={`px-1.5 py-0.5 rounded font-mono ${
+                    (val ?? 0) >= 70 ? 'bg-green-50 text-green-700' :
+                    (val ?? 0) >= 50 ? 'bg-yellow-50 text-yellow-700' :
+                    'bg-red-50 text-red-700'
+                  }`}>
+                    {label} {val}
+                  </span>
+                ))}
+              </div>
             </div>
           )}
           {a.cta && <p className="text-xs font-medium text-primary">{a.cta}</p>}

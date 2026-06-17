@@ -126,6 +126,30 @@ export interface RelationshipScore {
   total: number;                // 100 = pure relationship | 0 = pure promotion
 }
 
+// V3 gates — proof, employer demand, regional opportunity
+
+export interface ProofScore {
+  has_portfolio_example: number;  // 0-25: references a portfolio or showcase?
+  has_simulation: number;         // 0-25: mentions practice/simulation/scenario?
+  has_real_project: number;       // 0-25: tied to a real-world project or case?
+  has_student_evidence: number;   // 0-25: student result, testimonial, or outcome?
+  total: number;                  // 0-100
+}
+
+export interface EmployerDemandScore {
+  maps_to_hiring_demand: number;  // 0-34: tied to a role employers are actively hiring?
+  signals_ai_readiness: number;   // 0-33: shows AI capability an employer cares about?
+  workforce_relevance: number;    // 0-33: relevant to current workforce needs (2025–2027)?
+  total: number;                  // 0-100
+}
+
+export interface AfricaOpportunityScore {
+  africa_relevance: number;       // 0-34: speaks to Africa / Cameroon context?
+  dr_relevance: number;           // 0-33: speaks to Dominican Republic context?
+  economic_transformation: number; // 0-33: frames career change as economic mobility?
+  total: number;                  // 0-100
+}
+
 export interface ContentExcellenceScore {
   kane: KaneScore;
   hormozi: HormoziScore;
@@ -136,8 +160,19 @@ export interface ContentExcellenceScore {
   tanner: TannerScore;
   emotional_trigger: EmotionalTriggerScore;
   relationship: RelationshipScore;
+  proof: ProofScore;
+  employer_demand: EmployerDemandScore;
+  africa_opportunity: AfricaOpportunityScore;
   final: number;   // weighted composite 0-100
-  gate: 'publish' | 'revise' | 'reject';  // 85+ publish | <85 revise/reject
+  gate: 'publish' | 'revise' | 'reject';  // 90+ publish | <90 revise/reject
+  mandatory_check: {  // all five must pass for publish
+    attention: boolean;
+    trust: boolean;
+    transformation: boolean;
+    proof: boolean;
+    employment: boolean;
+    all_pass: boolean;
+  };
 }
 
 export interface ScoredHook {
@@ -696,8 +731,81 @@ function scoreRelationship(hook: string, body: string, cta: string, flywheel_sta
   return { relationship_first, content_type_tag, penalty, total };
 }
 
-// Composite gate — V2: Kane 20% | Hormozi 20% | Trust 15% | Transformation 15% | Employment 10% | GoldenRule 10% | Tanner 5% | EmotionalTrigger 5%
-// Threshold: 85+ publish | <85 revise/reject
+// Gate 10 — Proof: portfolio, simulation, real project, student evidence
+function scoreProof(body: string, proof_source: string): ProofScore {
+  const text = body.toLowerCase();
+  const proof = proof_source.toLowerCase();
+
+  const has_portfolio_example = /portfolio|showcase|gallery|artifacts|examples of my work|real work/.test(text) ? 25 : 0;
+  const has_simulation = /simulat|scenario|practice|enterprise scenario|real-world exercise|hands-on/.test(text) ? 25 : 0;
+  const has_real_project = /project|client|stakeholder|sprint|backlog|delivered|built|launched/.test(text) ? 25 :
+    (proof.length > 10 ? 12 : 0);
+  const has_student_evidence = /student|learner|participant|graduate|alumni|testimonial|result|hired after|placed/.test(text) ? 25 : 0;
+
+  const total = Math.min(100, has_portfolio_example + has_simulation + has_real_project + has_student_evidence);
+  return { has_portfolio_example, has_simulation, has_real_project, has_student_evidence, total };
+}
+
+// Gate 11 — Employer Demand: hiring signals, AI readiness, workforce relevance
+function scoreEmployerDemand(body: string, audience: GrowthAudience): EmployerDemandScore {
+  const text = body.toLowerCase();
+
+  const hiringRoles = /scrum master|product owner|business analyst|devops|cloud engineer|data analyst|agile coach|project manager|cybersecurity|ai specialist/;
+  const maps_to_hiring_demand = (
+    hiringRoles.test(text) ||
+    /hiring|job opening|in demand|talent shortage|recruiters want|employers need/.test(text) ||
+    audience === 'employers'
+  ) ? 34 : 10;
+
+  const signals_ai_readiness = (
+    /ai-ready|ai ready|ai-powered|machine learning|generative ai|chatgpt|llm|automation|ai tools|ai workflow/.test(text) ||
+    /future-proof|future proof|next-generation workforce|workforce of the future/.test(text)
+  ) ? 33 : 10;
+
+  const workforce_relevance = (
+    /2025|2026|2027|today's market|current demand|workforce gap|skills gap|labour market|job market/.test(text) ||
+    /enterprise|organization|company needs|corporate|global workforce/.test(text)
+  ) ? 33 : 10;
+
+  const total = Math.min(100, maps_to_hiring_demand + signals_ai_readiness + workforce_relevance);
+  return { maps_to_hiring_demand, signals_ai_readiness, workforce_relevance, total };
+}
+
+// Gate 12 — Africa & DR Opportunity: regional relevance and economic transformation framing
+function scoreAfricaOpportunity(body: string, hook: string, audience: GrowthAudience): AfricaOpportunityScore {
+  const text = (hook + ' ' + body).toLowerCase();
+
+  const africa_relevance = (
+    /africa|cameroon|nairobi|lagos|accra|abidjan|kigali|african professional|sub-saharan|francophone africa/.test(text) ||
+    audience === 'africa_cameroon'
+  ) ? 34 : (
+    /global south|emerging market|developing econom/.test(text) ? 17 : 0
+  );
+
+  const dr_relevance = (
+    /dominican republic|santo domingo|caribbean|latin america|latinx|hispanic professional/.test(text) ||
+    audience === 'dominican_republic'
+  ) ? 33 : (
+    /spanish-speaking|bilingual|diaspora/.test(text) ? 16 : 0
+  );
+
+  const economic_transformation = (
+    /economic mobility|economic transformation|break the cycle|generational change|first in family|social mobility/.test(text) ||
+    /opportunity|access|bridge the gap|unlock|pathway out/.test(text)
+  ) ? 33 : 10;
+
+  const total = Math.min(100, africa_relevance + dr_relevance + economic_transformation);
+  return { africa_relevance, dr_relevance, economic_transformation, total };
+}
+
+// ---------------------------------------------------------------------------
+// Composite gate — V3: 12 gates, mandatory 5-pillar presence check
+// Weights: Kane 15% | Hormozi 15% | Trust 12% | Transformation 12% | Employment 10%
+//          Proof 10% | GoldenRule 8% | Tanner 5% | EmotionalTrigger 5%
+//          EmployerDemand 5% | AfricaOpportunity 3%
+// Threshold: 90+ publish | <90 revise/reject
+// Hard gate: Attention + Trust + Transformation + Proof + Employment ALL must score ≥ 50
+// ---------------------------------------------------------------------------
 export function runExcellenceGates(asset: Omit<GrowthAsset, 'score' | 'excellence'>): ContentExcellenceScore {
   const bucket = asset.metadata?.bucket as string ?? '';
   const kane = scoreKane(asset.hook, bucket, asset.body);
@@ -709,27 +817,44 @@ export function runExcellenceGates(asset: Omit<GrowthAsset, 'score' | 'excellenc
   const tanner = scoreTanner(asset.hook, asset.body);
   const emotional_trigger = scoreEmotionalTrigger(asset.hook, asset.body, bucket);
   const relationship = scoreRelationship(asset.hook, asset.body, asset.cta, asset.flywheel_stage);
+  const proof = scoreProof(asset.body, asset.proof_source);
+  const employer_demand = scoreEmployerDemand(asset.body, asset.audience);
+  const africa_opportunity = scoreAfricaOpportunity(asset.body, asset.hook, asset.audience);
 
-  // Hard reject if Golden Rule fails (brand-dependent content with no standalone value)
+  // Mandatory 5-pillar presence check — all must score ≥ 50 for publish
+  const mandatory_check = {
+    attention:      kane.total >= 50,
+    trust:          trust.total >= 50,
+    transformation: transformation.total >= 50,
+    proof:          proof.total >= 25,   // at least one proof signal present
+    employment:     employment.total >= 50,
+    get all_pass() { return this.attention && this.trust && this.transformation && this.proof && this.employment; },
+  };
+
+  // Hard reject if Golden Rule fails (brand-dependent, no standalone value)
   if (golden_rule.total < 30) {
     const final = 0;
-    return { kane, hormozi, trust, transformation, employment, golden_rule, tanner, emotional_trigger, relationship, final, gate: 'reject' };
+    return { kane, hormozi, trust, transformation, employment, golden_rule, tanner, emotional_trigger, relationship, proof, employer_demand, africa_opportunity, final, gate: 'reject', mandatory_check: { ...mandatory_check, all_pass: false } };
   }
 
   const final = Math.round(
-    kane.total * 0.20 +
-    hormozi.total * 0.20 +
-    trust.total * 0.15 +
-    transformation.total * 0.15 +
+    kane.total * 0.15 +
+    hormozi.total * 0.15 +
+    trust.total * 0.12 +
+    transformation.total * 0.12 +
     employment.total * 0.10 +
-    golden_rule.total * 0.10 +
+    proof.total * 0.10 +
+    golden_rule.total * 0.08 +
     tanner.total * 0.05 +
-    emotional_trigger.total * 0.05,
+    emotional_trigger.total * 0.05 +
+    employer_demand.total * 0.05 +
+    africa_opportunity.total * 0.03,
   );
 
-  const gate: ContentExcellenceScore['gate'] = final >= 85 ? 'publish' : 'revise';
+  // 90+ AND all 5 mandatory pillars present = publish; otherwise revise
+  const gate: ContentExcellenceScore['gate'] = (final >= 90 && mandatory_check.all_pass) ? 'publish' : 'revise';
 
-  return { kane, hormozi, trust, transformation, employment, golden_rule, tanner, emotional_trigger, relationship, final, gate };
+  return { kane, hormozi, trust, transformation, employment, golden_rule, tanner, emotional_trigger, relationship, proof, employer_demand, africa_opportunity, final, gate, mandatory_check: { ...mandatory_check } };
 }
 
 // Convenience wrapper used by all generators

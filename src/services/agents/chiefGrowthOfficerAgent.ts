@@ -98,7 +98,7 @@ async function persistGrowthAsset(
     kpi_target: asset.kpi_target,
     score: asset.score,
     hashtags: asset.hashtags,
-    // Store full V2 9-gate breakdown in metadata for founder review
+    // Store full V3 12-gate breakdown in metadata for founder review
     metadata: {
       ...asset.metadata,
       excellence: asset.excellence,
@@ -112,6 +112,10 @@ async function persistGrowthAsset(
       emotional_trigger_score: asset.excellence?.emotional_trigger?.total,
       emotional_trigger_name: asset.excellence?.emotional_trigger?.trigger,
       relationship_type: asset.excellence?.relationship?.content_type_tag,
+      proof_score: asset.excellence?.proof?.total,
+      employer_demand_score: asset.excellence?.employer_demand?.total,
+      africa_opportunity_score: asset.excellence?.africa_opportunity?.total,
+      mandatory_check: asset.excellence?.mandatory_check,
       gate: asset.excellence?.gate,
     },
     status,
