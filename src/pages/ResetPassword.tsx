@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { PASSWORD_RULES, isPasswordValid } from '@/lib/passwordPolicy';
 import { KeyRound, Lock, Eye, EyeOff, CheckCircle2, Circle, AlertCircle, ShieldCheck, Loader2 } from 'lucide-react';
 
@@ -38,6 +39,7 @@ const Shell = ({ children }: { children: React.ReactNode }) => (
 const ResetPassword = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   // null = still resolving the recovery session, true = ready, false = invalid/expired
   const [hasSession, setHasSession] = useState<boolean | null>(null);
@@ -60,8 +62,8 @@ const ResetPassword = () => {
     });
     // Fallback: if no session has appeared shortly after the token is processed,
     // treat the link as invalid/expired.
-    const t = setTimeout(() => setHasSession((prev) => (prev === null ? false : prev)), 2500);
-    return () => { subscription.unsubscribe(); clearTimeout(t); };
+    const timer = setTimeout(() => setHasSession((prev) => (prev === null ? false : prev)), 2500);
+    return () => { subscription.unsubscribe(); clearTimeout(timer); };
   }, []);
 
   const rulesPass = isPasswordValid(password);
@@ -71,18 +73,18 @@ const ResetPassword = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    if (!isPasswordValid(password)) { setError('Password does not meet the requirements below.'); return; }
-    if (password !== confirm) { setError('Passwords do not match.'); return; }
+    if (!isPasswordValid(password)) { setError(t('reset.err.policy')); return; }
+    if (password !== confirm) { setError(t('reset.mismatch')); return; }
     setLoading(true);
     try {
       const { error: upErr } = await supabase.auth.updateUser({ password });
       if (upErr) throw upErr;
       setDone(true);
-      toast({ title: 'Password updated successfully' });
+      toast({ title: t('reset.toast.success') });
       // Sign out so the user re-authenticates with the new password.
       setTimeout(async () => { await supabase.auth.signOut(); navigate('/auth'); }, 2200);
     } catch (err: any) {
-      setError(err?.message || 'Could not update password. Please request a new reset link.');
+      setError(err?.message || t('reset.err.generic'));
     } finally {
       setLoading(false);
     }
@@ -96,11 +98,11 @@ const ResetPassword = () => {
           <div className="mx-auto w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4">
             <CheckCircle2 className="w-8 h-8 text-green-400" />
           </div>
-          <CardTitle className="text-2xl font-display">Password updated successfully</CardTitle>
-          <CardDescription>Redirecting you to sign in…</CardDescription>
+          <CardTitle className="text-2xl font-display">{t('reset.success.title')}</CardTitle>
+          <CardDescription>{t('reset.success.desc')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Button className="w-full" variant="coral" onClick={() => navigate('/auth')}>Go to Sign In →</Button>
+          <Button className="w-full" variant="coral" onClick={() => navigate('/auth')}>{t('reset.success.btn')} →</Button>
         </CardContent>
       </Shell>
     );
@@ -114,11 +116,11 @@ const ResetPassword = () => {
           <div className="mx-auto w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mb-4">
             <AlertCircle className="w-8 h-8 text-amber-400" />
           </div>
-          <CardTitle className="text-2xl font-display">Reset link invalid or expired</CardTitle>
-          <CardDescription>Request a fresh password reset link to continue.</CardDescription>
+          <CardTitle className="text-2xl font-display">{t('reset.expired.title')}</CardTitle>
+          <CardDescription>{t('reset.expired.desc')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Button className="w-full" variant="coral" onClick={() => navigate('/auth')}>Back to Sign In</Button>
+          <Button className="w-full" variant="coral" onClick={() => navigate('/auth')}>{t('reset.expired.btn')}</Button>
         </CardContent>
       </Shell>
     );
@@ -130,7 +132,7 @@ const ResetPassword = () => {
       <Shell>
         <CardContent className="py-16 text-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto" />
-          <p className="text-sm text-muted-foreground mt-4">Verifying your reset link…</p>
+          <p className="text-sm text-muted-foreground mt-4">{t('reset.loading')}</p>
         </CardContent>
       </Shell>
     );
@@ -143,18 +145,18 @@ const ResetPassword = () => {
         <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
           <KeyRound className="w-8 h-8 text-primary" />
         </div>
-        <CardTitle className="text-2xl font-display">Set a new password</CardTitle>
-        <CardDescription>Choose a strong password for your Aladiah account.</CardDescription>
+        <CardTitle className="text-2xl font-display">{t('reset.title')}</CardTitle>
+        <CardDescription>{t('reset.desc')}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="new-password">New Password</Label>
+            <Label htmlFor="new-password">{t('reset.label.new')}</Label>
             <div className="relative">
               <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
               <Input id="new-password" type={showPw ? 'text' : 'password'} placeholder="••••••••••••"
                 value={password} onChange={(e) => setPassword(e.target.value)} required className="pl-9 pr-10" />
-              <button type="button" onClick={() => setShowPw((s) => !s)} aria-label={showPw ? 'Hide password' : 'Show password'}
+              <button type="button" onClick={() => setShowPw((s) => !s)} aria-label={showPw ? t('reset.hide') : t('reset.show')}
                 className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
                 {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -162,18 +164,18 @@ const ResetPassword = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirm-password">Confirm Password</Label>
+            <Label htmlFor="confirm-password">{t('reset.label.confirm')}</Label>
             <div className="relative">
               <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
               <Input id="confirm-password" type={showConfirm ? 'text' : 'password'} placeholder="••••••••••••"
                 value={confirm} onChange={(e) => setConfirm(e.target.value)} required className="pl-9 pr-10" />
-              <button type="button" onClick={() => setShowConfirm((s) => !s)} aria-label={showConfirm ? 'Hide password' : 'Show password'}
+              <button type="button" onClick={() => setShowConfirm((s) => !s)} aria-label={showConfirm ? t('reset.hide') : t('reset.show')}
                 className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
                 {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
             {confirm.length > 0 && !matches && (
-              <p className="text-xs text-red-400">Passwords do not match.</p>
+              <p className="text-xs text-red-400">{t('reset.mismatch')}</p>
             )}
           </div>
 
@@ -184,7 +186,7 @@ const ResetPassword = () => {
               return (
                 <div key={r.key} className="flex items-center gap-2">
                   {ok ? <CheckCircle2 className="w-3.5 h-3.5 text-green-400" /> : <Circle className="w-3.5 h-3.5 text-muted-foreground/50" />}
-                  <span className={`text-xs ${ok ? 'text-green-400' : 'text-muted-foreground'}`}>{r.label}</span>
+                  <span className={`text-xs ${ok ? 'text-green-400' : 'text-muted-foreground'}`}>{t(`reset.rule.${r.key}`)}</span>
                 </div>
               );
             })}
@@ -198,12 +200,12 @@ const ResetPassword = () => {
           )}
 
           <Button type="submit" className="w-full" variant="coral" disabled={!canSubmit}>
-            {loading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Updating…</> : 'Update Password'}
+            {loading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t('reset.btn.updating')}</> : t('reset.btn.update')}
           </Button>
 
           <div className="flex items-center gap-2 justify-center text-muted-foreground">
             <ShieldCheck className="w-3.5 h-3.5" />
-            <span className="text-[11px]">Encrypted by Supabase Auth · your link is single-use</span>
+            <span className="text-[11px]">{t('reset.security')}</span>
           </div>
         </form>
       </CardContent>
