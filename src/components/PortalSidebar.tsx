@@ -55,7 +55,7 @@ export default function PortalSidebar({ hoursLeft, coursesCount }: PortalSidebar
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(10,20,55,.75)', border: '1px solid rgba(255,255,255,.11)', color: '#c7d2fe', padding: '5px 10px', borderRadius: 8, fontSize: 12, fontWeight: 500, marginBottom: 5 }}>
           {T('pro_member')} <span style={{ color: '#818cf8' }}>◆</span>
         </div>
-        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 13 }}>Plan: <b style={{ color: '#e2e8f8' }}>{T('all_access')}</b></div>
+        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 13 }}>{t('sidebar.plan_label')} <b style={{ color: '#e2e8f8' }}>{T('all_access')}</b></div>
         <div style={{ background: 'rgba(5,15,40,.65)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 10, padding: '10px 12px' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 7 }}>
             <span style={{ fontSize: 24, fontWeight: 900, color: '#f97316', textShadow: '0 0 18px rgba(249,115,22,.5)' }}>{completedHours}</span>
