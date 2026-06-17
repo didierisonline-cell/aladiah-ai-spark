@@ -194,24 +194,24 @@ export default function PortalSettings() {
             <div>
               {/* Profile */}
               <div style={cardStyle}>
-                <div style={sectionTitle('👤 Profile')}>👤 Profile</div>
+                <div style={sectionTitle(t('portal.settings.profile'))}>{t('portal.settings.profile')}</div>
 
                 <div style={{ marginBottom:'1rem' }}>
-                  <label style={labelStyle}>Display Name</label>
+                  <label style={labelStyle}>{t('portal.settings.label.name')}</label>
                   <input value={name} onChange={e => setName(e.target.value)}
-                    placeholder="Your name" style={inputStyle}
+                    placeholder={t('portal.settings.ph.name')} style={inputStyle}
                     onFocus={e => (e.target as HTMLElement).style.borderColor = DS.blue}
                     onBlur={e => (e.target as HTMLElement).style.borderColor = DS.border} />
                 </div>
 
                 <div style={{ marginBottom:'1rem' }}>
-                  <label style={labelStyle}>Email</label>
+                  <label style={labelStyle}>{t('portal.settings.label.email')}</label>
                   <input value={user?.email || ''} readOnly
                     style={{ ...inputStyle, opacity:.7, cursor:'not-allowed' }} />
                 </div>
 
                 <div style={{ marginBottom:'1rem' }}>
-                  <label style={labelStyle}>Country</label>
+                  <label style={labelStyle}>{t('portal.settings.label.country')}</label>
                   <select value={country} onChange={e => setCountry(e.target.value)}
                     style={{ ...inputStyle, appearance:'none', cursor:'pointer' }}>
                     {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -219,33 +219,33 @@ export default function PortalSettings() {
                 </div>
 
                 <div style={{ marginBottom:'1rem' }}>
-                  <label style={labelStyle}>LinkedIn Profile URL</label>
+                  <label style={labelStyle}>{t('portal.settings.label.linkedin')}</label>
                   <input value={linkedin} onChange={e => setLinkedin(e.target.value)}
-                    type="url" placeholder="https://linkedin.com/in/..."
+                    type="url" placeholder={t('portal.settings.ph.linkedin')}
                     style={inputStyle}
                     onFocus={e => (e.target as HTMLElement).style.borderColor = DS.blue}
                     onBlur={e => (e.target as HTMLElement).style.borderColor = DS.border} />
                 </div>
 
                 <div style={{ marginBottom:'1.25rem' }}>
-                  <label style={labelStyle}>GitHub Username</label>
+                  <label style={labelStyle}>{t('portal.settings.label.github')}</label>
                   <input value={github} onChange={e => setGithub(e.target.value)}
-                    placeholder="yourusername" style={inputStyle}
+                    placeholder={t('portal.settings.ph.github')} style={inputStyle}
                     onFocus={e => (e.target as HTMLElement).style.borderColor = DS.blue}
                     onBlur={e => (e.target as HTMLElement).style.borderColor = DS.border} />
                 </div>
 
                 <button onClick={handleSaveProfile} disabled={saving}
                   style={{ fontSize:13, fontWeight:700, padding:'.55rem 1.25rem', borderRadius:'.5rem', background:DS.blue, color:'#fff', border:'none', cursor:'pointer', transition:'all .2s' }}>
-                  {saved === 'profile' ? '✓ Saved!' : saving ? t('portal.settings.saving') : t('portal.settings.save_profile')}
+                  {saved === 'profile' ? t('portal.settings.saved') : saving ? t('portal.settings.saving') : t('portal.settings.save_profile')}
                 </button>
               </div>
 
               {/* Language & Region */}
               <div style={cardStyle}>
-                <div style={sectionTitle('🌐 Language & Region')}>🌐 Language & Region</div>
+                <div style={sectionTitle(t('portal.settings.lang_region'))}>{t('portal.settings.lang_region')}</div>
                 <div style={{ marginBottom:'1.25rem' }}>
-                  <label style={labelStyle}>Portal Language</label>
+                  <label style={labelStyle}>{t('portal.settings.portal_lang')}</label>
                   <select value={selectedLang} onChange={e => setSelectedLang(e.target.value)}
                     style={{ ...inputStyle, appearance:'none', cursor:'pointer' }}>
                     {LANGUAGES.map(l => (
@@ -255,13 +255,13 @@ export default function PortalSettings() {
                 </div>
                 <button onClick={handleSaveLang}
                   style={{ fontSize:13, fontWeight:700, padding:'.55rem 1.25rem', borderRadius:'.5rem', background:DS.blue, color:'#fff', border:'none', cursor:'pointer' }}>
-                  {saved === 'lang' ? '✓ Saved!' : t('portal.settings.save_pref')}
+                  {saved === 'lang' ? t('portal.settings.saved') : t('portal.settings.save_pref')}
                 </button>
               </div>
 
               {/* Notifications */}
               <div style={cardStyle}>
-                <div style={sectionTitle('🔔 Notifications')}>🔔 Notifications</div>
+                <div style={sectionTitle(t('portal.settings.notifications_title'))}>{t('portal.settings.notifications_title')}</div>
                 <div style={{ display:'flex', flexDirection:'column' as const }}>
                   {NOTIFICATIONS_KEYS.map((notif, i) => (
                     <div key={notif.key} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'.65rem 0', borderBottom: i < NOTIFICATIONS_KEYS.length-1 ? `1px solid rgba(255,255,255,.04)` : 'none' }}>
@@ -283,21 +283,21 @@ export default function PortalSettings() {
             <div>
               {/* Subscription */}
               <div style={{ ...cardStyle, borderTop:`2px solid ${DS.gold}` }}>
-                <div style={sectionTitle('💳 Subscription')}>💳 Subscription</div>
+                <div style={sectionTitle(t('portal.settings.subscription_title'))}>{t('portal.settings.subscription_title')}</div>
 
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1rem' }}>
                   <div>
                     <div style={{ fontSize:14, fontWeight:700, color:DS.gold }}>Aladiah All-Access Pass™</div>
                     <div style={{ fontSize:12, color:DS.fm }}>$99.99/month · Renews June 26, 2026</div>
                   </div>
-                  <span style={{ fontSize:11, fontWeight:700, padding:'4px 12px', borderRadius:999, background:DS.grd, color:DS.green, border:'1px solid rgba(34,201,138,.28)' }}>Active</span>
+                  <span style={{ fontSize:11, fontWeight:700, padding:'4px 12px', borderRadius:999, background:DS.grd, color:DS.green, border:'1px solid rgba(34,201,138,.28)' }}>{t('portal.settings.active')}</span>
                 </div>
 
                 {/* Days remaining bar */}
                 <div style={{ background:DS.muted, border:`1px solid ${DS.border}`, borderRadius:'.45rem', padding:'.85rem', marginBottom:'1rem' }}>
                   <div style={{ display:'flex', justifyContent:'space-between', fontSize:12, marginBottom:6 }}>
                     <span style={{ color:DS.fm }}>{t('portal.settings.days_remaining')}</span>
-                    <span style={{ color:DS.fg, fontWeight:600 }}>{daysRemaining} days</span>
+                    <span style={{ color:DS.fg, fontWeight:600 }}>{daysRemaining} {t('portal.settings.days_unit')}</span>
                   </div>
                   <div style={{ height:5, background:'rgba(255,255,255,.06)', borderRadius:3, overflow:'hidden' }}>
                     <div style={{ height:'100%', width:`${cyclePercent}%`, background:`linear-gradient(90deg,${DS.orange},#F5895E)`, borderRadius:3 }}/>
@@ -322,18 +322,18 @@ export default function PortalSettings() {
 
               {/* Account Actions */}
               <div style={{ ...cardStyle, borderColor:'rgba(240,98,42,.25)' }}>
-                <div style={{ fontSize:13, fontWeight:700, color:DS.orange, marginBottom:'1rem', paddingBottom:'.65rem', borderBottom:'1px solid rgba(240,98,42,.2)' }}>⚠️ Account Actions</div>
+                <div style={{ fontSize:13, fontWeight:700, color:DS.orange, marginBottom:'1rem', paddingBottom:'.65rem', borderBottom:'1px solid rgba(240,98,42,.2)' }}>{t('portal.settings.account_actions')}</div>
                 <div style={{ display:'flex', flexDirection:'column' as const, gap:'.5rem' }}>
-                  {[
-                    { icon:'📤', label:'Export My Data', action: () => alert('Data export coming soon'), danger:false },
-                    { icon:'🔑', label:'Change Password', action: async () => { if (user?.email) await supabase.auth.resetPasswordForEmail(user.email); alert('Password reset email sent!'); }, danger:false },
-                    { icon:'🗑️', label:'Delete Account', action: () => { if (window.confirm('Are you sure? This cannot be undone.')) handleLogout(); }, danger:true },
-                  ].map(btn => (
-                    <button key={btn.label} onClick={btn.action}
+                  {([
+                    { icon:'📤', labelKey:'portal.settings.export', action: () => alert(t('portal.settings.export_soon')), danger:false },
+                    { icon:'🔑', labelKey:'portal.settings.change_pwd', action: async () => { if (user?.email) await supabase.auth.resetPasswordForEmail(user.email); alert(t('portal.settings.pwd_sent')); }, danger:false },
+                    { icon:'🗑️', labelKey:'portal.settings.delete', action: () => { if (window.confirm(t('portal.settings.delete_confirm'))) handleLogout(); }, danger:true },
+                  ] as const).map(btn => (
+                    <button key={btn.labelKey} onClick={btn.action}
                       style={{ width:'100%', display:'flex', alignItems:'center', gap:'.65rem', padding:'.75rem 1rem', borderRadius:'.5rem', background:'rgba(255,255,255,.02)', border:`1px solid ${btn.danger ? DS.ob : DS.border}`, color: btn.danger ? DS.orange : DS.fg, fontSize:13, fontWeight:600, cursor:'pointer', textAlign:'left', transition:'all .15s' }}
                       onMouseEnter={e => (e.currentTarget as HTMLElement).style.background='rgba(255,255,255,.05)'}
                       onMouseLeave={e => (e.currentTarget as HTMLElement).style.background='rgba(255,255,255,.02)'}>
-                      <span>{btn.icon}</span> {btn.label}
+                      <span>{btn.icon}</span> {t(btn.labelKey)}
                     </button>
                   ))}
                 </div>

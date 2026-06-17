@@ -32,7 +32,7 @@ interface CourseProgress {
 const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const { progress: overallProgress } = useProgress(user?.id);
 
   const [courseProgresses, setCourseProgresses] = useState<CourseProgress[]>([]);
@@ -44,7 +44,6 @@ const Dashboard = () => {
   const currentLang = supportedLanguages.includes(language as SupportedLanguage)
     ? (language as SupportedLanguage)
     : 'en';
-  const t = courseUITranslations[currentLang];
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -137,7 +136,7 @@ const Dashboard = () => {
           nextChapterId: nextChapter?.id || courseChapters[0]?.id || null,
           nextChapterTitle: nextChapter
             ? getTranslatedContent(nextChapter.translations as any, currentLang, nextChapter.title, '').title
-            : 'All complete!',
+            : t('dash.all_complete'),
         };
       });
 
@@ -167,18 +166,18 @@ const Dashboard = () => {
         {/* Welcome */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="text-3xl font-display font-bold mb-1">
-            Welcome back{user?.user_metadata?.full_name ? `, ${user.user_metadata.full_name}` : ''}! 👋
+            {t('dash.welcome')}{user?.user_metadata?.full_name ? `, ${user.user_metadata.full_name}` : ''}! 👋
           </h1>
-          <p className="text-muted-foreground">Here's your learning snapshot.</p>
+          <p className="text-muted-foreground">{t('dash.snapshot')}</p>
         </motion.div>
 
         {/* Stats Row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { icon: TrendingUp, label: 'Overall Progress', value: `${overallProgress}%`, color: progressColor },
-            { icon: Flame, label: 'Day Streak', value: `${streak}`, color: streak > 0 ? 'hsl(15, 85%, 60%)' : undefined },
-            { icon: Trophy, label: 'Quizzes Passed', value: `${quizzesCompleted}`, color: 'hsl(42, 95%, 55%)' },
-            { icon: Target, label: 'Courses', value: `${courseProgresses.length}`, color: undefined },
+            { icon: TrendingUp, label: t('dash.stat.progress'), value: `${overallProgress}%`, color: progressColor },
+            { icon: Flame, label: t('dash.stat.streak'), value: `${streak}`, color: streak > 0 ? 'hsl(15, 85%, 60%)' : undefined },
+            { icon: Trophy, label: t('dash.stat.quizzes'), value: `${quizzesCompleted}`, color: 'hsl(42, 95%, 55%)' },
+            { icon: Target, label: t('dash.stat.programs'), value: `${courseProgresses.length}`, color: undefined },
           ].map((stat, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
               <Card className="p-4">
@@ -199,7 +198,7 @@ const Dashboard = () => {
         </div>
 
         {/* Course Progress Cards */}
-        <h2 className="text-xl font-display font-bold mb-4">Your Courses</h2>
+        <h2 className="text-xl font-display font-bold mb-4">{t('dash.my_programs')}</h2>
         <div className="grid md:grid-cols-2 gap-4 mb-8">
           {courseProgresses.map((cp, i) => {
             const pct = cp.totalVideos > 0 ? Math.round((cp.completedVideos / cp.totalVideos) * 100) : 0;
@@ -222,12 +221,12 @@ const Dashboard = () => {
                         {pct === 100 ? (
                           <>
                             <CheckCircle className="w-3.5 h-3.5 text-green-500" />
-                            Complete!
+                            {t('dash.complete')}
                           </>
                         ) : (
                           <>
                             <Play className="w-3.5 h-3.5" />
-                            Next: {cp.nextChapterTitle}
+                            {t('dash.next')}{cp.nextChapterTitle}
                           </>
                         )}
                       </div>
@@ -238,7 +237,7 @@ const Dashboard = () => {
                           className="h-7 text-xs gap-1"
                           onClick={() => navigate(`/course/${cp.courseId}/chapter/${cp.nextChapterId}`)}
                         >
-                          Continue <ArrowRight className="w-3 h-3" />
+                          {t('dash.continue')} <ArrowRight className="w-3 h-3" />
                         </Button>
                       )}
                     </div>
@@ -250,14 +249,14 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <h2 className="text-xl font-display font-bold mb-4">Quick Actions</h2>
+        <h2 className="text-xl font-display font-bold mb-4">{t('dash.quick_actions')}</h2>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {[
-            { label: 'AI Portal', path: '/portal', icon: Target },
-            { label: 'All Courses', path: '/courses', icon: BookOpen },
-            { label: 'Community', path: '/community', icon: Target },
-            { label: 'Sprint Simulation', path: '/simulation', icon: Flame },
-            { label: 'Feedback', path: '/feedback', icon: Trophy },
+            { label: t('dash.action.portal'), path: '/portal', icon: Target },
+            { label: t('dash.action.programs'), path: '/courses', icon: BookOpen },
+            { label: t('dash.action.community'), path: '/community', icon: Target },
+            { label: t('dash.action.sprint'), path: '/simulation', icon: Flame },
+            { label: t('dash.action.feedback'), path: '/feedback', icon: Trophy },
           ].map((action, i) => (
             <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 + i * 0.05 }}>
               <Card
