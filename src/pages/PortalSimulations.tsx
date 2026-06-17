@@ -238,7 +238,7 @@ export default function PortalSimulations() {
                 onChange={e => setSelectedType(e.target.value)}
                 style={{ background:'rgba(255,255,255,.04)', border:'1px solid rgba(255,255,255,.08)', borderRadius:8, color:DS.fg, fontSize:12, padding:'8px 10px', fontFamily:'inherit', cursor:'pointer', flexShrink:0 }}>
                 <option value="All">{t('sim.all_types')}</option>
-                {Object.entries(TYPE_ICONS).map(([type,icon]) => <option key={type} value={type}>{icon} {type.charAt(0).toUpperCase()+type.slice(1)}</option>)}
+                {Object.entries(TYPE_ICONS).map(([type,icon]) => <option key={type} value={type}>{icon} {t('sim.type_'+type)}</option>)}
               </select>
 
               <div style={{ fontSize:11, color:DS.fm, flexShrink:0, marginLeft:'auto' }}>
@@ -421,7 +421,7 @@ function ModuleCard({ moduleNum, sims, done, color, onSelectSim, completedMap }:
         </div>
         <div style={{ flex:1 }}>
           <div style={{ fontSize:11, fontWeight:600, color:DS.fg }}>{t('sim.module')} {moduleNum}</div>
-          <div style={{ fontSize:9, color:DS.fm }}>{done}/{sims.length} · {sims[0]?.difficulty}</div>
+          <div style={{ fontSize:9, color:DS.fm }}>{done}/{sims.length} · {sims[0]?.difficulty ? t('sim.diff_'+sims[0].difficulty) : ''}</div>
         </div>
         <div style={{ display:'flex', gap:2 }}>
           {sims.slice(0,10).map((s,i) => (
@@ -524,7 +524,7 @@ function SimCard({ sim, completed, onStart }: {
 
       <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:12 }}>
         <span style={{ fontSize:8, fontWeight:700, padding:'2px 7px', borderRadius:3, color:diff.color, background:diff.bg, border:`1px solid ${diff.color}33` }}>
-          {diff.label.toUpperCase()}
+          {t('sim.diff_'+sim.difficulty).toUpperCase()}
         </span>
         <span style={{ fontSize:8, fontWeight:700, padding:'2px 7px', borderRadius:3, color:'#8596AD', background:'rgba(133,150,173,.12)' }}>
           {t('sim.mod')} {sim.module}
