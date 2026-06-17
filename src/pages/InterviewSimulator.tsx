@@ -40,10 +40,10 @@ interface InterviewQuestion {
 }
 
 const INTERVIEW_SCENARIOS = [
-  { id: 'scrum_master', title: 'Scrum Master Interview', icon: <Shield className="w-5 h-5" />, difficulty: 'medium' as const, description: 'Standard SM role interview with behavioral + technical questions' },
-  { id: 'safe_rte', title: 'SAFe RTE Interview', icon: <Users className="w-5 h-5" />, difficulty: 'hard' as const, description: 'Release Train Engineer role with scaled agile scenarios' },
-  { id: 'agile_coach', title: 'Agile Coach Interview', icon: <Brain className="w-5 h-5" />, difficulty: 'hard' as const, description: 'Senior coaching role with organizational transformation scenarios' },
-  { id: 'pm_agile', title: 'Agile PM Interview', icon: <Briefcase className="w-5 h-5" />, difficulty: 'medium' as const, description: 'Product/Project Manager role blending agile with traditional PM' },
+  { id: 'scrum_master', titleKey: 'interview.sc_scrum_title', icon: <Shield className="w-5 h-5" />, difficulty: 'medium' as const, descKey: 'interview.sc_scrum_desc' },
+  { id: 'safe_rte', titleKey: 'interview.sc_safe_title', icon: <Users className="w-5 h-5" />, difficulty: 'hard' as const, descKey: 'interview.sc_safe_desc' },
+  { id: 'agile_coach', titleKey: 'interview.sc_coach_title', icon: <Brain className="w-5 h-5" />, difficulty: 'hard' as const, descKey: 'interview.sc_coach_desc' },
+  { id: 'pm_agile', titleKey: 'interview.sc_pm_title', icon: <Briefcase className="w-5 h-5" />, difficulty: 'medium' as const, descKey: 'interview.sc_pm_desc' },
 ];
 
 const InterviewSimulator = () => {
@@ -186,11 +186,11 @@ const InterviewSimulator = () => {
                           {s.icon}
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-semibold text-foreground mb-1">{s.title}</h3>
-                          <p className="text-sm text-muted-foreground mb-3">{s.description}</p>
+                          <h3 className="font-semibold text-foreground mb-1">{t(s.titleKey)}</h3>
+                          <p className="text-sm text-muted-foreground mb-3">{t(s.descKey)}</p>
                           <div className="flex items-center gap-2">
                             <Badge variant={s.difficulty === 'hard' ? 'destructive' : 'secondary'} className="text-xs">
-                              {s.difficulty}
+                              {t('interview.diff_'+s.difficulty)}
                             </Badge>
                             <span className="text-xs text-muted-foreground">{totalQuestions} questions</span>
                           </div>
@@ -222,7 +222,7 @@ const InterviewSimulator = () => {
             {phase === 'interview' && (
               <motion.div key="interview" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}>
                 <div className="mb-4 flex items-center justify-between">
-                  <Badge variant="outline">{scenario?.title}</Badge>
+                  <Badge variant="outline">{scenario ? t(scenario.titleKey) : ''}</Badge>
                   <span className="text-sm text-muted-foreground">Question {currentQuestion + 1} of {questions.length || totalQuestions}</span>
                 </div>
                 <Progress value={((currentQuestion + 1) / (questions.length || totalQuestions)) * 100} className="mb-6 h-2" />
@@ -238,7 +238,7 @@ const InterviewSimulator = () => {
                       <div className="flex items-center gap-2 mb-3">
                         <Badge variant="secondary" className="text-xs">{questions[currentQuestion].category}</Badge>
                         <Badge variant={questions[currentQuestion].difficulty === 'hard' ? 'destructive' : 'outline'} className="text-xs">
-                          {questions[currentQuestion].difficulty}
+                          {t('interview.diff_'+questions[currentQuestion].difficulty)}
                         </Badge>
                       </div>
 
