@@ -1,3 +1,4 @@
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useState, useEffect, useRef } from 'react';
 import type { Simulation } from '@/data/simulations';
 
@@ -38,6 +39,7 @@ const TYPE_LABEL: Record<string, string> = {
 
 // ─── Simulation Engine ─────────────────────────────────────────
 export default function SimEngine({ sim, onClose, onComplete }: SimEngineProps) {
+  const { t } = useLanguage();
   const [phase, setPhase] = useState<'brief' | 'active' | 'scoring' | 'results'>('brief');
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -268,7 +270,7 @@ Be honest and rigorous. Aladiah Academy holds students to elite standards.`;
         borderBottom:'1px solid rgba(74,144,245,.2)',
       }}>
         <button onClick={onClose} style={{background:'none',border:'1px solid rgba(255,255,255,.15)',borderRadius:6,color:'#8596AD',fontSize:11,padding:'4px 10px',cursor:'pointer',fontFamily:'inherit'}}>
-          ← EXIT
+          {t('se.exit')}
         </button>
         <div style={{flex:1, display:'flex', alignItems:'center', gap:10}}>
           <span style={{fontSize:10,fontWeight:700,color:DIFF_COLOR[sim.difficulty],letterSpacing:1,background:`${DIFF_COLOR[sim.difficulty]}18`,padding:'2px 8px',borderRadius:4,border:`1px solid ${DIFF_COLOR[sim.difficulty]}44`}}>
@@ -332,11 +334,11 @@ Be honest and rigorous. Aladiah Academy holds students to elite standards.`;
             {/* Company & Role */}
             <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:16}}>
               <div style={{background:'rgba(255,255,255,.03)',border:'1px solid rgba(255,255,255,.06)',borderRadius:8,padding:'10px 12px'}}>
-                <div style={{fontSize:9,color:'#4A5E7A',letterSpacing:1,marginBottom:4}}>YOUR ROLE</div>
+                <div style={{fontSize:9,color:'#4A5E7A',letterSpacing:1,marginBottom:4}}>{t('se.your_role')}</div>
                 <div style={{fontSize:11,color:'#EDF2F7',fontWeight:600}}>{sim.roleContext}</div>
               </div>
               <div style={{background:'rgba(255,255,255,.03)',border:'1px solid rgba(255,255,255,.06)',borderRadius:8,padding:'10px 12px'}}>
-                <div style={{fontSize:9,color:'#4A5E7A',letterSpacing:1,marginBottom:4}}>COMPANY</div>
+                <div style={{fontSize:9,color:'#4A5E7A',letterSpacing:1,marginBottom:4}}>{t('se.company')}</div>
                 <div style={{fontSize:11,color:'#EDF2F7',fontWeight:600}}>{sim.companyContext}</div>
               </div>
             </div>
@@ -348,13 +350,13 @@ Be honest and rigorous. Aladiah Academy holds students to elite standards.`;
               borderLeft:'3px solid #4A90F5',
               borderRadius:'0 8px 8px 0', padding:'14px 16px', marginBottom:16,
             }}>
-              <div style={{fontSize:9,color:'#4A90F5',letterSpacing:1,fontWeight:700,marginBottom:6}}>MISSION BRIEFING</div>
+              <div style={{fontSize:9,color:'#4A90F5',letterSpacing:1,fontWeight:700,marginBottom:6}}>{t('se.briefing')}</div>
               <div style={{fontSize:12,color:'#CBD5E1',lineHeight:1.7}}>{sim.scenario}</div>
             </div>
 
             {/* Personas */}
             <div style={{marginBottom:16}}>
-              <div style={{fontSize:9,color:'#4A5E7A',letterSpacing:1,marginBottom:8}}>PEOPLE YOU'LL DEAL WITH</div>
+              <div style={{fontSize:9,color:'#4A5E7A',letterSpacing:1,marginBottom:8}}>{t('se.people')}</div>
               <div style={{display:'flex', gap:8, flexWrap:'wrap'}}>
                 {sim.aiPersonas.map((p,i) => (
                   <div key={i} style={{
@@ -373,7 +375,7 @@ Be honest and rigorous. Aladiah Academy holds students to elite standards.`;
 
             {/* Success Criteria */}
             <div style={{marginBottom:20}}>
-              <div style={{fontSize:9,color:'#4A5E7A',letterSpacing:1,marginBottom:8}}>SUCCESS CRITERIA</div>
+              <div style={{fontSize:9,color:'#4A5E7A',letterSpacing:1,marginBottom:8}}>{t('se.success')}</div>
               {sim.successCriteria.map((c,i) => (
                 <div key={i} style={{display:'flex', gap:8, alignItems:'flex-start', marginBottom:5}}>
                   <div style={{width:16,height:16,border:'1px solid #22C98A',borderRadius:3,flexShrink:0,marginTop:1}}/>
@@ -411,7 +413,7 @@ Be honest and rigorous. Aladiah Academy holds students to elite standards.`;
               fontFamily:'inherit', letterSpacing:.5,
               boxShadow:'0 0 30px rgba(74,144,245,.4)',
             }}>
-              LAUNCH SIMULATION →
+              {t('se.launch')}
             </button>
           </div>
         </div>
@@ -450,7 +452,7 @@ Be honest and rigorous. Aladiah Academy holds students to elite standards.`;
               </div>
             ))}
             <div style={{marginLeft:'auto', display:'flex', alignItems:'center', gap:8}}>
-              <div style={{fontSize:9,color:'#4A5E7A'}}>TOOLS:</div>
+              <div style={{fontSize:9,color:'#4A5E7A'}}>{t('se.tools')}</div>
               {sim.tools.slice(0,4).map((t,i) => (
                 <span key={i} style={{fontSize:8,color:'#4A90F5',background:'rgba(74,144,245,.1)',padding:'2px 6px',borderRadius:3}}>
                   {t}
@@ -553,7 +555,7 @@ Be honest and rigorous. Aladiah Academy holds students to elite standards.`;
                   value={input}
                   onChange={e => setInput(e.target.value)}
                   onKeyDown={handleKey}
-                  placeholder={`Respond as ${sim.roleContext}... (Enter to send, Shift+Enter for new line)`}
+                  placeholder={t('se.placeholder').replace('{role}', sim.roleContext)}
                   disabled={loading}
                   rows={2}
                   style={{
@@ -581,12 +583,12 @@ Be honest and rigorous. Aladiah Academy holds students to elite standards.`;
                   transition:'all .2s',
                 }}
               >
-                SEND →
+                {t('se.send')}
               </button>
             </div>
             <div style={{display:'flex', justifyContent:'space-between', marginTop:6}}>
               <div style={{fontSize:9,color:'#4A5E7A'}}>
-                Turn {turnCount} of ~12 · Press Enter to send
+                {t('se.turn').replace('{n}', String(turnCount))}
               </div>
               <div style={{fontSize:9,color:'#4A5E7A'}}>
                 {sim.tools.join(' · ')}
@@ -610,10 +612,10 @@ Be honest and rigorous. Aladiah Academy holds students to elite standards.`;
               <div style={{fontSize:28}}>🎓</div>
             </div>
             <div style={{fontSize:16,fontWeight:700,color:'#EDF2F7',marginBottom:8}}>
-              Evaluating Your Performance
+              {t('se.evaluating')}
             </div>
             <div style={{fontSize:12,color:'#8596AD'}}>
-              Prof. Didier is reviewing your decisions...
+              {t('se.reviewing')}
             </div>
           </div>
         </div>
@@ -664,7 +666,7 @@ Be honest and rigorous. Aladiah Academy holds students to elite standards.`;
                 borderRadius:20, padding:'4px 16px',
                 fontSize:13, fontWeight:700, color:'#F5B81A',
               }}>
-                +{score.xpEarned} XP EARNED
+                {t('se.xp').replace('{n}', String(score.xpEarned))}
               </div>
             </div>
 
@@ -674,7 +676,7 @@ Be honest and rigorous. Aladiah Academy holds students to elite standards.`;
                 background:'rgba(34,201,138,.06)', border:'1px solid rgba(34,201,138,.2)',
                 borderRadius:12, padding:'14px 16px',
               }}>
-                <div style={{fontSize:9,color:'#22C98A',fontWeight:700,letterSpacing:1,marginBottom:10}}>✓ STRENGTHS</div>
+                <div style={{fontSize:9,color:'#22C98A',fontWeight:700,letterSpacing:1,marginBottom:10}}>{t('se.strengths')}</div>
                 {score.strengths.map((s,i) => (
                   <div key={i} style={{display:'flex', gap:6, marginBottom:6, alignItems:'flex-start'}}>
                     <span style={{color:'#22C98A',fontSize:10,marginTop:1}}>✓</span>
@@ -686,7 +688,7 @@ Be honest and rigorous. Aladiah Academy holds students to elite standards.`;
                 background:'rgba(240,98,42,.06)', border:'1px solid rgba(240,98,42,.2)',
                 borderRadius:12, padding:'14px 16px',
               }}>
-                <div style={{fontSize:9,color:'#F0622A',fontWeight:700,letterSpacing:1,marginBottom:10}}>↑ IMPROVE</div>
+                <div style={{fontSize:9,color:'#F0622A',fontWeight:700,letterSpacing:1,marginBottom:10}}>{t('se.improve')}</div>
                 {score.improvements.map((s,i) => (
                   <div key={i} style={{display:'flex', gap:6, marginBottom:6, alignItems:'flex-start'}}>
                     <span style={{color:'#F0622A',fontSize:10,marginTop:1}}>↑</span>
@@ -701,7 +703,7 @@ Be honest and rigorous. Aladiah Academy holds students to elite standards.`;
               background:'rgba(74,144,245,.05)', border:'1px solid rgba(74,144,245,.15)',
               borderRadius:12, padding:'14px 16px', marginBottom:16,
             }}>
-              <div style={{fontSize:9,color:'#4A90F5',fontWeight:700,letterSpacing:1,marginBottom:10}}>KEY DECISIONS OBSERVED</div>
+              <div style={{fontSize:9,color:'#4A90F5',fontWeight:700,letterSpacing:1,marginBottom:10}}>{t('se.key_decisions')}</div>
               {score.keyDecisions.map((d,i) => (
                 <div key={i} style={{fontSize:11,color:'#8596AD',marginBottom:5,lineHeight:1.5}}>
                   <span style={{color:'#4A90F5'}}>›</span> {d}
@@ -718,7 +720,7 @@ Be honest and rigorous. Aladiah Academy holds students to elite standards.`;
                 borderRadius:10, color:'#8596AD',
                 fontSize:12, fontWeight:700, cursor:'pointer', fontFamily:'inherit',
               }}>
-                ← Back to Simulations
+                {t('se.back_sims')}
               </button>
               <button onClick={() => {
                 setPhase('brief'); setMessages([]); setTurnCount(0);
@@ -730,7 +732,7 @@ Be honest and rigorous. Aladiah Academy holds students to elite standards.`;
                 fontSize:12, fontWeight:700, cursor:'pointer', fontFamily:'inherit',
                 boxShadow:'0 0 24px rgba(74,144,245,.4)',
               }}>
-                🔁 Retry Simulation
+                {t('se.retry')}
               </button>
             </div>
           </div>
