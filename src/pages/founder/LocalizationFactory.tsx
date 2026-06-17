@@ -4,37 +4,55 @@ import { supabase } from '@/integrations/supabase/client';
 import { Globe } from 'lucide-react';
 
 /**
- * /founder/localization — Global Content Localization Factory dashboard.
- * Founder-only (via <FounderRoute>). Reads the Phase-2/3 pipeline views:
- * v_factory_dashboard (coverage % + quality), v_missing_translations (backlog),
- * translation_jobs (queue). Renders a calm "run the migration" empty state until
- * the localization-factory migration has been applied in Supabase.
+ * /founder/localization — Founder Localization Readiness dashboard.
+ * Queries the ACTUAL translatable store (courses/chapters/videos.translations JSONB)
+ * live and computes per-language coverage + missing counts. Code-tier content
+ * (simulations/career paths/resources/certifications) has no DB translation store
+ * yet → shown as "code-tier (pipeline pending)". Founder-only via <FounderRoute>.
  */
-type Row = { lang: string; name: string; tier: string; deploy_blocking: boolean;
-  source_assets: number; published: number; in_progress: number; avg_quality: number | null; coverage_pct: number | null };
+const LANGS: { code: string; name: string }[] = [
+  { code: 'es', name: 'Spanish' }, { code: 'fr', name: 'French' }, { code: 'pt', name: 'Portuguese' },
+  { code: 'de', name: 'German' }, { code: 'ar', name: 'Arabic' }, { code: 'zh', name: 'Chinese' }, { code: 'hi', name: 'Hindi' },
+];
+const DB_TABLES = ['courses', 'chapters', 'videos'] as const;
+const CODE_TIER = ['Simulations', 'Career Paths', 'Resources', 'Certifications'];
+
+type Counts = Record<string, { total: number; missing: Record<string, number> }>;
 
 export default function LocalizationFactory() {
-  const [rows, setRows] = useState<Row[]>([]);
-  const [backlog, setBacklog] = useState<number | null>(null);
-  const [jobs, setJobs] = useState<Record<string, number>>({});
-  const [ready, setReady] = useState<boolean | null>(null);
+  const [counts, setCounts] = useState<Counts>({});
+  const [err, setErr] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const dash = await (supabase as any).from('v_factory_dashboard').select('*');
-      if (dash.error) { setReady(false); return; }
-      setReady(true);
-      setRows(dash.data || []);
-      const miss = await (supabase as any).from('v_missing_translations').select('*', { count: 'exact', head: true });
-      setBacklog(miss.count ?? null);
-      const jq = await (supabase as any).from('translation_jobs').select('status');
-      if (jq.data) { const m: Record<string, number> = {}; jq.data.forEach((r: any) => m[r.status] = (m[r.status] || 0) + 1); setJobs(m); }
+      const out: Counts = {};
+      for (const tbl of DB_TABLES) {
+        const { data, error } = await (supabase as any).from(tbl).select('id, translations');
+        if (error) { setErr(`${tbl}: ${error.message}`); continue; }
+        const total = data.length;
+        const missing: Record<string, number> = {};
+        for (const { code } of LANGS) {
+          missing[code] = data.filter((r: any) => !(r.translations?.[code]?.title?.trim())).length;
+        }
+        out[tbl] = { total, missing };
+      }
+      setCounts(out); setLoaded(true);
     })();
   }, []);
 
-  const bar = (pct: number | null) => (
-    <div style={{ height: 6, background: 'rgba(255,255,255,.08)', borderRadius: 99, overflow: 'hidden' }}>
-      <div style={{ height: '100%', width: `${pct ?? 0}%`, background: (pct ?? 0) >= 100 ? '#22C98A' : (pct ?? 0) >= 50 ? '#F5B81A' : '#F0622A' }} />
+  const pct = (tbl: string, lang: string) => {
+    const c = counts[tbl]; if (!c || !c.total) return null;
+    return Math.round(100 * (c.total - c.missing[lang]) / c.total);
+  };
+  const overall = (lang: string) => {
+    const tot = DB_TABLES.reduce((a, t) => a + (counts[t]?.total || 0), 0);
+    const miss = DB_TABLES.reduce((a, t) => a + (counts[t]?.missing[lang] || 0), 0);
+    return tot ? Math.round(100 * (tot - miss) / tot) : null;
+  };
+  const bar = (p: number | null) => (
+    <div style={{ height: 6, width: 90, background: 'rgba(255,255,255,.08)', borderRadius: 99, overflow: 'hidden', display: 'inline-block', verticalAlign: 'middle' }}>
+      <div style={{ height: '100%', width: `${p ?? 0}%`, background: (p ?? 0) >= 100 ? '#22C98A' : (p ?? 0) >= 50 ? '#F5B81A' : '#F0622A' }} />
     </div>
   );
 
@@ -43,57 +61,46 @@ export default function LocalizationFactory() {
       <div className="mb-6 flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><Globe className="w-5 h-5 text-primary" /></div>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Global Content Localization Factory</h1>
-          <p className="text-sm text-muted-foreground">Coverage, backlog, and quality across every launch & expansion language.</p>
+          <h1 className="text-2xl font-bold text-foreground">Localization Readiness</h1>
+          <p className="text-sm text-muted-foreground">Live per-language coverage from courses/chapters/videos.translations. EN = source.</p>
         </div>
       </div>
 
-      {ready === false && (
-        <div className="rounded-xl border border-border bg-card/60 p-8 text-center text-sm text-muted-foreground">
-          Pipeline tables not found. Apply <code>supabase/migrations/20260618000000_content_localization_pipeline.sql</code> and
-          <code> 20260618010000_localization_factory.sql</code> in Supabase to activate this dashboard.
+      {err && <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-600">Query note: {err}</div>}
+      {!loaded && <div className="text-sm text-muted-foreground">Loading live translation data…</div>}
+
+      {loaded && (
+        <div className="rounded-xl border border-border overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/40 text-muted-foreground">
+              <tr>
+                <th className="text-left px-3 py-2">Language</th>
+                <th className="px-3 py-2">Overall (DB)</th>
+                <th className="px-3 py-2">Missing Courses</th>
+                <th className="px-3 py-2">Missing Chapters</th>
+                <th className="px-3 py-2">Missing Videos</th>
+                {CODE_TIER.map(c => <th key={c} className="px-3 py-2">Missing {c}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {LANGS.map(({ code, name }) => (
+                <tr key={code} className="border-t border-border">
+                  <td className="px-3 py-2 font-medium text-foreground">{name} <span className="text-muted-foreground">({code})</span></td>
+                  <td className="px-3 py-2 text-center">{bar(overall(code))} <span className="text-xs ml-1">{overall(code) ?? '—'}%</span></td>
+                  <td className="px-3 py-2 text-center">{counts.courses?.missing[code] ?? '—'}<span className="text-muted-foreground text-xs">/{counts.courses?.total ?? '—'}</span></td>
+                  <td className="px-3 py-2 text-center">{counts.chapters?.missing[code] ?? '—'}<span className="text-muted-foreground text-xs">/{counts.chapters?.total ?? '—'}</span></td>
+                  <td className="px-3 py-2 text-center">{counts.videos?.missing[code] ?? '—'}<span className="text-muted-foreground text-xs">/{counts.videos?.total ?? '—'}</span></td>
+                  {CODE_TIER.map(c => <td key={c} className="px-3 py-2 text-center text-muted-foreground text-xs">code-tier*</td>)}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
-
-      {ready && (
-        <>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-            <Stat label="Languages in pipeline" value={String(rows.length)} />
-            <Stat label="Missing-translation backlog" value={backlog == null ? '—' : String(backlog)} />
-            <Stat label="Jobs queued" value={String(jobs['queued'] || 0)} />
-            <Stat label="Jobs needing review" value={String(jobs['needs_review'] || 0)} />
-          </div>
-
-          <div className="rounded-xl border border-border overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/40 text-muted-foreground">
-                <tr><th className="text-left px-3 py-2">Language</th><th className="px-3 py-2">Tier</th>
-                  <th className="px-3 py-2">Coverage</th><th className="px-3 py-2">Published</th>
-                  <th className="px-3 py-2">In progress</th><th className="px-3 py-2">Avg quality</th></tr>
-              </thead>
-              <tbody>
-                {rows.map(r => (
-                  <tr key={r.lang} className="border-t border-border">
-                    <td className="px-3 py-2 font-medium text-foreground">{r.name} <span className="text-muted-foreground">({r.lang})</span>{r.deploy_blocking && <span className="ml-2 text-[10px] text-amber-500">DEPLOY-GATE</span>}</td>
-                    <td className="px-3 py-2 text-center text-muted-foreground">{r.tier}</td>
-                    <td className="px-3 py-2" style={{ minWidth: 140 }}>{bar(r.coverage_pct)}<span className="text-xs text-muted-foreground">{r.coverage_pct ?? 0}%</span></td>
-                    <td className="px-3 py-2 text-center">{r.published}</td>
-                    <td className="px-3 py-2 text-center text-muted-foreground">{r.in_progress}</td>
-                    <td className="px-3 py-2 text-center">{r.avg_quality ?? '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
+      <p className="text-xs text-muted-foreground mt-3">
+        * Simulations / Career Paths / Resources / Certifications render from code (no DB translation store yet).
+        They become coverable once migrated into the Phase-2 <code>content_i18n</code> pipeline. EN content is the source; a language counts as covered for a row when its <code>translations[lang].title</code> is non-empty.
+      </p>
     </FounderShell>
   );
 }
-
-const Stat = ({ label, value }: { label: string; value: string }) => (
-  <div className="rounded-xl border border-border bg-card/60 p-4">
-    <div className="text-2xl font-bold text-foreground">{value}</div>
-    <div className="text-xs text-muted-foreground mt-1">{label}</div>
-  </div>
-);
