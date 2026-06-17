@@ -1,5 +1,5 @@
 -- ============================================================================
--- Replace Scrum Master program → AI Scrum Master Professional Certification v1.0
+-- Replace Scrum Master program → AI Enterprise Scrum Master & Agile Transformation Leader
 -- 18-module flagship structure. REVIEW → apply by hand in Supabase (canon).
 -- EN content only; run scripts/populate-translations.mjs afterward to fill
 -- ES/FR/PT/DE/AR/ZH/HI into chapters.translations (and courses.translations).
@@ -12,7 +12,7 @@ BEGIN
   IF cid IS NULL THEN RAISE EXCEPTION 'Scrum Master course not found'; END IF;
 
   UPDATE public.courses
-     SET title='AI Scrum Master Professional Certification v1.0',
+     SET title='AI Enterprise Scrum Master & Agile Transformation Leader',
          description='An 18-module, AI-augmented professional certification: 54 simulations, 18 labs, 18 portfolio deliverables, 36 assessments, and a 1,080-question bank. Aligned to Scrum.org PSM I/II readiness.',
          is_flagship=true, flagship_version='v1.0', curriculum_version='v1.0'
    WHERE id=cid;
