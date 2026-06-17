@@ -25,13 +25,13 @@ export default function PortalCourseDetail() {
   const [lessonCounts, setLessonCounts] = useState<Record<string, number>>({});
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { isPhone } = useBreakpoint();
 
   useEffect(() => {
     if (!user || !courseId) return;
     Promise.all([
-      supabase.from('courses').select('id, title, description').eq('id', courseId).single(),
+      supabase.from('courses').select('id, title, description, translations').eq('id', courseId).single(),
       supabase.from('chapters').select('id, title, description, order_index').eq('course_id', courseId).order('order_index'),
     ]).then(([courseRes, chaptersRes]) => {
       if (courseRes.data) setCourse(courseRes.data);
@@ -91,8 +91,8 @@ export default function PortalCourseDetail() {
           {/* Course Hero */}
           {course && (
             <div style={{ marginBottom: '2rem' }}>
-              <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '.5rem' }}>{course.title}</h1>
-              <p style={{ fontSize: 14, color: DS.fm, lineHeight: 1.7, maxWidth: 680 }}>{course.description}</p>
+              <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '.5rem' }}>{course.translations?.[language]?.title || course.title}</h1>
+              <p style={{ fontSize: 14, color: DS.fm, lineHeight: 1.7, maxWidth: 680 }}>{course.translations?.[language]?.description || course.description}</p>
               <div style={{ display: 'flex', gap: '1.5rem', marginTop: '.75rem' }}>
                 <div style={{ fontSize: 13, color: DS.fm }}>
                   <span style={{ color: DS.orange, fontWeight: 700 }}>{chapters.length}</span> {t('course.modules')}

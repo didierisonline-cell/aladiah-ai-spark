@@ -127,7 +127,7 @@ export default function PortalCourses() {
                     </div>
                     <div style={{ fontSize: 14, fontWeight: 700, marginBottom: '.4rem', lineHeight: 1.3 }}>{c.translations?.[language]?.title || c.title}</div>
                     <div style={{ fontSize: 12, color: DS.fm, lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>
-                      {c.description}
+                      {c.translations?.[language]?.description || c.description}
                     </div>
                     <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span style={{ fontSize: 11, color: DS.green, fontWeight: 600 }}>{t('courses.access_pass')}</span>
