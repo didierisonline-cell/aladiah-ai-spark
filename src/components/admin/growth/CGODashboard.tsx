@@ -165,16 +165,19 @@ function AssetTable({ status }: { status?: string }) {
             )}
           </div>
           {a.hook && <p className="text-xs text-muted-foreground italic">"{a.hook}"</p>}
-          {/* 5-gate excellence scores */}
-          {a.metadata?.excellence && (
+          {/* V2 excellence scores */}
+          {(a.kane_score != null || a.metadata?.excellence) && (
             <div className="flex flex-wrap gap-2 text-xs mt-1">
               {[
-                { label: 'Kane', val: a.metadata.kane_score },
-                { label: 'Hormozi', val: a.metadata.hormozi_score },
-                { label: 'Trust', val: a.metadata.trust_score },
-                { label: 'Transform', val: a.metadata.transformation_score },
-                { label: 'Employment', val: a.metadata.employment_score },
-              ].map(({ label, val }) => (
+                { label: 'Kane', val: a.kane_score },
+                { label: 'Hormozi', val: a.hormozi_score },
+                { label: 'Trust', val: a.trust_score },
+                { label: 'Transform', val: a.transformation_score },
+                { label: 'Employment', val: a.employment_score },
+                { label: 'Golden Rule', val: a.metadata?.golden_rule_score },
+                { label: 'Tanner', val: a.metadata?.tanner_score },
+                { label: 'Emotion', val: a.metadata?.emotional_trigger_score },
+              ].filter(({ val }) => val != null).map(({ label, val }) => (
                 <span key={label} className={`px-1.5 py-0.5 rounded text-xs font-mono ${
                   (val ?? 0) >= 70 ? 'bg-green-50 text-green-700' :
                   (val ?? 0) >= 50 ? 'bg-yellow-50 text-yellow-700' :

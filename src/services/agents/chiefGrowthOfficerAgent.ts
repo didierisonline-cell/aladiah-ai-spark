@@ -73,7 +73,7 @@ async function persistGrowthAsset(
       runId: opts.runId,
       level: 'warn',
       result: 'rejected',
-      message: `Score ${asset.score} < 80 — "${asset.title}" rejected by Content Excellence Gate`,
+      message: `Score ${asset.score} — "${asset.title}" rejected by Golden Rule gate (no standalone value without brand)`,
       detail: { channel: asset.channel, score: asset.score, excellence: asset.excellence },
     });
     return null;
@@ -98,7 +98,7 @@ async function persistGrowthAsset(
     kpi_target: asset.kpi_target,
     score: asset.score,
     hashtags: asset.hashtags,
-    // Store full 5-gate breakdown in metadata for founder review
+    // Store full V2 9-gate breakdown in metadata for founder review
     metadata: {
       ...asset.metadata,
       excellence: asset.excellence,
@@ -107,6 +107,11 @@ async function persistGrowthAsset(
       trust_score: asset.excellence?.trust?.total,
       transformation_score: asset.excellence?.transformation?.total,
       employment_score: asset.excellence?.employment?.total,
+      golden_rule_score: asset.excellence?.golden_rule?.total,
+      tanner_score: asset.excellence?.tanner?.total,
+      emotional_trigger_score: asset.excellence?.emotional_trigger?.total,
+      emotional_trigger_name: asset.excellence?.emotional_trigger?.trigger,
+      relationship_type: asset.excellence?.relationship?.content_type_tag,
       gate: asset.excellence?.gate,
     },
     status,

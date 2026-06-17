@@ -98,14 +98,46 @@ export interface EmploymentScore {
   total: number;               // 0-100
 }
 
+// V2 gates — Growth OS V2 (identity-first, relationship-first)
+
+export interface GoldenRuleScore {
+  standalone_value: number;  // 0-100: value without any brand mention?
+  total: number;
+}
+
+export interface TannerScore {
+  identity_language: number;   // 0-25: "become" / "transform into" / "who you are"
+  aspiration_clarity: number;  // 0-25: does it paint a vivid identity destination?
+  before_after: number;        // 0-25: old identity → new identity
+  audience_sees_self: number;  // 0-25: will the reader see themselves in this?
+  total: number;
+}
+
+export interface EmotionalTriggerScore {
+  trigger: string;   // which primary trigger fires
+  intensity: number; // 0-100 how strongly it fires
+  total: number;
+}
+
+export interface RelationshipScore {
+  relationship_first: boolean;  // gives before it asks?
+  content_type_tag: 'relationship' | 'transformation' | 'promotion';
+  penalty: number;              // 0 = fine | >0 = ratio imbalance detected
+  total: number;                // 100 = pure relationship | 0 = pure promotion
+}
+
 export interface ContentExcellenceScore {
   kane: KaneScore;
   hormozi: HormoziScore;
   trust: TrustScore;
   transformation: TransformationScore;
   employment: EmploymentScore;
+  golden_rule: GoldenRuleScore;
+  tanner: TannerScore;
+  emotional_trigger: EmotionalTriggerScore;
+  relationship: RelationshipScore;
   final: number;   // weighted composite 0-100
-  gate: 'publish' | 'revise' | 'reject';  // 90+ publish | 80-89 revise | <80 reject
+  gate: 'publish' | 'revise' | 'reject';  // 85+ publish | <85 revise/reject
 }
 
 export interface ScoredHook {
@@ -156,76 +188,92 @@ export interface DailyGrowthBrief {
 }
 
 const SITE = 'https://aladiah.academy';
-const TAGLINE = 'AI-powered career transformation ecosystem';
+const TAGLINE = 'The place where ordinary people become extraordinary professionals in the age of AI';
 const LAUNCH_DATE = 'June 19, 2026';
+
+// V2 content pillars (Growth OS V2)
+const CONTENT_PILLARS = [
+  'future_of_work',
+  'personal_transformation',
+  'professional_excellence',
+  'human_stories',
+  'opportunity_discovery',
+] as const;
+type ContentPillar = typeof CONTENT_PILLARS[number];
+
+// V2 emotional triggers — every post must activate at least one
+const EMOTIONAL_TRIGGERS = ['hope', 'ambition', 'pride', 'curiosity', 'belonging', 'possibility', 'security', 'purpose'] as const;
+type EmotionalTrigger = typeof EMOTIONAL_TRIGGERS[number];
 
 // ---------------------------------------------------------------------------
 // Hook bucket generators
 // ---------------------------------------------------------------------------
 
+// V2 hook buckets — identity-transformation first, relationship-first
+// Golden Rule test applied: every hook provides value without brand
 const HOOK_BUCKETS: Record<string, string[]> = {
   contrarian_belief: [
-    'Most people do not have a learning problem. They have a signaling problem.',
-    'A certificate is not proof if nobody can see what you can do.',
-    'The future will not reward people who only consume content.',
-    'More courses do not fix unclear direction. Better signals do.',
-    'Resumes reward storytelling. Employers need evidence.',
+    'Most people do not have a learning problem. They have a becoming problem.',
+    'A certificate tells people what you studied. A proof artifact shows who you became.',
+    'The future does not reward people who consumed content. It rewards people who became something.',
+    'You do not need more courses. You need to become the person those courses promised.',
+    'The career gap is not about what you know. It is about who you have not yet become.',
   ],
   costly_mistake: [
-    'The most expensive mistake in a career pivot is choosing the wrong signal.',
-    'Most learners waste months on content that never becomes visible proof.',
-    'Studying without simulating is the fastest way to fail an interview.',
-    'You cannot backfill experience with certifications alone.',
-    'The gap is not talent. It is structured opportunity and visible proof.',
+    'The most expensive career mistake is investing in knowledge without transforming your identity.',
+    'Most people spend years learning the right things but never become the right person for the role.',
+    'Studying Scrum is easy. Becoming someone who leads transformations with it — that takes a system.',
+    'You can earn every certificate and still not become an AI-ready professional. Here is why.',
+    'The gap is not talent. It is the absence of a system that transforms who you are, not just what you know.',
   ],
   surprising_proof: [
-    'We can show your capability in one score. Most platforms cannot show it at all.',
-    'Aladiah learners practice real enterprise scenarios before their first interview.',
-    'A Talent Score changes what recruiters see — without changing your resume.',
-    'Every Aladiah module ends with a proof artifact, not just a quiz.',
-    '"Work-ready" should be measurable, not motivational.',
+    'There is a measurable difference between someone who studies AI and someone who becomes AI-ready.',
+    'Ordinary people become extraordinary professionals when they practice in real enterprise scenarios first.',
+    'One score can show recruiters who you are becoming — before you have the title.',
+    'Every module ends with a proof artifact: not proof you studied, but proof of who you became.',
+    '"Work-ready" is not a feeling. It is a transformation you can measure.',
   ],
   identity_aspiration: [
-    'You are not too late. You are early for the AI workforce.',
-    'The AI economy needs people who can lead it — that starts with you.',
-    'From career changer to AI-ready professional: this is the path.',
-    'Your background does not disqualify you. The right system gets you there.',
-    "Africa's next workforce leaders are training right now.",
+    'You are not too late. You are becoming the AI-ready professional the economy is waiting for.',
+    'The AI economy does not need more learners. It needs leaders who became ready.',
+    'From ordinary background to extraordinary professional in the age of AI — this is the path.',
+    'Your background is not a limitation. It is the origin story of who you are becoming.',
+    "Africa's next generation of extraordinary professionals is training right now.",
   ],
   identity_threat: [
-    'AI is not replacing workers — it is replacing workers who are not AI-ready.',
-    'Your role is changing faster than most training programs admit.',
-    'If your current skills were built before 2022, the market has moved.',
-    'The professionals who do not upskill in the next 12 months will feel it.',
-    'Outdated skills are not a character flaw. They are a system problem.',
+    'AI is not replacing workers. It is replacing the version of you that never became AI-ready.',
+    'The professionals who thrive in 2026 became AI-ready before most people started thinking about it.',
+    'There are two types of professionals in 2026: those who became the future of work, and those who watched it happen.',
+    'The person you are today is not the person the AI economy is hiring. Become them first.',
+    'Outdated skills are not who you are. They are who you have not yet decided to stop being.',
   ],
   speed_to_outcome: [
-    'Aladiah gives you one clear score and one clear next step in minutes.',
-    'Start your AI Scrum Master path today. See your first progress marker this week.',
-    'In under an hour, you will know exactly where you stand.',
-    'One assessment. One score. One path. Start free.',
-    'The fastest way to know your readiness is to measure it.',
+    'In one session, you move from confused professional to someone with a clear transformation path.',
+    'Start today. Become measurably closer to the professional you want to be by this week.',
+    'In under an hour, you will know exactly who you need to become — and how to get there.',
+    'One assessment. One score. One transformation path. Start becoming.',
+    'The fastest way to become AI-ready is to start being assessed like someone who already is.',
   ],
   myth_busting: [
-    'Myth: you need a CS degree to enter AI-powered tech roles. Truth: you need proof.',
-    'Myth: online certifications are enough. Truth: employers want demonstrated capability.',
-    'Myth: AI will make training irrelevant. Truth: AI makes better training possible.',
-    'Myth: career transformation takes years. Truth: it takes the right system.',
-    'Myth: Africa is behind in the AI economy. Truth: it has the most to gain.',
+    'Myth: you need a CS degree to become an AI-powered professional. Truth: you need to become one.',
+    'Myth: certifications transform careers. Truth: only becoming the right person transforms a career.',
+    'Myth: AI makes training irrelevant. Truth: AI makes the right transformation system possible.',
+    'Myth: career transformation takes years. Truth: it takes the decision to become someone different.',
+    'Myth: Africa is behind in the AI economy. Truth: African professionals who become AI-ready lead globally.',
   ],
   behind_the_build: [
-    'Building an AI career school from the ground up — here is what nobody talks about.',
-    'We designed Aladiah for learners who are done with content that goes nowhere.',
-    'Why we built a Talent Score before we built more courses.',
-    'The real reason Aladiah exists: career transformation is not the same as course completion.',
-    'This is what an AI-powered career ecosystem looks like from the inside.',
+    'Building a school that transforms ordinary people into extraordinary professionals — what I learned.',
+    'We did not build another course platform. We built a system for becoming.',
+    'Why we built identity transformation before we built more content.',
+    'The real reason this school exists: becoming an AI-ready professional is not the same as taking AI courses.',
+    'This is what a career transformation system looks like from the inside — not a course, a becoming.',
   ],
   transformation_story: [
-    'From confusion to career-ready: what the Aladiah system actually does.',
-    'What changes when you move from learner to validated professional.',
-    'The moment a student stops consuming and starts performing.',
-    'A career transformation is not a moment. It is a system.',
-    'Learn. Practice. Simulate. Validate. Interview. Get hired. Lead. Build.',
+    'From ordinary to extraordinary: what the transformation path actually looks like from inside.',
+    'What changes is not just what you know — it is who you become capable of being.',
+    'The moment someone stops being a learner and starts becoming a professional.',
+    'A career transformation is not a single moment. It is a series of becoming something more.',
+    'Become. Practice. Validate. Interview. Get hired. Lead. Build. Begin.',
   ],
 };
 
@@ -283,14 +331,14 @@ export function buildHookBank(count = 100): HookBankEntry[] {
 function bucketToTrigger(bucket: string): string {
   const map: Record<string, string> = {
     contrarian_belief: 'curiosity',
-    costly_mistake: 'fear / urgency',
-    surprising_proof: 'credibility',
+    costly_mistake: 'security',
+    surprising_proof: 'ambition',
     identity_aspiration: 'hope',
-    identity_threat: 'urgency',
-    speed_to_outcome: 'desire',
-    myth_busting: 'curiosity / relief',
-    behind_the_build: 'trust / intimacy',
-    transformation_story: 'aspiration',
+    identity_threat: 'purpose',
+    speed_to_outcome: 'possibility',
+    myth_busting: 'curiosity',
+    behind_the_build: 'belonging',
+    transformation_story: 'pride',
   };
   return map[bucket] ?? 'curiosity';
 }
@@ -524,27 +572,164 @@ function scoreEmployment(hook: string, body: string, audience: GrowthAudience): 
   return { job_relevance, interview_relevance, salary_relevance, total };
 }
 
-// Composite gate — weighted across all 5
-// Kane: 25% | Hormozi: 25% | Trust: 20% | Transformation: 15% | Employment: 15%
+// Gate 6 — Golden Rule: remove all brand mentions — still valuable?
+function scoreGoldenRule(hook: string, body: string): GoldenRuleScore {
+  // Strip brand words and test if the insight still stands alone
+  const brandWords = /aladiah|talent score/gi;
+  const strippedHook = hook.replace(brandWords, '').trim();
+  const strippedBody = body.replace(brandWords, '').trim();
+
+  // Insight signals that hold without brand
+  const insightSignals = [
+    strippedHook.length > 20,
+    /\?|:/.test(strippedHook),
+    strippedBody.length > 80,
+    /because|therefore|that means|this means|here is why|the reason/.test(strippedBody.toLowerCase()),
+    /you|your|people|professionals|workers/.test(strippedBody.toLowerCase()),
+    /tip|how|why|what|when|discover|learn|know/.test(strippedBody.toLowerCase()),
+  ];
+  const standalone_value = Math.round((insightSignals.filter(Boolean).length / insightSignals.length) * 100);
+  return { standalone_value, total: standalone_value };
+}
+
+// Gate 7 — Tanner Chidester: who does the audience BECOME?
+function scoreTanner(hook: string, body: string): TannerScore {
+  const text = (hook + ' ' + body).toLowerCase();
+
+  // Identity language: "become", "transform into", "who you are", "the kind of person"
+  const identityWords = /become|becoming|transform into|who you are|the person|your identity|type of person|kind of professional/;
+  const identity_language = identityWords.test(text) ? 25 : 0;
+
+  // Aspiration clarity: a vivid identity destination
+  const aspirationPhrases = /ai-ready professional|extraordinary professional|the leader|certified|career-ready|the expert|the one who/;
+  const aspiration_clarity = aspirationPhrases.test(text) ? 25 : (
+    /professional|leader|expert|ready|capable/.test(text) ? 15 : 5
+  );
+
+  // Before/after identity contrast
+  const beforeAfterPatterns = /from .+ to|used to .+ now|before .+ after|stop being .+ start being|ordinary .+ extraordinary/;
+  const before_after = beforeAfterPatterns.test(text) ? 25 : 0;
+
+  // Audience sees themselves in the narrative
+  const selfPatterns = /you are|your path|your story|people like you|just like you|someone who|if you have/;
+  const audience_sees_self = selfPatterns.test(text) ? 25 : (
+    /you|your/.test(text) ? 15 : 0
+  );
+
+  const total = Math.min(100, identity_language + aspiration_clarity + before_after + audience_sees_self);
+  return { identity_language, aspiration_clarity, before_after, audience_sees_self, total };
+}
+
+// Gate 8 — Emotional Trigger: must activate at least one of the 8 triggers
+function scoreEmotionalTrigger(hook: string, body: string, bucket: string): EmotionalTriggerScore {
+  const text = (hook + ' ' + body).toLowerCase();
+  const triggerMap: Record<string, string[]> = {
+    hope:        ['you can', 'possible', 'you are not too late', 'start', 'early', 'path', 'way forward'],
+    ambition:    ['become', 'extraordinary', 'leader', 'global', 'top', 'achieve', 'level up'],
+    pride:       ['proof', 'validated', 'certified', 'recognized', 'earned', 'built', 'accomplished'],
+    curiosity:   ['why', 'how', 'what if', 'surprising', 'myth', 'truth is', 'here is what'],
+    belonging:   ['we', 'community', 'together', 'you are not alone', 'join', 'our learners', 'people like you'],
+    possibility: ['in weeks', 'this week', 'right now', 'faster', 'possible', 'start today', 'one session'],
+    security:    ['job security', 'stable', 'future-proof', 'protected', 'ready', 'prepared', 'demand'],
+    purpose:     ['mission', 'impact', 'why', 'matters', 'change', 'generation', 'legacy', 'build'],
+  };
+
+  const bucketTrigger = bucketToTrigger(bucket);
+  let bestTrigger = bucketTrigger;
+  let bestCount = 0;
+
+  for (const [trigger, words] of Object.entries(triggerMap)) {
+    const count = words.filter(w => text.includes(w)).length;
+    if (count > bestCount) {
+      bestCount = count;
+      bestTrigger = trigger;
+    }
+  }
+
+  const intensity = Math.min(100, bestCount * 20 + (bestTrigger === bucketTrigger ? 20 : 0));
+  return { trigger: bestTrigger, intensity, total: intensity };
+}
+
+// Gate 9 — Relationship Score: 70% relationship / 20% transformation / 10% promotion
+function scoreRelationship(hook: string, body: string, cta: string, flywheel_stage: FlywheelStage): RelationshipScore {
+  const text = (hook + ' ' + body).toLowerCase();
+  const ctaLower = cta.toLowerCase();
+
+  // Promotion signals (deduct)
+  const promotionSignals = [
+    /sign up|buy now|enroll now|get started free|limited time|only \$|discount|offer/.test(ctaLower),
+    /price|cost|sale|promotion|deal|offer/.test(text),
+  ];
+  const isPromotion = promotionSignals.filter(Boolean).length >= 2;
+
+  // Transformation signals (middle tier)
+  const transformationSignals = [
+    /case study|result|outcome|transformation|before.+after/.test(text),
+    flywheel_stage === 'transformation' || flywheel_stage === 'success_stories',
+  ];
+  const isTransformation = transformationSignals.filter(Boolean).length >= 1;
+
+  // Relationship-first signals (give before ask)
+  const relationshipSignals = [
+    /here is why|here is how|the truth|the reason|insight|tip|lesson|you should know/.test(text),
+    /you|your/.test(text),
+    !isPromotion,
+    body.length > 100,
+    /\?/.test(hook),
+  ];
+  const relationshipCount = relationshipSignals.filter(Boolean).length;
+
+  const content_type_tag: RelationshipScore['content_type_tag'] = isPromotion
+    ? 'promotion'
+    : isTransformation
+    ? 'transformation'
+    : 'relationship';
+
+  const relationship_first = content_type_tag !== 'promotion';
+  const penalty = isPromotion ? 30 : 0;
+  const total = Math.max(0, Math.min(100,
+    content_type_tag === 'relationship' ? 70 + (relationshipCount * 6) :
+    content_type_tag === 'transformation' ? 50 :
+    20
+  ) - penalty);
+
+  return { relationship_first, content_type_tag, penalty, total };
+}
+
+// Composite gate — V2: Kane 20% | Hormozi 20% | Trust 15% | Transformation 15% | Employment 10% | GoldenRule 10% | Tanner 5% | EmotionalTrigger 5%
+// Threshold: 85+ publish | <85 revise/reject
 export function runExcellenceGates(asset: Omit<GrowthAsset, 'score' | 'excellence'>): ContentExcellenceScore {
-  const kane = scoreKane(asset.hook, asset.metadata?.bucket as string ?? '', asset.body);
+  const bucket = asset.metadata?.bucket as string ?? '';
+  const kane = scoreKane(asset.hook, bucket, asset.body);
   const hormozi = scoreHormozi(asset.hook, asset.body, asset.cta);
   const trust = scoreTrustGate(asset.hook, asset.body, asset.proof_source);
   const transformation = scoreTransformation(asset.hook, asset.body, asset.flywheel_stage);
   const employment = scoreEmployment(asset.hook, asset.body, asset.audience);
+  const golden_rule = scoreGoldenRule(asset.hook, asset.body);
+  const tanner = scoreTanner(asset.hook, asset.body);
+  const emotional_trigger = scoreEmotionalTrigger(asset.hook, asset.body, bucket);
+  const relationship = scoreRelationship(asset.hook, asset.body, asset.cta, asset.flywheel_stage);
+
+  // Hard reject if Golden Rule fails (brand-dependent content with no standalone value)
+  if (golden_rule.total < 30) {
+    const final = 0;
+    return { kane, hormozi, trust, transformation, employment, golden_rule, tanner, emotional_trigger, relationship, final, gate: 'reject' };
+  }
 
   const final = Math.round(
-    kane.total * 0.25 +
-    hormozi.total * 0.25 +
-    trust.total * 0.20 +
+    kane.total * 0.20 +
+    hormozi.total * 0.20 +
+    trust.total * 0.15 +
     transformation.total * 0.15 +
-    employment.total * 0.15,
+    employment.total * 0.10 +
+    golden_rule.total * 0.10 +
+    tanner.total * 0.05 +
+    emotional_trigger.total * 0.05,
   );
 
-  const gate: ContentExcellenceScore['gate'] =
-    final >= 90 ? 'publish' : final >= 80 ? 'revise' : 'reject';
+  const gate: ContentExcellenceScore['gate'] = final >= 85 ? 'publish' : 'revise';
 
-  return { kane, hormozi, trust, transformation, employment, final, gate };
+  return { kane, hormozi, trust, transformation, employment, golden_rule, tanner, emotional_trigger, relationship, final, gate };
 }
 
 // Convenience wrapper used by all generators
@@ -672,14 +857,14 @@ export function linkedinAuthorityPosts(count = 10): GrowthAsset[] {
       hook: t.hook,
       body:
         `${t.hook}\n\n` +
-        `At Aladiah we are building the AI-powered career transformation ecosystem — not another course platform.\n\n` +
-        `The difference:\n` +
-        `• Theory → Performance\n` +
-        `• Certificates → Validated proof artifacts\n` +
-        `• Learner → AI-ready professional\n\n` +
-        `That is what ${t.title.toLowerCase()} means in practice.\n\n` +
-        `If you want theory, there are thousands of posts. If you want proof, structure, and a next step, start here.`,
-      cta: `Follow for daily career-transformation insights. Start free → ${SITE}`,
+        `This is what becoming an extraordinary professional in the age of AI actually requires.\n\n` +
+        `Not more content. A different identity:\n` +
+        `• From learner → validated AI-ready professional\n` +
+        `• From studying → performing in real enterprise scenarios\n` +
+        `• From certificate → proof of who you became\n\n` +
+        `That is what ${t.title.toLowerCase()} is really about.\n\n` +
+        `Ordinary people become extraordinary professionals. That transformation is the whole point.`,
+      cta: `Follow for daily insights on becoming an AI-ready professional → ${SITE}`,
       proof_source: 'Aladiah Talent Score and simulation system',
       kpi_target: 'saves + profile views + qualified comments',
       hashtags: ['CareerTransformation', 'AIWorkforce', 'FutureOfWork', 'Aladiah'],
