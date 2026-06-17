@@ -8,10 +8,10 @@ import juanCarlosPhoto from '@/assets/professors/juan-carlos.jpg';
 import mariaPhoto from '@/assets/professors/maria.webp';
 
 const professors = [
-  { name: 'Bettyna', title: 'Career Advisor', origin: 'Brazil', photo: bettynaPhoto, color: '#3C3489', bg: '#EEEDFE', border: '#534AB7' },
-  { name: 'Charly', title: 'Interview Coach', origin: 'Germany', photo: charlyPhoto, color: '#712B13', bg: '#FAECE7', border: '#D85A30' },
-  { name: 'Juan Carlos', title: 'Resume Builder', origin: 'Santo Domingo, DR', photo: juanCarlosPhoto, color: '#633806', bg: '#FAEEDA', border: '#BA7517' },
-  { name: 'Maria', title: 'Scrum Expert', origin: 'Colombia', photo: mariaPhoto, color: '#0C447C', bg: '#E6F1FB', border: '#185FA5' },
+  { name: 'Bettyna', titleKey: 'about.role_advisor', originKey: 'about.origin_brazil', photo: bettynaPhoto, color: '#3C3489', bg: '#EEEDFE', border: '#534AB7' },
+  { name: 'Charly', titleKey: 'about.role_coach', originKey: 'about.origin_germany', photo: charlyPhoto, color: '#712B13', bg: '#FAECE7', border: '#D85A30' },
+  { name: 'Juan Carlos', titleKey: 'about.role_resume', originKey: 'about.origin_dr', photo: juanCarlosPhoto, color: '#633806', bg: '#FAEEDA', border: '#BA7517' },
+  { name: 'Maria', titleKey: 'about.role_scrum', originKey: 'about.origin_colombia', photo: mariaPhoto, color: '#0C447C', bg: '#E6F1FB', border: '#185FA5' },
 ];
 
 const About = () => {
@@ -194,12 +194,12 @@ const About = () => {
               <div className="relative h-64 overflow-hidden">
                 <img src={prof.photo} alt={prof.name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" />
                 <div className="absolute bottom-3 left-3 px-2 py-1 rounded-full text-xs font-semibold" style={{ background: prof.border, color: '#fff' }}>
-                  {prof.origin}
+                  {t(prof.originKey)}
                 </div>
               </div>
               <div className="p-4" style={{ background: prof.bg }}>
                 <h4 className="font-bold text-lg" style={{ color: prof.color }}>{prof.name}</h4>
-                <p className="text-sm font-medium" style={{ color: prof.border }}>{prof.title}</p>
+                <p className="text-sm font-medium" style={{ color: prof.border }}>{t(prof.titleKey)}</p>
               </div>
             </div>
           ))}
