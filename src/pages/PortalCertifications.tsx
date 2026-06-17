@@ -24,6 +24,19 @@ export default function PortalCertifications() {
   const { user } = useAuth();
   const { t } = useLanguage();
 
+  const PLATFORM_EXAMPLES = [
+    { name:'AWS',          icon:'☁️', color:'#FF9900' },
+    { name:'Google Cloud', icon:'🌐', color:'#4285F4' },
+    { name:'Microsoft',    icon:'🪟', color:'#00A4EF' },
+    { name:'Coursera',     icon:'📚', color:'#0056D2' },
+    { name:'PMI',          icon:'📋', color:'#1A5276'  },
+    { name:'Scrum.org',    icon:'🔄', color:'#2E86AB'  },
+    { name:'Salesforce',   icon:'☁️', color:'#00A1E0'  },
+    { name:'Databricks',   icon:'⚡', color:'#FF3621'  },
+    { name:'Anthropic',    icon:'🤖', color:'#C084FC'  },
+    { name:t('pcert.other'), icon:'🏅', color:'#F5B81A'  },
+  ];
+
   const FEATURES = [
     { icon:'📤', titleKey:'pcert.f0_title', descKey:'pcert.f0_desc' },
     { icon:'✅', titleKey:'pcert.f1_title', descKey:'pcert.f1_desc' },

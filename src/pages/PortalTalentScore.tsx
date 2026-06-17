@@ -58,7 +58,7 @@ export default function PortalTalentScore() {
               {dimensions.map(d => (
                 <div key={d.label} style={{ marginBottom: '1rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '.35rem' }}>
-                    <span style={{ fontSize: 12, color: DS.fm }}>{d.label}</span>
+                    <span style={{ fontSize: 12, color: DS.fm }}>{t(d.labelKey)}</span>
                     <span style={{ fontSize: 12, fontWeight: 700, color: d.color }}>{d.score} / {d.max}</span>
                   </div>
                   <div style={{ height: 5, background: 'rgba(255,255,255,.06)', borderRadius: 3, overflow: 'hidden' }}>
