@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const LANGUAGES = [
   '🇺🇸 EN','🇪🇸 ES','🇫🇷 FR','🇩🇪 DE','🇨🇳 ZH','🇸🇦 AR','🇯🇵 JA',
@@ -11,6 +12,7 @@ const LANGUAGES = [
 const Footer = forwardRef<HTMLElement>((_, ref) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useLanguage();
 
   const isPortal = location.pathname.startsWith('/portal') || location.pathname.startsWith('/course') || location.pathname.startsWith('/chapter');
   if (isPortal) return null;
@@ -31,8 +33,8 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
           {/* Brand */}
           <div>
             <img src={aladiahLogo} alt="Aladiah Academy" style={{ height: 40, width: 'auto', objectFit: 'contain', marginBottom: '0.4rem' }} />
-            <div style={{ fontSize: 11, color: '#8596AD', fontStyle: 'italic', marginBottom: '0.75rem' }}>"Solo Excelencia" — Where AI Leaders Are Built</div>
-            <p style={{ fontSize: 11, color: '#8596AD', lineHeight: 1.6, maxWidth: 250 }}>AI Workforce Infrastructure. 4 Schools. 30+ Programs. 20+ Languages. Global Placement Network.</p>
+            <div style={{ fontSize: 11, color: '#8596AD', fontStyle: 'italic', marginBottom: '0.75rem' }}>"Solo Excelencia" — {t('footer.tagline')}</div>
+            <p style={{ fontSize: 11, color: '#8596AD', lineHeight: 1.6, maxWidth: 250 }}>{t('footer.blurb')}</p>
             <div style={{ marginTop: '0.85rem' }}>
               <a href="https://www.aladiahmanagement.com" target="_blank" rel="noopener noreferrer"
                 style={{ fontSize: 11, fontWeight: 700, color: '#F0622A', border: '1px solid rgba(240,98,42,.28)', padding: '4px 12px', borderRadius: '0.4rem', textDecoration: 'none' }}>
@@ -42,33 +44,33 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
           </div>
           {/* Schools */}
           <div>
-            <h5 style={{ fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#8596AD', marginBottom: '0.65rem' }}>Schools</h5>
-            {lnk('AI Engineering', '/schools')}
-            {lnk('AI Business', '/schools')}
-            {lnk('Governance & Risk', '/schools')}
-            {lnk('Human-AI Experience', '/schools')}
+            <h5 style={{ fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#8596AD', marginBottom: '0.65rem' }}>{t('footer.schools_h')}</h5>
+            {lnk(t('footer.s_eng'), '/schools')}
+            {lnk(t('footer.s_biz'), '/schools')}
+            {lnk(t('footer.s_gov'), '/schools')}
+            {lnk(t('footer.s_human'), '/schools')}
           </div>
           {/* Platform */}
           <div>
-            <h5 style={{ fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#8596AD', marginBottom: '0.65rem' }}>Platform</h5>
-            {lnk('Certifications', '/certifications')}
-            {lnk('Talent Network', '/talent-network')}
-            {lnk('Pricing', '/pricing')}
-            {lnk('Employer Portal', '/employers')}
-            {lnk('Student Portal', '/portal')}
+            <h5 style={{ fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#8596AD', marginBottom: '0.65rem' }}>{t('footer.platform_h')}</h5>
+            {lnk(t('footer.certifications'), '/certifications')}
+            {lnk(t('footer.talent_network'), '/talent-network')}
+            {lnk(t('footer.pricing'), '/pricing')}
+            {lnk(t('footer.employer_portal'), '/employers')}
+            {lnk(t('footer.student_portal'), '/portal')}
           </div>
           {/* Company */}
           <div>
-            <h5 style={{ fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#8596AD', marginBottom: '0.65rem' }}>Company</h5>
-            {lnk('About', '/')}
-            {lnk('Referral Program', '/referral')}
-            {lnk('Community', '/community')}
+            <h5 style={{ fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#8596AD', marginBottom: '0.65rem' }}>{t('footer.company_h')}</h5>
+            {lnk(t('footer.about'), '/')}
+            {lnk(t('footer.referral'), '/referral')}
+            {lnk(t('footer.community'), '/community')}
             <a href="https://www.aladiahmanagement.com" target="_blank" rel="noopener noreferrer"
               style={{ display: 'block', fontSize: 12, color: '#8596AD', marginBottom: '0.35rem', textDecoration: 'none' }}
               onMouseEnter={e => (e.currentTarget.style.color = '#4A90F5')}
               onMouseLeave={e => (e.currentTarget.style.color = '#8596AD')}
             >Aladiah Management</a>
-            {lnk('Feedback', '/feedback')}
+            {lnk(t('footer.feedback'), '/feedback')}
           </div>
         </div>
         {/* Bottom row */}
