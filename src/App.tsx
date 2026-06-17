@@ -45,6 +45,7 @@ import Approvals from "./pages/admin/Approvals";
 import Security from "./pages/admin/Security";
 import FounderPortal from "./pages/founder/FounderPortal";
 import FounderControlCenter from "./pages/founder/FounderControlCenter";
+import LocalizationFactory from "./pages/founder/LocalizationFactory";
 import FounderCurriculum from "./pages/founder/FounderCurriculum";
 import FounderReadiness from "./pages/founder/FounderReadiness";
 import ResumeStudio from "./pages/ResumeStudio";
@@ -129,6 +130,7 @@ const AppContent = () => {
         <Route path="/founder/control-center" element={<FounderRoute><FounderControlCenter /></FounderRoute>} />
         <Route path="/founder/curriculum" element={<FounderRoute><FounderCurriculum /></FounderRoute>} />
         <Route path="/founder/readiness" element={<FounderRoute><FounderReadiness /></FounderRoute>} />
+        <Route path="/founder/localization" element={<FounderRoute><LocalizationFactory /></FounderRoute>} />
         {/* Founder authorities (legacy /admin paths, founder-protected) */}
         <Route path="/admin" element={<FounderRoute><AdminDashboard /></FounderRoute>} />
         <Route path="/admin/ai-workforce" element={<FounderRoute><AIWorkforce /></FounderRoute>} />

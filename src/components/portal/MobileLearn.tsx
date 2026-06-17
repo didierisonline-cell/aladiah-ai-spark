@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { getLocalizedField } from '@/lib/i18nData';
 import { useAuth } from '@/hooks/useAuth';
 import { useProgress } from '@/hooks/useProgress';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -20,10 +21,11 @@ export default function MobileLearn({ courses, loading, selectedId }: { courses:
   const { progress } = useProgress(user?.id);
   // Continue with the student's SELECTED program (source of truth), not courses[0].
   const top = (selectedId && courses.find(c => c.id === selectedId)) || courses[0];
-  const titleOf = (c: any) => c?.translations?.[language]?.title || c?.title || 'Program';
+  const titleOf = (c: any) => getLocalizedField(c, language, 'title') || 'Program';
+  const descOf = (c: any) => getLocalizedField(c, language, 'description');
 
   return (
-    <MobileShell title="Learn" score={progress}>
+    <MobileShell title={t('nav.tab_learn')} score={progress}>
       <div style={{ padding: '18px 16px 8px', maxWidth: 620, margin: '0 auto' }}>
         {loading ? (
           <div style={{ color: C.fm, fontSize: 14, padding: 20 }}>{t('mobile.learn.loading')}</div>
@@ -57,7 +59,7 @@ export default function MobileLearn({ courses, loading, selectedId }: { courses:
                   <div style={{ width: 46, height: 46, borderRadius: 12, flexShrink: 0, background: 'rgba(74,144,245,.12)', border: '1px solid rgba(74,144,245,.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{ICONS[c.title] || '📘'}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14.5, fontWeight: 800, color: C.fg, lineHeight: 1.3 }}>{titleOf(c)}</div>
-                    <div style={{ fontSize: 12, color: C.fm, marginTop: 3, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>{c.description}</div>
+                    <div style={{ fontSize: 12, color: C.fm, marginTop: 3, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>{descOf(c)}</div>
                   </div>
                   <span style={{ color: C.fm, fontSize: 20, flexShrink: 0 }}>›</span>
                 </button>

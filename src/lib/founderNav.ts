@@ -22,6 +22,7 @@ export const FOUNDER_NAV_ITEMS: FounderNavItem[] = [
   { to: '/founder', label: 'Founder Home', icon: Home },
   { to: '/founder/control-center', label: 'Control Center', icon: LayoutGrid },
   { to: '/founder/readiness', label: 'Curriculum Readiness', icon: GaugeCircle },
+  { to: '/founder/localization', label: 'Localization Factory', icon: Sparkles },
   { to: '/founder/curriculum', label: 'Question Review', icon: ClipboardCheck },
   { to: '/admin/command-center', label: 'CEO', icon: Sparkles },
   { to: '/admin/ai-workforce', label: 'AI Workforce', icon: LayoutGrid },

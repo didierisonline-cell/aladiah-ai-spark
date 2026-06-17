@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { getLocalizedField } from '@/lib/i18nData';
 import PortalShell from '@/components/portal/PortalShell';
 import { useAuth } from '@/hooks/useAuth';
 import { useState, useEffect } from 'react';
@@ -125,9 +126,9 @@ export default function PortalCourses() {
                       <div style={{ fontSize: 32 }}>{icon}</div>
                       {isSelected && <span style={{ fontSize: 10, fontWeight: 800, color: DS.blue, background: 'rgba(74,144,245,.12)', border: `1px solid ${DS.bb}`, borderRadius: 99, padding: '3px 10px', letterSpacing: '.04em' }}>{t('courses.your_program')}</span>}
                     </div>
-                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: '.4rem', lineHeight: 1.3 }}>{c.translations?.[language]?.title || c.title}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: '.4rem', lineHeight: 1.3 }}>{getLocalizedField(c, language, 'title')}</div>
                     <div style={{ fontSize: 12, color: DS.fm, lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>
-                      {c.description}
+                      {getLocalizedField(c, language, 'description')}
                     </div>
                     <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span style={{ fontSize: 11, color: DS.green, fontWeight: 600 }}>{t('courses.access_pass')}</span>

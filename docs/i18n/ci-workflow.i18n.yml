@@ -1,0 +1,27 @@
+name: i18n guard
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  i18n:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm ci
+      # Gate 1 — dictionary parity: every key in all 8 launch languages (hard fail)
+      - name: Dictionary parity guard
+        run: node scripts/i18n-guard.mjs
+      # Gate 2 — build must pass
+      - name: Build
+        run: npm run build
+      # Gate 3 — content coverage (optional; runs only if Supabase secrets present).
+      #          Blocks deploy if any deploy_blocking language < 100% (v_deploy_blockers).
+      - name: Content coverage gate
+        if: ${{ env.SUPABASE_URL != '' }}
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: node scripts/i18n-content-gate.mjs
