@@ -9335,6 +9335,8 @@ const translations: Record<Language, Record<string, string>> = {
 // ============================================================================
 const moduleI18n: Partial<Record<Language, Record<string, string>>> = {
   en: {
+    "common.back": "Back",
+    "blog.start_journey": "Start Your Journey",
     "sim.diff_Starter": "Starter",
     "sim.diff_Practitioner": "Practitioner",
     "sim.diff_Expert": "Expert",
@@ -10370,6 +10372,8 @@ const moduleI18n: Partial<Record<Language, Record<string, string>>> = {
     "portpanel.add_btn": "Add Project →",
   },
   es: {
+    "common.back": "Atrás",
+    "blog.start_journey": "Comienza tu camino",
     "sim.diff_Starter": "Inicial",
     "sim.diff_Practitioner": "Practicante",
     "sim.diff_Expert": "Experto",
@@ -11405,6 +11409,8 @@ const moduleI18n: Partial<Record<Language, Record<string, string>>> = {
     "portpanel.add_btn": "Añadir Proyecto →",
   },
   fr: {
+    "common.back": "Retour",
+    "blog.start_journey": "Commencez votre parcours",
     "sim.diff_Starter": "Débutant",
     "sim.diff_Practitioner": "Praticien",
     "sim.diff_Expert": "Expert",
@@ -12440,6 +12446,8 @@ const moduleI18n: Partial<Record<Language, Record<string, string>>> = {
     "portpanel.add_btn": "Ajouter Projet →",
   },
   pt: {
+    "common.back": "Voltar",
+    "blog.start_journey": "Comece sua jornada",
     "sim.diff_Starter": "Inicial",
     "sim.diff_Practitioner": "Praticante",
     "sim.diff_Expert": "Especialista",
@@ -13661,6 +13669,8 @@ const moduleI18n: Partial<Record<Language, Record<string, string>>> = {
     "portpanel.add_btn": "Adicionar Projeto →",
   },
   de: {
+    "common.back": "Zurück",
+    "blog.start_journey": "Starte deine Reise",
     "sim.diff_Starter": "Einsteiger",
     "sim.diff_Practitioner": "Praktiker",
     "sim.diff_Expert": "Experte",
@@ -14697,6 +14707,8 @@ const moduleI18n: Partial<Record<Language, Record<string, string>>> = {
     "portpanel.add_btn": "Projekt Hinzufügen →",
   },
   ar: {
+    "common.back": "رجوع",
+    "blog.start_journey": "ابدأ رحلتك",
     "sim.diff_Starter": "مبتدئ",
     "sim.diff_Practitioner": "ممارس",
     "sim.diff_Expert": "خبير",
@@ -15741,6 +15753,8 @@ const moduleI18n: Partial<Record<Language, Record<string, string>>> = {
     "portpanel.add_btn": "← إضافة مشروع",
   },
   zh: {
+    "common.back": "返回",
+    "blog.start_journey": "开启你的旅程",
     "sim.diff_Starter": "入门",
     "sim.diff_Practitioner": "实践者",
     "sim.diff_Expert": "专家",
@@ -16785,6 +16799,8 @@ const moduleI18n: Partial<Record<Language, Record<string, string>>> = {
     "portpanel.add_btn": "添加项目 →",
   },
   hi: {
+    "common.back": "वापस",
+    "blog.start_journey": "अपनी यात्रा शुरू करें",
     "sim.diff_Starter": "प्रारंभिक",
     "sim.diff_Practitioner": "अभ्यासकर्ता",
     "sim.diff_Expert": "विशेषज्ञ",
