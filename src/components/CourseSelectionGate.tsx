@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getLocalizedField } from '@/lib/i18nData';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { GraduationCap, CheckCircle, ArrowRight, RefreshCw } from 'lucide-react';
@@ -36,7 +37,7 @@ const getCourseIcon = (title: string) => {
 };
 
 export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -57,7 +58,7 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
 
   const loadCourses = async () => {
     const data = await sbFetch(
-      supabase.from('courses').select('id, title, description').eq('is_published', true).order('title'),
+      supabase.from('courses').select('id, title, description, translations').eq('is_published', true).order('title'),
       []
     );
     setCourses(data);
@@ -158,7 +159,7 @@ export const CourseSelectionGate = ({ userId, onCourseSelected }: Props) => {
                   <span style={{ fontSize: '24px', flexShrink: 0 }}>{getCourseIcon(course.title)}</span>
                   <div style={{ flex: 1 }}>
                     <p style={{ fontSize: '13px', fontWeight: 700, color: '#fff', marginBottom: '4px', lineHeight: 1.3 }}>
-                      {course.title}
+                      {getLocalizedField(course, language, 'title')}
                     </p>
                     <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.4 }}>
                       {t('enroll.gate.module_free')}

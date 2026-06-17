@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { getLocalizedField } from '@/lib/i18nData';
 import { useAuth } from '@/hooks/useAuth';
 import { useProgress } from '@/hooks/useProgress';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -20,8 +21,8 @@ export default function MobileLearn({ courses, loading, selectedId }: { courses:
   const { progress } = useProgress(user?.id);
   // Continue with the student's SELECTED program (source of truth), not courses[0].
   const top = (selectedId && courses.find(c => c.id === selectedId)) || courses[0];
-  const titleOf = (c: any) => c?.translations?.[language]?.title || c?.title || 'Program';
-  const descOf = (c: any) => c?.translations?.[language]?.description || c?.description || '';
+  const titleOf = (c: any) => getLocalizedField(c, language, 'title') || 'Program';
+  const descOf = (c: any) => getLocalizedField(c, language, 'description');
 
   return (
     <MobileShell title={t('nav.tab_learn')} score={progress}>

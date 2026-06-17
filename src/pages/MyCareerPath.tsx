@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getLocalizedField } from '@/lib/i18nData';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -51,7 +52,7 @@ const SCHOOL_MAP: Record<string,{color:string;icon:string;school:string}> = {
 export default function MyCareerPath() {
   const navigate = useNavigate();
   const {user} = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [courses,setCourses] = useState<any[]>([]);
   const [chapters,setChapters] = useState<any[]>([]);
   const [selectedId,setSelectedId] = useState<string|null>(null);
@@ -62,7 +63,7 @@ export default function MyCareerPath() {
     if(!user) return;
     const saved = localStorage.getItem(`career-path-${user.id}`);
     if(saved) { setSelectedId(saved); loadChapters(saved); }
-    supabase.from('courses').select('id,title,description').eq('is_published',true).order('title')
+    supabase.from('courses').select('id,title,description,translations').eq('is_published',true).order('title')
       .then(({data})=>{ if(data) setCourses(data); setLoading(false); });
   },[user]);
 
@@ -123,7 +124,7 @@ export default function MyCareerPath() {
                           onMouseEnter={e=>{if(!act)(e.currentTarget as HTMLElement).style.background='rgba(255,255,255,.04)';}}
                           onMouseLeave={e=>{if(!act)(e.currentTarget as HTMLElement).style.background='transparent';}}>
                           <span style={{fontSize:14,flexShrink:0}}>{c.track?.icon||'📖'}</span>
-                          <span style={{fontSize:12,fontWeight:act?700:500,color:act?sm.color:DS.fg,flex:1,lineHeight:1.3}}>{c.title}</span>
+                          <span style={{fontSize:12,fontWeight:act?700:500,color:act?sm.color:DS.fg,flex:1,lineHeight:1.3}}>{getLocalizedField(c, language, 'title')}</span>
                         </button>;
                       })}
                     </div>;
@@ -146,8 +147,8 @@ export default function MyCareerPath() {
                   <div style={{display:'flex',alignItems:'flex-start',gap:'1rem'}}>
                     <div style={{fontSize:40,flexShrink:0}}>{track?.icon||'📖'}</div>
                     <div style={{flex:1}}>
-                      <h2 style={{fontSize:'1.3rem',fontWeight:800,margin:'0 0 .4rem'}}>{course.title}</h2>
-                      <p style={{fontSize:13,color:DS.fm,margin:'0 0 .75rem',lineHeight:1.6}}>{course.description}</p>
+                      <h2 style={{fontSize:'1.3rem',fontWeight:800,margin:'0 0 .4rem'}}>{getLocalizedField(course, language, 'title')}</h2>
+                      <p style={{fontSize:13,color:DS.fm,margin:'0 0 .75rem',lineHeight:1.6}}>{getLocalizedField(course, language, 'description')}</p>
                       <div style={{display:'flex',gap:8,flexWrap:'wrap' as const}}>
                         <span style={{fontSize:11,padding:'3px 10px',borderRadius:99,background:'rgba(74,144,245,.12)',color:DS.blue,fontWeight:600}}>{chapters.length} {t('career.modules')}</span>
                         <span style={{fontSize:11,padding:'3px 10px',borderRadius:99,background:'rgba(245,184,26,.12)',color:DS.gold,fontWeight:600}}>{t('career.certified')}</span>

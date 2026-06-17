@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { getLocalizedField } from '@/lib/i18nData';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
@@ -721,7 +722,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
                 {showStudyGuide && (
                   <div style={{ marginTop: 12, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(212,175,55,0.2)' }}>
                     <div style={{ padding: '8px 14px', borderBottom: '1px solid rgba(212,175,55,0.15)', background: 'rgba(212,175,55,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#d4af37' }}>📚 {course.title} — {t('chapter.study_guide')}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#d4af37' }}>📚 {getLocalizedField(course, language, 'title')} — {t('chapter.study_guide')}</span>
                       <span style={{ fontSize: 11, color: '#64748b' }}>{t('chapter.read_only')}</span>
                     </div>
                     <iframe src={getStudyGuidePdf(course.title) + '#toolbar=0&navpanes=0&scrollbar=1'} style={{ width: '100%', height: 520, border: 'none', background: '#0a0f1e' }} title={t('lesson.study_guide')} />
