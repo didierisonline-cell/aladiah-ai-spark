@@ -33,7 +33,7 @@ export default function PortalCourseDetail() {
     if (!user || !courseId) return;
     Promise.all([
       supabase.from('courses').select('id, title, description, translations').eq('id', courseId).single(),
-      supabase.from('chapters').select('id, title, description, order_index').eq('course_id', courseId).order('order_index'),
+      supabase.from('chapters').select('id, title, description, order_index, translations').eq('course_id', courseId).order('order_index'),
     ]).then(([courseRes, chaptersRes]) => {
       if (courseRes.data) setCourse(courseRes.data);
       const chaps = chaptersRes.data || [];
@@ -149,14 +149,14 @@ export default function PortalCourseDetail() {
 
                   {/* Info */}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 3 }}>{ch.title}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 3 }}>{getLocalizedField(ch, language, 'title', 'chapter')}</div>
                     {ch.description && (
                       <div style={{
                         fontSize: 12, color: DS.fm,
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
                         maxWidth: 520,
                       }}>
-                        {ch.description}
+                        {getLocalizedField(ch, language, 'description', 'chapter')}
                       </div>
                     )}
                     {lessonCount > 0 && (

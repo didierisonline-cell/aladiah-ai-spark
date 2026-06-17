@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { getLocalizedField } from '@/lib/i18nData';
 import MobileShell from '@/components/mobile/MobileShell';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -14,7 +15,7 @@ interface Props {
 
 export default function MobileCourse({ course, chapters, lessonCounts, completed }: Props) {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const total = chapters.length;
   const doneCount = chapters.filter(c => completed.has(c.id)).length;
   const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
@@ -23,8 +24,9 @@ export default function MobileCourse({ course, chapters, lessonCounts, completed
   const currentIdx = chapters.findIndex((c, i) => isUnlocked(i) && !completed.has(c.id));
   const current = currentIdx >= 0 ? chapters[currentIdx] : null;
 
-  const courseTitle = course?.title
-    ? (course.title.length > 22 ? course.title.slice(0, 22) + '…' : course.title)
+  const _ct = getLocalizedField(course, language, 'title', 'course');
+  const courseTitle = _ct
+    ? (_ct.length > 22 ? _ct.slice(0, 22) + '…' : _ct)
     : t('mobile.course.default_title');
 
   return (
@@ -32,7 +34,7 @@ export default function MobileCourse({ course, chapters, lessonCounts, completed
       <div style={{ padding: '18px 16px 8px', maxWidth: 620, margin: '0 auto' }}>
         {/* Program progress */}
         <div style={{ background: 'linear-gradient(150deg,rgba(37,99,235,.26),rgba(124,58,237,.2))', border: '1px solid rgba(99,102,241,.3)', borderRadius: 20, padding: 18, marginBottom: 18 }}>
-          <div style={{ fontSize: 19, fontWeight: 900, color: '#fff', lineHeight: 1.2 }}>{course?.title}</div>
+          <div style={{ fontSize: 19, fontWeight: 900, color: '#fff', lineHeight: 1.2 }}>{getLocalizedField(course, language, 'title', 'course')}</div>
           <div style={{ fontSize: 12, color: '#c7d2fe', marginTop: 6 }}>{doneCount}{t('mobile.course.progress')}{total}{t('mobile.course.modules_done')}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '12px 0 2px' }}>
             <div style={{ flex: 1, height: 8, background: 'rgba(255,255,255,.12)', borderRadius: 99, overflow: 'hidden' }}>
@@ -62,7 +64,7 @@ export default function MobileCourse({ course, chapters, lessonCounts, completed
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 10, fontWeight: 700, color: C.fm, letterSpacing: '.06em' }}>{t('mobile.course.module_label')}{i + 1}</div>
-                  <div style={{ fontSize: 14, fontWeight: 800, color: unlocked ? C.fg : C.fm, lineHeight: 1.3 }}>{ch.title}</div>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: unlocked ? C.fg : C.fm, lineHeight: 1.3 }}>{getLocalizedField(ch, language, 'title', 'chapter')}</div>
                   <div style={{ fontSize: 11, marginTop: 3, fontWeight: 700, color }}>
                     {done ? t('mobile.course.completed') : isCurrent ? t('mobile.course.continue') : unlocked ? `${lessonCounts[ch.id] || 0}${t('mobile.course.lessons')}` : t('mobile.course.locked')}
                   </div>
