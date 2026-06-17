@@ -771,7 +771,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
           <div style={{ background: 'linear-gradient(155deg,rgba(8,20,52,.88),rgba(5,13,38,.92))', border: '1px solid rgba(255,255,255,.08)', borderRadius: 15, padding: 14, boxShadow: '0 4px 20px rgba(0,0,0,.4)', flexShrink: 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
               <span style={{ fontSize: 12, fontWeight: 700 }}>{T('talent_score_label')}</span>
-              <div><span style={{ fontSize: 9.5, color: '#34d399', fontWeight: 700 }}>↑ {T('rising_star')}</span><span style={{ fontSize: 8.5, color: '#334155', marginLeft: 3 }}>+38 this week</span></div>
+              <div><span style={{ fontSize: 9.5, color: '#34d399', fontWeight: 700 }}>↑ {T('rising_star')}</span><span style={{ fontSize: 8.5, color: '#334155', marginLeft: 3 }}>+38 {t('portal.this_week')}</span></div>
             </div>
             <div style={{ marginBottom: 9 }}><span style={{ fontSize: 30, fontWeight: 800, color: '#fb923c', letterSpacing: '-.5px' }}>{talentScore}</span><span style={{ fontSize: 13, color: '#334155', marginLeft: 3 }}>/ 1000</span></div>
             <svg width="100%" height="54" viewBox="0 0 256 54" preserveAspectRatio="none" style={{ display: 'block', marginBottom: 4 }}>

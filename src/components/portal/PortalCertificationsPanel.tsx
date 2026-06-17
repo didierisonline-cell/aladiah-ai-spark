@@ -23,13 +23,13 @@ const PortalCertificationsPanel = () => {
       <div style={{background:'var(--card)',border:'1px solid var(--border)',borderRadius:'0.75rem',padding:'1.5rem'}}>
         <div style={{display:'flex',alignItems:'center',gap:'1rem',marginBottom:'1rem'}}>
           <div style={{width:'48px',height:'48px',borderRadius:'50%',background:'rgba(245,184,26,0.1)',border:'2px dashed #F5B81A',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'monospace',fontSize:'11px',fontWeight:800,color:'#F5B81A',flexShrink:0}}>AMS</div>
-          <div><div style={{fontSize:'14px',fontWeight:700,color:'var(--foreground)'}}>Aladiah Master™</div><div style={{fontSize:'12px',color:'var(--muted-foreground)'}}>L600 Enterprise Simulation required · Oral defense · Peer evaluation</div></div>
+          <div><div style={{fontSize:'14px',fontWeight:700,color:'var(--foreground)'}}>Aladiah Master™</div><div style={{fontSize:'12px',color:'var(--muted-foreground)'}}>{t('certpanel.ms_sub')}</div></div>
         </div>
         <div style={{marginBottom:'0.75rem'}}>
           <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',color:'var(--muted-foreground)',marginBottom:'4px'}}><span>{t('certpanel.req_progress')}</span><span>60%</span></div>
           <div style={{height:'5px',background:'rgba(255,255,255,0.06)',borderRadius:'3px',overflow:'hidden'}}><div style={{height:'100%',width:'60%',background:'linear-gradient(90deg,#F0622A,#F5895E)'}}/></div>
         </div>
-        {[{r:'Complete L600 Enterprise Simulation',d:false},{r:'Submit capstone with oral defense',d:false},{r:'3 peer evaluation scores of 80%+',d:false},{r:'Aladiah Expert (AEX) — verified',d:true},{r:'Minimum Talent Score of 750',d:true}].map((x,i)=>(
+        {[{r:t('certpanel.req1'),d:false},{r:t('certpanel.req2'),d:false},{r:t('certpanel.req3'),d:false},{r:t('certpanel.req4'),d:true},{r:t('certpanel.req5'),d:true}].map((x,i)=>(
           <div key={i} style={{display:'flex',alignItems:'center',gap:'0.6rem',fontSize:'12px',color:x.d?'#22C98A':'var(--muted-foreground)',padding:'0.25rem 0'}}><span>{x.d?'✅':'⬜'}</span>{x.r}</div>
         ))}
       </div>
