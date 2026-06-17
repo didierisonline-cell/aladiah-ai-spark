@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import PortalShell from '@/components/portal/PortalShell';
 import { Save, Download, Sparkles, CheckCircle, Loader2, LayoutTemplate, X, Palette } from 'lucide-react';
@@ -32,16 +33,16 @@ const MOCK: ResumeData = {
 };
 
 const TEMPLATES = [
-  { id:'prestige', name:'Prestige', accent:'#1B2A4A', desc:'Two-column navy sidebar — C-Suite & VP' },
-  { id:'manhattan', name:'Manhattan', accent:'#0D1F3C', desc:'Bold centered header — Fortune 500' },
-  { id:'sovereign', name:'Sovereign', accent:'#2C1810', desc:'Dark luxury — board-level positions' },
-  { id:'apex', name:'Apex', accent:'#1E3A5F', desc:'Metrics-forward — quantify achievements' },
-  { id:'zenith', name:'Zenith', accent:'#B8860B', desc:'Gold serif elegance — C-Suite & Directors' },
-  { id:'catalyst', name:'Catalyst', accent:'#1A6B3C', desc:'Green tech — AI & digital leaders' },
-  { id:'obsidian', name:'Obsidian', accent:'#212121', desc:'Ultra-premium — consulting & finance' },
-  { id:'blueprint', name:'Blueprint', accent:'#003366', desc:'Technical leader — AI & CTO roles' },
-  { id:'cardinal', name:'Cardinal', accent:'#8B0000', desc:'Deep red authority — law & healthcare' },
-  { id:'visionary', name:'Visionary', accent:'#4B0082', desc:'Purple innovation — creative directors' },
+  { id:'prestige', name:'Prestige', accent:'#1B2A4A', descKey:'resume.tpl_prestige' },
+  { id:'manhattan', name:'Manhattan', accent:'#0D1F3C', descKey:'resume.tpl_manhattan' },
+  { id:'sovereign', name:'Sovereign', accent:'#2C1810', descKey:'resume.tpl_sovereign' },
+  { id:'apex', name:'Apex', accent:'#1E3A5F', descKey:'resume.tpl_apex' },
+  { id:'zenith', name:'Zenith', accent:'#B8860B', descKey:'resume.tpl_zenith' },
+  { id:'catalyst', name:'Catalyst', accent:'#1A6B3C', descKey:'resume.tpl_catalyst' },
+  { id:'obsidian', name:'Obsidian', accent:'#212121', descKey:'resume.tpl_obsidian' },
+  { id:'blueprint', name:'Blueprint', accent:'#003366', descKey:'resume.tpl_blueprint' },
+  { id:'cardinal', name:'Cardinal', accent:'#8B0000', descKey:'resume.tpl_cardinal' },
+  { id:'visionary', name:'Visionary', accent:'#4B0082', descKey:'resume.tpl_visionary' },
 ];
 
 const ACCENT_PRESETS = [
@@ -79,6 +80,7 @@ const Section = ({ title, accent, onAI, loading, children }:
 
 const ResumeStudio = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [resume, setResume] = useState<ResumeData>(MOCK);
   const [template, setTemplate] = useState('zenith');
@@ -166,7 +168,7 @@ const ResumeStudio = () => {
                    file.type === 'application/msword';
     try {
       if (isPDF) {
-        setUploadMsg('Reading your PDF...');
+        setUploadMsg(t('resume.up_pdf'));
         const buf = await file.arrayBuffer();
         const base64 = toBase64(buf);
         const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -184,9 +186,9 @@ const ResumeStudio = () => {
         const raw = data.content?.[0]?.text || '{}';
         const parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
         applyResumeData(parsed);
-        setUploadMsg('✓ PDF imported successfully!');
+        setUploadMsg(t('resume.up_pdf_ok'));
       } else if (isDOCX) {
-        setUploadMsg('Reading your Word document...');
+        setUploadMsg(t('resume.up_word'));
         const buf = await file.arrayBuffer();
         if (!(window as any).mammoth) {
           await new Promise<void>((resolve, reject) => {
@@ -199,8 +201,8 @@ const ResumeStudio = () => {
         }
         const result = await (window as any).mammoth.extractRawText({ arrayBuffer: buf });
         const text = result.value || '';
-        if (!text.trim()) throw new Error('Could not extract text from Word document');
-        setUploadMsg('AI is parsing your resume...');
+        if (!text.trim()) throw new Error(t('resume.up_word_err'));
+        setUploadMsg(t('resume.up_parsing'));
         const res = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -213,9 +215,9 @@ const ResumeStudio = () => {
         const raw = data.content?.[0]?.text || '{}';
         const parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
         applyResumeData(parsed);
-        setUploadMsg('✓ Word document imported successfully!');
+        setUploadMsg(t('resume.up_word_ok'));
       } else {
-        setUploadMsg('Reading your resume...');
+        setUploadMsg(t('resume.up_generic'));
         const text = await file.text();
         setUploadMsg('AI is parsing your resume...');
         const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -229,10 +231,10 @@ const ResumeStudio = () => {
         const raw = data.content?.[0]?.text || '{}';
         const parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
         applyResumeData(parsed);
-        setUploadMsg('✓ Resume imported successfully!');
+        setUploadMsg(t('resume.up_ok'));
       }
     } catch (err: any) {
-      setUploadMsg(`Could not read file: ${err?.message || 'Unknown error'}. Try saving as .txt instead.`);
+      setUploadMsg(t('resume.up_err').replace('{msg}', err?.message || 'Unknown error'));
     }
     setUploading(false);
     setTimeout(() => setUploadMsg(''), 6000);
@@ -342,12 +344,12 @@ const ResumeStudio = () => {
 
   const sidebarContent = () => s.sidebar ? (
     <div style={{ background:s.sidebarBg, padding:'28px 20px', color:s.sidebarColor }}>
-      <Section title="Skills" accent={accent}>
+      <Section title={t('resume.sec_skills')} accent={accent}>
         <div data-field="skills" contentEditable suppressContentEditableWarning onInput={onFieldInput('skills')} onBlur={onFieldBlur('skills')}
           style={fieldStyle({ fontSize:bodySize-1, lineHeight:1.8, color:s.sidebarColor||bodyColor, whiteSpace:'pre-wrap' as const })}
         >{resume.skills}</div>
       </Section>
-      <Section title="Certifications" accent={accent}>
+      <Section title={t('resume.sec_certs')} accent={accent}>
         <div data-field="certifications" contentEditable suppressContentEditableWarning onInput={onFieldInput('certifications')} onBlur={onFieldBlur('certifications')}
           style={fieldStyle({ fontSize:bodySize-1, lineHeight:1.8, color:s.sidebarColor||bodyColor, whiteSpace:'pre-wrap' as const })}
         >{resume.certifications}</div>
@@ -375,31 +377,31 @@ const ResumeStudio = () => {
 
           <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:'1.25rem', gap:'1rem', flexWrap:'wrap' as const }}>
             <div>
-              <h1 style={{ fontSize:'1.4rem', fontWeight:800, color:DS.fg, margin:0 }}>Resume Builder Studio</h1>
-              <p style={{ fontSize:12, color:DS.fm, margin:'3px 0 0' }}>Click any text to edit · AI-powered · World-class templates</p>
+              <h1 style={{ fontSize:'1.4rem', fontWeight:800, color:DS.fg, margin:0 }}>{t('resume.studio_title')}</h1>
+              <p style={{ fontSize:12, color:DS.fm, margin:'3px 0 0' }}>{t('resume.subtitle')}</p>
             </div>
             <div style={{ display:'flex', gap:6, flexWrap:'wrap' as const }}>
-              <button onClick={undo} style={btn()}>↩ Undo</button>
-              <button onClick={redo} style={btn()}>↪ Redo</button>
+              <button onClick={undo} style={btn()}>↩ {t('resume.undo')}</button>
+              <button onClick={redo} style={btn()}>↪ {t('resume.redo')}</button>
               <input ref={fileInputRef} type="file" accept=".txt,.pdf,.doc,.docx" onChange={handleUpload} style={{ display:'none' }}/>
               <button onClick={() => fileInputRef.current?.click()} disabled={uploading}
                 style={{ ...btn(), background:'rgba(34,201,138,.12)', borderColor:'rgba(34,201,138,.3)', color:'#22C98A' }}>
-                {uploading ? <Loader2 size={12} style={{ animation:'spin 1s linear infinite' }}/> : '📄'} {uploading ? 'Reading...' : 'Upload'}
+                {uploading ? <Loader2 size={12} style={{ animation:'spin 1s linear infinite' }}/> : '📄'} {uploading ? t('resume.reading') : t('resume.upload')}
               </button>
               <button onClick={() => { setShowStylePanel(p => !p); setShowTemplates(false); }} style={btn(showStylePanel)}>
-                <Palette size={12}/> Style
+                <Palette size={12}/> {t('resume.style')}
               </button>
               <button onClick={() => { setShowTemplates(p => !p); setShowStylePanel(false); }} style={btn(showTemplates)}>
-                <LayoutTemplate size={12}/> Templates
+                <LayoutTemplate size={12}/> {t('resume.templates')}
               </button>
               <button onClick={saveResume} disabled={saving}
                 style={{ ...btn(saved), background:saved?'#22C98A22':DS.card, borderColor:saved?'#22C98A':DS.border, color:saved?'#22C98A':DS.fm }}>
                 {saving?<Loader2 size={12} style={{ animation:'spin 1s linear infinite' }}/>:saved?<CheckCircle size={12}/>:<Save size={12}/>}
-                {saved?'Saved!':'Save'}
+                {saved?t('resume.saved'):t('resume.save')}
               </button>
               <button onClick={downloadResume}
                 style={{ display:'flex', alignItems:'center', gap:5, padding:'6px 12px', background:DS.blue, border:'none', borderRadius:'.5rem', color:'#fff', fontSize:11, fontWeight:700, cursor:'pointer' }}>
-                <Download size={12}/> Download
+                <Download size={12}/> {t('resume.download')}
               </button>
             </div>
           </div>
@@ -407,24 +409,24 @@ const ResumeStudio = () => {
           {showStylePanel && (
             <div style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:'.75rem', padding:'1rem', marginBottom:'1.25rem' }}>
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
-                <span style={{ fontSize:12, fontWeight:700, color:DS.fg }}>Style Controls</span>
+                <span style={{ fontSize:12, fontWeight:700, color:DS.fg }}>{t('resume.style_controls')}</span>
                 <button onClick={() => setShowStylePanel(false)} style={{ background:'none', border:'none', color:DS.fm, cursor:'pointer' }}><X size={14}/></button>
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
                 <div>
-                  <div style={{ fontSize:11, color:DS.fm, marginBottom:6, fontWeight:600 }}>Body font size: {styleControls.fontSize}px</div>
+                  <div style={{ fontSize:11, color:DS.fm, marginBottom:6, fontWeight:600 }}>{t('resume.body_font')}: {styleControls.fontSize}px</div>
                   <input type="range" min={10} max={16} step={0.5} value={styleControls.fontSize}
                     onChange={e => setStyleControls(s => ({ ...s, fontSize: Number(e.target.value) }))} style={{ width:'100%' }}/>
-                  <div style={{ display:'flex', justifyContent:'space-between', fontSize:10, color:DS.fm }}><span>Compact</span><span>Spacious</span></div>
+                  <div style={{ display:'flex', justifyContent:'space-between', fontSize:10, color:DS.fm }}><span>{t('resume.compact')}</span><span>{t('resume.spacious')}</span></div>
                 </div>
                 <div>
-                  <div style={{ fontSize:11, color:DS.fm, marginBottom:6, fontWeight:600 }}>Name size: {styleControls.nameSize}px</div>
+                  <div style={{ fontSize:11, color:DS.fm, marginBottom:6, fontWeight:600 }}>{t('resume.name_size')}: {styleControls.nameSize}px</div>
                   <input type="range" min={20} max={48} step={1} value={styleControls.nameSize}
                     onChange={e => setStyleControls(s => ({ ...s, nameSize: Number(e.target.value) }))} style={{ width:'100%' }}/>
-                  <div style={{ display:'flex', justifyContent:'space-between', fontSize:10, color:DS.fm }}><span>Small</span><span>Large</span></div>
+                  <div style={{ display:'flex', justifyContent:'space-between', fontSize:10, color:DS.fm }}><span>{t('resume.small')}</span><span>{t('resume.large')}</span></div>
                 </div>
                 <div>
-                  <div style={{ fontSize:11, color:DS.fm, marginBottom:6, fontWeight:600 }}>Accent color</div>
+                  <div style={{ fontSize:11, color:DS.fm, marginBottom:6, fontWeight:600 }}>{t('resume.accent_color')}</div>
                   <div style={{ display:'flex', gap:5, flexWrap:'wrap' as const, marginBottom:6 }}>
                     {ACCENT_PRESETS.map(c => (
                       <button key={c} onClick={() => setStyleControls(s => ({ ...s, accentColor: c }))}
@@ -440,7 +442,7 @@ const ResumeStudio = () => {
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontSize:11, color:DS.fm, marginBottom:6, fontWeight:600 }}>Text color</div>
+                  <div style={{ fontSize:11, color:DS.fm, marginBottom:6, fontWeight:600 }}>{t('resume.text_color')}</div>
                   <div style={{ display:'flex', gap:5, marginBottom:6 }}>
                     {['#111111','#333333','#444444','#2c2c2c','#1a1a2e','#0d1b2a'].map(c => (
                       <button key={c} onClick={() => setStyleControls(s => ({ ...s, textColor: c }))}
@@ -462,18 +464,18 @@ const ResumeStudio = () => {
           {showTemplates && (
             <div style={{ background:DS.card, border:`1px solid ${DS.border}`, borderRadius:'.75rem', padding:'1rem', marginBottom:'1.25rem' }}>
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
-                <span style={{ fontSize:12, fontWeight:700, color:DS.fg }}>Executive Templates</span>
+                <span style={{ fontSize:12, fontWeight:700, color:DS.fg }}>{t('resume.exec_templates')}</span>
                 <button onClick={() => setShowTemplates(false)} style={{ background:'none', border:'none', color:DS.fm, cursor:'pointer' }}><X size={16}/></button>
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:8 }}>
-                {TEMPLATES.map(t => (
-                  <button key={t.id} onClick={() => { setTemplate(t.id); setShowTemplates(false); setStyleControls(sc => ({ ...sc, accentColor: t.accent })); }}
-                    style={{ padding:'10px 12px', background:template===t.id?t.accent+'22':DS.bg, border:`2px solid ${template===t.id?t.accent:DS.border}`, borderRadius:'.5rem', cursor:'pointer', textAlign:'left' as const }}>
+                {TEMPLATES.map(tpl => (
+                  <button key={tpl.id} onClick={() => { setTemplate(tpl.id); setShowTemplates(false); setStyleControls(sc => ({ ...sc, accentColor: tpl.accent })); }}
+                    style={{ padding:'10px 12px', background:template===tpl.id?tpl.accent+'22':DS.bg, border:`2px solid ${template===tpl.id?tpl.accent:DS.border}`, borderRadius:'.5rem', cursor:'pointer', textAlign:'left' as const }}>
                     <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:4 }}>
-                      <div style={{ width:10, height:10, borderRadius:2, background:t.accent }}/>
-                      <span style={{ fontSize:11, fontWeight:700, color:template===t.id?t.accent:DS.fg }}>{t.name}</span>
+                      <div style={{ width:10, height:10, borderRadius:2, background:tpl.accent }}/>
+                      <span style={{ fontSize:11, fontWeight:700, color:template===tpl.id?tpl.accent:DS.fg }}>{tpl.name}</span>
                     </div>
-                    <p style={{ fontSize:9, color:DS.fm, margin:0, lineHeight:1.4 }}>{t.desc}</p>
+                    <p style={{ fontSize:9, color:DS.fm, margin:0, lineHeight:1.4 }}>{t(tpl.descKey)}</p>
                   </button>
                 ))}
               </div>
@@ -489,7 +491,7 @@ const ResumeStudio = () => {
 
           <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:'1rem', padding:'8px 14px', background:'rgba(74,144,245,.08)', border:'1px solid rgba(74,144,245,.2)', borderRadius:'.5rem' }}>
             <span style={{ fontSize:16 }}>✏️</span>
-            <p style={{ fontSize:12, color:DS.blue, margin:0 }}><strong>Click any text</strong> to edit · ✨ AI buttons generate content · Style panel for fonts, sizes & colors</p>
+            <p style={{ fontSize:12, color:DS.blue, margin:0 }}><strong>{t('resume.tip_strong')}</strong>{t('resume.tip_rest')}</p>
           </div>
 
           <div id="resume-doc" style={{ background:'#fff', boxShadow:'0 4px 40px rgba(0,0,0,.25)', borderRadius:8, overflow:'hidden', fontFamily:s.font, maxWidth:'100%', width:'100%' }}>
@@ -503,14 +505,14 @@ const ResumeStudio = () => {
                     {renderHeader()}
                   </div>
                 )}
-                {resume.summary && renderSection('summary', s.ornate?'Executive Profile':'Professional Summary')}
-                {renderSection('experience', 'Professional Experience')}
-                {renderSection('education', 'Education')}
-                {renderSection('projects', 'Key Projects & Achievements')}
+                {resume.summary && renderSection('summary', s.ornate?t('resume.sec_exec_profile'):t('resume.sec_summary'))}
+                {renderSection('experience', t('resume.sec_experience'))}
+                {renderSection('education', t('resume.sec_education'))}
+                {renderSection('projects', t('resume.sec_projects'))}
                 {!s.sidebar && (
                   <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }}>
-                    {renderSection('skills', 'Core Skills')}
-                    {renderSection('certifications', 'Certifications')}
+                    {renderSection('skills', t('resume.sec_core_skills'))}
+                    {renderSection('certifications', t('resume.sec_certs'))}
                   </div>
                 )}
               </div>
@@ -518,7 +520,7 @@ const ResumeStudio = () => {
             </div>
           </div>
 
-          <p style={{ fontSize:11, color:DS.fm, textAlign:'center' as const, marginTop:12 }}>All changes save automatically · Click Download to export</p>
+          <p style={{ fontSize:11, color:DS.fm, textAlign:'center' as const, marginTop:12 }}>{t('resume.autosave')}</p>
         </main>
     </PortalShell>
   );
