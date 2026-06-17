@@ -216,7 +216,10 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
 
 
   const loadVisuals = async (lesson: any, courseTitle: string) => {
-    const key = lesson?.id || '';
+    // Language-aware cache key: EN and ES/FR/etc. diagrams are cached separately so a
+    // Spanish student never sees the English-generated SVG. (lesson_visuals.lesson_id
+    // is an untyped text key — safe to namespace.)
+    const key = lesson?.id ? `${lesson.id}::${language}` : '';
     if (!key || key === visualsKey) return;
     setVisualsKey(key);
     setVisualsLoading(true);
@@ -230,8 +233,10 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       }
     } catch { }
     try {
+      // Generate from the LOCALIZED lesson (title/description in the selected language)
+      // and tell the generator which language to label the diagram in.
       const res = await supabase.functions.invoke('generate-visuals', {
-        body: { lessonTitle: lesson?.title || '', lessonDescription: lesson?.description || '', courseTitle }
+        body: { lessonTitle: getTitle(lesson), lessonDescription: getDescription(lesson), courseTitle, language }
       });
       if (res.data?.svgs?.length > 0) {
         setLessonVisuals(res.data.svgs);
@@ -243,7 +248,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
 
   useEffect(() => {
     if (currentLesson && course) loadVisuals(currentLesson, course.title);
-  }, [currentLesson?.id, course?.id]);
+  }, [currentLesson?.id, course?.id, language]);
 
   // Auto-reset Prof. Didier when student clicks a different lesson
   const activeLessonIdRef = useRef<string>('');

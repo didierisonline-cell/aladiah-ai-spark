@@ -5,9 +5,14 @@ const cors = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"
 serve(async (req) => {
   if (req.method==="OPTIONS") return new Response("ok",{headers:cors});
   try {
-    const { lessonTitle, lessonDescription, courseTitle } = await req.json();
+    const { lessonTitle, lessonDescription, courseTitle, language } = await req.json();
     const key = Deno.env.get("ANTHROPIC_API_KEY")||"";
-    const prompt = `Create 2 professional educational SVG diagrams. Course: ${courseTitle}. Lesson: ${lessonTitle}. Description: ${lessonDescription||''}.
+    const LANG: Record<string,string> = { en:"English", es:"Spanish", fr:"French", pt:"Portuguese", de:"German", ar:"Arabic", zh:"Chinese (Simplified)", hi:"Hindi" };
+    const langName = LANG[language] || "English";
+    const langRule = language && language !== 'en'
+      ? `\n\nLANGUAGE: Write EVERY diagram text label, title, and annotation in ${langName}. Do NOT use English for any visible label. Keep only protected brand/technical names unchanged: Aladiah, Scrum, AI, Sprint, Kanban, SAFe, Jira, GitHub. ${language==='ar' ? 'This is a Right-To-Left language: set direction="rtl" on <text> and right-anchor labels appropriately.' : ''}`
+      : '';
+    const prompt = `Create 2 professional educational SVG diagrams. Course: ${courseTitle}. Lesson: ${lessonTitle}. Description: ${lessonDescription||''}.${langRule}
 
 CRITICAL ACCURACY RULES (this is a paid certification course — fabricated facts cause real harm):
 - Use ONLY concepts, terms, and facts that appear in the Description above, plus widely-established, non-controversial Scrum framework facts (the 3 accountabilities, 5 events, 3 artifacts, event timeboxes from the Scrum Guide).
