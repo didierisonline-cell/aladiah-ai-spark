@@ -176,11 +176,11 @@ const Enroll = () => {
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label className="text-white/70 text-sm">{t('enroll.label.fullname')} *</Label>
-                    <Input value={form.fullName} onChange={e => updateField('fullName', e.target.value)} placeholder="John Doe" required maxLength={100} className="bg-white/5 border-white/10 text-white placeholder:text-white/30" />
+                    <Input value={form.fullName} onChange={e => updateField('fullName', e.target.value)} placeholder={t('enroll.ph.name')} required maxLength={100} className="bg-white/5 border-white/10 text-white placeholder:text-white/30" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-white/70 text-sm">{t('enroll.label.email')} *</Label>
-                    <Input type="email" value={form.email} onChange={e => updateField('email', e.target.value)} placeholder="john@company.com" required maxLength={255} className="bg-white/5 border-white/10 text-white placeholder:text-white/30" />
+                    <Input type="email" value={form.email} onChange={e => updateField('email', e.target.value)} placeholder={t('enroll.ph.email')} required maxLength={255} className="bg-white/5 border-white/10 text-white placeholder:text-white/30" />
                   </div>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-5">
@@ -203,11 +203,11 @@ const Enroll = () => {
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label className="text-white/70 text-sm">{t('enroll.label.company')} <span className="text-white/30 text-xs">{t('enroll.optional')}</span></Label>
-                    <Input value={form.company} onChange={e => updateField('company', e.target.value)} placeholder="Acme Corp" maxLength={100} className="bg-white/5 border-white/10 text-white placeholder:text-white/30" />
+                    <Input value={form.company} onChange={e => updateField('company', e.target.value)} placeholder={t('enroll.ph.company')} maxLength={100} className="bg-white/5 border-white/10 text-white placeholder:text-white/30" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-white/70 text-sm">{t('enroll.label.jobtitle')} <span className="text-white/30 text-xs">{t('enroll.optional')}</span></Label>
-                    <Input value={form.jobTitle} onChange={e => updateField('jobTitle', e.target.value)} placeholder="Software Engineer" maxLength={100} className="bg-white/5 border-white/10 text-white placeholder:text-white/30" />
+                    <Input value={form.jobTitle} onChange={e => updateField('jobTitle', e.target.value)} placeholder={t('enroll.ph.role')} maxLength={100} className="bg-white/5 border-white/10 text-white placeholder:text-white/30" />
                   </div>
                 </div>
                 <div className="pt-4">
