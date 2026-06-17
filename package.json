@@ -9,7 +9,8 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "audit:i18n-data": "node scripts/audit-i18n-data.mjs"
+    "audit:i18n-data": "node scripts/audit-i18n-data.mjs",
+    "populate:translations": "node scripts/populate-translations.mjs"
   },
   "dependencies": {
     "@elevenlabs/client": "^1.0.0",
