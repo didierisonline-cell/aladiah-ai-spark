@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import PortalShell from '@/components/portal/PortalShell';
 import { RESOURCE_TRACKS } from '@/data/resourcesData';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', card2:'#142035', border:'#1E2D47',
@@ -50,6 +51,7 @@ const SCHOOL_MAP: Record<string,{color:string;icon:string;school:string}> = {
 export default function MyCareerPath() {
   const navigate = useNavigate();
   const {user} = useAuth();
+  const { t } = useLanguage();
   const [courses,setCourses] = useState<any[]>([]);
   const [chapters,setChapters] = useState<any[]>([]);
   const [selectedId,setSelectedId] = useState<string|null>(null);
@@ -96,20 +98,20 @@ export default function MyCareerPath() {
     <PortalShell background={DS.bg}>
         <main style={{padding:'2rem',background:DS.bg,minWidth:0}}>
           <div style={{marginBottom:'1.75rem'}}>
-            <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:'uppercase' as const,color:DS.fm,marginBottom:'.3rem'}}>CAREER FOCUS</div>
-            <h1 style={{fontSize:'1.75rem',fontWeight:800,margin:0}}>My Career Path</h1>
-            <p style={{fontSize:13,color:DS.fm,marginTop:'.3rem'}}>Choose your target program. See your full roadmap, resources, glossary, and global salary data — all in one place.</p>
+            <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:'uppercase' as const,color:DS.fm,marginBottom:'.3rem'}}>{t('career.focus')}</div>
+            <h1 style={{fontSize:'1.75rem',fontWeight:800,margin:0}}>{t('career.title')}</h1>
+            <p style={{fontSize:13,color:DS.fm,marginTop:'.3rem'}}>{t('career.subtitle')}</p>
           </div>
 
           <div style={{display:'grid',gridTemplateColumns:'280px 1fr',gap:'1.5rem',alignItems:'start'}}>
             {/* Program list */}
             <div style={{background:DS.card,border:`1px solid ${DS.border}`,borderRadius:'1rem',overflow:'hidden',position:'sticky' as const,top:90}}>
               <div style={{padding:'1rem 1.25rem',borderBottom:`1px solid ${DS.border}`}}>
-                <div style={{fontSize:11,fontWeight:700,color:DS.fg}}>Select your program</div>
-                <div style={{fontSize:10,color:DS.fm,marginTop:2}}>28 AI workforce programs</div>
+                <div style={{fontSize:11,fontWeight:700,color:DS.fg}}>{t('career.select_prog')}</div>
+                <div style={{fontSize:10,color:DS.fm,marginTop:2}}>{t('career.prog_count')}</div>
               </div>
               <div style={{maxHeight:'calc(100vh - 220px)',overflowY:'auto' as const,padding:'.5rem 0'}}>
-                {loading ? <div style={{padding:'2rem',textAlign:'center' as const,color:DS.fm,fontSize:12}}>Loading...</div> :
+                {loading ? <div style={{padding:'2rem',textAlign:'center' as const,color:DS.fm,fontSize:12}}>{t('career.loading')}</div> :
                   Object.entries(bySchool).map(([school,list])=>{
                     const sm = SCHOOL_MAP[school]||{color:DS.blue,icon:'📚',school};
                     return <div key={school}>
@@ -134,8 +136,8 @@ export default function MyCareerPath() {
             {!course ? (
               <div style={{background:DS.card,border:`1px solid ${DS.border}`,borderRadius:'1rem',padding:'4rem 2rem',textAlign:'center' as const}}>
                 <div style={{fontSize:48,marginBottom:'1rem'}}>🎯</div>
-                <div style={{fontSize:'1.1rem',fontWeight:700,marginBottom:'.5rem'}}>Choose your career target</div>
-                <div style={{fontSize:13,color:DS.fm,maxWidth:360,margin:'0 auto'}}>Select a program on the left to see your full learning roadmap, salary data, resources, and everything you need to succeed.</div>
+                <div style={{fontSize:'1.1rem',fontWeight:700,marginBottom:'.5rem'}}>{t('career.choose_target')}</div>
+                <div style={{fontSize:13,color:DS.fm,maxWidth:360,margin:'0 auto'}}>{t('career.choose_target_desc')}</div>
               </div>
             ) : (
               <div>
@@ -147,21 +149,21 @@ export default function MyCareerPath() {
                       <h2 style={{fontSize:'1.3rem',fontWeight:800,margin:'0 0 .4rem'}}>{course.title}</h2>
                       <p style={{fontSize:13,color:DS.fm,margin:'0 0 .75rem',lineHeight:1.6}}>{course.description}</p>
                       <div style={{display:'flex',gap:8,flexWrap:'wrap' as const}}>
-                        <span style={{fontSize:11,padding:'3px 10px',borderRadius:99,background:'rgba(74,144,245,.12)',color:DS.blue,fontWeight:600}}>{chapters.length} modules</span>
-                        <span style={{fontSize:11,padding:'3px 10px',borderRadius:99,background:'rgba(245,184,26,.12)',color:DS.gold,fontWeight:600}}>Aladiah Certified™</span>
+                        <span style={{fontSize:11,padding:'3px 10px',borderRadius:99,background:'rgba(74,144,245,.12)',color:DS.blue,fontWeight:600}}>{chapters.length} {t('career.modules')}</span>
+                        <span style={{fontSize:11,padding:'3px 10px',borderRadius:99,background:'rgba(245,184,26,.12)',color:DS.gold,fontWeight:600}}>{t('career.certified')}</span>
                         <span style={{fontSize:11,padding:'3px 10px',borderRadius:99,background:'rgba(34,201,138,.12)',color:DS.green,fontWeight:600}}>{track?.school||'AI Engineering'}</span>
                       </div>
                     </div>
-                    <button onClick={()=>navigate(`/portal/course/${course.id}`)} style={{padding:'10px 20px',background:DS.blue,border:'none',borderRadius:'.6rem',color:'#fff',fontSize:12,fontWeight:700,cursor:'pointer',whiteSpace:'nowrap' as const,flexShrink:0}}>Start Learning →</button>
+                    <button onClick={()=>navigate(`/portal/course/${course.id}`)} style={{padding:'10px 20px',background:DS.blue,border:'none',borderRadius:'.6rem',color:'#fff',fontSize:12,fontWeight:700,cursor:'pointer',whiteSpace:'nowrap' as const,flexShrink:0}}>{t('career.start_learning')}</button>
                   </div>
                 </div>
 
                 {/* Tabs */}
                 <div style={{display:'flex',borderBottom:`1px solid ${DS.border}`,marginBottom:'1.25rem',overflowX:'auto' as const}}>
-                  {tabBtn('path','🗺️ Learning Path')}
-                  {tabBtn('resources','📖 Resources')}
-                  {tabBtn('glossary','📚 Glossary')}
-                  {tabBtn('salary','💰 Salary & Jobs')}
+                  {tabBtn('path',t('career.tab_path'))}
+                  {tabBtn('resources',t('career.tab_resources'))}
+                  {tabBtn('glossary',t('career.tab_glossary'))}
+                  {tabBtn('salary',t('career.tab_salary'))}
                 </div>
 
                 {/* Path tab */}
@@ -170,13 +172,13 @@ export default function MyCareerPath() {
                     {chapters.length===0 ? (
                       <div style={{background:DS.card,border:`1px solid ${DS.border}`,borderRadius:'.75rem',padding:'2.5rem',textAlign:'center' as const}}>
                         <div style={{fontSize:32,marginBottom:'.75rem'}}>📋</div>
-                        <div style={{fontSize:14,fontWeight:700,marginBottom:'.4rem'}}>Modules loading...</div>
-                        <div style={{fontSize:12,color:DS.fm,marginBottom:'1rem'}}>Content for this program is being prepared.</div>
-                        <button onClick={()=>navigate(`/portal/course/${course.id}`)} style={{padding:'8px 20px',background:DS.blue,border:'none',borderRadius:'.5rem',color:'#fff',fontSize:12,fontWeight:700,cursor:'pointer'}}>Go to Course Page</button>
+                        <div style={{fontSize:14,fontWeight:700,marginBottom:'.4rem'}}>{t('career.modules_loading')}</div>
+                        <div style={{fontSize:12,color:DS.fm,marginBottom:'1rem'}}>{t('career.content_preparing')}</div>
+                        <button onClick={()=>navigate(`/portal/course/${course.id}`)} style={{padding:'8px 20px',background:DS.blue,border:'none',borderRadius:'.5rem',color:'#fff',fontSize:12,fontWeight:700,cursor:'pointer'}}>{t('career.go_course')}</button>
                       </div>
                     ) : (
                       <div>
-                        <div style={{fontSize:12,color:DS.fm,marginBottom:'1rem'}}>{chapters.length} modules · Complete in order for best results</div>
+                        <div style={{fontSize:12,color:DS.fm,marginBottom:'1rem'}}>{chapters.length} {t('career.complete_order')}</div>
                         {chapters.map((ch,i)=>(
                           <div key={ch.id} onClick={()=>navigate(`/portal/course/${course.id}`)}
                             style={{display:'flex',gap:'1rem',alignItems:'flex-start',background:DS.card,border:`1px solid ${DS.border}`,borderRadius:'.75rem',padding:'1rem 1.25rem',marginBottom:'.75rem',cursor:'pointer',transition:'all .15s'}}
@@ -191,7 +193,7 @@ export default function MyCareerPath() {
                           </div>
                         ))}
                         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'.75rem',marginTop:'1.5rem'}}>
-                          {[{icon:'🧪',label:'Labs',desc:'Apply everything learned',go:()=>navigate('/portal/simulations')},{icon:'🎮',label:'Simulations',desc:'Live AI-graded exercises',go:()=>navigate('/portal/simulations')},{icon:'📋',label:'Case Studies',desc:'Real-world incidents',go:()=>navigate('/portal/resources')}].map(x=>(
+                          {[{icon:'🧪',label:t('career.labs'),desc:t('career.labs_desc'),go:()=>navigate('/portal/simulations')},{icon:'🎮',label:t('career.simulations'),desc:t('career.simulations_desc'),go:()=>navigate('/portal/simulations')},{icon:'📋',label:t('career.case_studies'),desc:t('career.case_studies_desc'),go:()=>navigate('/portal/resources')}].map(x=>(
                             <button key={x.label} onClick={x.go} style={{padding:'1rem',background:DS.card2,border:`1px solid ${DS.border}`,borderRadius:'.75rem',cursor:'pointer',textAlign:'left' as const,transition:'all .15s'}}
                               onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.borderColor=DS.blue+'60';}}
                               onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.borderColor=DS.border;}}>
@@ -209,9 +211,9 @@ export default function MyCareerPath() {
                 {/* Resources tab */}
                 {activeTab==='resources' && (
                   <div>
-                    {!track ? <div style={{background:DS.card,border:`1px solid ${DS.border}`,borderRadius:'.75rem',padding:'2rem',textAlign:'center' as const,color:DS.fm,fontSize:13}}>Resources being curated.</div> : (
+                    {!track ? <div style={{background:DS.card,border:`1px solid ${DS.border}`,borderRadius:'.75rem',padding:'2rem',textAlign:'center' as const,color:DS.fm,fontSize:13}}>{t('career.resources_curated')}</div> : (
                       <div>
-                        <div style={{fontSize:12,color:DS.fm,marginBottom:'1rem'}}>{track.resources.length} curated resources</div>
+                        <div style={{fontSize:12,color:DS.fm,marginBottom:'1rem'}}>{track.resources.length} {t('career.curated_count')}</div>
                         {track.resources.map((r,i)=>(
                           <a key={i} href={r.url} target="_blank" rel="noopener noreferrer"
                             style={{display:'flex',alignItems:'center',gap:'1rem',padding:'.9rem 1.1rem',background:DS.card,border:`1px solid ${DS.border}`,borderRadius:'.65rem',textDecoration:'none',transition:'all .15s',marginBottom:'.6rem'}}
@@ -220,7 +222,7 @@ export default function MyCareerPath() {
                             <div style={{padding:'3px 10px',borderRadius:99,fontSize:9,fontWeight:700,background:'rgba(74,144,245,.12)',color:DS.blue,flexShrink:0}}>{r.type}</div>
                             <div style={{fontSize:13,fontWeight:600,color:DS.fg,flex:1}}>{r.label}</div>
                             <div style={{display:'flex',alignItems:'center',gap:8}}>
-                              {r.free&&<span style={{fontSize:9,padding:'2px 7px',borderRadius:99,background:'rgba(34,201,138,.12)',color:DS.green,fontWeight:700}}>FREE</span>}
+                              {r.free&&<span style={{fontSize:9,padding:'2px 7px',borderRadius:99,background:'rgba(34,201,138,.12)',color:DS.green,fontWeight:700}}>{t('career.free')}</span>}
                               <span style={{fontSize:16,color:DS.fd}}>↗</span>
                             </div>
                           </a>
@@ -233,9 +235,9 @@ export default function MyCareerPath() {
                 {/* Glossary tab */}
                 {activeTab==='glossary' && (
                   <div>
-                    {!track?.glossary?.length ? <div style={{background:DS.card,border:`1px solid ${DS.border}`,borderRadius:'.75rem',padding:'2rem',textAlign:'center' as const,color:DS.fm,fontSize:13}}>Glossary being built.</div> : (
+                    {!track?.glossary?.length ? <div style={{background:DS.card,border:`1px solid ${DS.border}`,borderRadius:'.75rem',padding:'2rem',textAlign:'center' as const,color:DS.fm,fontSize:13}}>{t('career.glossary_building')}</div> : (
                       <div>
-                        <div style={{fontSize:12,color:DS.fm,marginBottom:'1rem'}}>{track.glossary.length} key terms</div>
+                        <div style={{fontSize:12,color:DS.fm,marginBottom:'1rem'}}>{track.glossary.length} {t('career.key_terms')}</div>
                         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'.65rem'}}>
                           {track.glossary.map((g,i)=>(
                             <div key={i} style={{padding:'1rem',background:DS.card,border:`1px solid ${DS.border}`,borderRadius:'.65rem'}}>
@@ -253,15 +255,15 @@ export default function MyCareerPath() {
                 {activeTab==='salary' && salary && (
                   <div>
                     <div style={{marginBottom:'1.5rem'}}>
-                      <div style={{fontSize:11,fontWeight:700,color:DS.fg,marginBottom:'.75rem'}}>Job titles you will qualify for</div>
+                      <div style={{fontSize:11,fontWeight:700,color:DS.fg,marginBottom:'.75rem'}}>{t('career.job_titles')}</div>
                       <div style={{display:'flex',gap:8,flexWrap:'wrap' as const}}>
                         {jobs.map(t=><span key={t} style={{padding:'5px 14px',borderRadius:99,background:'rgba(74,144,245,.1)',border:'1px solid rgba(74,144,245,.25)',color:DS.blue,fontSize:12,fontWeight:600}}>{t}</span>)}
                       </div>
                     </div>
-                    <div style={{fontSize:11,fontWeight:700,color:DS.fg,marginBottom:'.75rem'}}>Annual salary by country</div>
+                    <div style={{fontSize:11,fontWeight:700,color:DS.fg,marginBottom:'.75rem'}}>{t('career.annual_salary')}</div>
                     <div style={{background:DS.card,border:`1px solid ${DS.border}`,borderRadius:'1rem',overflow:'hidden'}}>
                       <div style={{display:'grid',gridTemplateColumns:'1.8fr 1fr 1fr 2fr',padding:'.65rem 1.25rem',background:'rgba(255,255,255,.03)',borderBottom:`1px solid ${DS.border}`}}>
-                        {['Country','Min','Max','Range'].map(h=><div key={h} style={{fontSize:10,fontWeight:700,letterSpacing:1,textTransform:'uppercase' as const,color:DS.fm}}>{h}</div>)}
+                        {[t('career.col_country'),t('career.col_min'),t('career.col_max'),t('career.col_range')].map(h=><div key={h} style={{fontSize:10,fontWeight:700,letterSpacing:1,textTransform:'uppercase' as const,color:DS.fm}}>{h}</div>)}
                       </div>
                       {COUNTRIES.map((c,i)=>{
                         const s=salary[c]||DEFAULT_SALARY[c]; if(!s) return null;
@@ -275,9 +277,9 @@ export default function MyCareerPath() {
                             <span style={{fontSize:18}}>{FLAGS[c]}</span>
                             <div>
                               <div style={{fontSize:12,fontWeight:600,color:DS.fg}}>{c}</div>
-                              <div style={{fontSize:10,color:DS.fm}}>{s.currency}/year</div>
+                              <div style={{fontSize:10,color:DS.fm}}>{s.currency}{t('career.per_year')}</div>
                             </div>
-                            {s.max===mx&&<span style={{fontSize:9,padding:'1px 6px',borderRadius:99,background:'rgba(245,184,26,.15)',color:DS.gold,fontWeight:700}}>TOP</span>}
+                            {s.max===mx&&<span style={{fontSize:9,padding:'1px 6px',borderRadius:99,background:'rgba(245,184,26,.15)',color:DS.gold,fontWeight:700}}>{t('career.top')}</span>}
                           </div>
                           <div style={{fontSize:12,color:DS.fm}}>{fmt(s.min,s.symbol)}</div>
                           <div style={{fontSize:13,fontWeight:700,color:DS.green}}>{fmt(s.max,s.symbol)}</div>
@@ -291,7 +293,7 @@ export default function MyCareerPath() {
                       })}
                     </div>
                     <div style={{marginTop:'1rem',padding:'.75rem 1rem',background:'rgba(74,144,245,.06)',border:'1px solid rgba(74,144,245,.15)',borderRadius:'.6rem',fontSize:11,color:DS.fm,lineHeight:1.6}}>
-                      📊 <strong style={{color:DS.fg}}>Sources:</strong> LinkedIn Salary, Glassdoor, Levels.fyi, Indeed (2024–2025). Ranges reflect total compensation. DR figures in Dominican Pesos (RD$).
+                      📊 <strong style={{color:DS.fg}}>Sources:</strong> {t('career.sources')}
                     </div>
                   </div>
                 )}
