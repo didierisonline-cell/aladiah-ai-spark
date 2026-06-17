@@ -43,11 +43,11 @@ function getDateStr(lang?: string) {
 // in production; populate from real verified graduate outcomes when available.
 const MOMENTUM: { name: string; action: string; role?: string; company?: string; salary?: string; program?: string; cert?: string; time: string }[] = [];
 const SKILLS = [
-  { label: 'Cloud Architecture', pct: 92, color: '#6366f1' },
-  { label: 'Problem Solving', pct: 88, color: '#8b5cf6' },
-  { label: 'AI/ML Fundamentals', pct: 85, color: '#10b981' },
-  { label: 'System Design', pct: 78, color: '#f59e0b' },
-  { label: 'Communication', pct: 74, color: '#f97316' },
+  { labelKey: 'skill.cloud_arch', pct: 92, color: '#6366f1' },
+  { labelKey: 'skill.problem_solving', pct: 88, color: '#8b5cf6' },
+  { labelKey: 'skill.ai_ml', pct: 85, color: '#10b981' },
+  { labelKey: 'skill.system_design', pct: 78, color: '#f59e0b' },
+  { labelKey: 'skill.communication', pct: 74, color: '#f97316' },
 ];
 const TOOLS = [
   { icon: '🎤', lbl: 'ai_interview', sub: 'practice_now', path: '/portal/career' },
@@ -125,7 +125,7 @@ export default function StudentPortal() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const { progress: overallProgress } = useProgress(user?.id);
   const { isPhone, isDesktop } = useBreakpoint();
   // Founder God Mode: unrestricted only when the founder has the toggle ON.
@@ -558,9 +558,9 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                 </div>
               ) : (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                  <span style={{ fontSize: 13, color: '#64748b' }}>No courses started yet.</span>
+                  <span style={{ fontSize: 13, color: '#64748b' }}>{t('portal.no_courses')}</span>
                   <button onClick={() => navigate('/portal/courses')} style={{ padding: '9px 20px', background: 'linear-gradient(135deg,#4f8ef7,#6366f1)', border: 'none', borderRadius: 10, color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
-                    Browse Courses →
+                    {t('portal.browse_courses')}
                   </button>
                 </div>
               )}
@@ -608,7 +608,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 4 }}>
                   <span style={{ fontSize: 13, fontWeight: 700 }}>{T('live_session')}</span>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: '#dc2626', borderRadius: 99, padding: '3px 8px', fontSize: 8.5, fontWeight: 800, boxShadow: '0 0 10px rgba(220,38,38,.55)' }}>
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#fff' }} />LIVE
+                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#fff' }} />{t('portal.live')}
                   </div>
                 </div>
                 <div style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.6, marginBottom: 12 }}>{T('live_session_sub')}</div>
@@ -672,7 +672,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                 <div style={{ padding: '8px 16px 12px', overflowY: 'auto', maxHeight: 320 }}>
                   {schoolCourses.length === 0 && (
                     <div style={{ padding: '24px 12px', textAlign: 'center', color: '#334155', fontSize: 12 }}>
-                      Loading courses…
+                      {t('portal.loading_courses')}
                     </div>
                   )}
                   {schoolCourses.map((cp, idx) => (
@@ -738,8 +738,8 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                 AI
               </div>
               <div>
-                <div style={{ fontSize: 15, fontWeight: 800, color: '#fff', lineHeight: 1.2, marginBottom: 1 }}>Professor Didier AI</div>
-                <div style={{ fontSize: 11, color: '#7a9cbf' }}>Your AI Mentor</div>
+                <div style={{ fontSize: 15, fontWeight: 800, color: '#fff', lineHeight: 1.2, marginBottom: 1 }}>{t('portal.prof_name')}</div>
+                <div style={{ fontSize: 11, color: '#7a9cbf' }}>{t('portal.prof_title')}</div>
               </div>
             </div>
             {/* Message box */}
@@ -794,7 +794,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               return (
               <div key={i} style={{ marginBottom: i < 4 ? 8 : 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, fontSize: 10.5 }}>
-                  <span style={{ color: '#64748b' }}>{sk.label}</span>
+                  <span style={{ color: '#64748b' }}>{t(sk.labelKey)}</span>
                   <span style={{ fontWeight: 700, color: sk.color }}>{pct}%</span>
                 </div>
                 <div style={{ height: 4, background: 'rgba(255,255,255,.07)', borderRadius: 99, overflow: 'hidden' }}>
@@ -836,7 +836,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               </div>
             ))}
             {MOMENTUM.length === 0 && (
-              <div style={{ fontSize: 11, color: '#64748b', lineHeight: 1.5 }}>Verified graduate outcomes will appear here as our community grows.</div>
+              <div style={{ fontSize: 11, color: '#64748b', lineHeight: 1.5 }}>{t('portal.momentum_empty')}</div>
             )}
           </div>
 
@@ -866,10 +866,10 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
               <div style={{ width: 50, height: 50, borderRadius: '50%', background: 'rgba(15,35,80,.9)', border: '2px solid rgba(59,130,246,.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, fontWeight: 800, color: '#60a5fa', flexShrink: 0, boxShadow: '0 0 20px rgba(59,130,246,.3)' }}>AI</div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 800, color: '#fff', fontSize: 15 }}>Professor Didier AI</div>
+                <div style={{ fontWeight: 800, color: '#fff', fontSize: 15 }}>{t('portal.prof_name')}</div>
                 <div style={{ fontSize: 11, color: '#34d399', display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399', display: 'inline-block' }} />
-                  {profLoading ? 'Analyzing your progress...' : 'Your Personal Mentor'}
+                  {profLoading ? t('portal.prof_analyzing') : t('portal.prof_mentor')}
                 </div>
               </div>
               <button onClick={() => { if (!profLoading) setProfChat(false) }} style={{ background: 'none', border: '1px solid rgba(255,255,255,.1)', borderRadius: 8, color: '#64748b', fontSize: 18, cursor: 'pointer', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>×</button>
@@ -884,15 +884,15 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                     ))}
                   </div>
                   <div style={{ fontSize: 12, color: '#60a5fa', fontWeight: 600, textAlign: 'center', lineHeight: 1.6 }}>
-                    Prof. Didier is reviewing your progress<br />
-                    <span style={{ color: '#475569', fontWeight: 400, fontSize: 11 }}>Personalizing your mentoring session...</span>
+                    {t('portal.prof_reviewing')}<br />
+                    <span style={{ color: '#475569', fontWeight: 400, fontSize: 11 }}>{t('portal.prof_personalizing')}</span>
                   </div>
                 </div>
               ) : profGreeting ? (
                 <p style={{ fontSize: 13, color: '#cbd5e1', lineHeight: 1.8, margin: 0 }}>{profGreeting}</p>
               ) : (
                 <p style={{ fontSize: 12, color: '#475569', lineHeight: 1.7, margin: 0, fontStyle: 'italic', textAlign: 'center', paddingTop: 8 }}>
-                  Your personalized mentoring session is ready. Prof. Didier will analyze your progress and give you a custom action plan.
+                  {t('portal.prof_ready')}
                 </p>
               )}
             </div>
@@ -900,10 +900,10 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
             {!profLoading && (
               <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
                 {[
-                  { val: `${overallPct}%`, lbl: 'Overall', color: '#6366f1' },
-                  { val: `${streak}🔥`, lbl: 'Streak', color: '#f97316' },
-                  { val: totalPoints.toLocaleString(), lbl: 'Points', color: '#f59e0b' },
-                  { val: `${courses.filter(c => c.pct > 0 && !c.isCert).length}`, lbl: 'Active', color: '#34d399' },
+                  { val: `${overallPct}%`, lbl: t('portal.stat_overall'), color: '#6366f1' },
+                  { val: `${streak}🔥`, lbl: t('portal.stat_streak'), color: '#f97316' },
+                  { val: totalPoints.toLocaleString(), lbl: t('portal.stat_points'), color: '#f59e0b' },
+                  { val: `${courses.filter(c => c.pct > 0 && !c.isCert).length}`, lbl: t('portal.stat_active'), color: '#34d399' },
                 ].map((s, i) => (
                   <div key={i} style={{ flex: 1, background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.07)', borderRadius: 10, padding: '8px 4px', textAlign: 'center' }}>
                     <div style={{ fontSize: 14, fontWeight: 800, color: s.color }}>{s.val}</div>
@@ -916,16 +916,16 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
             <div style={{ display: 'flex', gap: 8 }}>
               {profGreeting && !profLoading && (
                 <button onClick={generateProfGreeting} style={{ flex: 1, padding: '11px 0', background: 'rgba(37,99,235,.15)', border: '1px solid rgba(37,99,235,.4)', borderRadius: 11, color: '#60a5fa', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: 12 }}>
-                  🔄 Refresh
+                  {t('portal.refresh')}
                 </button>
               )}
               {!profGreeting && !profLoading && (
                 <button onClick={generateProfGreeting} style={{ flex: 2, padding: '12px 0', background: 'linear-gradient(90deg,#2563eb,#6366f1)', border: 'none', borderRadius: 11, color: '#fff', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, boxShadow: '0 0 20px rgba(37,99,235,.4)' }}>
-                  🎙️ Get My Analysis
+                  {t('portal.get_analysis')}
                 </button>
               )}
               <button onClick={() => { setProfChat(false); navigate('/portal/courses'); }} style={{ flex: 2, padding: '12px 0', background: profGreeting ? 'linear-gradient(90deg,#2563eb,#6366f1)' : 'rgba(255,255,255,.06)', border: profGreeting ? 'none' : '1px solid rgba(255,255,255,.1)', borderRadius: 11, color: '#fff', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: 12 }}>
-                📚 Go to Courses
+                {t('portal.go_courses')}
               </button>
             </div>
           </div>
