@@ -16,10 +16,12 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// Canonical founder list — must match src/lib/roles.ts FOUNDER_EMAILS and
+// the aos_is_admin() / auto_assign_admin() DB functions exactly.
 const FOUNDER_EMAILS = [
+  "didier@aladiahacademy.com",
   "didierisonline@gmail.com",
-  "info@aladiahacademy.com",
-  "admin@aladiahacademy.com",
+  "didiermbok@yahoo.com",
 ];
 
 const corsHeaders = {

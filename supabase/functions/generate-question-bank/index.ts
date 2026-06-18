@@ -12,8 +12,7 @@
 // Body: { courseId?, perRun?=25, target?=350 }
 // =============================================================================
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const FOUNDER_EMAILS = ["didier@aladiahacademy.com", "didiermbok@yahoo.com"];
+import { requireAdminOrServiceRole } from "../_shared/adminGuard.ts";
 const FLAGSHIP = "f46d8fc2-50e4-4bd8-91da-f8bac4f7ba14";
 
 // Module (order_index) → topic + competency tags. 0-based index.
@@ -42,18 +41,12 @@ const cors = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
+  const authError = await requireAdminOrServiceRole(req);
+  if (authError) return authError;
   try {
     const url = Deno.env.get("SUPABASE_URL")!;
-    const anon = Deno.env.get("SUPABASE_ANON_KEY")!;
     const service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY")!;
-
-    // ---- AuthZ: founder only ----
-    const authed = createClient(url, anon, { global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } } });
-    const { data: { user } } = await authed.auth.getUser();
-    if (!user || !FOUNDER_EMAILS.includes((user.email ?? "").toLowerCase())) {
-      return new Response(JSON.stringify({ error: "founder only" }), { status: 403, headers: { ...cors, "content-type": "application/json" } });
-    }
 
     const { courseId = FLAGSHIP, perRun = 25, target = 350 } = await req.json().catch(() => ({}));
     const db = createClient(url, service);
