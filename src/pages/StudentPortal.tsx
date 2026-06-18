@@ -8,6 +8,7 @@ import { composeProfFirstMessage, composeProfRecommendation, type ProfMode } fro
 import { getLocalizedField } from '@/lib/i18nData';
 import { useProgress } from '@/hooks/useProgress';
 import { talentScoreFromProgress } from '@/hooks/useTalentScore';
+import { careerHoursLeft } from '@/lib/progressModel';
 import { useIdentity } from '@/hooks/useIdentity';
 import { activeHref } from '@/lib/nav';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
@@ -128,7 +129,9 @@ export default function StudentPortal() {
   const location = useLocation();
   const { user } = useAuth();
   const { language, t } = useLanguage();
-  const { progress: overallProgress } = useProgress(user?.id);
+  // Canonical headline progress — the ONE definition used by every metric on
+  // this page (stat card, Talent Score, Career Path hours, skill bars, mobile).
+  const { pct: overallProgress } = useProgress(user?.id);
   const { isPhone, isDesktop } = useBreakpoint();
   // Founder God Mode: unrestricted only when the founder has the toggle ON.
   // When OFF, the founder sees the real student experience (gates apply).
@@ -158,12 +161,11 @@ export default function StudentPortal() {
   const [profLoading, setProfLoading] = useState(false);
   const [profileRow, setProfileRow] = useState<any | null>(null); // extended profiles row (recap-state cols); consumers (mute/DB day-gate) land in a follow-up
   const [recap, setRecap] = useState<any | null>(null);           // get-student-recap response (Option-A contract); text-only this step
-  // Talent Score — single source of truth (derived from real quiz progress).
+  // Talent Score — single source of truth (derived from canonical progress).
   // Same formula the Talent Score page uses, so the two screens always agree.
   const talentScore = talentScoreFromProgress(overallProgress);
-  // "Hours to employable" derived from real progress against a 600-hour program
-  // target (was a hardcoded 412 placeholder).
-  const hoursLeft = Math.round(((100 - Math.max(0, Math.min(100, overallProgress))) / 100) * 600);
+  // "Hours to employable" derived from the SAME canonical progress (single 600h source).
+  const hoursLeft = careerHoursLeft(overallProgress);
 
   const T = (key: string) => overviewT(language || 'en', key);
 
@@ -348,7 +350,7 @@ export default function StudentPortal() {
       const studentContext = `
 Student name: ${userName}
 Time of day: ${timeOfDay}
-Overall progress across all courses: ${overallPct}%
+Overall progress across all courses: ${overallProgress}%
 Day streak: ${streak} consecutive days
 Total points earned: ${totalPoints}
 Certifications earned: ${certCount}
@@ -398,12 +400,12 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
       if (text) {
         setProfGreeting(text);
       } else {
-        setProfGreeting(`Good ${timeOfDay}, ${userName}! I've analyzed your progress across Aladiah Academy. You're at ${overallPct}% overall with a ${streak}-day streak — that consistency is exactly what separates students who make it to the top. Let's keep pushing forward. Your AI career starts here.`);
+        setProfGreeting(`Good ${timeOfDay}, ${userName}! I've analyzed your progress across Aladiah Academy. You're at ${overallProgress}% overall with a ${streak}-day streak — that consistency is exactly what separates students who make it to the top. Let's keep pushing forward. Your AI career starts here.`);
       }
     } catch {
       const hour = new Date().getHours();
       const timeOfDay = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
-      setProfGreeting(`Good ${timeOfDay}, ${userName}! I've reviewed your progress across Aladiah Academy. You're at ${overallPct}% overall with a ${streak}-day streak. Keep that momentum going — consistency is everything in this field. Let's get to work.`);
+      setProfGreeting(`Good ${timeOfDay}, ${userName}! I've reviewed your progress across Aladiah Academy. You're at ${overallProgress}% overall with a ${streak}-day streak. Keep that momentum going — consistency is everything in this field. Let's get to work.`);
     } finally {
       setProfLoading(false);
     }
@@ -469,7 +471,9 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
   const profRecommendation = recap
     ? composeProfRecommendation(profMode, language || 'en', profCourseTitle)
     : '';
-  const overallPct = courses.length > 0 ? Math.round(courses.reduce((s, c) => s + c.pct, 0) / courses.length) : 0;
+  // NOTE: headline progress is the canonical `overallProgress` (lesson completion
+  // from useProgress), NOT a separate per-course average. `courses[].pct` remains
+  // only for the per-course breakdown cards below.
   const ALL_SCHOOLS = ['AI Engineering', 'AI Business', 'Governance & Risk', 'Human-AI Experience'];
   const schoolCourses = courses.filter(c => c.school === activeSchool);
   const certCourses = courses.filter(c => c.isCert);
@@ -648,7 +652,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
             {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', background: 'linear-gradient(155deg,rgba(8,20,52,.85),rgba(5,13,38,.9))', border: '1px solid rgba(255,255,255,.08)', borderRadius: 16, overflow: 'hidden', backdropFilter: 'blur(28px)', marginBottom: 14 }}>
               {[
-                { val: `${overallPct}%`, lbl: T('overall_progress'), sub: T('keep_going'), color: '#6366f1', onClick: () => navigate('/portal/my-career-path') },
+                { val: `${overallProgress}%`, lbl: T('overall_progress'), sub: T('keep_going'), color: '#6366f1', onClick: () => navigate('/portal/my-career-path') },
                 { val: streak, lbl: `${T('day_streak')} 🔥`, sub: T('amazing'), color: '#f97316', onClick: () => setStreakModal(true) },
                 { val: totalPoints.toLocaleString(), lbl: T('points_earned'), sub: T('this_week'), color: '#f59e0b', onClick: () => setPointsModal(true) },
                 { val: labs.filter((l: any) => l.completed).length, lbl: T('labs_completed'), sub: T('labs_week'), color: '#34d399', onClick: () => setLabsModal(true) },
@@ -918,7 +922,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
             {!profLoading && (
               <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
                 {[
-                  { val: `${overallPct}%`, lbl: t('portal.stat_overall'), color: '#6366f1' },
+                  { val: `${overallProgress}%`, lbl: t('portal.stat_overall'), color: '#6366f1' },
                   { val: `${streak}🔥`, lbl: t('portal.stat_streak'), color: '#f97316' },
                   { val: totalPoints.toLocaleString(), lbl: t('portal.stat_points'), color: '#f59e0b' },
                   { val: `${courses.filter(c => c.pct > 0 && !c.isCert).length}`, lbl: t('portal.stat_active'), color: '#34d399' },

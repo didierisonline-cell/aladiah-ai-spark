@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { useProgress } from '@/hooks/useProgress';
+import { careerHoursEarned } from '@/lib/progressModel';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { activeHref } from '@/lib/nav';
@@ -17,10 +18,10 @@ export default function PortalSidebar({ hoursLeft, coursesCount }: PortalSidebar
   const location = useLocation();
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
-  const { progress } = useProgress(user?.id);
+  const { pct: progress } = useProgress(user?.id);
   // Truthful career-path metric: hours COMPLETED of a 600-hour path (0 for a new
-  // student). Never a fabricated "hours to employable" figure.
-  const completedHours = Math.round((Math.max(0, Math.min(100, progress)) / 100) * 600);
+  // student), from the single canonical 600h source. Never fabricated.
+  const completedHours = careerHoursEarned(progress);
   const { language, t } = useLanguage();
   const T = (key: string) => overviewT(language || 'en', key);
 
