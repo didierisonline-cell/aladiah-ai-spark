@@ -12,11 +12,13 @@
 // =============================================================================
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-/** Founder accounts recognized server-side. Keep in sync with src/lib/roles.ts. */
+/** Canonical founder accounts recognized server-side. Keep in sync with
+ *  src/lib/roles.ts and public.aos_is_admin(). The legacy didiermbok@yahoo.com
+ *  is intentionally NOT here — it has TEMPORARY access via a user_roles admin
+ *  row (honored by the fallback below), revocable without a code change. */
 export const FOUNDER_EMAILS = [
   "didier@aladiahacademy.com",
   "didierisonline@gmail.com",
-  "didiermbok@yahoo.com",
 ];
 
 export const sharedCors = {

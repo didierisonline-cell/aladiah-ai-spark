@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireAdmin } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,32 +12,16 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("No authorization header");
+  // SECURITY: founder/admin only via the shared guard (canonical founder emails
+  // OR a user_roles admin row) — replaces the prior user_roles-only check, which
+  // had no founder-email fallback.
+  const auth = await requireAdmin(req);
+  if (auth instanceof Response) return auth;
 
+  try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabaseAnon = Deno.env.get("SUPABASE_ANON_KEY")!;
-
-    // Verify user is admin
-    const userClient = createClient(supabaseUrl, supabaseAnon, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: { user }, error: authError } = await userClient.auth.getUser();
-    if (authError || !user) throw new Error("Unauthorized");
-
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Check admin role
-    const { data: roleData } = await adminClient
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("role", "admin")
-      .single();
-
-    if (!roleData) throw new Error("Admin access required");
 
     // Gather all analytics
     const [
