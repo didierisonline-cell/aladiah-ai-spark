@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { sendEmail, emailWrapper, btnHtml, SITE_URL } from "../_shared/email.ts";
+import { requireServiceRole, isValidEmail, escapeHtml, json } from "../_shared/emailGuard.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -15,11 +16,17 @@ const TIER_NAMES: Record<string, string> = {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
+  // Server-to-server only (invoked by handle-payment-webhook with the service
+  // role key). verify_jwt = false for this function, so this body check is what
+  // closes the open relay.
+  const denied = requireServiceRole(req);
+  if (denied) return denied;
+
   try {
     const { email, fullName, tier } = await req.json();
-    if (!email) throw new Error("Missing email");
+    if (!isValidEmail(email)) return json(400, { error: "Invalid email" });
 
-    const firstName = (fullName || "Student").split(" ")[0];
+    const firstName = escapeHtml((fullName || "Student").split(" ")[0], 60);
     const tierName = TIER_NAMES[tier] || "Foundation Builder";
 
     const content = `
