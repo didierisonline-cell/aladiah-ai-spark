@@ -101,7 +101,7 @@ export default function HomepageBot() {
 
         {open && (
           <div style={{
-            width: 350, height: 460,
+            width: 'min(350px, calc(100vw - 32px))', height: 'min(460px, calc(100vh - 120px))',
             background: 'linear-gradient(160deg,#0f172a 0%,#1e1b4b 100%)',
             border: '1px solid rgba(124,58,237,0.3)',
             borderRadius: 20, display: 'flex', flexDirection: 'column',
