@@ -1,9 +1,6 @@
+import { requireAdminOrServiceRole, corsHeaders } from "../_shared/adminGuard.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-const corsHeaders = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type"};
-
-const courseData = {
-  "title": "AI Cloud Engineer",
   "description": "Master cloud-native AI infrastructure across AWS, Azure, and GCP. Build, deploy, and operate production-grade AI systems using IaC, Kubernetes, serverless AI patterns, and MLOps pipelines.",
   "translations": {"es": {"title": "AI Cloud Engineer"}, "fr": {"title": "AI Cloud Engineer"}},
   "modules": [
@@ -98,10 +95,11 @@ const courseData = {
     {"title": "10.7 Final Capstone: Your AI Infrastructure Career Roadmap", "desc": "Design a comprehensive 3-year AI infrastructure career plan. Starting point: determine your current level honestly (Starter, Practitioner, Expert, Elite across cloud, Kubernetes, ML infrastructure, security). Target: identify your 3-year destination (Staff Engineer at a top AI company? Principal Engineer at a startup? Head of Platform Engineering?). Gap analysis: what skills must you develop? What projects must you complete? What visibility must you build? Action plan: Year 1 (achieve one major certification, contribute to one open-source project, complete one significant production infrastructure project, give one internal tech talk). Year 2 (publish 6 technical blog posts, achieve Staff Engineer title, specialize in one high-premium area, develop a reputation in one community). Year 3 (conference speaking at one major event, recognized expert in your specialization, Staff+ compensation tier achieved). Present your roadmap with specific quarterly milestones and accountability checkpoints."}
   ]}
 ]
-};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const authError = await requireAdminOrServiceRole(req);
+  if (authError) return authError;
   try {
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const COURSE_TITLE = courseData.title;

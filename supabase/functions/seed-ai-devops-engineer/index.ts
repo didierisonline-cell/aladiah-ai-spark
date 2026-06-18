@@ -1,9 +1,6 @@
+import { requireAdminOrServiceRole, corsHeaders } from "../_shared/adminGuard.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-const corsHeaders = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type"};
-
-const courseData = {
-  "title": "AI DevOps Engineer",
   "description": "Build the CI/CD pipelines, Kubernetes infrastructure, GitOps workflows, and SRE practices that power production AI systems. From containerization to chaos engineering — every DevOps skill modern AI teams require.",
   "translations": {"es": {"title": "AI DevOps Engineer", "description": "Build the CI/CD pipelines, Kubernetes infrastructure, GitOps workflows, and SRE practices that power production AI systems. From containerization to chaos engineering — every DevOps skill modern AI teams require."}, "fr": {"title": "AI DevOps Engineer", "description": "Build the CI/CD pipelines, Kubernetes infrastructure, GitOps workflows, and SRE practices that power production AI systems. From containerization to chaos engineering — every DevOps skill modern AI teams require."}, "de": {"title": "AI DevOps Engineer", "description": "Build the CI/CD pipelines, Kubernetes infrastructure, GitOps workflows, and SRE practices that power production AI systems. From containerization to chaos engineering — every DevOps skill modern AI teams require."}, "zh": {"title": "AI DevOps Engineer", "description": "Build the CI/CD pipelines, Kubernetes infrastructure, GitOps workflows, and SRE practices that power production AI systems. From containerization to chaos engineering — every DevOps skill modern AI teams require."}, "ar": {"title": "AI DevOps Engineer", "description": "Build the CI/CD pipelines, Kubernetes infrastructure, GitOps workflows, and SRE practices that power production AI systems. From containerization to chaos engineering — every DevOps skill modern AI teams require."}, "ja": {"title": "AI DevOps Engineer", "description": "Build the CI/CD pipelines, Kubernetes infrastructure, GitOps workflows, and SRE practices that power production AI systems. From containerization to chaos engineering — every DevOps skill modern AI teams require."}},
   "modules": [
@@ -96,10 +93,11 @@ const courseData = {
     {"title": "10.7 Capstone: Design and Present a Complete AI DevOps Architecture", "desc": "Final capstone project: design the complete AI DevOps architecture for a Series C AI company. Deliverables: infrastructure architecture diagram (all components from VPC to monitoring), CI/CD pipeline design for model deployment, Kubernetes resource configuration, cost optimization strategy with projected annual savings, security architecture against OWASP Top 10 for ML, observability stack design,"}
   ]}
 ]
-};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const authError = await requireAdminOrServiceRole(req);
+  if (authError) return authError;
   try {
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const COURSE_TITLE = courseData.title;

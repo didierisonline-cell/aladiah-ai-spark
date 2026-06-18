@@ -1,3 +1,5 @@
+import { requireAdminOrServiceRole } from "../_shared/adminGuard.ts";
+
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!;
 const FROM_EMAIL = 'noreply@aladiahacademy.com';
 const ADMIN_EMAIL = 'info@aladiahacademy.com';
@@ -82,6 +84,8 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type' } });
   }
+  const authError = await requireAdminOrServiceRole(req);
+  if (authError) return authError;
   try {
     const { type, student, lang = 'en' } = await req.json();
     const t = translations[lang] || translations.en;

@@ -1,9 +1,6 @@
+import { requireAdminOrServiceRole, corsHeaders } from "../_shared/adminGuard.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-const corsHeaders = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type"};
-
-const courseData = {
-  "title": "AI Governance Professional",
   "description": "Master the frameworks, policies, and accountability structures that make AI responsible at enterprise scale. Cover EU AI Act, NIST AI RMF, ISO 42001, bias and fairness, audit methodologies, and board-level AI governance.",
   "translations": {"es": {"title": "AI Governance Professional", "description": "Master the frameworks, policies, and accountability structures that make AI responsible at enterprise scale. Cover EU AI Act, NIST AI RMF, ISO 42001, bias and fairness, audit methodologies, and board-level AI governance."}, "fr": {"title": "AI Governance Professional", "description": "Master the frameworks, policies, and accountability structures that make AI responsible at enterprise scale. Cover EU AI Act, NIST AI RMF, ISO 42001, bias and fairness, audit methodologies, and board-level AI governance."}, "de": {"title": "AI Governance Professional", "description": "Master the frameworks, policies, and accountability structures that make AI responsible at enterprise scale. Cover EU AI Act, NIST AI RMF, ISO 42001, bias and fairness, audit methodologies, and board-level AI governance."}, "zh": {"title": "AI Governance Professional", "description": "Master the frameworks, policies, and accountability structures that make AI responsible at enterprise scale. Cover EU AI Act, NIST AI RMF, ISO 42001, bias and fairness, audit methodologies, and board-level AI governance."}, "ar": {"title": "AI Governance Professional", "description": "Master the frameworks, policies, and accountability structures that make AI responsible at enterprise scale. Cover EU AI Act, NIST AI RMF, ISO 42001, bias and fairness, audit methodologies, and board-level AI governance."}, "ja": {"title": "AI Governance Professional", "description": "Master the frameworks, policies, and accountability structures that make AI responsible at enterprise scale. Cover EU AI Act, NIST AI RMF, ISO 42001, bias and fairness, audit methodologies, and board-level AI governance."}},
   "modules": [
@@ -96,10 +93,11 @@ const courseData = {
     {"title": "10.7 Final Capstone: AI Governance Strategy Presentation", "desc": "Design and present the 3-year AI governance strategy for a global technology company with 100 production AI systems, 5,000 employees in 20 countries, and upcoming EU AI Act compliance deadlines. Deliverable: executive presentation (10 slides) covering current governance maturity assessment, regulatory compliance gap analysis (EU AI Act, GDPR intersection, sector-specific regulations), proposed gov"}
   ]}
 ]
-};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const authError = await requireAdminOrServiceRole(req);
+  if (authError) return authError;
   try {
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const COURSE_TITLE = courseData.title;

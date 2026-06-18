@@ -1,9 +1,6 @@
+import { requireAdminOrServiceRole, corsHeaders } from "../_shared/adminGuard.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-const corsHeaders = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type"};
-
-const courseData = {
-  "title": "AI MLOps Engineer",
   "description": "Master the full MLOps lifecycle: experiment tracking, model deployment, drift detection, CI/CD for ML, and the production reliability practices used at Spotify, Airbnb, and DoorDash.",
   "translations": {"es": {"title": "AI MLOps Engineer", "description": "Master the full MLOps lifecycle: experiment tracking, model deployment, drift detection, CI/CD for ML, and the production reliability practices used at Spotify, Airbnb, and DoorDash."}, "fr": {"title": "AI MLOps Engineer", "description": "Master the full MLOps lifecycle: experiment tracking, model deployment, drift detection, CI/CD for ML, and the production reliability practices used at Spotify, Airbnb, and DoorDash."}, "de": {"title": "AI MLOps Engineer", "description": "Master the full MLOps lifecycle: experiment tracking, model deployment, drift detection, CI/CD for ML, and the production reliability practices used at Spotify, Airbnb, and DoorDash."}, "zh": {"title": "AI MLOps Engineer", "description": "Master the full MLOps lifecycle: experiment tracking, model deployment, drift detection, CI/CD for ML, and the production reliability practices used at Spotify, Airbnb, and DoorDash."}, "ar": {"title": "AI MLOps Engineer", "description": "Master the full MLOps lifecycle: experiment tracking, model deployment, drift detection, CI/CD for ML, and the production reliability practices used at Spotify, Airbnb, and DoorDash."}, "ja": {"title": "AI MLOps Engineer", "description": "Master the full MLOps lifecycle: experiment tracking, model deployment, drift detection, CI/CD for ML, and the production reliability practices used at Spotify, Airbnb, and DoorDash."}},
   "modules": [
@@ -96,10 +93,11 @@ const courseData = {
     {"title": "10.7 Final Capstone: MLOps Maturity Assessment and Transformation Roadmap", "desc": "Full MLOps assessment of a provided organization: assess current maturity state across experiment tracking, data versioning, CI/CD, monitoring, feature store, governance. Identify top 3 highest-impact gaps. Design technical solution for each. Build business case (ROI calculation, executive presentation). Write 18-month roadmap with quarterly milestones. Present to CTO and VP Engineering."}
   ]}
 ]
-};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const authError = await requireAdminOrServiceRole(req);
+  if (authError) return authError;
   try {
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const COURSE_TITLE = courseData.title;

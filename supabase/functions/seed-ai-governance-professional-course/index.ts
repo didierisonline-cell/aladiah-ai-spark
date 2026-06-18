@@ -1,10 +1,7 @@
+import { requireAdminOrServiceRole, corsHeaders } from "../_shared/adminGuard.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
 
 const courseData = {
   title: "AI Governance Professional",
@@ -116,11 +113,12 @@ const courseData = {
             }]
     }
   ]
-};
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
+  const authError = await requireAdminOrServiceRole(req);
+  if (authError) return authError;
   try {
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",

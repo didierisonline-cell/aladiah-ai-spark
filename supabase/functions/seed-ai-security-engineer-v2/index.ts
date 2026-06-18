@@ -1,9 +1,6 @@
+import { requireAdminOrServiceRole, corsHeaders } from "../_shared/adminGuard.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-const corsHeaders = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type"};
-
-const courseData = {
-  "title": "AI Security Engineer",
   "description": "Master AI-specific security engineering: adversarial ML, prompt injection defense, model supply chain security, differential privacy, red teaming, EU AI Act, NIST AI RMF, GDPR, secure AI architecture, and incident response.",
   "translations": {"es": {"title": "AI Security Engineer", "description": "Master AI-specific security engineering: adversarial ML, prompt injection defense, model supply chain security, differential privacy, red teaming, EU AI Act, NIST AI RMF, GDPR, secure AI architecture, and incident response."}, "fr": {"title": "AI Security Engineer", "description": "Master AI-specific security engineering: adversarial ML, prompt injection defense, model supply chain security, differential privacy, red teaming, EU AI Act, NIST AI RMF, GDPR, secure AI architecture, and incident response."}, "de": {"title": "AI Security Engineer", "description": "Master AI-specific security engineering: adversarial ML, prompt injection defense, model supply chain security, differential privacy, red teaming, EU AI Act, NIST AI RMF, GDPR, secure AI architecture, and incident response."}, "zh": {"title": "AI Security Engineer", "description": "Master AI-specific security engineering: adversarial ML, prompt injection defense, model supply chain security, differential privacy, red teaming, EU AI Act, NIST AI RMF, GDPR, secure AI architecture, and incident response."}, "ar": {"title": "AI Security Engineer", "description": "Master AI-specific security engineering: adversarial ML, prompt injection defense, model supply chain security, differential privacy, red teaming, EU AI Act, NIST AI RMF, GDPR, secure AI architecture, and incident response."}, "ja": {"title": "AI Security Engineer", "description": "Master AI-specific security engineering: adversarial ML, prompt injection defense, model supply chain security, differential privacy, red teaming, EU AI Act, NIST AI RMF, GDPR, secure AI architecture, and incident response."}},
   "modules": [
@@ -92,10 +89,11 @@ const courseData = {
     {"title": "10.7 Final Capstone: AI Security Program Design", "desc": "Design the complete AI security program for a Series C AI company with 200 ML engineers and 50 production AI systems. Deliverables: team structure and hiring plan, 12-month security program roadmap (threat modeling all systems, red team schedule, compliance milestones), executive risk communication framework, incident response plan with AI-specific playbooks, training curriculum for ML engineers, "}
   ]}
 ]
-};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const authError = await requireAdminOrServiceRole(req);
+  if (authError) return authError;
   try {
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const COURSE_TITLE = courseData.title;

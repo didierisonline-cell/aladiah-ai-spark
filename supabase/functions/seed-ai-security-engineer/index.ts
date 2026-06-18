@@ -1,9 +1,6 @@
+import { requireAdminOrServiceRole, corsHeaders } from "../_shared/adminGuard.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-const corsHeaders = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type"};
-
-const courseData = {
-  title: "AI Security Engineer",
   description: "Master AI-specific security engineering — adversarial ML attacks, prompt injection defense, model supply chain security, differential privacy, and red teaming methodologies used by Anthropic, Google DeepMind, and Microsoft. Build security into AI systems from day one, not as an afterthought.",
   chapters: [{
     title: "Module 1: AI Threat Landscape, Attack Taxonomy, and Defense Architecture",
@@ -129,10 +126,11 @@ const courseData = {
       {question_text:"What is the 'AI Incident Database' and how should security engineers use it?",scenario_context:"Conducting threat modeling for a new AI-powered hiring decision system.",options:["A database of AI system performance benchmarks","A public catalog of 600+ documented AI harm incidents. Security engineers use it for proactive threat modeling: search for incidents involving similar systems (AI hiring tools, recommendation systems, autonomous vehicles) to identify real-world failure modes before they occur in your deployment.","A list of AI security vulnerabilities (CVEs)","A training dataset for AI safety research"],correct_answer_index:1,explanation:"The AI Incident Database (incidentdatabase.ai) is the empirical foundation for AI threat modeling — real incidents, not hypothetical risks. Before deploying an AI hiring tool, searching for 'hiring algorithm discrimination' incidents reveals documented cases (Amazon's recruiting AI, HireVue facial analysis) that define your threat model with real-world evidence rather than speculation."}
     ]
   }]
-};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const authError = await requireAdminOrServiceRole(req);
+  if (authError) return authError;
   try {
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const { data: ex } = await supabase.from("courses").select("id").eq("title", courseData.title).maybeSingle();

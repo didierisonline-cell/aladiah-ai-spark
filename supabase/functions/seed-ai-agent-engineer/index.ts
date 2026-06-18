@@ -1,9 +1,6 @@
+import { requireAdminOrServiceRole, corsHeaders } from "../_shared/adminGuard.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-const corsHeaders = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type"};
-
-const courseData = {
-  "title": "AI Agent Engineer",
   "description": "Design, build, and deploy production AI agent systems. Master LLM orchestration, multi-agent coordination, tool use, RAG architectures, and autonomous workflow design.",
   "translations": {"es": {"title": "AI Agent Engineer"}, "fr": {"title": "AI Agent Engineer"}},
   "modules": [
@@ -98,10 +95,11 @@ const courseData = {
     {"title": "10.7 Final Capstone: Agent Engineering Portfolio and Career Plan", "desc": "Comprehensive career plan and portfolio review. Portfolio requirements: 3 production-quality agent projects (public GitHub repos with comprehensive documentation), 1 contribution to a major open-source agent framework, 5 published technical posts about agent engineering, 1 conference talk or meetup presentation. Career plan: Year 1 (complete all portfolio projects, make first open-source contribution, publish monthly, achieve Senior Agent Engineer title), Year 2 (staff-level architectural decision, recognized specialization, 10,000 GitHub stars or 20,000 newsletter subscribers), Year 3 (Principal Agent Engineer title, conference keynote or workshop paper, advisory role or independent consulting at $400K+ equivalent). Present your portfolio and career plan as if interviewing for a Staff Agent Engineer role at a leading AI company."}
   ]}
 ]
-};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const authError = await requireAdminOrServiceRole(req);
+  if (authError) return authError;
   try {
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const COURSE_TITLE = courseData.title;

@@ -1,9 +1,6 @@
+import { requireAdminOrServiceRole, corsHeaders } from "../_shared/adminGuard.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-const corsHeaders = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type"};
-
-const courseData = {
-  "title": "AI Data Engineer",
   "description": "Master the data infrastructure that powers AI — data lakehouses, dbt transformations, Apache Kafka streaming, feature engineering, and feature stores. Build production pipelines used at Uber, Netflix, Airbnb, and every serious AI-first company.",
   "translations": {"es": {"title": "AI Data Engineer", "description": "Master the data infrastructure that powers AI — data lakehouses, dbt transformations, Apache Kafka streaming, feature engineering, and feature stores. Build production pipelines used at Uber, Netflix, Airbnb, and every serious AI-first company."}, "fr": {"title": "AI Data Engineer", "description": "Master the data infrastructure that powers AI — data lakehouses, dbt transformations, Apache Kafka streaming, feature engineering, and feature stores. Build production pipelines used at Uber, Netflix, Airbnb, and every serious AI-first company."}, "de": {"title": "AI Data Engineer", "description": "Master the data infrastructure that powers AI — data lakehouses, dbt transformations, Apache Kafka streaming, feature engineering, and feature stores. Build production pipelines used at Uber, Netflix, Airbnb, and every serious AI-first company."}, "zh": {"title": "AI Data Engineer", "description": "Master the data infrastructure that powers AI — data lakehouses, dbt transformations, Apache Kafka streaming, feature engineering, and feature stores. Build production pipelines used at Uber, Netflix, Airbnb, and every serious AI-first company."}, "ar": {"title": "AI Data Engineer", "description": "Master the data infrastructure that powers AI — data lakehouses, dbt transformations, Apache Kafka streaming, feature engineering, and feature stores. Build production pipelines used at Uber, Netflix, Airbnb, and every serious AI-first company."}, "ja": {"title": "AI Data Engineer", "description": "Master the data infrastructure that powers AI — data lakehouses, dbt transformations, Apache Kafka streaming, feature engineering, and feature stores. Build production pipelines used at Uber, Netflix, Airbnb, and every serious AI-first company."}},
   "modules": [
@@ -96,10 +93,11 @@ const courseData = {
     {"title": "10.7 Capstone: Design and Present Your AI Data Platform", "desc": "Final project: given a fictional Series C AI company (ride-sharing, 5M daily active users, 15 ML models, 50 data engineers), design the complete AI data platform. Deliverable: architecture diagram, technology selections with rationale, cost estimate, team structure, 90-day implementation roadmap, and a data quality + governance plan. Present as if pitching to the CTO. Peer review against the Netfl"}
   ]}
 ]
-};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const authError = await requireAdminOrServiceRole(req);
+  if (authError) return authError;
   try {
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const COURSE_TITLE = courseData.title;
