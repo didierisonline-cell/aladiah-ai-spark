@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
+import { composeProfFirstMessage, composeProfRecommendation, type ProfMode } from '@/lib/profDidierMessage';
 import { useProgress } from '@/hooks/useProgress';
 import { talentScoreFromProgress } from '@/hooks/useTalentScore';
 import { useIdentity } from '@/hooks/useIdentity';
@@ -413,13 +414,6 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
   // greets with the CURRENT student's first name (useIdentity) — never a stale/old
   // recap value, and never a prior/test name.
   const recapName = firstName;
-  // The server-composed first_message embeds the student's full name; rewrite any
-  // occurrence of the server's name to the live FIRST name, so the program-confirmation
-  // message reads e.g. "Congratulations, Test2Real!" / "Congratulations, Didier!" and
-  // can never surface an old/test name carried by the recap payload.
-  const profFirstMessage = recap?.first_message
-    ? (recap?.student_name ? String(recap.first_message).split(recap.student_name).join(firstName) : recap.first_message)
-    : T('prof_analyzed');
   const modeGreeting =
     recap?.mode === 'onboarding' ? T('prof_greet_onboarding') :
     recap?.mode === 'daily_briefing' ? T('prof_greet_daily') :
@@ -451,6 +445,25 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
         ? { id: recapCourse.id, title: recapCourse.title || recapCourseProg?.title || '', prog: recapCourseProg }
         : (topCourse ? { id: topCourse.id, title: topCourse.title, prog: topCourse } : null));
   const nextActionHasProgress = !!(nextActionCourse?.prog && (nextActionCourse.prog.total ?? 0) > 0);
+  // Prof. Didier card copy is composed CLIENT-SIDE in the SELECTED UI language
+  // (not the server recap, which was bound to the stored profiles.preferred_language
+  // and only covered en/es/fr — the root cause of the stale-Spanish card). It reads
+  // only the recap's raw data buckets (mode, lessons since last login) plus the
+  // already-localized selected-program title, so it re-renders instantly on a
+  // language switch across all 8 launch languages with no refetch.
+  const profMode: ProfMode =
+    recap?.mode === 'onboarding' || recap?.mode === 'upgrade_coach' ? recap.mode : 'daily_briefing';
+  const profCourseTitle = nextActionCourse?.title || recapCourse?.title || '';
+  const profFirstMessage = recap
+    ? composeProfFirstMessage(profMode, language || 'en', {
+        name: firstName,
+        course: profCourseTitle,
+        lessons: recap?.since_last_login?.lessons_completed ?? 0,
+      })
+    : T('prof_analyzed');
+  const profRecommendation = recap
+    ? composeProfRecommendation(profMode, language || 'en', profCourseTitle)
+    : '';
   const overallPct = courses.length > 0 ? Math.round(courses.reduce((s, c) => s + c.pct, 0) / courses.length) : 0;
   const ALL_SCHOOLS = ['AI Engineering', 'AI Business', 'Governance & Risk', 'Human-AI Experience'];
   const schoolCourses = courses.filter(c => c.school === activeSchool);
@@ -748,12 +761,12 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                 {modeGreeting}, {recapName}! <span style={{ color: '#f59e0b' }}>🌟</span>
               </div>
               {/* Step 2: data-driven recap (first_message) with static fallback — never blank */}
-              <p style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.55, marginBottom: recap?.recommendation ? 5 : 10 }}>
+              <p style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.55, marginBottom: profRecommendation ? 5 : 10 }}>
                 {profFirstMessage}
               </p>
-              {recap?.recommendation && (
+              {profRecommendation && (
                 <p style={{ fontSize: 11, color: '#67e8f9', fontWeight: 600, lineHeight: 1.5, marginBottom: 10 }}>
-                  {modeRecLabel ? `${modeRecLabel}: ` : '→ '}{recap.recommendation}
+                  {modeRecLabel ? `${modeRecLabel}: ` : '→ '}{profRecommendation}
                 </p>
               )}
               <button onClick={generateProfGreeting} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, width: '100%', minHeight: 38, padding: '8px 12px', background: 'linear-gradient(90deg,#1d4ed8,#2563eb)', border: 'none', borderRadius: 9, color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 0 20px rgba(37,99,235,.38)' }}>
