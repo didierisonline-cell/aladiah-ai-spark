@@ -83,7 +83,7 @@ const Community = () => {
 
       // Get profiles
       const { data: profiles } = await supabase
-        .from('profiles')
+        .from('public_profiles' as any)
         .select('user_id, full_name')
         .in('user_id', userIds);
 
@@ -124,7 +124,7 @@ const Community = () => {
       const missingIds = replyUserIds.filter(id => !profileMap[id]);
       if (missingIds.length > 0) {
         const { data: moreProfiles } = await supabase
-          .from('profiles')
+          .from('public_profiles' as any)
           .select('user_id, full_name')
           .in('user_id', missingIds);
         (moreProfiles || []).forEach(p => {
