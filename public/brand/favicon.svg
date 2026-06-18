@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Aladiah Academy">
+  <defs>
+    <linearGradient id="fvS" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F4F8FF"/><stop offset="1" stop-color="#9FB2CE"/>
+    </linearGradient>
+    <linearGradient id="fvG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F6D27A"/><stop offset="1" stop-color="#C8902E"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#0B1124"/>
+  <!-- gold spiral peak (simplified dot for legibility at 16px) -->
+  <circle cx="32" cy="12" r="3.2" fill="url(#fvG)"/>
+  <!-- silver A blades -->
+  <polygon points="13,52 30,16 35,16 23,52" fill="url(#fvS)"/>
+  <polygon points="51,52 34,16 29,16 41,52" fill="url(#fvS)"/>
+  <!-- gold central spear -->
+  <polygon points="32,20 40,33 32,28 24,33" fill="url(#fvG)"/>
+  <rect x="30.2" y="26" width="3.6" height="26" fill="url(#fvG)"/>
+  <!-- gold base arc -->
+  <path d="M12 54 Q32 61 52 54" stroke="url(#fvG)" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+</svg>

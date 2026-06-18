@@ -12,7 +12,7 @@ import {
   GraduationCap, BookOpen, Trophy, Flame, ArrowRight,
   Clock, Target, TrendingUp, Play, LogOut, CheckCircle
 } from 'lucide-react';
-import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
+const aladiahLogo = '/brand/aladiah-logo.svg';
 import Header from '@/components/Header';
 import {
   courseUITranslations,
