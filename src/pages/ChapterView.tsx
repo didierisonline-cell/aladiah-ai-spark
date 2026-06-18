@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { getLocalizedField } from '@/lib/i18nData';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
@@ -215,7 +216,10 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
 
 
   const loadVisuals = async (lesson: any, courseTitle: string) => {
-    const key = lesson?.id || '';
+    // Language-aware cache key: EN and ES/FR/etc. diagrams are cached separately so a
+    // Spanish student never sees the English-generated SVG. (lesson_visuals.lesson_id
+    // is an untyped text key — safe to namespace.)
+    const key = lesson?.id ? `${lesson.id}::${language}` : '';
     if (!key || key === visualsKey) return;
     setVisualsKey(key);
     setVisualsLoading(true);
@@ -229,8 +233,10 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       }
     } catch { }
     try {
+      // Generate from the LOCALIZED lesson (title/description in the selected language)
+      // and tell the generator which language to label the diagram in.
       const res = await supabase.functions.invoke('generate-visuals', {
-        body: { lessonTitle: lesson?.title || '', lessonDescription: lesson?.description || '', courseTitle }
+        body: { lessonTitle: getTitle(lesson), lessonDescription: getDescription(lesson), courseTitle, language }
       });
       if (res.data?.svgs?.length > 0) {
         setLessonVisuals(res.data.svgs);
@@ -242,7 +248,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
 
   useEffect(() => {
     if (currentLesson && course) loadVisuals(currentLesson, course.title);
-  }, [currentLesson?.id, course?.id]);
+  }, [currentLesson?.id, course?.id, language]);
 
   // Auto-reset Prof. Didier when student clicks a different lesson
   const activeLessonIdRef = useRef<string>('');
@@ -333,7 +339,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       setPassedQuizzes((progressData || []).map((p: any) => p.quiz_id));
       if (videosData && videosData.length > 0) setCurrentLesson(videosData[0] as Video);
     } catch (e: any) {
-      toast({ title: 'Error loading lesson', description: e.message, variant: 'destructive' });
+      toast({ title: t('lesson.err_load'), description: e.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -533,7 +539,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
             {mainPoints.length > 0 && (
               <div style={{ background: 'rgba(30,64,175,0.08)', border: '1px solid rgba(96,165,250,0.15)', borderRadius: 16, padding: '24px 28px', marginBottom: 32 }}>
                 <h3 style={{ fontSize: 13, fontWeight: 700, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <BookOpen size={14} /> Key Learning Points
+                  <BookOpen size={14} /> {t('lesson.key_points')}
                 </h3>
                 <ol style={{ margin: 0, padding: '0 0 0 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {mainPoints.map((pt: string, i: number) => (
@@ -721,10 +727,10 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
                 {showStudyGuide && (
                   <div style={{ marginTop: 12, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(212,175,55,0.2)' }}>
                     <div style={{ padding: '8px 14px', borderBottom: '1px solid rgba(212,175,55,0.15)', background: 'rgba(212,175,55,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#d4af37' }}>📚 {course.title} — {t('chapter.study_guide')}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#d4af37' }}>📚 {getLocalizedField(course, language, 'title')} — {t('chapter.study_guide')}</span>
                       <span style={{ fontSize: 11, color: '#64748b' }}>{t('chapter.read_only')}</span>
                     </div>
-                    <iframe src={getStudyGuidePdf(course.title) + '#toolbar=0&navpanes=0&scrollbar=1'} style={{ width: '100%', height: 520, border: 'none', background: '#0a0f1e' }} title="Study Guide" />
+                    <iframe src={getStudyGuidePdf(course.title) + '#toolbar=0&navpanes=0&scrollbar=1'} style={{ width: '100%', height: 520, border: 'none', background: '#0a0f1e' }} title={t('lesson.study_guide')} />
                     <div style={{ padding: '6px 14px', borderTop: '1px solid rgba(212,175,55,0.1)', textAlign: 'center' }}>
                       <span style={{ fontSize: 11, color: '#475569' }}>Aladiah Academy · Solo Excelencia™</span>
                     </div>

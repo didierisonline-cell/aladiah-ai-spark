@@ -51,8 +51,8 @@ const Header = ({ onProfileClick }: HeaderProps) => {
   const portalNavItems = [
     { labelKey: 'nav.portal', href: '/portal' },
     { labelKey: 'nav.courses', href: '/portal/courses' },
-    { label: 'Flagship', href: '/portal/flagship' },
-    { label: 'Simulations', href: '/portal/simulations' },
+    { labelKey: 'nav.flagship', href: '/portal/flagship' },
+    { labelKey: 'nav.simulations', href: '/portal/simulations' },
     { labelKey: 'nav.talent_score', href: '/portal/talent-score' },
     { labelKey: 'nav.career', href: '/portal/career' },
     { labelKey: 'nav.community', href: '/community' },
@@ -124,7 +124,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
               textDecoration: 'none',
             }}
           >
-            Enterprise ↗
+            {t('header.enterprise')}
           </a>
         )}
 
@@ -171,7 +171,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
             }}
             title="Founder Command Center"
           >
-            👑 Founder
+            👑 {t('header.founder')}
           </a>
         )}
 
@@ -221,6 +221,7 @@ const Header = ({ onProfileClick }: HeaderProps) => {
 function AuthNavButton({ navigate, isPortal }: { navigate: (p: string) => void; isPortal: boolean }) {
   const [user, setUser] = useState<any>(getStoredUser());
   const { pathname } = useLocation();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
@@ -253,34 +254,35 @@ function AuthNavButton({ navigate, isPortal }: { navigate: (p: string) => void; 
     if (pathname.startsWith('/course') || pathname.startsWith('/chapter')) {
       return (
         <a href="/portal" onClick={e => { e.preventDefault(); navigate('/portal'); }}
-          style={btnStyle('#4A90F5', '#fff')}>← Portal</a>
+          style={btnStyle('#4A90F5', '#fff')}>{t('header.back_portal')}</a>
       );
     }
     if (isPortal) {
       return (
         <button onClick={handleLogout} style={btnStyle('transparent', '#F0622A', '1px solid rgba(240,98,42,.4)')}>
-          Done for the Day
+          {t('header.done_day')}
         </button>
       );
     }
     return (
       <a href="/portal" onClick={e => { e.preventDefault(); navigate('/portal'); }}
-        style={btnStyle('#4A90F5', '#fff')}>My Portal →</a>
+        style={btnStyle('#4A90F5', '#fff')}>{t('header.my_portal')} →</a>
     );
   }
 
   return (
     <div style={{ display: 'flex', gap: '0.5rem' }}>
       <a href="/auth" onClick={e => { e.preventDefault(); navigate('/auth'); }}
-        style={btnStyle('transparent', '#8596AD', '1px solid #1E2D47')}>Sign In</a>
+        style={btnStyle('transparent', '#8596AD', '1px solid #1E2D47')}>{t('header.sign_in')}</a>
       <a href="/pricing" onClick={e => { e.preventDefault(); navigate('/pricing'); }}
-        style={btnStyle('#4A90F5', '#fff')}>Enroll →</a>
+        style={btnStyle('#4A90F5', '#fff')}>{t('header.enroll')} →</a>
     </div>
   );
 }
 
 function MobileAuthButtons({ navigate, isPortal, onClose }: { navigate: (p: string) => void; isPortal: boolean; onClose: () => void }) {
   const [user, setUser] = useState<any>(getStoredUser());
+  const { t } = useLanguage();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
@@ -295,7 +297,7 @@ function MobileAuthButtons({ navigate, isPortal, onClose }: { navigate: (p: stri
       <div style={{ marginTop: '1rem' }}>
         <a href="/portal" onClick={e => { e.preventDefault(); navigate('/portal'); onClose(); }}
           style={{ display: 'block', padding: '0.65rem', textAlign: 'center', background: '#4A90F5', color: '#fff', borderRadius: '0.5rem', fontWeight: 700, fontSize: 13, textDecoration: 'none' }}>
-          My Portal →
+          {t('header.my_portal')} →
         </a>
       </div>
     );
@@ -305,11 +307,11 @@ function MobileAuthButtons({ navigate, isPortal, onClose }: { navigate: (p: stri
     <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
       <a href="/auth" onClick={e => { e.preventDefault(); navigate('/auth'); onClose(); }}
         style={{ flex: 1, display: 'block', padding: '0.65rem', textAlign: 'center', background: 'transparent', border: '1px solid #1E2D47', color: '#8596AD', borderRadius: '0.5rem', fontWeight: 600, fontSize: 13, textDecoration: 'none' }}>
-        Sign In
+        {t('header.sign_in')}
       </a>
       <a href="/pricing" onClick={e => { e.preventDefault(); navigate('/pricing'); onClose(); }}
         style={{ flex: 1, display: 'block', padding: '0.65rem', textAlign: 'center', background: '#4A90F5', color: '#fff', borderRadius: '0.5rem', fontWeight: 700, fontSize: 13, textDecoration: 'none' }}>
-        Enroll →
+        {t('header.enroll')} →
       </a>
     </div>
   );

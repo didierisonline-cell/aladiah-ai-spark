@@ -1,14 +1,12 @@
-import { useNavigate } from 'react-router-dom';
 import PortalShell from '@/components/portal/PortalShell';
 import { useAuth } from '@/hooks/useAuth';
-import { displayNameFromEmail } from '@/lib/avatar';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', border:'#1E2D47', fg:'#EDF2F7', fm:'#8596AD',
   blue:'#4A90F5', gold:'#F5B81A', green:'#22C98A', purple:'#A78BFA', orange:'#F0622A',
 };
 
-// Popular platforms students commonly certify on
 const PLATFORM_EXAMPLES = [
   { name:'AWS',          icon:'☁️', color:'#FF9900' },
   { name:'Google Cloud', icon:'🌐', color:'#4285F4' },
@@ -24,7 +22,27 @@ const PLATFORM_EXAMPLES = [
 
 export default function PortalCertifications() {
   const { user } = useAuth();
-  const displayName = displayNameFromEmail(user?.email, user?.user_metadata?.full_name);
+  const { t } = useLanguage();
+
+  const PLATFORM_EXAMPLES = [
+    { name:'AWS',          icon:'☁️', color:'#FF9900' },
+    { name:'Google Cloud', icon:'🌐', color:'#4285F4' },
+    { name:'Microsoft',    icon:'🪟', color:'#00A4EF' },
+    { name:'Coursera',     icon:'📚', color:'#0056D2' },
+    { name:'PMI',          icon:'📋', color:'#1A5276'  },
+    { name:'Scrum.org',    icon:'🔄', color:'#2E86AB'  },
+    { name:'Salesforce',   icon:'☁️', color:'#00A1E0'  },
+    { name:'Databricks',   icon:'⚡', color:'#FF3621'  },
+    { name:'Anthropic',    icon:'🤖', color:'#C084FC'  },
+    { name:t('pcert.other'), icon:'🏅', color:'#F5B81A'  },
+  ];
+
+  const FEATURES = [
+    { icon:'📤', titleKey:'pcert.f0_title', descKey:'pcert.f0_desc' },
+    { icon:'✅', titleKey:'pcert.f1_title', descKey:'pcert.f1_desc' },
+    { icon:'👔', titleKey:'pcert.f2_title', descKey:'pcert.f2_desc' },
+    { icon:'🌐', titleKey:'pcert.f3_title', descKey:'pcert.f3_desc' },
+  ];
 
   return (
     <PortalShell background={DS.bg}>
@@ -33,13 +51,13 @@ export default function PortalCertifications() {
           {/* Page header */}
           <div style={{ marginBottom: 40 }}>
             <div style={{ fontSize: 10, color: DS.gold, fontWeight: 700, letterSpacing: 2, marginBottom: 8 }}>
-              🏅 CERTIFICATION WALLET
+              {t('pcert.label')}
             </div>
             <h1 style={{ fontSize: 32, fontWeight: 900, color: DS.fg, margin: '0 0 10px', letterSpacing: '-0.5px' }}>
-              Your Certification Portfolio
+              {t('pcert.title')}
             </h1>
             <p style={{ color: DS.fm, fontSize: 14, margin: 0, maxWidth: 560, lineHeight: 1.6 }}>
-              Upload and showcase all your professional certifications in one place — AWS, Google, Microsoft, PMI, Scrum, and more. Employers visiting your profile will see everything here.
+              {t('pcert.sub')}
             </p>
           </div>
 
@@ -51,7 +69,6 @@ export default function PortalCertifications() {
             textAlign: 'center', marginBottom: 32,
             position: 'relative', overflow: 'hidden',
           }}>
-            {/* Background decoration */}
             <div style={{
               position: 'absolute', top: -60, right: -60, width: 220, height: 220,
               borderRadius: '50%', background: 'radial-gradient(circle,rgba(245,184,26,.06),transparent 70%)',
@@ -63,7 +80,6 @@ export default function PortalCertifications() {
               pointerEvents: 'none',
             }}/>
 
-            {/* Upload icon */}
             <div style={{
               width: 72, height: 72, borderRadius: 18, margin: '0 auto 20px',
               background: 'rgba(74,144,245,.12)', border: '1px solid rgba(74,144,245,.25)',
@@ -74,13 +90,12 @@ export default function PortalCertifications() {
             </div>
 
             <div style={{ fontSize: 20, fontWeight: 800, color: DS.fg, marginBottom: 8 }}>
-              Upload Your Certifications
+              {t('pcert.upload_h')}
             </div>
             <div style={{ fontSize: 13, color: DS.fm, marginBottom: 28, maxWidth: 420, margin: '0 auto 28px', lineHeight: 1.6 }}>
-              This feature is coming soon. You'll be able to upload your certificates from any platform — PDF, image, or credential URL — and they'll be verified and displayed on your employer-facing profile.
+              {t('pcert.upload_sub')}
             </div>
 
-            {/* Coming soon badge */}
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               background: 'rgba(245,184,26,.12)', border: '1px solid rgba(245,184,26,.3)',
@@ -89,25 +104,20 @@ export default function PortalCertifications() {
               letterSpacing: 1,
             }}>
               <span style={{ width: 7, height: 7, borderRadius: '50%', background: DS.gold, display: 'inline-block', animation: 'pulse 2s infinite' }}/>
-              COMING SOON
+              {t('pcert.coming_soon')}
             </div>
           </div>
 
-          {/* What will be here */}
+          {/* Feature cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 14, marginBottom: 36 }}>
-            {[
-              { icon:'📤', title:'Upload Any Certificate', desc:'PDF, image, or credential URL from any platform worldwide.' },
-              { icon:'✅', title:'Verified & Trusted', desc:'We validate authenticity so employers can trust every credential.' },
-              { icon:'👔', title:'Employer Visibility', desc:'Hiring teams browsing Aladiah Talent Network see your full cert stack.' },
-              { icon:'🌐', title:'Public Profile Link', desc:'Share one link that shows your complete verified certification portfolio.' },
-            ].map((f, i) => (
+            {FEATURES.map((f, i) => (
               <div key={i} style={{
                 background: DS.card, border: `1px solid ${DS.border}`,
                 borderRadius: 12, padding: '18px 20px',
               }}>
                 <div style={{ fontSize: 24, marginBottom: 10 }}>{f.icon}</div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: DS.fg, marginBottom: 6 }}>{f.title}</div>
-                <div style={{ fontSize: 12, color: DS.fm, lineHeight: 1.5 }}>{f.desc}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: DS.fg, marginBottom: 6 }}>{t(f.titleKey)}</div>
+                <div style={{ fontSize: 12, color: DS.fm, lineHeight: 1.5 }}>{t(f.descKey)}</div>
               </div>
             ))}
           </div>
@@ -118,7 +128,7 @@ export default function PortalCertifications() {
             borderRadius: 14, padding: '24px 28px',
           }}>
             <div style={{ fontSize: 11, color: DS.fm, fontWeight: 700, letterSpacing: 1, marginBottom: 16 }}>
-              SUPPORTED PLATFORMS (and more)
+              {t('pcert.platforms')}
             </div>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               {PLATFORM_EXAMPLES.map((p, i) => (

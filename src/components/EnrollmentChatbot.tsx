@@ -4,19 +4,17 @@ import { MessageCircle, X, Send, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ReactMarkdown from 'react-markdown';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/enrollment-chat`;
 
-const suggestedQuestions = [
-  "What certifications does the program cover?",
-  "How long is the program?",
-  "What's included in the $1,999 price?",
-  "I'm new to Scrum — is this for me?",
-];
+const SUGGESTED_KEYS = ['chatbot.q1', 'chatbot.q2', 'chatbot.q3', 'chatbot.q4'];
 
 export default function EnrollmentChatbot() {
+  const { t } = useLanguage();
+  const suggestedQuestions = SUGGESTED_KEYS.map(k => t(k));
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
@@ -32,7 +30,7 @@ export default function EnrollmentChatbot() {
   useEffect(() => {
     if (open && !hasGreeted && messages.length === 0) {
       setHasGreeted(true);
-      sendMessage("Hi, I'm interested in learning more about the program.");
+      sendMessage(t('chatbot.greeting'));
     }
   }, [open, hasGreeted, messages.length]);
 
@@ -87,7 +85,7 @@ export default function EnrollmentChatbot() {
     const newMessages = [...messages, userMsg];
     
     // Don't show the initial greeting as a user message
-    const isGreeting = text === "Hi, I'm interested in learning more about the program." && messages.length === 0;
+    const isGreeting = text === t('chatbot.greeting') && messages.length === 0;
     
     if (!isGreeting) {
       setMessages(newMessages);
@@ -110,7 +108,7 @@ export default function EnrollmentChatbot() {
     try {
       await streamChat(isGreeting ? [userMsg] : newMessages, upsert, () => setIsLoading(false));
     } catch {
-      upsert("Sorry, something went wrong. Please try again!");
+      upsert(t('chatbot.error'));
       setIsLoading(false);
     }
   }, [messages, streamChat]);
@@ -163,7 +161,7 @@ export default function EnrollmentChatbot() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-sm">Aladiah Advisor</p>
-                <p className="text-xs opacity-80">Ask about our programs</p>
+                <p className="text-xs opacity-80">{t('chatbot.subtitle')}</p>
               </div>
               <button onClick={() => setOpen(false)} className="p-1 rounded-full hover:bg-primary-foreground/20 transition-colors">
                 <X className="w-5 h-5" />
@@ -175,7 +173,7 @@ export default function EnrollmentChatbot() {
               {messages.length === 0 && !isLoading && (
                 <div className="text-center text-muted-foreground text-sm py-8">
                   <GraduationCap className="w-10 h-10 mx-auto mb-3 opacity-40" />
-                  <p>Your enrollment advisor is ready!</p>
+                  <p>{t('chatbot.ready')}</p>
                 </div>
               )}
 
@@ -228,7 +226,7 @@ export default function EnrollmentChatbot() {
               <Input
                 value={input}
                 onChange={e => setInput(e.target.value)}
-                placeholder="Ask about our programs..."
+                placeholder={t('chatbot.placeholder')}
                 className="flex-1 text-sm h-9"
                 disabled={isLoading}
               />

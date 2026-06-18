@@ -12,9 +12,9 @@ const Programs = () => {
     {
       id: 'engineering',
       emoji: '⚙️',
-      name: 'School of AI Engineering',
-      tagline: 'Build. Deploy. Scale.',
-      desc: 'Design and operate the AI systems powering modern enterprises. Cloud infrastructure, autonomous agents, data platforms, MLOps, DevOps, and security at production scale.',
+      name: t('pm.eng_name'),
+      tagline: t('pm.eng_tag'),
+      desc: t('pm.eng_desc'),
       count: 8,
       accentColor: '#4A90F5',
       headerBg: 'linear-gradient(90deg,#0D2E6B,#112966,#0a1f50)',
@@ -25,9 +25,9 @@ const Programs = () => {
     {
       id: 'business',
       emoji: '💼',
-      name: 'School of AI Business Transformation',
-      tagline: 'Consult. Manage. Deliver.',
-      desc: 'Lead enterprise AI adoption at the intersection of strategy and execution. Consulting, product management, program delivery, and transformation leadership across global organizations.',
+      name: t('pm.biz_name'),
+      tagline: t('pm.biz_tag'),
+      desc: t('pm.biz_desc'),
       count: 8,
       accentColor: '#F0622A',
       headerBg: 'linear-gradient(90deg,#5C1C08,#4D1807,#3D1106)',
@@ -38,9 +38,9 @@ const Programs = () => {
     {
       id: 'governance',
       emoji: '⚖️',
-      name: 'School of Governance & Risk',
-      tagline: 'Govern. Comply. Protect.',
-      desc: 'Design the frameworks, policies, and audit systems that make AI responsible and trustworthy at scale. The fastest-growing AI specialization globally.',
+      name: t('pm.gov_name'),
+      tagline: t('pm.gov_tag'),
+      desc: t('pm.gov_desc'),
       count: 7,
       accentColor: '#F5B81A',
       headerBg: 'linear-gradient(90deg,#4A3000,#3E2800,#321F00)',
@@ -51,9 +51,9 @@ const Programs = () => {
     {
       id: 'humanai',
       emoji: '🎨',
-      name: 'School of Human-AI Experience',
-      tagline: 'Design. Trust. Connect.',
-      desc: 'Create the interfaces, conversations, and workflows where humans and AI collaborate. The discipline defining the next decade of work and product design.',
+      name: t('pm.human_name'),
+      tagline: t('pm.human_tag'),
+      desc: t('pm.human_desc'),
       count: 5,
       accentColor: '#22C98A',
       headerBg: 'linear-gradient(90deg,#053D25,#043120,#031F14)',
@@ -75,7 +75,7 @@ const Programs = () => {
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/20 mb-6"
           >
             <Zap className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold text-primary">4 Schools · 28 Programs · AI Workforce Infrastructure</span>
+            <span className="text-sm font-semibold text-primary">{t('pm.badge')}</span>
           </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
@@ -124,7 +124,7 @@ const Programs = () => {
                   className="ml-auto text-xs font-bold relative z-10 px-2.5 py-0.5 rounded-full"
                   style={{ color: "rgba(255,255,255,0.85)", background: "rgba(0,0,0,0.25)", border: "1px solid rgba(255,255,255,0.15)" }}
                 >
-                  {school.count} programs
+                  {t('pm.count_programs').replace('{n}', String(school.count))}
                 </span>
               </div>
 
@@ -146,7 +146,7 @@ const Programs = () => {
                   ))}
                   {school.programs.length > 5 && (
                     <span className="text-xs px-2.5 py-1 rounded-lg font-medium bg-muted border border-border text-muted-foreground">
-                      +{school.programs.length - 5} more
+                      {t('pm.more').replace('{n}', String(school.programs.length - 5))}
                     </span>
                   )}
                 </div>
@@ -160,7 +160,7 @@ const Programs = () => {
                     className="flex items-center gap-1 text-xs font-bold group-hover:gap-2 transition-all"
                     style={{ color: school.accentColor }}
                   >
-                    Explore <ArrowRight className="w-3 h-3" />
+                    {t('pm.explore')} <ArrowRight className="w-3 h-3" />
                   </div>
                 </div>
               </div>
@@ -179,27 +179,27 @@ const Programs = () => {
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-secondary/10 text-2xl border border-secondary/20">🏢</div>
                 <div>
-                  <div className="text-xs font-extrabold tracking-widest uppercase text-secondary mb-0.5">NEW STANDARD · L600</div>
-                  <h3 className="text-base font-display font-bold text-foreground">Enterprise Simulation Lab</h3>
+                  <div className="text-xs font-extrabold tracking-widest uppercase text-secondary mb-0.5">{t('pm.sim_label')}</div>
+                  <h3 className="text-base font-display font-bold text-foreground">{t('pm.sim_title')}</h3>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed mb-3 max-w-2xl">
-                Every certification program includes a dedicated enterprise simulation at Level 600 — purpose-built for that certification&apos;s real-world context. 10 simulations across all 4 schools.
+                {t('pm.sim_desc')}
               </p>
               <div className="flex flex-wrap gap-2">
                 {["Sprint Simulation","SAFe PI Planning","Rogers-Shaw Merger","AI Agent Deployment","Governance Audit","Gov AI Program"].map(tag => (
                   <span key={tag} className="text-xs px-2.5 py-1 rounded-lg bg-secondary/10 text-secondary border border-secondary/20 font-medium">{tag}</span>
                 ))}
-                <span className="text-xs px-2.5 py-1 rounded-lg bg-muted text-muted-foreground border border-border font-medium">+4 more</span>
+                <span className="text-xs px-2.5 py-1 rounded-lg bg-muted text-muted-foreground border border-border font-medium">{t('pm.more').replace('{n}', '4')}</span>
               </div>
             </div>
             <div className="lg:flex-shrink-0 flex flex-col gap-2">
               <Button onClick={() => navigate("/simulation")} className="bg-secondary hover:bg-secondary/90 text-secondary-foreground">
-                View Simulations <ArrowRight className="w-4 h-4 ml-1" />
+                {t('pm.view_sims')} <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground justify-center">
                 <Lock className="w-3 h-3" />
-                <span>Unlock at L500 completion</span>
+                <span>{t('pm.unlock_l500')}</span>
               </div>
             </div>
           </div>
@@ -215,12 +215,12 @@ const Programs = () => {
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-muted text-2xl border border-border">📚</div>
                 <div>
-                  <div className="text-xs font-extrabold tracking-widest uppercase text-muted-foreground mb-0.5">FOUNDATION LIBRARY · ALWAYS AVAILABLE</div>
-                  <h3 className="text-base font-display font-bold text-foreground">Foundation Library</h3>
+                  <div className="text-xs font-extrabold tracking-widest uppercase text-muted-foreground mb-0.5">{t('pm.foundation_label')}</div>
+                  <h3 className="text-base font-display font-bold text-foreground">{t('pm.foundation_title')}</h3>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed mb-3 max-w-2xl">
-                Our original 8 programs. The bedrock every elite AI professional builds on. Each earns an Aladiah Associate™ credential and feeds directly into the AI Workforce Programs above.
+                {t('pm.foundation_desc')}
               </p>
               <div className="flex flex-wrap gap-2">
                 {["Scrum Master","Project Management","AI Tools for Managers","Cybersecurity","Solution Architect","Data Analytics","DevOps & Cloud","Business Analysis"].map(c => (
@@ -230,7 +230,7 @@ const Programs = () => {
             </div>
             <div className="lg:flex-shrink-0">
               <Button variant="outline" onClick={() => navigate("/courses")}>
-                Browse Foundation Library <ArrowRight className="w-4 h-4 ml-1" />
+                {t('pm.browse_foundation')} <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </div>
           </div>

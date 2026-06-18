@@ -1,3 +1,4 @@
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import Logo from '@/components/Logo';
 
@@ -12,6 +13,7 @@ interface Props {
 
 /** Compact, safe-area-aware top bar for the student mobile shell. */
 export default function MobileTopBar({ title, score, back }: Props) {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   return (
     <header
@@ -24,7 +26,7 @@ export default function MobileTopBar({ title, score, back }: Props) {
     >
       <div style={{ height: 'var(--mobile-topbar-h)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 14px' }}>
         {back ? (
-          <button onClick={() => navigate(back)} className="tap-target app-tap" style={{ background: 'none', border: 'none', color: '#cbd5e1', fontSize: 22, cursor: 'pointer', display: 'flex', alignItems: 'center' }} aria-label="Back">‹</button>
+          <button onClick={() => navigate(back)} className="tap-target app-tap" style={{ background: 'none', border: 'none', color: '#cbd5e1', fontSize: 22, cursor: 'pointer', display: 'flex', alignItems: 'center' }} aria-label={t('common.back')}>‹</button>
         ) : (
           <div onClick={() => navigate('/portal')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
             <Logo variant="full" style={{ height: 30, width: 'auto' }} />

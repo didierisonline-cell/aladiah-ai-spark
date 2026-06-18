@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const C = { fg: '#f1f5f9', fm: '#94a3b8', fd: '#475569', blue: '#3b82f6', blue2: '#60a5fa', gold: '#f59e0b', green: '#22c55e', card: 'rgba(15,23,42,0.6)', border: 'rgba(96,165,250,0.15)' };
 
@@ -13,11 +14,12 @@ export interface LessonPlayerProps {
 }
 
 function Video({ url }: { url: string }) {
+  const { t } = useLanguage();
   const embed = /youtube|youtu\.be|vimeo/i.test(url);
   return (
     <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', borderRadius: 14, overflow: 'hidden', background: '#000', marginBottom: 18, border: '1px solid rgba(96,165,250,.15)' }}>
       {embed ? (
-        <iframe src={url} title="Lesson video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }} />
+        <iframe src={url} title={t('lesson.video')} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }} />
       ) : (
         <video src={url} controls playsInline style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }} />
       )}
@@ -27,6 +29,7 @@ function Video({ url }: { url: string }) {
 
 /** Immersive single-column lesson player for phones (< 768px). No bottom tab bar. */
 export default function MobileLessonPlayer(p: LessonPlayerProps) {
+  const { t } = useLanguage();
   const [showReading, setShowReading] = useState(true);
   const lesson = p.currentLesson;
   const reading = p.getDescription(lesson);
@@ -38,7 +41,7 @@ export default function MobileLessonPlayer(p: LessonPlayerProps) {
       {/* Sticky header */}
       <header className="safe-top app-tap" style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(10,15,30,0.92)', backdropFilter: 'blur(14px)', borderBottom: '1px solid rgba(96,165,250,0.12)' }}>
         <div style={{ height: 52, display: 'flex', alignItems: 'center', gap: 10, padding: '0 12px' }}>
-          <button onClick={p.onBack} className="tap-target app-tap" aria-label="Back" style={{ background: 'none', border: 'none', color: C.fm, fontSize: 24, cursor: 'pointer' }}>‹</button>
+          <button onClick={p.onBack} className="tap-target app-tap" aria-label={t('lesson.back')} style={{ background: 'none', border: 'none', color: C.fm, fontSize: 24, cursor: 'pointer' }}>‹</button>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: C.fg, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.getTitle(p.chapter)}</div>
           </div>
@@ -65,7 +68,7 @@ export default function MobileLessonPlayer(p: LessonPlayerProps) {
 
       {/* Content */}
       <main className="pb-tabbar" style={{ flex: 1, padding: '14px 16px 0' }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: C.blue, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 6 }}>Lesson {(lesson?.order_index ?? 0) + 1}</div>
+        <div style={{ fontSize: 11, fontWeight: 700, color: C.blue, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 6 }}>{t('lesson.lesson_n').replace('{n}', String((lesson?.order_index ?? 0) + 1))}</div>
         <h1 style={{ fontSize: 22, fontWeight: 800, color: C.fg, margin: '0 0 16px', lineHeight: 1.3 }}>{p.getTitle(lesson)}</h1>
 
         {/* Video */}
@@ -76,7 +79,7 @@ export default function MobileLessonPlayer(p: LessonPlayerProps) {
         {transcript && (
           <div style={{ marginBottom: 18 }}>
             <button onClick={() => setShowReading(s => !s)} className="app-tap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 12, padding: '12px 14px', color: C.blue2, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
-              <span>📖 Reading / transcript</span><span>{showReading ? '▾' : '▸'}</span>
+              <span>{t('lesson.reading')}</span><span>{showReading ? '▾' : '▸'}</span>
             </button>
             {showReading && (
               <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: '14px 16px', marginTop: 8, maxHeight: 320, overflowY: 'auto' }}>
@@ -94,7 +97,7 @@ export default function MobileLessonPlayer(p: LessonPlayerProps) {
             <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'linear-gradient(135deg,#1e40af,#3b82f6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, color: '#fff', flexShrink: 0 }}>D</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: C.fg }}>Prof. Didier</div>
-              <div style={{ fontSize: 11.5, color: p.isLive ? C.green : C.fd }}>{p.isLive ? (p.isSpeaking ? '🎙 Speaking…' : '👂 Listening…') : p.convStatus === 'connecting' ? 'Connecting…' : 'AI Mentor · tap to start'}</div>
+              <div style={{ fontSize: 11.5, color: p.isLive ? C.green : C.fd }}>{p.isLive ? (p.isSpeaking ? t('lesson.speaking') : t('lesson.listening')) : p.convStatus === 'connecting' ? t('lesson.connecting') : t('lesson.mentor_tap')}</div>
             </div>
             {p.isLive && <span style={{ fontSize: 12, color: C.blue2, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{p.fmt(p.duration)}</span>}
           </div>
@@ -111,11 +114,11 @@ export default function MobileLessonPlayer(p: LessonPlayerProps) {
           )}
           <div style={{ padding: '14px 16px' }}>
             {!p.isLive && p.convStatus !== 'connecting' ? (
-              <button onClick={p.onStart} className="app-tap tap-target" style={{ width: '100%', height: 48, borderRadius: 12, border: 'none', background: 'linear-gradient(135deg,#1d4ed8,#3b82f6)', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>💬 Ask Prof. Didier</button>
+              <button onClick={p.onStart} className="app-tap tap-target" style={{ width: '100%', height: 48, borderRadius: 12, border: 'none', background: 'linear-gradient(135deg,#1d4ed8,#3b82f6)', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>{t('lesson.ask_prof')}</button>
             ) : p.convStatus === 'connecting' ? (
-              <button disabled className="tap-target" style={{ width: '100%', height: 48, borderRadius: 12, border: 'none', background: 'rgba(96,165,250,0.1)', color: C.blue2, fontSize: 15, fontWeight: 600, fontFamily: 'inherit' }}>Connecting…</button>
+              <button disabled className="tap-target" style={{ width: '100%', height: 48, borderRadius: 12, border: 'none', background: 'rgba(96,165,250,0.1)', color: C.blue2, fontSize: 15, fontWeight: 600, fontFamily: 'inherit' }}>{t('lesson.connecting')}</button>
             ) : (
-              <button onClick={p.onEnd} className="app-tap tap-target" style={{ width: '100%', height: 48, borderRadius: 12, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.08)', color: '#f87171', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>End session</button>
+              <button onClick={p.onEnd} className="app-tap tap-target" style={{ width: '100%', height: 48, borderRadius: 12, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.08)', color: '#f87171', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>{t('lesson.end_session')}</button>
             )}
           </div>
         </div>
@@ -125,8 +128,8 @@ export default function MobileLessonPlayer(p: LessonPlayerProps) {
           <button onClick={() => p.onOpenQuiz(chapterEndQuiz.id)} className="app-tap" style={{ display: 'flex', alignItems: 'center', gap: 11, width: '100%', background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.35)', borderRadius: 14, padding: 14, cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit', marginBottom: 16 }}>
             <span style={{ fontSize: 22 }}>🏆</span>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 800, color: C.gold }}>Module Quiz</div>
-              <div style={{ fontSize: 11.5, color: '#b45309' }}>Pass to unlock the next module</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: C.gold }}>{t('lesson.module_quiz')}</div>
+              <div style={{ fontSize: 11.5, color: '#b45309' }}>{t('lesson.pass_unlock')}</div>
             </div>
             <span style={{ color: C.gold, fontSize: 18 }}>›</span>
           </button>
@@ -136,7 +139,7 @@ export default function MobileLessonPlayer(p: LessonPlayerProps) {
       {/* Sticky Continue */}
       <div className="safe-bottom" style={{ position: 'sticky', bottom: 0, zIndex: 40, background: 'rgba(10,15,30,0.92)', backdropFilter: 'blur(14px)', borderTop: '1px solid rgba(96,165,250,0.12)', padding: '12px 16px' }}>
         <button onClick={p.onContinue} className="app-tap tap-target" style={{ width: '100%', height: 54, borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#f59e0b,#d97706)', color: '#0a0f1e', fontSize: 16, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-          {p.continueIsToQuiz ? 'Continue to Quiz' : 'Continue'} ›
+          {p.continueIsToQuiz ? t('lesson.continue_quiz') : t('lesson.continue')} ›
         </button>
       </div>
     </div>

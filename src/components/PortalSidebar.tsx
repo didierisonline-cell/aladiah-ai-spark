@@ -5,7 +5,7 @@ import { useProgress } from '@/hooks/useProgress';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { activeHref } from '@/lib/nav';
-import { displayNameFromEmail, initialsFromEmail } from '@/lib/avatar';
+import { useIdentity } from '@/hooks/useIdentity';
 
 interface PortalSidebarProps {
   hoursLeft?: number;
@@ -21,23 +21,22 @@ export default function PortalSidebar({ hoursLeft, coursesCount }: PortalSidebar
   // Truthful career-path metric: hours COMPLETED of a 600-hour path (0 for a new
   // student). Never a fabricated "hours to employable" figure.
   const completedHours = Math.round((Math.max(0, Math.min(100, progress)) / 100) * 600);
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const T = (key: string) => overviewT(language || 'en', key);
 
-  const displayName = displayNameFromEmail(user?.email, user?.user_metadata?.full_name);
-  const initials = initialsFromEmail(user?.email, user?.user_metadata?.full_name);
+  const { displayName, initials } = useIdentity();
 
   const LINKS: { icon: string; lbl: string; path: string; exact?: boolean; badge?: number }[] = [
     { icon: '🏠', lbl: T('overview'), path: '/portal', exact: true },
     { icon: '📚', lbl: T('my_academy'), path: '/portal/courses', badge: coursesCount || undefined },
-    { icon: '🏆', lbl: 'Flagship Program', path: '/portal/flagship' },
+    { icon: '🏆', lbl: t('nav.flagship'), path: '/portal/flagship' },
     { icon: '🎯', lbl: T('my_career'), path: '/portal/my-career-path' },
-    { icon: '🌐', lbl: 'Simulations', path: '/portal/simulations' },
+    { icon: '🌐', lbl: t('nav.simulations'), path: '/portal/simulations' },
     { icon: '⭐', lbl: T('talent'), path: '/portal/talent-score' },
     { icon: '🏅', lbl: T('certs'), path: '/portal/certifications' },
     { icon: '💼', lbl: T('career_tools'), path: '/portal/career' },
     { icon: '🗂️', lbl: T('portfolio'), path: '/portal/portfolio' },
-    { icon: '🤖', lbl: 'AI Mentor', path: '/portal/mentor' },
+    { icon: '🤖', lbl: t('sidebar.ai_mentor'), path: '/portal/mentor' },
     { icon: '👥', lbl: T('community'), path: '/community' },
     { icon: '🏆', lbl: T('leaderboard'), path: '/portal/talent-score' },
     { icon: '📅', lbl: T('events'), path: '/community' },
@@ -56,23 +55,23 @@ export default function PortalSidebar({ hoursLeft, coursesCount }: PortalSidebar
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(10,20,55,.75)', border: '1px solid rgba(255,255,255,.11)', color: '#c7d2fe', padding: '5px 10px', borderRadius: 8, fontSize: 12, fontWeight: 500, marginBottom: 5 }}>
           {T('pro_member')} <span style={{ color: '#818cf8' }}>◆</span>
         </div>
-        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 13 }}>Plan: <b style={{ color: '#e2e8f8' }}>{T('all_access')}</b></div>
+        <div style={{ fontSize: 12, color: '#64748b', marginBottom: 13 }}>{t('sidebar.plan_label')} <b style={{ color: '#e2e8f8' }}>{T('all_access')}</b></div>
         <div style={{ background: 'rgba(5,15,40,.65)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 10, padding: '10px 12px' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 7 }}>
             <span style={{ fontSize: 24, fontWeight: 900, color: '#f97316', textShadow: '0 0 18px rgba(249,115,22,.5)' }}>{completedHours}</span>
-            <span style={{ fontSize: 11.5, color: '#94a3b8' }}>/ 600 hr career path</span>
+            <span style={{ fontSize: 11.5, color: '#94a3b8' }}>{t('sidebar.hr_path')}</span>
           </div>
           <div style={{ height: 5, background: 'rgba(255,255,255,.08)', borderRadius: 99, overflow: 'hidden' }}>
             <div style={{ height: '100%', width: `${(completedHours / 600) * 100}%`, background: 'linear-gradient(90deg,#f97316,#fb923c)', borderRadius: 99, boxShadow: '0 0 10px rgba(249,115,22,.5)' }} />
           </div>
-          <div style={{ fontSize: 10, color: '#64748b', marginTop: 6 }}>Career-path progress</div>
+          <div style={{ fontSize: 10, color: '#64748b', marginTop: 6 }}>{t('sidebar.career_progress')}</div>
         </div>
       </div>
 
       <div style={{ flex: 1, overflow: 'auto' }}>
         {isAdmin && (
           <button onClick={() => navigate('/founder')} style={{ display: 'flex', alignItems: 'center', gap: 9, margin: '12px 10px', padding: '11px 13px', width: 'calc(100% - 20px)', color: '#fff', fontSize: 13, fontWeight: 800, cursor: 'pointer', border: '1px solid rgba(124,58,237,.5)', borderRadius: 10, background: 'linear-gradient(135deg,#7c3aed,#4A90F5)', boxShadow: '0 0 16px rgba(124,58,237,.45)', textAlign: 'left', fontFamily: 'inherit' }}>
-            <span style={{ fontSize: 16 }}>👑</span>Founder Command Center
+            <span style={{ fontSize: 16 }}>👑</span>{t('sidebar.founder_center')}
           </button>
         )}
         {(() => { const current = activeHref(location.pathname, LINKS.map(l => l.path)); return LINKS.map(link => {
@@ -93,7 +92,7 @@ export default function PortalSidebar({ hoursLeft, coursesCount }: PortalSidebar
           <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>🏢</span>{T('management')}
         </a>
         <button onClick={() => navigate('/community')} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '10px 15px', color: '#64748b', fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: 'none', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}>
-          <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>❓</span>Help &amp; Support
+          <span style={{ fontSize: 15, width: 18, textAlign: 'center' }}>❓</span>{t('sidebar.help')}
         </button>
       </div>
 

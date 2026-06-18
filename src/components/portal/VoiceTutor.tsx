@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Mic, MicOff, Volume2, Phone, PhoneOff, Loader2, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface VoiceTutorProps {
   studentName?: string;
@@ -15,17 +16,18 @@ interface VoiceTutorProps {
 const VoiceTutor = ({ studentName, courseProgress }: VoiceTutorProps) => {
   const [isConnecting, setIsConnecting] = useState(false);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const conversation = useConversation({
     onConnect: () => {
-      toast({ title: '🎙️ Connected!', description: 'You can now speak with Professor Didier.' });
+      toast({ title: t('mentor.v.connected_title'), description: t('mentor.v.connected_desc') });
     },
     onDisconnect: () => {
-      toast({ title: 'Call ended', description: 'Voice session disconnected.' });
+      toast({ title: t('mentor.v.call_ended'), description: t('mentor.v.call_ended_desc') });
     },
     onError: (error) => {
       console.error('Voice tutor error:', error);
-      toast({ title: 'Connection error', description: 'Could not connect to voice tutor. Please try again.', variant: 'destructive' });
+      toast({ title: t('mentor.v.conn_error'), description: t('mentor.v.conn_error_desc'), variant: 'destructive' });
     },
   });
 
@@ -48,9 +50,9 @@ const VoiceTutor = ({ studentName, courseProgress }: VoiceTutorProps) => {
     } catch (error: any) {
       console.error('Failed to start voice session:', error);
       if (error.name === 'NotAllowedError') {
-        toast({ title: 'Microphone access required', description: 'Please enable microphone access to use voice tutoring.', variant: 'destructive' });
+        toast({ title: t('mentor.v.mic_required'), description: t('mentor.v.mic_required_desc'), variant: 'destructive' });
       } else {
-        toast({ title: 'Connection failed', description: error.message || 'Could not start voice session.', variant: 'destructive' });
+        toast({ title: t('mentor.v.conn_failed'), description: error.message || t('mentor.v.conn_failed_desc'), variant: 'destructive' });
       }
     } finally {
       setIsConnecting(false);
@@ -72,13 +74,13 @@ const VoiceTutor = ({ studentName, courseProgress }: VoiceTutorProps) => {
               <Volume2 className={`w-5 h-5 ${isActive ? 'text-secondary' : 'text-primary'}`} />
             </div>
             <div>
-              <h3 className="font-semibold text-foreground text-sm">Voice AI Tutor</h3>
-              <p className="text-xs text-muted-foreground">Talk with Professor Didier</p>
+              <h3 className="font-semibold text-foreground text-sm">{t('mentor.v.title')}</h3>
+              <p className="text-xs text-muted-foreground">{t('mentor.v.subtitle')}</p>
             </div>
           </div>
           {isActive && (
             <Badge variant="secondary" className="animate-pulse text-xs">
-              {conversation.isSpeaking ? '🗣️ Speaking...' : '👂 Listening...'}
+              {conversation.isSpeaking ? t('mentor.v.speaking') : t('mentor.v.listening')}
             </Badge>
           )}
         </div>
@@ -88,7 +90,7 @@ const VoiceTutor = ({ studentName, courseProgress }: VoiceTutorProps) => {
             <div className="flex items-center gap-2 mb-2">
               <div className={`w-2 h-2 rounded-full ${conversation.isSpeaking ? 'bg-secondary animate-pulse' : 'bg-green-500'}`} />
               <span className="text-xs text-muted-foreground">
-                {conversation.isSpeaking ? 'Professor Didier is speaking' : 'Your turn to speak'}
+                {conversation.isSpeaking ? t('mentor.v.prof_speaking') : t('mentor.v.your_turn')}
               </span>
             </div>
             <div className="flex gap-1">
@@ -114,19 +116,19 @@ const VoiceTutor = ({ studentName, courseProgress }: VoiceTutorProps) => {
             variant="coral"
           >
             {isConnecting ? (
-              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Connecting...</>
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t('mentor.v.connecting')}</>
             ) : (
-              <><Phone className="w-4 h-4 mr-2" /> Start Voice Session</>
+              <><Phone className="w-4 h-4 mr-2" /> {t('mentor.v.start')}</>
             )}
           </Button>
         ) : (
           <Button onClick={stopConversation} variant="destructive" className="w-full">
-            <PhoneOff className="w-4 h-4 mr-2" /> End Session
+            <PhoneOff className="w-4 h-4 mr-2" /> {t('mentor.v.end')}
           </Button>
         )}
 
         <p className="text-[11px] text-muted-foreground text-center mt-2">
-          {isActive ? 'Speak naturally — ask any Scrum or career question' : 'Real-time voice conversation powered by ElevenLabs'}
+          {isActive ? t('mentor.v.hint_active') : t('mentor.v.hint_idle')}
         </p>
       </CardContent>
     </Card>

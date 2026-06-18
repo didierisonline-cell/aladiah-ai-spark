@@ -123,6 +123,32 @@ const translations: Record<string, {
     successDesc: 'コースの準備ができ次第お知らせします。',
     errorDuplicate: 'すでにウェイトリストに登録されています！',
   },
+  pt: {
+    title: 'Entre na Lista de Espera',
+    description: 'Seja o primeiro a saber quando nosso curso de Gestão de Projetos Profissional for lançado. Tenha acesso antecipado e preços exclusivos.',
+    name: 'Nome Completo',
+    namePlaceholder: 'Digite seu nome completo',
+    email: 'Endereço de E-mail',
+    emailPlaceholder: 'voce@exemplo.com',
+    submit: 'Entrar na Lista',
+    submitting: 'Entrando...',
+    successTitle: 'Você está na lista! 🎉',
+    successDesc: 'Avisaremos assim que o curso estiver pronto.',
+    errorDuplicate: 'Você já está na lista de espera!',
+  },
+  hi: {
+    title: 'प्रतीक्षा सूची में शामिल हों',
+    description: 'हमारे प्रोजेक्ट मैनेजमेंट प्रोफेशनल कोर्स के लॉन्च होने पर सबसे पहले जानें। शीघ्र पहुँच और विशेष मूल्य प्राप्त करें।',
+    name: 'पूरा नाम',
+    namePlaceholder: 'अपना पूरा नाम दर्ज करें',
+    email: 'ईमेल पता',
+    emailPlaceholder: 'aap@udaharan.com',
+    submit: 'सूची में शामिल हों',
+    submitting: 'शामिल हो रहे हैं...',
+    successTitle: 'आप सूची में हैं! 🎉',
+    successDesc: 'कोर्स तैयार होते ही हम आपको सूचित करेंगे।',
+    errorDuplicate: 'आप पहले से ही प्रतीक्षा सूची में हैं!',
+  },
 };
 
 const WaitlistModal = ({ open, onOpenChange }: WaitlistModalProps) => {
@@ -131,7 +157,7 @@ const WaitlistModal = ({ open, onOpenChange }: WaitlistModalProps) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const { toast } = useToast();
-  const { language } = useLanguage();
+  const { language, t: tr } = useLanguage();
 
   const t = translations[language] || translations.en;
 
@@ -184,14 +210,14 @@ const WaitlistModal = ({ open, onOpenChange }: WaitlistModalProps) => {
             <CheckCircle className="w-16 h-16 text-primary mx-auto" />
             <DialogTitle className="text-2xl font-display">{t.successTitle}</DialogTitle>
             <DialogDescription className="text-base">{t.successDesc}</DialogDescription>
-            <Button onClick={() => handleClose(false)} className="mt-4">OK</Button>
+            <Button onClick={() => handleClose(false)} className="mt-4">{tr('modal.ok')}</Button>
           </div>
         ) : (
           <>
             <DialogHeader>
               <div className="flex items-center gap-2 mb-1">
                 <Sparkles className="w-5 h-5 text-primary" />
-                <span className="text-xs font-semibold text-primary uppercase tracking-wider">Coming Soon</span>
+                <span className="text-xs font-semibold text-primary uppercase tracking-wider">{tr('modal.coming_soon')}</span>
               </div>
               <DialogTitle className="text-xl font-display">{t.title}</DialogTitle>
               <DialogDescription>{t.description}</DialogDescription>
