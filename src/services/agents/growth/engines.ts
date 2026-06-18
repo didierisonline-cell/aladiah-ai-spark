@@ -150,6 +150,55 @@ export interface AfricaOpportunityScore {
   total: number;                  // 0-100
 }
 
+// V4 gates — Marketing Intelligence Department
+
+export interface AuthorityScore {
+  has_industry_stats: number;    // 0-25: cites data, statistics, or research?
+  has_expert_reference: number;  // 0-25: references known authority, study, or framework?
+  has_case_study: number;        // 0-25: grounded in a real case or employer evidence?
+  has_track_record: number;      // 0-25: demonstrates history of results?
+  total: number;                 // 0-100 — "why should anybody listen?"
+}
+
+export interface CredibilityScore {
+  student_results: number;       // 0-25: actual student outcomes, placements, scores?
+  portfolio_proof: number;       // 0-25: verifiable artifacts, not claims?
+  simulation_reference: number;  // 0-25: evidence of practice-based learning?
+  hiring_outcomes: number;       // 0-25: mentions real hires, interviews, or offers?
+  total: number;                 // 0-100 — "can this claim be verified?"
+}
+
+export interface ActionabilityScore {
+  has_clear_cta: number;         // 0-25: one specific action to take?
+  action_is_low_friction: number; // 0-25: easy to do right now?
+  action_maps_to_flywheel: number; // 0-25: moves reader toward next flywheel stage?
+  creates_urgency: number;       // 0-25: reason to act now vs. later?
+  total: number;                 // 0-100 — "can somebody do something immediately?"
+}
+
+export interface RetentionScore {
+  is_episodic: number;           // 0-34: part of a series, thread, or ongoing story?
+  creates_open_loop: number;     // 0-33: makes the reader want what comes next?
+  builds_relationship: number;   // 0-33: adds to an ongoing conversation vs. one-off?
+  total: number;                 // 0-100 — "will they come back?"
+}
+
+export interface ConversionScore {
+  lead_potential: number;        // 0-25: likely to generate a lead or inquiry?
+  student_potential: number;     // 0-25: moves someone toward enrollment?
+  graduate_signal: number;       // 0-25: relevant to current students completing?
+  ambassador_signal: number;     // 0-25: would a graduate share this proudly?
+  total: number;                 // 0-100 — "likelihood of lead → student → employed → ambassador"
+}
+
+// Flywheel stage assignment — every asset must map to exactly one stage
+export interface FlywheelMapping {
+  stage: FlywheelStage;
+  stage_number: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  journey_goal: string;           // what this stage accomplishes in the reader's journey
+  next_stage: FlywheelStage | null;
+}
+
 export interface ContentExcellenceScore {
   kane: KaneScore;
   hormozi: HormoziScore;
@@ -163,14 +212,21 @@ export interface ContentExcellenceScore {
   proof: ProofScore;
   employer_demand: EmployerDemandScore;
   africa_opportunity: AfricaOpportunityScore;
+  authority: AuthorityScore;
+  credibility: CredibilityScore;
+  actionability: ActionabilityScore;
+  retention: RetentionScore;
+  conversion: ConversionScore;
+  flywheel: FlywheelMapping;
   final: number;   // weighted composite 0-100
-  gate: 'publish' | 'revise' | 'reject';  // 90+ publish | <90 revise/reject
-  mandatory_check: {  // all five must pass for publish
+  gate: 'publish' | 'revise' | 'reject';  // 90+ AND all mandatory = publish
+  mandatory_check: {
     attention: boolean;
     trust: boolean;
     transformation: boolean;
     proof: boolean;
     employment: boolean;
+    flywheel_assigned: boolean;  // must have a clear stage
     all_pass: boolean;
   };
 }
@@ -798,13 +854,144 @@ function scoreAfricaOpportunity(body: string, hook: string, audience: GrowthAudi
   return { africa_relevance, dr_relevance, economic_transformation, total };
 }
 
+// Gate 13 — Authority: why should anybody listen?
+function scoreAuthority(body: string, proof_source: string): AuthorityScore {
+  const text = body.toLowerCase();
+
+  const has_industry_stats = /\d+%|\d+ million|\d+ billion|according to|research shows|study found|data shows|survey/.test(text) ? 25 : 0;
+  const has_expert_reference = /mckinsey|world economic forum|linkedin learning|gartner|forrester|harvard|stanford|professor|researcher|expert/.test(text) ? 25 :
+    (/framework|methodology|published|peer-reviewed|cited/.test(text) ? 12 : 0);
+  const has_case_study = (
+    /case study|real company|enterprise client|global company|fortune 500|organization used|team implemented/.test(text) ||
+    proof_source.length > 20
+  ) ? 25 : 0;
+  const has_track_record = /track record|year of|built over|since \d{4}|trained \d+|placed \d+|our graduates|our alumni/.test(text) ? 25 : 0;
+
+  const total = Math.min(100, has_industry_stats + has_expert_reference + has_case_study + has_track_record);
+  return { has_industry_stats, has_expert_reference, has_case_study, has_track_record, total };
+}
+
+// Gate 14 — Credibility: can this claim be verified?
+function scoreCredibility(body: string, proof_source: string): CredibilityScore {
+  const text = body.toLowerCase();
+
+  const student_results = /student|learner|graduate|alumni|participant|completed|passed|scored/.test(text) ? 25 : 0;
+  const portfolio_proof = (
+    /portfolio|artifact|proof of work|deliverable|you can see|review here|link to|view the/.test(text) ||
+    proof_source.length > 10
+  ) ? 25 : 0;
+  const simulation_reference = /simulation|scenario|practiced|enterprise exercise|mock|real-world case|hands-on/.test(text) ? 25 : 0;
+  const hiring_outcomes = /hired|interview|offer|placed|got the job|accepted|role at|joined .+ as/.test(text) ? 25 : 0;
+
+  const total = Math.min(100, student_results + portfolio_proof + simulation_reference + hiring_outcomes);
+  return { student_results, portfolio_proof, simulation_reference, hiring_outcomes, total };
+}
+
+// Gate 15 — Actionability: can somebody do something right now?
+function scoreActionability(body: string, cta: string, flywheel_stage: FlywheelStage): ActionabilityScore {
+  const text = (body + ' ' + cta).toLowerCase();
+
+  const has_clear_cta = (
+    /comment|download|join|apply|learn|attend|take|start|follow|sign up|enroll|register|share|save/.test(cta.toLowerCase())
+  ) ? 25 : 0;
+
+  const action_is_low_friction = (
+    /free|one click|takes \d+ minutes|in seconds|no credit card|start now|instantly/.test(text) ||
+    cta.length < 80
+  ) ? 25 : 10;
+
+  // CTA maps to next flywheel stage
+  const flywheelCTAMap: Partial<Record<FlywheelStage, RegExp>> = {
+    attention:       /follow|subscribe|save/,
+    trust:           /comment|reply|share your|download/,
+    community:       /join|community|group|discord|waitlist/,
+    transformation:  /learn|enroll|start|apply|take/,
+    employment:      /apply|interview|upload|connect with/,
+    success_stories: /share|tell us|submit your|nominate/,
+    authority:       /follow|partner|collaborate|speak/,
+  };
+  const stagePattern = flywheelCTAMap[flywheel_stage];
+  const action_maps_to_flywheel = stagePattern && stagePattern.test(text) ? 25 : 10;
+
+  const creates_urgency = /today|now|this week|limited|closing|deadline|don.t miss|before/.test(text) ? 25 : 5;
+
+  const total = Math.min(100, has_clear_cta + action_is_low_friction + action_maps_to_flywheel + creates_urgency);
+  return { has_clear_cta, action_is_low_friction, action_maps_to_flywheel, creates_urgency, total };
+}
+
+// Gate 16 — Retention: will they come back?
+function scoreRetention(hook: string, body: string, title: string): RetentionScore {
+  const text = (hook + ' ' + body + ' ' + title).toLowerCase();
+
+  const is_episodic = (
+    /part \d|episode \d|series|thread|next week i|tomorrow i|coming next|more on this|stay tuned|week \d/.test(text) ||
+    /\(1\/|thread 🧵|a series/.test(hook)
+  ) ? 34 : 0;
+
+  const creates_open_loop = (
+    /here is why|i will explain|more on|coming soon|part 2|there is more|in the next|what comes next/.test(text) ||
+    /\.\.\./.test(hook) ||
+    hook.endsWith('?')
+  ) ? 33 : 10;
+
+  const builds_relationship = (
+    /we|our|i have been|i have learned|what we found|what i believe|in my experience|here is what happened/.test(text)
+  ) ? 33 : 10;
+
+  const total = Math.min(100, is_episodic + creates_open_loop + builds_relationship);
+  return { is_episodic, creates_open_loop, builds_relationship, total };
+}
+
+// Gate 17 — Conversion: likelihood of View → Lead → Student → Graduate → Employed → Ambassador
+function scoreConversion(body: string, cta: string, flywheel_stage: FlywheelStage, audience: GrowthAudience): ConversionScore {
+  const text = (body + ' ' + cta).toLowerCase();
+
+  const lead_potential = (
+    /learn more|find out|get access|download|free assessment|take the quiz|start free/.test(text) ||
+    flywheel_stage === 'attention' || flywheel_stage === 'trust'
+  ) ? 25 : 5;
+
+  const student_potential = (
+    /enroll|join the program|start your path|register|apply now|become/.test(text) ||
+    flywheel_stage === 'community' || flywheel_stage === 'transformation'
+  ) ? 25 : 5;
+
+  const graduate_signal = (
+    /complete|graduate|finish|certif|validated|talent score|proof artifact/.test(text) ||
+    flywheel_stage === 'employment' || flywheel_stage === 'success_stories'
+  ) ? 25 : 5;
+
+  const ambassador_signal = (
+    /share your story|tell your friends|refer|spread the word|you made it|success story/.test(text) ||
+    flywheel_stage === 'authority' || audience === 'employers'
+  ) ? 25 : 5;
+
+  const total = Math.min(100, lead_potential + student_potential + graduate_signal + ambassador_signal);
+  return { lead_potential, student_potential, graduate_signal, ambassador_signal, total };
+}
+
+// Flywheel stage mapper — enforces every asset maps to a stage in the journey
+function mapFlywheel(flywheel_stage: FlywheelStage): FlywheelMapping {
+  const map: Record<FlywheelStage, Omit<FlywheelMapping, 'stage'>> = {
+    attention:       { stage_number: 1, journey_goal: 'View → awareness of Aladiah or Prof. Didier',           next_stage: 'trust' },
+    trust:           { stage_number: 2, journey_goal: 'Awareness → belief that transformation is possible',      next_stage: 'community' },
+    community:       { stage_number: 3, journey_goal: 'Belief → belonging: joining the Aladiah community',       next_stage: 'transformation' },
+    transformation:  { stage_number: 4, journey_goal: 'Belonging → enrollment and active learning',              next_stage: 'employment' },
+    employment:      { stage_number: 5, journey_goal: 'Learning → proof artifacts and interview readiness',       next_stage: 'success_stories' },
+    success_stories: { stage_number: 6, journey_goal: 'Readiness → hired: visible outcome and social proof',     next_stage: 'authority' },
+    authority:       { stage_number: 7, journey_goal: 'Outcome → ambassador: they recruit others into the path', next_stage: null },
+  };
+  return { stage: flywheel_stage, ...map[flywheel_stage] };
+}
+
 // ---------------------------------------------------------------------------
-// Composite gate — V3: 12 gates, mandatory 5-pillar presence check
-// Weights: Kane 15% | Hormozi 15% | Trust 12% | Transformation 12% | Employment 10%
-//          Proof 10% | GoldenRule 8% | Tanner 5% | EmotionalTrigger 5%
-//          EmployerDemand 5% | AfricaOpportunity 3%
-// Threshold: 90+ publish | <90 revise/reject
-// Hard gate: Attention + Trust + Transformation + Proof + Employment ALL must score ≥ 50
+// Composite gate — V4: 17 gates, Marketing Intelligence Department
+// Weights: Kane 12% | Hormozi 10% | Trust 10% | Transformation 10% | Employment 8%
+//          Proof 8% | Authority 8% | Credibility 8% | Actionability 8%
+//          Retention 5% | Conversion 5% | GoldenRule 4% | Tanner 2%
+//          EmotionalTrigger 1% | EmployerDemand 1%
+// Threshold: 90+ AND all mandatory pillars = publish | else revise | GoldenRule fail = reject
+// Mandatory: Attention + Trust + Transformation + Proof + Employment + Flywheel assigned
 // ---------------------------------------------------------------------------
 export function runExcellenceGates(asset: Omit<GrowthAsset, 'score' | 'excellence'>): ContentExcellenceScore {
   const bucket = asset.metadata?.bucket as string ?? '';
@@ -820,41 +1007,64 @@ export function runExcellenceGates(asset: Omit<GrowthAsset, 'score' | 'excellenc
   const proof = scoreProof(asset.body, asset.proof_source);
   const employer_demand = scoreEmployerDemand(asset.body, asset.audience);
   const africa_opportunity = scoreAfricaOpportunity(asset.body, asset.hook, asset.audience);
+  const authority = scoreAuthority(asset.body, asset.proof_source);
+  const credibility = scoreCredibility(asset.body, asset.proof_source);
+  const actionability = scoreActionability(asset.body, asset.cta, asset.flywheel_stage);
+  const retention = scoreRetention(asset.hook, asset.body, asset.title);
+  const conversion = scoreConversion(asset.body, asset.cta, asset.flywheel_stage, asset.audience);
+  const flywheel = mapFlywheel(asset.flywheel_stage);
 
-  // Mandatory 5-pillar presence check — all must score ≥ 50 for publish
+  // Mandatory pillar check — all must pass for publish
   const mandatory_check = {
-    attention:      kane.total >= 50,
-    trust:          trust.total >= 50,
-    transformation: transformation.total >= 50,
-    proof:          proof.total >= 25,   // at least one proof signal present
-    employment:     employment.total >= 50,
-    get all_pass() { return this.attention && this.trust && this.transformation && this.proof && this.employment; },
+    attention:         kane.total >= 50,
+    trust:             trust.total >= 50,
+    transformation:    transformation.total >= 50,
+    proof:             proof.total >= 25,
+    employment:        employment.total >= 50,
+    flywheel_assigned: !!asset.flywheel_stage,
+    get all_pass() {
+      return this.attention && this.trust && this.transformation &&
+             this.proof && this.employment && this.flywheel_assigned;
+    },
   };
 
-  // Hard reject if Golden Rule fails (brand-dependent, no standalone value)
+  // Hard reject if Golden Rule fails
   if (golden_rule.total < 30) {
-    const final = 0;
-    return { kane, hormozi, trust, transformation, employment, golden_rule, tanner, emotional_trigger, relationship, proof, employer_demand, africa_opportunity, final, gate: 'reject', mandatory_check: { ...mandatory_check, all_pass: false } };
+    return {
+      kane, hormozi, trust, transformation, employment, golden_rule, tanner,
+      emotional_trigger, relationship, proof, employer_demand, africa_opportunity,
+      authority, credibility, actionability, retention, conversion, flywheel,
+      final: 0, gate: 'reject',
+      mandatory_check: { ...mandatory_check, all_pass: false },
+    };
   }
 
   const final = Math.round(
-    kane.total * 0.15 +
-    hormozi.total * 0.15 +
-    trust.total * 0.12 +
-    transformation.total * 0.12 +
-    employment.total * 0.10 +
-    proof.total * 0.10 +
-    golden_rule.total * 0.08 +
-    tanner.total * 0.05 +
-    emotional_trigger.total * 0.05 +
-    employer_demand.total * 0.05 +
-    africa_opportunity.total * 0.03,
+    kane.total          * 0.12 +
+    hormozi.total       * 0.10 +
+    trust.total         * 0.10 +
+    transformation.total * 0.10 +
+    employment.total    * 0.08 +
+    proof.total         * 0.08 +
+    authority.total     * 0.08 +
+    credibility.total   * 0.08 +
+    actionability.total * 0.08 +
+    retention.total     * 0.05 +
+    conversion.total    * 0.05 +
+    golden_rule.total   * 0.04 +
+    tanner.total        * 0.02 +
+    emotional_trigger.total * 0.01 +
+    employer_demand.total   * 0.01,
   );
 
-  // 90+ AND all 5 mandatory pillars present = publish; otherwise revise
   const gate: ContentExcellenceScore['gate'] = (final >= 90 && mandatory_check.all_pass) ? 'publish' : 'revise';
 
-  return { kane, hormozi, trust, transformation, employment, golden_rule, tanner, emotional_trigger, relationship, proof, employer_demand, africa_opportunity, final, gate, mandatory_check: { ...mandatory_check } };
+  return {
+    kane, hormozi, trust, transformation, employment, golden_rule, tanner,
+    emotional_trigger, relationship, proof, employer_demand, africa_opportunity,
+    authority, credibility, actionability, retention, conversion, flywheel,
+    final, gate, mandatory_check: { ...mandatory_check },
+  };
 }
 
 // Convenience wrapper used by all generators

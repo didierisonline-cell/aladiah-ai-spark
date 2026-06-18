@@ -165,19 +165,27 @@ function AssetTable({ status }: { status?: string }) {
             )}
           </div>
           {a.hook && <p className="text-xs text-muted-foreground italic">"{a.hook}"</p>}
-          {/* V3 excellence scores — 12 gates */}
+          {/* V4 Content Intelligence — 17 gates */}
           {(a.kane_score != null || a.metadata?.excellence) && (
             <div className="space-y-1.5 mt-1">
-              {/* Mandatory 5-pillar check */}
+              {/* Flywheel journey position */}
+              {a.metadata?.flywheel_journey_goal && (
+                <p className="text-xs text-muted-foreground italic">
+                  Stage {a.metadata.flywheel_stage_number}: {a.metadata.flywheel_journey_goal}
+                  {a.metadata.flywheel_next_stage && ` → next: ${String(a.metadata.flywheel_next_stage).replace(/_/g, ' ')}`}
+                </p>
+              )}
+              {/* Mandatory 6-pillar check */}
               {a.metadata?.mandatory_check && (
                 <div className="flex flex-wrap gap-1 text-xs">
-                  <span className="text-muted-foreground font-semibold">Required:</span>
+                  <span className="text-muted-foreground font-semibold mr-1">Required:</span>
                   {[
-                    { label: 'Attention', pass: a.metadata.mandatory_check.attention },
-                    { label: 'Trust', pass: a.metadata.mandatory_check.trust },
-                    { label: 'Transform', pass: a.metadata.mandatory_check.transformation },
-                    { label: 'Proof', pass: a.metadata.mandatory_check.proof },
-                    { label: 'Employment', pass: a.metadata.mandatory_check.employment },
+                    { label: 'Attention',   pass: a.metadata.mandatory_check.attention },
+                    { label: 'Trust',       pass: a.metadata.mandatory_check.trust },
+                    { label: 'Transform',   pass: a.metadata.mandatory_check.transformation },
+                    { label: 'Proof',       pass: a.metadata.mandatory_check.proof },
+                    { label: 'Employment',  pass: a.metadata.mandatory_check.employment },
+                    { label: 'Flywheel',    pass: a.metadata.mandatory_check.flywheel_assigned },
                   ].map(({ label, pass }) => (
                     <span key={label} className={`px-1.5 py-0.5 rounded font-mono ${pass ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                       {pass ? '✓' : '✗'} {label}
@@ -185,20 +193,25 @@ function AssetTable({ status }: { status?: string }) {
                   ))}
                 </div>
               )}
-              {/* All gate scores */}
-              <div className="flex flex-wrap gap-1.5 text-xs">
+              {/* All 17 gate scores in two rows */}
+              <div className="flex flex-wrap gap-1 text-xs">
                 {[
-                  { label: 'Kane', val: a.kane_score },
-                  { label: 'Hormozi', val: a.hormozi_score },
-                  { label: 'Trust', val: a.trust_score },
-                  { label: 'Transform', val: a.transformation_score },
-                  { label: 'Employment', val: a.employment_score },
-                  { label: 'Proof', val: a.metadata?.proof_score },
-                  { label: 'Employer Demand', val: a.metadata?.employer_demand_score },
-                  { label: 'Africa/DR', val: a.metadata?.africa_opportunity_score },
-                  { label: 'Golden Rule', val: a.metadata?.golden_rule_score },
-                  { label: 'Tanner', val: a.metadata?.tanner_score },
-                  { label: 'Emotion', val: a.metadata?.emotional_trigger_score },
+                  { label: 'Kane',          val: a.kane_score },
+                  { label: 'Hormozi',       val: a.hormozi_score },
+                  { label: 'Trust',         val: a.trust_score },
+                  { label: 'Transform',     val: a.transformation_score },
+                  { label: 'Employment',    val: a.employment_score },
+                  { label: 'Proof',         val: a.metadata?.proof_score },
+                  { label: 'Authority',     val: a.metadata?.authority_score },
+                  { label: 'Credibility',   val: a.metadata?.credibility_score },
+                  { label: 'Action',        val: a.metadata?.actionability_score },
+                  { label: 'Retention',     val: a.metadata?.retention_score },
+                  { label: 'Conversion',    val: a.metadata?.conversion_score },
+                  { label: 'Employer Dmnd', val: a.metadata?.employer_demand_score },
+                  { label: 'Africa/DR',     val: a.metadata?.africa_opportunity_score },
+                  { label: 'Golden Rule',   val: a.metadata?.golden_rule_score },
+                  { label: 'Tanner',        val: a.metadata?.tanner_score },
+                  { label: 'Emotion',       val: a.metadata?.emotional_trigger_score },
                 ].filter(({ val }) => val != null).map(({ label, val }) => (
                   <span key={label} className={`px-1.5 py-0.5 rounded font-mono ${
                     (val ?? 0) >= 70 ? 'bg-green-50 text-green-700' :
