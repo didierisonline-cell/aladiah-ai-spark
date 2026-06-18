@@ -31,57 +31,36 @@ const ReferralProfile = () => {
     const loadReferrer = async () => {
       if (!code) { setError(true); setLoading(false); return; }
 
-      // Get referral code -> user_id
-      const { data: codeData } = await supabase
-        .from('referral_codes')
-        .select('user_id')
-        .eq('code', code)
-        .maybeSingle();
+      // Safe public referral read: one SECURITY DEFINER RPC that returns ONLY
+      // non-sensitive display fields (no PII, no profiles/referral_codes table
+      // access). profiles + referral_codes are now owner/admin-only.
+      const { data, error: rpcError } = await (supabase as any)
+        .rpc('get_referral_profile', { p_code: code });
+      const row = Array.isArray(data) ? data[0] : data;
 
-      if (!codeData) { setError(true); setLoading(false); return; }
-
-      const userId = codeData.user_id;
-
-      // Fetch profile, posts, replies, progress in parallel
-      const [profileRes, postsRes, repliesRes, progressRes] = await Promise.all([
-        supabase.from('profiles').select('full_name, avatar_url, created_at').eq('user_id', userId).maybeSingle(),
-        supabase.from('community_posts').select('content, created_at, post_type').eq('user_id', userId).order('created_at', { ascending: false }).limit(3),
-        supabase.from('community_replies').select('id', { count: 'exact', head: true }).eq('user_id', userId),
-        supabase.from('user_progress').select('course_id', { count: 'exact', head: true }).eq('user_id', userId),
-      ]);
+      if (rpcError || !row) { setError(true); setLoading(false); return; }
 
       setReferrer({
-        fullName: profileRes.data?.full_name || 'Academy Member',
-        avatarUrl: profileRes.data?.avatar_url,
-        joinedDate: profileRes.data?.created_at || new Date().toISOString(),
-        postCount: postsRes.data?.length || 0,
-        replyCount: repliesRes.count || 0,
-        coursesCompleted: progressRes.count || 0,
-        recentPosts: postsRes.data || [],
+        fullName: row.full_name || 'Academy Member',
+        avatarUrl: row.avatar_url ?? null,
+        joinedDate: row.joined_date || new Date().toISOString(),
+        postCount: Array.isArray(row.recent_posts) ? row.recent_posts.length : 0,
+        replyCount: row.reply_count || 0,
+        coursesCompleted: row.courses_completed || 0,
+        recentPosts: (row.recent_posts as ReferrerData['recentPosts']) || [],
       });
       setLoading(false);
-    };
 
-    loadReferrer();
-  }, [code]);
-
-  // Track the click
-  useEffect(() => {
-    if (!code) return;
-    const trackClick = async () => {
-      const { data: codeData } = await supabase
-        .from('referral_codes')
-        .select('id')
-        .eq('code', code)
-        .maybeSingle();
-      if (codeData) {
-        await supabase.from('referral_tracking').insert({
-          referral_code_id: codeData.id,
+      // Best-effort click tracking (anon INSERT is allowed on referral_tracking).
+      if (row.referral_code_id) {
+        supabase.from('referral_tracking').insert({
+          referral_code_id: row.referral_code_id,
           status: 'clicked',
         });
       }
     };
-    trackClick();
+
+    loadReferrer();
   }, [code]);
 
   if (loading) {
