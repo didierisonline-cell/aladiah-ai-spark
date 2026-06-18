@@ -31,6 +31,13 @@ nothing else needs to change:
 Until the raster files are dropped, `favicon.svg` already covers all modern
 browsers; only legacy `.ico` fallback and social-share preview images wait on them.
 
-## Palette
+## Palette (Aladiah identity)
 
-- Navy `#0B1124` · Silver `#F4F8FF→#9FB2CE` · Gold `#F6D27A→#C8902E` · Globe `#3E7BD6`
+- **Gold** `#F6D27A→#C8902E` · **Navy** `#0B1124` · **Crimson** `#D8425C→#8E1B2E`
+- Silver `#F4F8FF→#9FB2CE` is the structural metal of the spire (neutral, not a brand accent).
+
+## Symbolism (deliberate, religiously neutral)
+
+Spire **A** (aspiration) · **torch of knowledge** — gold flame with a crimson heart
+(secular, replaces the old cross-like spear) · the hidden gold **9** at the apex ·
+a subtle world **globe** at the base. No cross, crescent, star, or church form.
