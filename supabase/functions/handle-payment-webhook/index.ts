@@ -1,6 +1,35 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@14.21.0?target=deno&no-check";
 
+// Allowed subscription tiers (must match subscriptions.tier CHECK constraint).
+const VALID_TIERS = ["t1", "t2", "t3"] as const;
+type Tier = (typeof VALID_TIERS)[number];
+
+/**
+ * Server-side price -> tier map, built from edge-function env so the granted
+ * entitlement is derived from what the customer ACTUALLY purchased, not from
+ * client-supplied checkout metadata (which the browser controls).
+ * Configure these in Supabase Edge Function secrets to fully close tier
+ * escalation: STRIPE_PRICE_T1, STRIPE_PRICE_T2, STRIPE_PRICE_T3,
+ * STRIPE_PRICE_ANNUAL (annual maps to t2).
+ */
+function buildPriceTierMap(): Record<string, Tier> {
+  const map: Record<string, Tier> = {};
+  const add = (envName: string, tier: Tier) => {
+    const v = Deno.env.get(envName);
+    if (v) map[v] = tier;
+  };
+  add("STRIPE_PRICE_T1", "t1");
+  add("STRIPE_PRICE_T2", "t2");
+  add("STRIPE_PRICE_T3", "t3");
+  add("STRIPE_PRICE_ANNUAL", "t2");
+  return map;
+}
+
+function validTier(value: unknown): Tier | null {
+  return VALID_TIERS.includes(value as Tier) ? (value as Tier) : null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*" } });
@@ -9,19 +38,42 @@ Deno.serve(async (req) => {
     const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
     const STRIPE_WEBHOOK_SECRET = Deno.env.get("STRIPE_WEBHOOK_SECRET");
     if (!STRIPE_SECRET_KEY) throw new Error("Stripe not configured");
+
+    // SECURITY: the webhook secret is MANDATORY. Without signature verification
+    // an attacker could POST a forged "checkout.session.completed" event and be
+    // granted a paid subscription. Refuse to process anything unsigned.
+    if (!STRIPE_WEBHOOK_SECRET) {
+      console.error("STRIPE_WEBHOOK_SECRET is not set — refusing to process webhook.");
+      return new Response(
+        JSON.stringify({ error: "Webhook secret not configured" }),
+        { status: 500, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
     const stripe = new Stripe(STRIPE_SECRET_KEY, {
       apiVersion: "2023-10-16",
       httpClient: Stripe.createFetchHttpClient(),
     });
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const priceTierMap = buildPriceTierMap();
+
     const body = await req.text();
+    const sig = req.headers.get("stripe-signature");
+    if (!sig) {
+      return new Response(JSON.stringify({ error: "Missing stripe-signature header" }), {
+        status: 400, headers: { "Content-Type": "application/json" },
+      });
+    }
+
     let event: Stripe.Event;
-    if (STRIPE_WEBHOOK_SECRET) {
-      const sig = req.headers.get("stripe-signature");
-      if (!sig) throw new Error("Missing stripe-signature header");
+    try {
       event = await stripe.webhooks.constructEventAsync(body, sig, STRIPE_WEBHOOK_SECRET);
-    } else {
-      event = JSON.parse(body);
+    } catch (err: any) {
+      // Signature verification failed — reject (do NOT fall back to parsing).
+      console.error("Webhook signature verification failed:", err.message);
+      return new Response(JSON.stringify({ error: "Invalid signature" }), {
+        status: 400, headers: { "Content-Type": "application/json" },
+      });
     }
 
     console.log(`Stripe event: ${event.type}`);
@@ -29,10 +81,38 @@ Deno.serve(async (req) => {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
       const email = session.customer_email || session.metadata?.email || session.customer_details?.email;
-      const tier = session.metadata?.tier || "t2";
       const userId = session.metadata?.user_id;
       const customerId = session.customer as string;
       const subscriptionId = session.subscription as string;
+
+      // SECURITY: derive the tier from the PRICE the customer actually paid for,
+      // looking up the session's line item. Client-supplied metadata.tier is only
+      // a last-resort fallback and is validated against the allowed set. This
+      // prevents "request t3 while paying the t1 price" escalation.
+      let tier: Tier = "t1";
+      let derivedFrom = "default";
+      try {
+        const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 1 });
+        const paidPriceId = lineItems.data?.[0]?.price?.id;
+        const mapped = paidPriceId ? priceTierMap[paidPriceId] : undefined;
+        if (mapped) {
+          tier = mapped;
+          derivedFrom = `price:${paidPriceId}`;
+        } else {
+          const metaTier = validTier(session.metadata?.tier);
+          if (metaTier) {
+            tier = metaTier;
+            derivedFrom = paidPriceId
+              ? `metadata(unmapped price ${paidPriceId})`
+              : "metadata(no line item)";
+          }
+        }
+      } catch (e) {
+        const metaTier = validTier(session.metadata?.tier);
+        if (metaTier) { tier = metaTier; derivedFrom = "metadata(lineitem lookup failed)"; }
+        console.error("Line item lookup failed:", (e as any)?.message);
+      }
+      console.log(`Resolved tier=${tier} (${derivedFrom})`);
 
       let resolvedUserId = userId;
       let fullName = "Student";
@@ -73,20 +153,12 @@ Deno.serve(async (req) => {
 
       console.log(`Subscription upserted, rows: ${JSON.stringify(upsertData)}`);
 
-      // Update profiles.tier so frontend unlocks immediately
+      // Update profiles.tier so the frontend unlocks immediately.
       await supabase.from("profiles").upsert({
         user_id: resolvedUserId,
         tier: tier,
         free_course_completed: false,
       }, { onConflict: "user_id" });
-      console.log(`Profile tier updated to ${tier}`);
-
-      // Also update profiles.tier so frontend unlocks immediately
-      await supabase.from('profiles').upsert({
-        user_id: resolvedUserId,
-        tier: tier,
-        free_course_completed: false,
-      }, { onConflict: 'user_id' });
       console.log(`Profile tier updated to ${tier}`);
 
       try {
