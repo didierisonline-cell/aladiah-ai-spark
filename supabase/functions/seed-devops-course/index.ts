@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireAdmin } from "../_shared/adminGuard.ts";
 
 const courseData = {
   title: "DevOps & Cloud Engineering Professional",
@@ -468,6 +469,8 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type" } });
   }
+    const _denied = await requireAdmin(req);
+    if (_denied) return _denied;
   try {
     const supabase = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
     const courseId = "33333333-4444-5555-6666-777777777777";
