@@ -43,7 +43,7 @@ export default function Employers() {
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' as const, color: DS.blue, marginBottom: '.65rem' }}>Why Aladiah</div>
               <h2 style={{ fontSize: 'clamp(1.7rem,3vw,2.4rem)', fontWeight: 800 }}>The <span style={{ color: DS.orange }}>Enterprise-Grade</span> Talent Pipeline</h2>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1.25rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
               {BENEFITS.map(b => (
                 <div key={b.title} style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', padding: '1.75rem' }}>
                   <div style={{ fontSize: 24, marginBottom: '.75rem' }}>{b.icon}</div>

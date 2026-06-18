@@ -94,7 +94,7 @@ export default function Schools() {
         {SCHOOLS.map((school, si) => (
           <section key={school.id} id={school.id} style={{ padding: '5rem 0', background: si % 2 === 1 ? 'rgba(24,36,58,.22)' : 'transparent' }}>
             <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '4rem', alignItems: 'start' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem', alignItems: 'start' }}>
                 <div>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '.4rem', fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' as const, color: DS.blue, marginBottom: '.65rem' }}>School {school.num}</div>
                   <h2 style={{ fontSize: 'clamp(1.7rem,3vw,2.4rem)', fontWeight: 800, lineHeight: 1.15, marginBottom: '.45rem', color: school.color }}>{school.label}</h2>

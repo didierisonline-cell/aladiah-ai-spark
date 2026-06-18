@@ -63,10 +63,10 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Get quiz info
+    // Get quiz info (including chapter order so we can enforce progression)
     const { data: quiz, error: quizError } = await supabaseAdmin
       .from("quizzes")
-      .select("*, chapters(course_id)")
+      .select("*, chapters(id, course_id, order_index)")
       .eq("id", quizId)
       .single();
 
@@ -75,6 +75,39 @@ serve(async (req) => {
         JSON.stringify({ error: "Quiz not found" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    // Module progression gate: if this quiz belongs to chapter N (order_index > 0),
+    // the student must have passed at least one quiz in the preceding chapter (order_index - 1).
+    const chapterOrderIndex: number = quiz.chapters?.order_index ?? 0;
+    const courseId: string | null = quiz.chapters?.course_id ?? null;
+    if (chapterOrderIndex > 0 && courseId) {
+      // Find the immediately preceding chapter
+      const { data: prevChapter } = await supabaseAdmin
+        .from("chapters")
+        .select("id")
+        .eq("course_id", courseId)
+        .eq("order_index", chapterOrderIndex - 1)
+        .maybeSingle();
+
+      if (prevChapter) {
+        // Check that the student has passed at least one quiz in that chapter
+        const { data: prevProgress } = await supabaseAdmin
+          .from("user_progress")
+          .select("id")
+          .eq("user_id", userId)
+          .eq("chapter_id", prevChapter.id)
+          .not("quiz_id", "is", null)
+          .limit(1)
+          .maybeSingle();
+
+        if (!prevProgress) {
+          return new Response(
+            JSON.stringify({ error: "You must complete the previous module before attempting this quiz." }),
+            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
     }
 
     // In map-mode we grade ONLY the question IDs that were served/answered.

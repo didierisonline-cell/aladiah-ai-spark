@@ -1,9 +1,11 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import PortalSidebar from '@/components/PortalSidebar';
 import { useAuth } from '@/hooks/useAuth';
 import { useTalentScore } from '@/hooks/useTalentScore';
 import { initialsFromEmail } from '@/lib/avatar';
+import { useBreakpoint } from '@/hooks/useBreakpoint';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', border:'#1E2D47', fg:'#EDF2F7', fm:'#8596AD',
@@ -19,6 +21,10 @@ export default function PortalTalentScore() {
   const { user } = useAuth();
   const initials = initialsFromEmail(user?.email);
   const pathname = '/portal/talent-score';
+  const { isPhone } = useBreakpoint();
+
+  // On phones the StudentPortal MobileHome shell handles this view — redirect there.
+  useEffect(() => { if (isPhone) navigate('/portal', { replace: true }); }, [isPhone, navigate]);
 
   // Single source of truth — same hook/formula the dashboard uses.
   const { overall, max, dimensions } = useTalentScore(user?.id);

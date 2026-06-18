@@ -14,15 +14,16 @@ Deno.serve(async (req) => {
       httpClient: Stripe.createFetchHttpClient(),
     });
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    const body = await req.text();
-    let event: Stripe.Event;
-    if (STRIPE_WEBHOOK_SECRET) {
-      const sig = req.headers.get("stripe-signature");
-      if (!sig) throw new Error("Missing stripe-signature header");
-      event = await stripe.webhooks.constructEventAsync(body, sig, STRIPE_WEBHOOK_SECRET);
-    } else {
-      event = JSON.parse(body);
+    if (!STRIPE_WEBHOOK_SECRET) {
+      console.error("STRIPE_WEBHOOK_SECRET is not set — rejecting all webhook events");
+      return new Response(JSON.stringify({ error: "Webhook secret not configured" }), {
+        status: 500, headers: { "Content-Type": "application/json" },
+      });
     }
+    const body = await req.text();
+    const sig = req.headers.get("stripe-signature");
+    if (!sig) throw new Error("Missing stripe-signature header");
+    const event = await stripe.webhooks.constructEventAsync(body, sig, STRIPE_WEBHOOK_SECRET);
 
     console.log(`Stripe event: ${event.type}`);
 
@@ -79,14 +80,6 @@ Deno.serve(async (req) => {
         tier: tier,
         free_course_completed: false,
       }, { onConflict: "user_id" });
-      console.log(`Profile tier updated to ${tier}`);
-
-      // Also update profiles.tier so frontend unlocks immediately
-      await supabase.from('profiles').upsert({
-        user_id: resolvedUserId,
-        tier: tier,
-        free_course_completed: false,
-      }, { onConflict: 'user_id' });
       console.log(`Profile tier updated to ${tier}`);
 
       try {

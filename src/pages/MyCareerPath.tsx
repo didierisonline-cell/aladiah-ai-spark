@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import PortalSidebar from '@/components/PortalSidebar';
 import { RESOURCE_TRACKS } from '@/data/resourcesData';
+import { useBreakpoint } from '@/hooks/useBreakpoint';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', card2:'#142035', border:'#1E2D47',
@@ -56,6 +57,10 @@ export default function MyCareerPath() {
   const [selectedId,setSelectedId] = useState<string|null>(null);
   const [activeTab,setActiveTab] = useState<'path'|'resources'|'glossary'|'salary'>('path');
   const [loading,setLoading] = useState(true);
+  const { isPhone } = useBreakpoint();
+
+  // On phones redirect to mobile shell which handles career-path navigation.
+  useEffect(() => { if (isPhone) navigate('/portal', { replace: true }); }, [isPhone, navigate]);
 
   useEffect(()=>{
     if(!user) return;

@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import PortalSidebar from '@/components/PortalSidebar';
+import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { Save, Download, Sparkles, CheckCircle, Loader2, LayoutTemplate, X, Palette } from 'lucide-react';
 
 interface ResumeData {
@@ -81,6 +82,8 @@ const Section = ({ title, accent, onAI, loading, children }:
 const ResumeStudio = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { isPhone } = useBreakpoint();
+  useEffect(() => { if (isPhone) navigate('/portal', { replace: true }); }, [isPhone, navigate]);
   const [resume, setResume] = useState<ResumeData>(MOCK);
   const [template, setTemplate] = useState('zenith');
   const [saving, setSaving] = useState(false);

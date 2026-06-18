@@ -47,7 +47,7 @@ export default function TalentNetwork() {
 
         {/* Stats */}
         <section style={{ padding: '3rem 0', borderBottom: `1px solid ${DS.border}` }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '1rem' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
             {STATS.map(s => (
               <div key={s.val} style={{ textAlign: 'center', padding: '1.5rem' }}>
                 <div style={{ fontSize: '2.2rem', fontWeight: 800, color: DS.green, lineHeight: 1, marginBottom: 4 }}>{s.val}</div>
@@ -64,7 +64,7 @@ export default function TalentNetwork() {
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' as const, color: DS.blue, marginBottom: '.65rem' }}>How It Works</div>
               <h2 style={{ fontSize: 'clamp(1.7rem,3vw,2.4rem)', fontWeight: 800 }}>Your <span style={{ color: DS.green }}>Complete Career</span> Infrastructure</h2>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1.25rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
               {FEATURES.map(f => (
                 <div key={f.title} style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', padding: '1.75rem' }}>
                   <div style={{ fontSize: 24, marginBottom: '.75rem' }}>{f.icon}</div>
