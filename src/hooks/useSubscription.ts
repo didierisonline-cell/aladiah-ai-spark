@@ -52,10 +52,12 @@ export const useSubscription = () => {
           isActive: (data as any).status === 'active' || (data as any).status === 'trialing',
         });
       } else {
-        // Timed out or no subscription — check user metadata for tier
-        const userTier = user.user_metadata?.tier;
-        const tier = userTier === 'accelerator' ? 't2' : userTier === 'elite' ? 't3' : 't1';
-        setSubscription({ tier: tier as Tier, status: 'active', isActive: true });
+        // No verified subscription row (no row, or the lookup timed out). Fail CLOSED to the
+        // free Foundation tier. We must NEVER elevate tier from user.user_metadata — that
+        // value is client-controllable and could be spoofed to fake a paid (t2/t3) tier.
+        // t1 stays active so the legitimate free experience (courses, etc.) still works;
+        // paid features remain locked until a real subscriptions row is read.
+        setSubscription({ tier: 't1', status: 'free', isActive: true });
       }
       setLoading(false);
     };
