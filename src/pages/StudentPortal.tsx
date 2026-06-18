@@ -9,6 +9,8 @@ import { getLocalizedField } from '@/lib/i18nData';
 import { useProgress } from '@/hooks/useProgress';
 import { talentScoreFromProgress } from '@/hooks/useTalentScore';
 import { careerHoursLeft } from '@/lib/progressModel';
+import { useLearningProfile } from '@/hooks/useLearningProfile';
+import { competencyBarsFromProfile } from '@/lib/competencyBars';
 import { useIdentity } from '@/hooks/useIdentity';
 import { activeHref } from '@/lib/nav';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
@@ -45,13 +47,6 @@ function getDateStr(lang?: string) {
 // "Sarah K. hired … $120,000"). Cleared to avoid showing fabricated social proof
 // in production; populate from real verified graduate outcomes when available.
 const MOMENTUM: { name: string; action: string; role?: string; company?: string; salary?: string; program?: string; cert?: string; time: string }[] = [];
-const SKILLS = [
-  { labelKey: 'skill.cloud_arch', pct: 92, color: '#6366f1' },
-  { labelKey: 'skill.problem_solving', pct: 88, color: '#8b5cf6' },
-  { labelKey: 'skill.ai_ml', pct: 85, color: '#10b981' },
-  { labelKey: 'skill.system_design', pct: 78, color: '#f59e0b' },
-  { labelKey: 'skill.communication', pct: 74, color: '#f97316' },
-];
 const TOOLS = [
   { icon: '🎤', lbl: 'ai_interview', sub: 'practice_now', path: '/portal/career' },
   { icon: '📄', lbl: 'resume_builder', sub: 'optimize_cv', path: '/portal/career' },
@@ -132,6 +127,10 @@ export default function StudentPortal() {
   // Canonical headline progress — the ONE definition used by every metric on
   // this page (stat card, Talent Score, Career Path hours, skill bars, mobile).
   const { pct: overallProgress } = useProgress(user?.id);
+  // Real, quiz-derived competency strengths (cross-program learning profile).
+  // 0% per competency until there is quiz evidence — never a synthetic value.
+  const { profile: learningProfile } = useLearningProfile(user?.id);
+  const competencyBars = competencyBarsFromProfile(learningProfile);
   const { isPhone, isDesktop } = useBreakpoint();
   // Founder God Mode: unrestricted only when the founder has the toggle ON.
   // When OFF, the founder sees the real student experience (gates apply).
@@ -809,21 +808,17 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               {T('view_breakdown')}
             </button>
             <div style={{ fontSize: 11.5, fontWeight: 700, marginBottom: 9, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,.06)' }}>{T('top_skills')}</div>
-            {SKILLS.map((sk, i) => {
-              // Scale the aspirational target by REAL overall progress so the bar
-              // reflects actual learning (0 progress → 0%), never a fabricated value.
-              const pct = Math.round((sk.pct * overallProgress) / 100);
-              return (
-              <div key={i} style={{ marginBottom: i < 4 ? 8 : 0 }}>
+            {competencyBars.map((sk, i) => (
+              <div key={sk.label} style={{ marginBottom: i < competencyBars.length - 1 ? 8 : 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, fontSize: 10.5 }}>
-                  <span style={{ color: '#64748b' }}>{t(sk.labelKey)}</span>
-                  <span style={{ fontWeight: 700, color: sk.color }}>{pct}%</span>
+                  <span style={{ color: '#64748b' }}>{sk.label}</span>
+                  <span style={{ fontWeight: 700, color: sk.color }}>{sk.score}%</span>
                 </div>
                 <div style={{ height: 4, background: 'rgba(255,255,255,.07)', borderRadius: 99, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${pct}%`, background: sk.color, borderRadius: 99, opacity: .9 }} />
+                  <div style={{ height: '100%', width: `${sk.score}%`, background: sk.color, borderRadius: 99, opacity: .9 }} />
                 </div>
               </div>
-            );})}
+            ))}
           </div>
 
           {/* 3. CAREER MOMENTUM */}
