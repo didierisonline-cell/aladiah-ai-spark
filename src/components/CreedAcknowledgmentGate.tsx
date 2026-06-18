@@ -157,7 +157,7 @@ export const CreedAcknowledgmentGate = ({
             aria-hidden="true"
           >
             <img
-              src="/aladiah-academy-seal.svg"
+              src="/brand/aladiah-mark.svg"
               alt=""
               className="w-[500px] h-[500px] max-w-none"
             />

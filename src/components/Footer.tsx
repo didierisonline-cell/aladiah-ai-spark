@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
+const aladiahLogo = '/brand/aladiah-logo.svg';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const LANGUAGES = [
