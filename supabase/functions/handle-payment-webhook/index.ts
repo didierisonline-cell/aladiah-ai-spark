@@ -28,6 +28,9 @@ Deno.serve(async (req) => {
       const session = event.data.object as Stripe.Checkout.Session;
       const email = session.customer_email || session.metadata?.email || session.customer_details?.email;
       const tier = session.metadata?.tier || "t2";
+      // Validate tier against the known set so a malformed/unexpected metadata value can
+      // never be written as a subscription tier.
+      if (!["t1", "t2", "t3"].includes(tier)) throw new Error(`Invalid tier in metadata: ${tier}`);
       const userId = session.metadata?.user_id;
       const customerId = session.customer as string;
       const subscriptionId = session.subscription as string;
