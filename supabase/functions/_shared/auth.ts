@@ -80,3 +80,29 @@ export async function requireAdmin(req: Request): Promise<AuthedUser | Response>
 
   return deny(403, "Admin access required");
 }
+
+/**
+ * True when the request is an INTERNAL call carrying the service-role key as its
+ * Bearer token (e.g. one edge function invoking another, or a trusted cron).
+ * The service-role key is server-only and never shipped to the browser.
+ */
+export function isServiceRoleCall(req: Request): boolean {
+  const header = req.headers.get("Authorization") ?? "";
+  const token = header.startsWith("Bearer ") ? header.slice(7) : "";
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  return token.length > 0 && key.length > 0 && token === key;
+}
+
+/**
+ * Allow an internal service-role caller OR an authenticated founder/admin.
+ * Used by sensitive senders (email) that must never be invokable by the public.
+ *
+ *   const auth = await requireServiceOrAdmin(req);
+ *   if (auth instanceof Response) return auth;
+ */
+export async function requireServiceOrAdmin(
+  req: Request,
+): Promise<AuthedUser | { service: true } | Response> {
+  if (isServiceRoleCall(req)) return { service: true };
+  return await requireAdmin(req);
+}

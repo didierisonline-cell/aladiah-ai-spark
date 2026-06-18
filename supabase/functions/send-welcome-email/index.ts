@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { sendEmail, emailWrapper, btnHtml, SITE_URL } from "../_shared/email.ts";
+import { requireServiceOrAdmin } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -14,6 +15,12 @@ const TIER_NAMES: Record<string, string> = {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  // SECURITY: internal (service-role, e.g. the payment webhook) or founder/admin
+  // only — prevents the public from triggering arbitrary welcome emails (spam /
+  // phishing with attacker-controlled names).
+  const auth = await requireServiceOrAdmin(req);
+  if (auth instanceof Response) return auth;
 
   try {
     const { email, fullName, tier } = await req.json();

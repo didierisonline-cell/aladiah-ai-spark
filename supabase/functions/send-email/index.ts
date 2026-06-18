@@ -1,3 +1,5 @@
+import { requireServiceOrAdmin } from "../_shared/auth.ts";
+
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!;
 const FROM_EMAIL = 'noreply@aladiahacademy.com';
 const ADMIN_EMAIL = 'info@aladiahacademy.com';
@@ -82,6 +84,13 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type' } });
   }
+
+  // SECURITY: internal (service-role / cron) or founder/admin only. This function
+  // can email arbitrary recipients and notify the admin inbox, so it must never
+  // be invokable by the public or by ordinary authenticated students.
+  const auth = await requireServiceOrAdmin(req);
+  if (auth instanceof Response) return auth;
+
   try {
     const { type, student, lang = 'en' } = await req.json();
     const t = translations[lang] || translations.en;
