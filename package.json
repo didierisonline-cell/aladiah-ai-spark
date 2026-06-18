@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "audit:i18n-live": "node scripts/audit-i18n-live.mjs",
+    "verify:zero-state": "node scripts/verify-progress-zero-state.mjs",
     "i18n:audit": "node scripts/i18n-audit.mjs",
     "i18n:audit:report": "node scripts/i18n-audit.mjs --report --json",
     "audit:i18n-data": "node scripts/audit-i18n-data.mjs",

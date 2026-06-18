@@ -37,9 +37,17 @@ export const useProgress = (userId: string | undefined) => {
         const totalQuizzes = quizzes.length;
         const passedCount = passedQuizzes.length;
 
-        // Average score of passed quizzes (lesson quality)
+        // Average score of passed CHAPTER-END quizzes only (lesson quality).
+        // CRITICAL: this must be scoped to the same population as completionPct
+        // (chapter_end quizzes), NOT every quiz the student ever scored. A new
+        // student who scores on a non-completion quiz (e.g. the free Module-1
+        // quiz) has 0 chapter completions; if avgScore drew from all quizzes,
+        // `overall` became (0 + score)/2 ≈ 50% with zero completions — the
+        // zero-state regression. Sharing the population guarantees:
+        //   0 chapter completions ⇒ scores=[] ⇒ overall = completionPct = 0.
+        const passedQuizIds = new Set(passedQuizzes.map(q => q.id));
         const scores = (progressData || [])
-          .filter(p => passedIds.includes(p.quiz_id) && p.score != null)
+          .filter(p => passedQuizIds.has(p.quiz_id) && p.score != null)
           .map(p => p.score as number);
         const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
 
