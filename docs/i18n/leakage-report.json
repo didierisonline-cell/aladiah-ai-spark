@@ -1,0 +1,304 @@
+{
+  "generatedAt": "2026-06-18T01:54:19.230Z",
+  "totalEnKeys": 1599,
+  "languages": {
+    "es": {
+      "keysPresent": 1599,
+      "missing": 0,
+      "wrongScript": 0,
+      "untranslated": 27,
+      "strandedNative": 0,
+      "review": 0,
+      "samples": {
+        "missing": [],
+        "wrongScript": [],
+        "untranslated": [
+          {
+            "key": "auth.error",
+            "value": "Error"
+          },
+          {
+            "key": "portal.tab.labs",
+            "value": "Labs"
+          },
+          {
+            "key": "portal.sidebar.labs",
+            "value": "Labs"
+          },
+          {
+            "key": "portal.sidebar.plan",
+            "value": "Plan"
+          },
+          {
+            "key": "portal.labs.btn",
+            "value": "Lab"
+          },
+          {
+            "key": "blog.post1.category",
+            "value": "Scrum Insights"
+          },
+          {
+            "key": "kg.cat.kanban",
+            "value": "KANBAN"
+          },
+          {
+            "key": "kg.cat.lean",
+            "value": "LEAN"
+          }
+        ],
+        "strandedNative": [],
+        "review": []
+      }
+    },
+    "fr": {
+      "keysPresent": 1599,
+      "missing": 0,
+      "wrongScript": 0,
+      "untranslated": 74,
+      "strandedNative": 0,
+      "review": 0,
+      "samples": {
+        "missing": [],
+        "wrongScript": [],
+        "untranslated": [
+          {
+            "key": "auth.email",
+            "value": "Email"
+          },
+          {
+            "key": "portal.stat.points",
+            "value": "Points"
+          },
+          {
+            "key": "portal.tab.assistant",
+            "value": "Assistant"
+          },
+          {
+            "key": "portal.tab.labs",
+            "value": "Labs"
+          },
+          {
+            "key": "portal.sidebar.certifications",
+            "value": "Certifications"
+          },
+          {
+            "key": "portal.sidebar.labs",
+            "value": "Labs"
+          },
+          {
+            "key": "portal.settings.email",
+            "value": "Email"
+          },
+          {
+            "key": "portal.settings.notifications",
+            "value": "🔔 Notifications"
+          }
+        ],
+        "strandedNative": [],
+        "review": []
+      }
+    },
+    "pt": {
+      "keysPresent": 1599,
+      "missing": 0,
+      "wrongScript": 0,
+      "untranslated": 27,
+      "strandedNative": 0,
+      "review": 0,
+      "samples": {
+        "missing": [],
+        "wrongScript": [],
+        "untranslated": [
+          {
+            "key": "auth.email",
+            "value": "Email"
+          },
+          {
+            "key": "portal.tab.labs",
+            "value": "Labs"
+          },
+          {
+            "key": "portal.labs.btn",
+            "value": "Lab"
+          },
+          {
+            "key": "kg.cat.kanban",
+            "value": "KANBAN"
+          },
+          {
+            "key": "kg.cat.lean",
+            "value": "LEAN"
+          },
+          {
+            "key": "kg.node.daily_standup",
+            "value": "Daily Scrum"
+          },
+          {
+            "key": "nav.feedback",
+            "value": "Feedback"
+          },
+          {
+            "key": "programs.online",
+            "value": "Online"
+          }
+        ],
+        "strandedNative": [],
+        "review": []
+      }
+    },
+    "de": {
+      "keysPresent": 1599,
+      "missing": 0,
+      "wrongScript": 0,
+      "untranslated": 62,
+      "strandedNative": 0,
+      "review": 0,
+      "samples": {
+        "missing": [],
+        "wrongScript": [],
+        "untranslated": [
+          {
+            "key": "auth.optional",
+            "value": "optional"
+          },
+          {
+            "key": "portal.tab.labs",
+            "value": "Labs"
+          },
+          {
+            "key": "portal.nav.community",
+            "value": "Community"
+          },
+          {
+            "key": "portal.nav.interview",
+            "value": "Interview"
+          },
+          {
+            "key": "portal.sidebar.dashboard",
+            "value": "Dashboard"
+          },
+          {
+            "key": "portal.sidebar.labs",
+            "value": "Labs"
+          },
+          {
+            "key": "portal.sidebar.plan",
+            "value": "Plan"
+          },
+          {
+            "key": "portal.labs.btn",
+            "value": "Lab"
+          }
+        ],
+        "strandedNative": [],
+        "review": []
+      }
+    },
+    "ar": {
+      "keysPresent": 1599,
+      "missing": 1,
+      "wrongScript": 0,
+      "untranslated": 0,
+      "strandedNative": 0,
+      "review": 3,
+      "samples": {
+        "missing": [
+          "talent.how_h2b"
+        ],
+        "wrongScript": [],
+        "untranslated": [],
+        "strandedNative": [],
+        "review": [
+          {
+            "key": "enroll.plan.foundation.name",
+            "value": "Foundation Builder"
+          },
+          {
+            "key": "enroll.plan.accelerator.name",
+            "value": "Career Accelerator"
+          },
+          {
+            "key": "enroll.plan.elite.name",
+            "value": "Elite Mentorship"
+          }
+        ]
+      }
+    },
+    "zh": {
+      "keysPresent": 1599,
+      "missing": 1,
+      "wrongScript": 0,
+      "untranslated": 0,
+      "strandedNative": 0,
+      "review": 3,
+      "samples": {
+        "missing": [
+          "employers.why_h2a"
+        ],
+        "wrongScript": [],
+        "untranslated": [],
+        "strandedNative": [],
+        "review": [
+          {
+            "key": "enroll.plan.foundation.name",
+            "value": "Foundation Builder"
+          },
+          {
+            "key": "enroll.plan.accelerator.name",
+            "value": "Career Accelerator"
+          },
+          {
+            "key": "enroll.plan.elite.name",
+            "value": "Elite Mentorship"
+          }
+        ]
+      }
+    },
+    "hi": {
+      "keysPresent": 1599,
+      "missing": 1,
+      "wrongScript": 3,
+      "untranslated": 0,
+      "strandedNative": 0,
+      "review": 3,
+      "samples": {
+        "missing": [
+          "employers.why_h2a"
+        ],
+        "wrongScript": [
+          {
+            "key": "cpanel.interview_title",
+            "value": "Interview Coach AI",
+            "looksLike": "Latin (en/es/fr/pt/de)"
+          },
+          {
+            "key": "cpanel.resume_title",
+            "value": "AI Resume Builder",
+            "looksLike": "Latin (en/es/fr/pt/de)"
+          },
+          {
+            "key": "portpanel.demo",
+            "value": "Demo →",
+            "looksLike": "Latin (en/es/fr/pt/de)"
+          }
+        ],
+        "untranslated": [],
+        "strandedNative": [],
+        "review": [
+          {
+            "key": "enroll.plan.foundation.name",
+            "value": "Foundation Builder"
+          },
+          {
+            "key": "enroll.plan.accelerator.name",
+            "value": "Career Accelerator"
+          },
+          {
+            "key": "enroll.plan.elite.name",
+            "value": "Elite Mentorship"
+          }
+        ]
+      }
+    }
+  }
+}
