@@ -63,8 +63,8 @@ const Feedback = () => {
 
       const userIds = [...new Set(postsData.map(p => p.user_id))];
 
-      const { data: profiles } = await supabase
-        .from('profiles')
+      const { data: profiles } = await (supabase as any)
+        .from('public_profiles')
         .select('user_id, full_name')
         .in('user_id', userIds);
 
@@ -96,7 +96,7 @@ const Feedback = () => {
       const replyUserIds = [...new Set((repliesData || []).map(r => r.user_id))];
       const missingIds = replyUserIds.filter(id => !profileMap[id]);
       if (missingIds.length > 0) {
-        const { data: mp } = await supabase.from('profiles').select('user_id, full_name').in('user_id', missingIds);
+        const { data: mp } = await (supabase as any).from('public_profiles').select('user_id, full_name').in('user_id', missingIds);
         (mp || []).forEach(p => { profileMap[p.user_id] = p.full_name || 'Student'; });
         const { data: mpr } = await supabase.from('user_progress').select('user_id, quiz_id').in('user_id', missingIds).not('quiz_id', 'is', null);
         missingIds.forEach(uid => {
