@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { GraduationCap, Mail, Lock, User, Linkedin, Phone, ShieldCheck, CheckCircle, Zap, Crown, MailCheck, Eye, EyeOff, Loader2, KeyRound, Info, AlertCircle } from 'lucide-react';
 import Header from '@/components/Header';
+import Logo from '@/components/Logo';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Link } from 'react-router-dom';
@@ -353,8 +354,8 @@ const Auth = () => {
           className={`w-full ${isLogin ? 'max-w-md' : 'max-w-lg'}`}>
           <Card className="shadow-large border-primary/10">
             <CardHeader className="text-center">
-              <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                <GraduationCap className="w-8 h-8 text-primary" />
+              <div className="mx-auto mb-4 flex items-center justify-center">
+                <Logo variant="mark" style={{ height: 56, width: 'auto' }} />
               </div>
               <CardTitle className="text-2xl font-display">
                 {isLogin ? t('auth.welcome') : t('auth.join')}
