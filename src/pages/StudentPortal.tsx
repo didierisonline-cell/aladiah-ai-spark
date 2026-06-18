@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
 import { composeProfFirstMessage, composeProfRecommendation, type ProfMode } from '@/lib/profDidierMessage';
+import { getLocalizedField } from '@/lib/i18nData';
 import { useProgress } from '@/hooks/useProgress';
 import { talentScoreFromProgress } from '@/hooks/useTalentScore';
 import { useIdentity } from '@/hooks/useIdentity';
@@ -297,7 +298,9 @@ export default function StudentPortal() {
           );
           school = key ? COURSE_SCHOOL[key] : null;
         }
-        return { id: course.id, title: (course.translations?.[language]?.title || course.title), total, done: doneCount, pct, school, isCert };
+        // Catalog-aware localized title (DB translations → static program catalog →
+        // English/base). Re-runs on language switch via the effect dependency below.
+        return { id: course.id, title: getLocalizedField(course, language, 'title', 'course'), total, done: doneCount, pct, school, isCert };
       });
 
       // Include ALL courses (even unseeded ones) so school counts are correct
@@ -321,7 +324,9 @@ export default function StudentPortal() {
       setStreak(s);
     }
     load();
-  }, [user?.id]);
+    // `language` is a dependency so course titles re-localize on a language switch
+    // (the Next Action "Continue: …" card and program cards stay in sync).
+  }, [user?.id, language]);
 
   // Generate personalized AI greeting from Prof. Didier
   const generateProfGreeting = async () => {

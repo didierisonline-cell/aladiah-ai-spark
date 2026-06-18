@@ -9,6 +9,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
+    "audit:i18n-live": "node scripts/audit-i18n-live.mjs",
     "audit:i18n-data": "node scripts/audit-i18n-data.mjs",
     "populate:translations": "node scripts/populate-translations.mjs",
     "launch:readiness": "node scripts/launch-readiness.mjs"

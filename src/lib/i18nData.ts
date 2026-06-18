@@ -9,6 +9,8 @@
 // When a non-English field falls back, we RECORD it (dev audit) so missing DB
 // translations are never silently hidden.
 // ============================================================================
+import { localizeProgramTitle } from './programCatalog';
+
 export const LAUNCH_LANGS = ['en', 'es', 'fr', 'pt', 'de', 'ar', 'zh', 'hi'] as const;
 export type LaunchLang = typeof LAUNCH_LANGS[number];
 
@@ -35,6 +37,16 @@ export function getLocalizedField(item: Translatable | null | undefined, languag
   const tr = item.translations || {};
   const direct = tr?.[language]?.[field];
   if (direct != null && String(direct).trim() !== '') return direct;
+  // Program/course TITLE: before falling back to English, consult the static
+  // localized-name catalog so the standard catalog renders in the selected
+  // language even when courses.translations is unpopulated in the DB. Matches by
+  // canonical English, any localized value, or a known stale alias (e.g. a course
+  // whose DB base title is still French resolves to the selected language).
+  if (field === 'title' && (entity === 'course' || entity === 'program')) {
+    const base = tr?.en?.title ?? item.title ?? item[field];
+    const fromCatalog = localizeProgramTitle(base, language);
+    if (fromCatalog) return fromCatalog;
+  }
   // requested a non-English language but it's absent → record the gap
   if (language && language !== 'en') reportMissing(entity, item.id ?? '?', language, field);
   const en = tr?.en?.[field];
