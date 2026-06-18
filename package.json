@@ -11,6 +11,10 @@
     "preview": "vite preview",
     "audit:i18n-live": "node scripts/audit-i18n-live.mjs",
     "audit:i18n-data": "node scripts/audit-i18n-data.mjs",
+    "loc:status": "node scripts/localization-director.mjs status",
+    "loc:audit": "node scripts/localization-director.mjs audit",
+    "loc:populate": "node scripts/localization-director.mjs populate",
+    "loc:verify": "node scripts/localization-director.mjs verify",
     "populate:translations": "node scripts/populate-translations.mjs",
     "launch:readiness": "node scripts/launch-readiness.mjs"
   },
