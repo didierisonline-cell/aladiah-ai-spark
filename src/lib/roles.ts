@@ -4,15 +4,21 @@
 //   - didier@aladiahacademy.com  → role 'founder'  (primary / intended)
 //   - didierisonline@gmail.com   → role 'founder'  (the active Supabase Auth
 //                                   account during the email transition)
-//   - didiermbok@yahoo.com       → role 'founder'  (legacy — temporary, remove
-//                                   after the cutover is confirmed stable)
 //   - every other signed-in user → role 'student'
 // Routing homes: founder → /founder, student → /portal.
+//
+// ALIGNMENT: this list MUST match the founder set granted the 'admin' role in
+// public.user_roles (migration 20260619050000_founder_admin_alignment.sql). All
+// server-side security keys off user_roles.role = 'admin', so an email here that
+// is not also granted admin would get founder UI but no DB powers, and vice
+// versa. The legacy didiermbok@yahoo.com was removed from BOTH sides during the
+// cutover (it never held the DB admin role).
 // =============================================================================
 export type Role = 'founder' | 'student';
 
-/** Emails that are automatically granted the founder role. */
-export const FOUNDER_EMAILS = ['didier@aladiahacademy.com', 'didierisonline@gmail.com', 'didiermbok@yahoo.com'];
+/** Emails that are automatically granted the founder role. Keep in lockstep
+ *  with the aligned founder set in the founder_admin_alignment migration. */
+export const FOUNDER_EMAILS = ['didier@aladiahacademy.com', 'didierisonline@gmail.com'];
 
 export const FOUNDER_HOME = '/founder';
 export const STUDENT_HOME = '/portal';
