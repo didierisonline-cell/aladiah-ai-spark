@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireAdmin } from "../_shared/auth.ts";
 
 const courseData = {
   title: "Cybersecurity Professional Certification",
@@ -469,6 +470,9 @@ serve(async (req) => {
     return new Response("ok", { headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type" } });
   }
   try {
+    // SECURITY: founder/admin only — this seeder writes content with the service role.
+    const __adminCheck = await requireAdmin(req);
+    if (__adminCheck instanceof Response) return __adminCheck;
     const supabase = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
     const courseId = "ffffffff-1111-2222-3333-444444444444";
     const { data: existing } = await supabase.from("chapters").select("id").eq("course_id", courseId);

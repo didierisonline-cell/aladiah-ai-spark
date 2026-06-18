@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireAdmin } from "../_shared/auth.ts";
 
 const courseData = {
   title: "Project Management Professional Certification",
@@ -584,6 +585,9 @@ serve(async (req) => {
   }
 
   try {
+    // SECURITY: founder/admin only — this seeder writes content with the service role.
+    const __adminCheck = await requireAdmin(req);
+    if (__adminCheck instanceof Response) return __adminCheck;
     const supabase = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
     const courseId = "eeeeeeee-ffff-1111-2222-333333333333";
 
