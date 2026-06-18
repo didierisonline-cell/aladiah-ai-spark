@@ -44,7 +44,7 @@ const ReferralProfile = () => {
 
       // Fetch profile, posts, replies, progress in parallel
       const [profileRes, postsRes, repliesRes, progressRes] = await Promise.all([
-        supabase.from('profiles').select('full_name, avatar_url, created_at').eq('user_id', userId).maybeSingle(),
+        supabase.from('public_profiles' as any).select('full_name, avatar_url, created_at').eq('user_id', userId).maybeSingle(),
         supabase.from('community_posts').select('content, created_at, post_type').eq('user_id', userId).order('created_at', { ascending: false }).limit(3),
         supabase.from('community_replies').select('id', { count: 'exact', head: true }).eq('user_id', userId),
         supabase.from('user_progress').select('course_id', { count: 'exact', head: true }).eq('user_id', userId),
