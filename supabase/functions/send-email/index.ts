@@ -1,3 +1,5 @@
+import { isValidEmail, escapeHtml, rateLimit } from "../_shared/emailGuard.ts";
+
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!;
 const FROM_EMAIL = 'noreply@aladiahacademy.com';
 const ADMIN_EMAIL = 'info@aladiahacademy.com';
@@ -85,17 +87,35 @@ Deno.serve(async (req) => {
   try {
     const { type, student, lang = 'en' } = await req.json();
     const t = translations[lang] || translations.en;
-    const name = student?.name || 'Student';
+    // Escape user-supplied name (interpolated into email HTML) and validate the
+    // recipient. Rate-limit by the student's email so the academy's domain can't
+    // be used to blast mail at arbitrary addresses.
+    const name = escapeHtml(student?.name || 'Student', 80);
     const email = student?.email;
+    if (!isValidEmail(email)) {
+      return new Response(JSON.stringify({ error: 'Invalid email' }), { status: 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } });
+    }
+    const limited = await rateLimit(email, type ?? 'unknown', { perHour: 6, perDay: 20 });
+    if (limited) return limited;
+
+    // Admin-notification templates also interpolate student fields into HTML —
+    // pass sanitized values, not raw input.
+    const safeStudent = {
+      name,
+      email,
+      tier: escapeHtml(student?.tier, 40),
+      course: escapeHtml(student?.course, 120),
+      language: escapeHtml(student?.language || lang, 10),
+    };
 
     switch (type) {
       case 'welcome':
         await sendEmail(email, t.welcome_subject, t.welcome_body(name));
-        await sendEmail(ADMIN_EMAIL, adminTemplates.new_registration(student).subject, adminTemplates.new_registration(student).body);
+        await sendEmail(ADMIN_EMAIL, adminTemplates.new_registration(safeStudent).subject, adminTemplates.new_registration(safeStudent).body);
         break;
       case 'confirmed':
         await sendEmail(email, t.confirmed_subject, t.confirmed_body(name));
-        await sendEmail(ADMIN_EMAIL, adminTemplates.email_confirmed(student).subject, adminTemplates.email_confirmed(student).body);
+        await sendEmail(ADMIN_EMAIL, adminTemplates.email_confirmed(safeStudent).subject, adminTemplates.email_confirmed(safeStudent).body);
         break;
       case 'day1':
         await sendEmail(email, t.day1_subject, t.day1_body(name));
@@ -110,10 +130,10 @@ Deno.serve(async (req) => {
         await sendEmail(email, t.day14_subject, t.day14_body(name));
         break;
       case 'free_course_completed':
-        await sendEmail(ADMIN_EMAIL, adminTemplates.free_course_completed(student).subject, adminTemplates.free_course_completed(student).body);
+        await sendEmail(ADMIN_EMAIL, adminTemplates.free_course_completed(safeStudent).subject, adminTemplates.free_course_completed(safeStudent).body);
         break;
       case 'new_subscription':
-        await sendEmail(ADMIN_EMAIL, adminTemplates.new_subscription(student).subject, adminTemplates.new_subscription(student).body);
+        await sendEmail(ADMIN_EMAIL, adminTemplates.new_subscription(safeStudent).subject, adminTemplates.new_subscription(safeStudent).body);
         break;
       default:
         return new Response(JSON.stringify({ error: 'Unknown type' }), { status: 400 });
