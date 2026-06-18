@@ -47,6 +47,7 @@ import FounderPortal from "./pages/founder/FounderPortal";
 import FounderControlCenter from "./pages/founder/FounderControlCenter";
 import FounderCurriculum from "./pages/founder/FounderCurriculum";
 import FounderReadiness from "./pages/founder/FounderReadiness";
+import FounderLanguageQuality from "./pages/founder/FounderLanguageQuality";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
@@ -129,6 +130,7 @@ const AppContent = () => {
         <Route path="/founder/control-center" element={<FounderRoute><FounderControlCenter /></FounderRoute>} />
         <Route path="/founder/curriculum" element={<FounderRoute><FounderCurriculum /></FounderRoute>} />
         <Route path="/founder/readiness" element={<FounderRoute><FounderReadiness /></FounderRoute>} />
+        <Route path="/founder/language-quality" element={<FounderRoute><FounderLanguageQuality /></FounderRoute>} />
         {/* Founder authorities (legacy /admin paths, founder-protected) */}
         <Route path="/admin" element={<FounderRoute><AdminDashboard /></FounderRoute>} />
         <Route path="/admin/ai-workforce" element={<FounderRoute><AIWorkforce /></FounderRoute>} />
