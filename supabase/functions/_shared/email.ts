@@ -3,7 +3,7 @@
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const FROM_EMAIL = Deno.env.get("FROM_EMAIL") || "Aladiah Academy <noreply@aladiahacademy.com>";
-const SITE_URL = Deno.env.get("SITE_URL") || "https://preview--aladiah-ai-spark.lovable.app";
+const SITE_URL = Deno.env.get("SITE_URL") || "https://aladiahacademy.com";
 
 export async function sendEmail(to: string, subject: string, htmlBody: string) {
   if (!RESEND_API_KEY) {
