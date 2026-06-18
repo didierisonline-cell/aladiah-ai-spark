@@ -81,11 +81,10 @@ const Community = () => {
       // Get unique user IDs
       const userIds = [...new Set(postsData.map(p => p.user_id))];
 
-      // Get profiles
+      // Get display names via security-definer RPC (profiles table is not world-readable)
       const { data: profiles } = await supabase
-        .from('profiles')
-        .select('user_id, full_name')
-        .in('user_id', userIds);
+        .rpc('get_community_display_names', { p_user_ids: userIds })
+        .select('user_id, display_name');
 
       // Get progress for each user
       const { data: allProgress } = await supabase
@@ -107,8 +106,8 @@ const Community = () => {
       });
 
       const profileMap: Record<string, string> = {};
-      (profiles || []).forEach(p => {
-        profileMap[p.user_id] = p.full_name || 'Student';
+      (profiles || []).forEach((p: any) => {
+        profileMap[p.user_id] = p.display_name || 'Student';
       });
 
       // Get replies
@@ -124,11 +123,10 @@ const Community = () => {
       const missingIds = replyUserIds.filter(id => !profileMap[id]);
       if (missingIds.length > 0) {
         const { data: moreProfiles } = await supabase
-          .from('profiles')
-          .select('user_id, full_name')
-          .in('user_id', missingIds);
-        (moreProfiles || []).forEach(p => {
-          profileMap[p.user_id] = p.full_name || 'Student';
+          .rpc('get_community_display_names', { p_user_ids: missingIds })
+          .select('user_id, display_name');
+        (moreProfiles || []).forEach((p: any) => {
+          profileMap[p.user_id] = p.display_name || 'Student';
         });
 
         const { data: moreProgress } = await supabase
