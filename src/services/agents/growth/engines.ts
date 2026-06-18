@@ -191,6 +191,198 @@ export interface ConversionScore {
   total: number;                 // 0-100 — "likelihood of lead → student → employed → ambassador"
 }
 
+// ---------------------------------------------------------------------------
+// Portfolio Balance Analytics
+// ---------------------------------------------------------------------------
+
+// Ideal distribution of approved content across flywheel stages
+// Aladiah growth machine targets: heavy trust-building first 90 days, proof + employment always present
+export const FLYWHEEL_IDEAL_PCT: Record<FlywheelStage, number> = {
+  attention:       20,
+  trust:           20,
+  community:       10,
+  transformation:  15,
+  employment:      15,
+  success_stories: 10,
+  authority:       10,
+};
+
+export interface StageHealth {
+  stage: FlywheelStage;
+  label: string;
+  count: number;
+  pct: number;           // actual % of total
+  ideal_pct: number;     // target %
+  delta: number;         // actual - ideal (negative = under, positive = over)
+  status: 'healthy' | 'under' | 'over' | 'empty';
+  avg_score: number;     // average content quality score for this stage
+}
+
+export interface PortfolioRecommendation {
+  stage: FlywheelStage;
+  urgency: 'critical' | 'high' | 'medium';
+  reason: string;
+  suggested_formats: string[];
+  suggested_hook_bucket: string;
+}
+
+export interface PortfolioHealth {
+  total_assets: number;
+  approved_assets: number;
+  stages: StageHealth[];
+  health_score: number;           // 0-100 composite portfolio health
+  health_label: 'Critical' | 'At Risk' | 'Fair' | 'Good' | 'Excellent';
+  overproduced: FlywheelStage[];
+  underproduced: FlywheelStage[];
+  missing: FlywheelStage[];       // stages with zero approved content
+  recommendations: PortfolioRecommendation[];
+  funnel_conversion_risk: string; // plain-English diagnosis
+  avg_content_score: number;
+}
+
+// Raw asset shape coming from Supabase (subset needed for analytics)
+export interface RawAssetForAnalytics {
+  flywheel_stage: string;
+  status: string;
+  score?: number | null;
+}
+
+const STAGE_LABELS: Record<FlywheelStage, string> = {
+  attention:       'Attention',
+  trust:           'Trust',
+  community:       'Community',
+  transformation:  'Transformation',
+  employment:      'Employment',
+  success_stories: 'Success Stories',
+  authority:       'Authority',
+};
+
+const STAGE_FORMATS: Record<FlywheelStage, string[]> = {
+  attention:       ['LinkedIn hook post', 'TikTok/Reel script', 'YouTube Short', 'Contrarian tweet thread'],
+  trust:           ['Data-backed LinkedIn post', 'Behind-the-build story', 'Myth-busting carousel', 'Email deep-dive'],
+  community:       ['Community spotlight', 'Student Q&A thread', 'Live event invite', 'Discord/Slack post'],
+  transformation:  ['Before/after case study', 'Video tutorial', 'Email course module', 'LinkedIn transformation post'],
+  employment:      ['Employer demand post', 'Interview tip series', 'Salary/role breakdown', 'Proof artifact showcase'],
+  success_stories: ['Graduate story post', 'Hiring outcome video', 'Testimonial carousel', 'LinkedIn alumni feature'],
+  authority:       ['Industry insight post', 'Research-backed analysis', 'Speaking/media appearance', 'Employer partnership announcement'],
+};
+
+const STAGE_HOOK_BUCKET: Record<FlywheelStage, string> = {
+  attention:       'contrarian_belief',
+  trust:           'surprising_proof',
+  community:       'behind_the_build',
+  transformation:  'transformation_story',
+  employment:      'identity_aspiration',
+  success_stories: 'transformation_story',
+  authority:       'contrarian_belief',
+};
+
+export function analyzePortfolioBalance(assets: RawAssetForAnalytics[]): PortfolioHealth {
+  const ALL_STAGES: FlywheelStage[] = ['attention', 'trust', 'community', 'transformation', 'employment', 'success_stories', 'authority'];
+
+  const approved = assets.filter(a => a.status === 'approved' || a.status === 'published');
+  const total = assets.length;
+  const approvedCount = approved.length;
+
+  // Count and average score per stage
+  const stageCounts: Record<FlywheelStage, number> = {} as any;
+  const stageScores: Record<FlywheelStage, number[]> = {} as any;
+  for (const s of ALL_STAGES) { stageCounts[s] = 0; stageScores[s] = []; }
+
+  for (const a of approved) {
+    const s = a.flywheel_stage as FlywheelStage;
+    if (stageCounts[s] !== undefined) {
+      stageCounts[s]++;
+      if (a.score != null) stageScores[s].push(a.score);
+    }
+  }
+
+  const stages: StageHealth[] = ALL_STAGES.map(s => {
+    const count = stageCounts[s];
+    const pct = approvedCount > 0 ? Math.round((count / approvedCount) * 100) : 0;
+    const ideal = FLYWHEEL_IDEAL_PCT[s];
+    const delta = pct - ideal;
+    const scores = stageScores[s];
+    const avg_score = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+    const status: StageHealth['status'] = count === 0 ? 'empty' : delta <= -8 ? 'under' : delta >= 8 ? 'over' : 'healthy';
+    return { stage: s, label: STAGE_LABELS[s], count, pct, ideal_pct: ideal, delta, status, avg_score };
+  });
+
+  const overproduced = stages.filter(s => s.status === 'over').map(s => s.stage);
+  const underproduced = stages.filter(s => s.status === 'under').map(s => s.stage);
+  const missing = stages.filter(s => s.status === 'empty').map(s => s.stage);
+
+  // Portfolio Health Score:
+  // Base 100, deduct for each stage's deviation from ideal, bonus for high avg scores
+  const distributionPenalty = stages.reduce((sum, s) => sum + Math.abs(s.delta) * 1.5, 0);
+  const missingPenalty = missing.length * 15;
+  const allScores = approved.filter(a => a.score != null).map(a => a.score as number);
+  const avg_content_score = allScores.length > 0 ? Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length) : 0;
+  const qualityBonus = avg_content_score > 75 ? (avg_content_score - 75) * 0.5 : 0;
+  const health_score = Math.max(0, Math.min(100, Math.round(100 - distributionPenalty - missingPenalty + qualityBonus)));
+
+  const health_label: PortfolioHealth['health_label'] =
+    health_score >= 85 ? 'Excellent' :
+    health_score >= 70 ? 'Good' :
+    health_score >= 55 ? 'Fair' :
+    health_score >= 35 ? 'At Risk' : 'Critical';
+
+  // Funnel conversion risk diagnosis
+  const hasTrust = stageCounts.trust > 0;
+  const hasEmployment = stageCounts.employment > 0;
+  const hasProof = stageCounts.success_stories > 0;
+  const attentionHeavy = (stageCounts.attention / Math.max(approvedCount, 1)) > 0.4;
+
+  const funnel_conversion_risk =
+    !hasTrust && !hasEmployment ? 'Critical: no Trust or Employment content — funnel cannot convert views to students or outcomes.' :
+    !hasTrust ? 'High: no Trust content — viewers have no reason to believe transformation is possible.' :
+    !hasEmployment ? 'High: no Employment content — cannot demonstrate outcomes employers care about.' :
+    !hasProof ? 'Medium: no Success Story content — missing the social proof loop that drives Ambassador growth.' :
+    attentionHeavy ? 'Medium: portfolio is Attention-heavy — great for reach, but current mix cannot convert leads to students.' :
+    missing.length > 2 ? `Low-Medium: ${missing.length} flywheel stages have zero approved content.` :
+    'Low: funnel coverage is reasonable — focus on quality and conversion optimization.';
+
+  // Recommendations — prioritize empty and underproduced stages
+  const recommendations: PortfolioRecommendation[] = [];
+  const priorityStages: FlywheelStage[] = ['employment', 'trust', 'success_stories', 'transformation', 'community', 'authority', 'attention'];
+
+  for (const s of priorityStages) {
+    const sh = stages.find(st => st.stage === s)!;
+    if (sh.status === 'empty') {
+      recommendations.push({
+        stage: s,
+        urgency: (s === 'employment' || s === 'trust') ? 'critical' : 'high',
+        reason: `Zero approved ${STAGE_LABELS[s]} content — this stage of the journey is completely uncovered.`,
+        suggested_formats: STAGE_FORMATS[s],
+        suggested_hook_bucket: STAGE_HOOK_BUCKET[s],
+      });
+    } else if (sh.status === 'under') {
+      recommendations.push({
+        stage: s,
+        urgency: (s === 'employment' || s === 'trust') ? 'high' : 'medium',
+        reason: `${STAGE_LABELS[s]} is ${Math.abs(sh.delta)}% below ideal — readers at this stage lack content to move forward.`,
+        suggested_formats: STAGE_FORMATS[s].slice(0, 2),
+        suggested_hook_bucket: STAGE_HOOK_BUCKET[s],
+      });
+    }
+    if (recommendations.length >= 5) break;
+  }
+
+  return {
+    total_assets: total,
+    approved_assets: approvedCount,
+    stages,
+    health_score,
+    health_label,
+    overproduced,
+    underproduced,
+    missing,
+    recommendations,
+    funnel_conversion_risk,
+    avg_content_score,
+  };
+}
+
 // Flywheel stage assignment — every asset must map to exactly one stage
 export interface FlywheelMapping {
   stage: FlywheelStage;

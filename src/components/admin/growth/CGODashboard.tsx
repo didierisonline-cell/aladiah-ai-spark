@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { runAgent } from '@/services/aos';
+import { analyzePortfolioBalance, type PortfolioHealth, type RawAssetForAnalytics } from '@/services/agents/growth/engines';
 
 const db = supabase as unknown as { from: (t: string) => any };
 
@@ -51,6 +52,36 @@ function useDailyBrief() {
     queryFn: async () => {
       const { data } = await db.from('cgo_growth_briefs').select('*').order('date', { ascending: false }).limit(1).maybeSingle();
       return data ?? null;
+    },
+  });
+}
+
+function useAllAssetsForPortfolio() {
+  return useQuery({
+    queryKey: ['cgo_portfolio_all'],
+    queryFn: async () => {
+      const { data } = await db.from('cgo_growth_assets')
+        .select('flywheel_stage, status, score')
+        .limit(500);
+      return (data ?? []) as RawAssetForAnalytics[];
+    },
+  });
+}
+
+// High-impact approval queue: pending assets with score ≥ 80 or in key funnel stages
+function useHighImpactQueue() {
+  return useQuery({
+    queryKey: ['cgo_high_impact_queue'],
+    queryFn: async () => {
+      const { data } = await db.from('cgo_growth_assets')
+        .select('*')
+        .eq('status', 'pending_approval')
+        .order('score', { ascending: false })
+        .limit(20);
+      return (data ?? []).filter((a: any) =>
+        (a.score ?? 0) >= 80 ||
+        ['employment', 'success_stories', 'authority'].includes(a.flywheel_stage)
+      );
     },
   });
 }
@@ -283,6 +314,190 @@ function CampaignsPanel() {
 }
 
 // ---------------------------------------------------------------------------
+// Portfolio Health Panel
+// ---------------------------------------------------------------------------
+
+const HEALTH_COLOR: Record<string, string> = {
+  Excellent: 'text-green-600',
+  Good:      'text-green-500',
+  Fair:      'text-yellow-600',
+  'At Risk': 'text-orange-600',
+  Critical:  'text-red-600',
+};
+
+const URGENCY_COLOR: Record<string, string> = {
+  critical: 'bg-red-50 border-red-200 text-red-800',
+  high:     'bg-orange-50 border-orange-200 text-orange-800',
+  medium:   'bg-yellow-50 border-yellow-200 text-yellow-800',
+};
+
+function StageBar({ sh }: { sh: ReturnType<typeof analyzePortfolioBalance>['stages'][number] }) {
+  const barColor =
+    sh.status === 'empty' ? 'bg-red-200' :
+    sh.status === 'under' ? 'bg-yellow-400' :
+    sh.status === 'over'  ? 'bg-blue-400' :
+                            'bg-green-400';
+  const idealLeft = `${sh.ideal_pct}%`;
+
+  return (
+    <div className="space-y-0.5">
+      <div className="flex items-center justify-between text-xs">
+        <span className="font-medium w-32 shrink-0">{sh.label}</span>
+        <div className="flex-1 mx-2 relative h-4 bg-muted rounded overflow-hidden">
+          <div className={`h-full ${barColor} transition-all`} style={{ width: `${Math.min(sh.pct, 100)}%` }} />
+          {/* Ideal marker */}
+          <div className="absolute top-0 h-full w-0.5 bg-gray-500 opacity-40" style={{ left: idealLeft }} />
+        </div>
+        <span className={`w-20 text-right tabular-nums ${
+          sh.status === 'empty' ? 'text-red-600 font-bold' :
+          sh.status === 'under' ? 'text-yellow-700' :
+          sh.status === 'over'  ? 'text-blue-700' :
+          'text-green-700'
+        }`}>
+          {sh.count} ({sh.pct}%)
+        </span>
+        <span className="w-14 text-right text-muted-foreground tabular-nums text-xs">
+          {sh.avg_score > 0 ? `avg ${sh.avg_score}` : '—'}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function PortfolioHealthPanel() {
+  const { data: allAssets = [], isLoading, refetch } = useAllAssetsForPortfolio();
+  const { data: hiq = [], isLoading: hiqLoading, refetch: hiqRefetch } = useHighImpactQueue();
+  const hiRefetch = () => { refetch(); hiqRefetch(); };
+
+  if (isLoading) return <p className="text-sm text-muted-foreground">Analyzing portfolio…</p>;
+  if (!allAssets.length) return <p className="text-sm text-muted-foreground">No assets yet — run the CGO agent to generate your first content portfolio.</p>;
+
+  const health: PortfolioHealth = analyzePortfolioBalance(allAssets);
+
+  const approve = async (id: string) => {
+    await (db as any).from('cgo_growth_assets').update({ status: 'approved', approved_at: new Date().toISOString() }).eq('id', id);
+    hiRefetch();
+  };
+  const reject = async (id: string) => {
+    await (db as any).from('cgo_growth_assets').update({ status: 'rejected' }).eq('id', id);
+    hiRefetch();
+  };
+
+  return (
+    <div className="space-y-6">
+
+      {/* Header scores */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="border rounded-lg p-3 text-center">
+          <p className={`text-2xl font-bold ${HEALTH_COLOR[health.health_label]}`}>{health.health_score}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Portfolio Health Score</p>
+          <p className={`text-xs font-semibold mt-0.5 ${HEALTH_COLOR[health.health_label]}`}>{health.health_label}</p>
+        </div>
+        <div className="border rounded-lg p-3 text-center">
+          <p className="text-2xl font-bold">{health.approved_assets}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Approved Assets</p>
+          <p className="text-xs text-muted-foreground">{health.total_assets} total</p>
+        </div>
+        <div className="border rounded-lg p-3 text-center">
+          <p className="text-2xl font-bold">{health.avg_content_score > 0 ? health.avg_content_score : '—'}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Avg Content Score</p>
+          <p className="text-xs text-muted-foreground">approved content</p>
+        </div>
+        <div className="border rounded-lg p-3 text-center">
+          <p className={`text-2xl font-bold ${health.missing.length > 0 ? 'text-red-600' : 'text-green-600'}`}>
+            {7 - health.missing.length}/7
+          </p>
+          <p className="text-xs text-muted-foreground mt-0.5">Funnel Stages Covered</p>
+          {health.missing.length > 0 && (
+            <p className="text-xs text-red-600">{health.missing.length} empty</p>
+          )}
+        </div>
+      </div>
+
+      {/* Conversion risk */}
+      <div className={`rounded-lg border px-4 py-3 text-sm ${
+        health.funnel_conversion_risk.startsWith('Critical') ? 'bg-red-50 border-red-200 text-red-800' :
+        health.funnel_conversion_risk.startsWith('High')    ? 'bg-orange-50 border-orange-200 text-orange-800' :
+        health.funnel_conversion_risk.startsWith('Medium')  ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
+        'bg-green-50 border-green-200 text-green-800'
+      }`}>
+        <strong>Funnel Conversion Risk:</strong> {health.funnel_conversion_risk}
+      </div>
+
+      {/* Stage distribution */}
+      <div>
+        <h4 className="text-sm font-semibold mb-3">Flywheel Stage Distribution <span className="text-xs font-normal text-muted-foreground">(gray marker = target)</span></h4>
+        <div className="space-y-2">
+          {health.stages.map(sh => <StageBar key={sh.stage} sh={sh} />)}
+        </div>
+        <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+          <span><span className="inline-block w-2.5 h-2.5 rounded-sm bg-green-400 mr-1" />Healthy</span>
+          <span><span className="inline-block w-2.5 h-2.5 rounded-sm bg-yellow-400 mr-1" />Under</span>
+          <span><span className="inline-block w-2.5 h-2.5 rounded-sm bg-blue-400 mr-1" />Over</span>
+          <span><span className="inline-block w-2.5 h-2.5 rounded-sm bg-red-200 mr-1" />Empty</span>
+        </div>
+      </div>
+
+      {/* Recommended next content */}
+      {health.recommendations.length > 0 && (
+        <div>
+          <h4 className="text-sm font-semibold mb-2">Recommended Next Content Pieces</h4>
+          <div className="space-y-2">
+            {health.recommendations.map((r, i) => (
+              <div key={i} className={`rounded-lg border p-3 space-y-1 ${URGENCY_COLOR[r.urgency]}`}>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold uppercase">{r.urgency}</span>
+                  <span className="text-xs font-semibold">{r.stage.replace(/_/g, ' ')}</span>
+                </div>
+                <p className="text-xs">{r.reason}</p>
+                <p className="text-xs font-medium">Formats: {r.suggested_formats.join(' · ')}</p>
+                <p className="text-xs text-muted-foreground">Hook bucket: {r.suggested_hook_bucket.replace(/_/g, ' ')}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* High-impact approval queue */}
+      <div>
+        <h4 className="text-sm font-semibold mb-2">
+          High-Impact Approval Queue
+          <span className="ml-2 text-xs font-normal text-muted-foreground">score ≥ 80 or Employment / Success Stories / Authority</span>
+        </h4>
+        {hiqLoading ? (
+          <p className="text-sm text-muted-foreground">Loading…</p>
+        ) : !hiq.length ? (
+          <p className="text-sm text-muted-foreground">No high-impact items pending approval.</p>
+        ) : (
+          <div className="space-y-3">
+            {hiq.map((a: any) => (
+              <div key={a.id} className="border rounded-lg p-3 space-y-1.5">
+                <div className="flex items-start justify-between gap-2 flex-wrap">
+                  <div className="space-y-0.5">
+                    <p className="font-medium text-sm">{a.title}</p>
+                    <div className="flex flex-wrap gap-1.5 items-center">
+                      <StatusBadge status={a.flywheel_stage} />
+                      <StatusBadge status={a.channel} />
+                      <span className="text-xs font-mono text-muted-foreground">score {a.score ?? '—'}</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <Button size="sm" variant="default" onClick={() => approve(a.id)}>Approve</Button>
+                    <Button size="sm" variant="outline" onClick={() => reject(a.id)}>Reject</Button>
+                  </div>
+                </div>
+                {a.hook && <p className="text-xs text-muted-foreground italic">"{a.hook}"</p>}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main dashboard
 // ---------------------------------------------------------------------------
 
@@ -321,14 +536,27 @@ const CGODashboard = () => {
         </div>
       )}
 
-      <Tabs defaultValue="brief">
+      <Tabs defaultValue="portfolio">
         <TabsList className="flex-wrap h-auto gap-1">
+          <TabsTrigger value="portfolio">Portfolio Health</TabsTrigger>
           <TabsTrigger value="brief">Daily Brief</TabsTrigger>
-          <TabsTrigger value="pending">Approval Queue {pending.length > 0 && `(${pending.length})`}</TabsTrigger>
+          <TabsTrigger value="pending">All Pending {pending.length > 0 && `(${pending.length})`}</TabsTrigger>
           <TabsTrigger value="all">All Assets</TabsTrigger>
           <TabsTrigger value="hooks">Hook Bank</TabsTrigger>
           <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="portfolio">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Content Portfolio Health</CardTitle>
+              <p className="text-xs text-muted-foreground">
+                View → Lead → Student → Graduate → Employed → Success Story → Ambassador
+              </p>
+            </CardHeader>
+            <CardContent><PortfolioHealthPanel /></CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="brief">
           <Card>
@@ -339,7 +567,7 @@ const CGODashboard = () => {
 
         <TabsContent value="pending">
           <Card>
-            <CardHeader><CardTitle className="text-base">Approval Queue</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base">All Pending Approval</CardTitle></CardHeader>
             <CardContent><AssetTable status="pending_approval" /></CardContent>
           </Card>
         </TabsContent>
