@@ -113,13 +113,29 @@ Deno.serve(async (req) => {
     if (event.type === "invoice.payment_failed") {
       const invoice = event.data.object as Stripe.Invoice;
       const customerId = invoice.customer as string;
-      if (customerId) await supabase.from("subscriptions").update({ status: "past_due", updated_at: new Date().toISOString() }).eq("stripe_customer_id", customerId);
+      if (customerId) {
+        await supabase.from("subscriptions").update({ status: "past_due", updated_at: new Date().toISOString() }).eq("stripe_customer_id", customerId);
+        // Revoke paid access: downgrade profiles.tier so frontend gate fires immediately
+        const { data: sub } = await supabase.from("subscriptions").select("user_id").eq("stripe_customer_id", customerId).maybeSingle();
+        if (sub?.user_id) {
+          await supabase.from("profiles").update({ tier: "starter", updated_at: new Date().toISOString() }).eq("user_id", sub.user_id);
+          console.log(`profiles.tier downgraded to starter for user ${sub.user_id} (payment_failed)`);
+        }
+      }
     }
 
     if (event.type === "customer.subscription.deleted") {
       const subscription = event.data.object as Stripe.Subscription;
       const customerId = subscription.customer as string;
-      if (customerId) await supabase.from("subscriptions").update({ status: "canceled", updated_at: new Date().toISOString() }).eq("stripe_customer_id", customerId);
+      if (customerId) {
+        await supabase.from("subscriptions").update({ status: "canceled", updated_at: new Date().toISOString() }).eq("stripe_customer_id", customerId);
+        // Revoke paid access: downgrade profiles.tier so frontend gate fires immediately
+        const { data: sub } = await supabase.from("subscriptions").select("user_id").eq("stripe_customer_id", customerId).maybeSingle();
+        if (sub?.user_id) {
+          await supabase.from("profiles").update({ tier: "starter", updated_at: new Date().toISOString() }).eq("user_id", sub.user_id);
+          console.log(`profiles.tier downgraded to starter for user ${sub.user_id} (subscription.deleted)`);
+        }
+      }
     }
 
     return new Response(JSON.stringify({ received: true }), { status: 200, headers: { "Content-Type": "application/json" } });
