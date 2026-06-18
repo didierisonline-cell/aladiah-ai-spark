@@ -63,9 +63,11 @@ const Feedback = () => {
 
       const userIds = [...new Set(postsData.map(p => p.user_id))];
 
+      // Author names via the safe, column-limited member view (profiles is
+      // now owner/admin-only; this exposes first name + avatar only).
       const { data: profiles } = await supabase
-        .from('profiles')
-        .select('user_id, full_name')
+        .from('safe_member_profiles')
+        .select('user_id, display_name')
         .in('user_id', userIds);
 
       const { data: allProgress } = await supabase
@@ -84,7 +86,7 @@ const Feedback = () => {
       });
 
       const profileMap: Record<string, string> = {};
-      (profiles || []).forEach(p => { profileMap[p.user_id] = p.full_name || 'Student'; });
+      (profiles || []).forEach(p => { profileMap[p.user_id] = p.display_name || 'Student'; });
 
       const postIds = postsData.map(p => p.id);
       const { data: repliesData } = await supabase
@@ -96,8 +98,8 @@ const Feedback = () => {
       const replyUserIds = [...new Set((repliesData || []).map(r => r.user_id))];
       const missingIds = replyUserIds.filter(id => !profileMap[id]);
       if (missingIds.length > 0) {
-        const { data: mp } = await supabase.from('profiles').select('user_id, full_name').in('user_id', missingIds);
-        (mp || []).forEach(p => { profileMap[p.user_id] = p.full_name || 'Student'; });
+        const { data: mp } = await supabase.from('safe_member_profiles').select('user_id, display_name').in('user_id', missingIds);
+        (mp || []).forEach(p => { profileMap[p.user_id] = p.display_name || 'Student'; });
         const { data: mpr } = await supabase.from('user_progress').select('user_id, quiz_id').in('user_id', missingIds).not('quiz_id', 'is', null);
         missingIds.forEach(uid => {
           const passed = (mpr || []).filter(p => p.user_id === uid).length;

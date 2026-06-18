@@ -81,10 +81,11 @@ const Community = () => {
       // Get unique user IDs
       const userIds = [...new Set(postsData.map(p => p.user_id))];
 
-      // Get profiles
+      // Get author display names via the safe, column-limited member view
+      // (profiles is now owner/admin-only; this exposes first name + avatar only).
       const { data: profiles } = await supabase
-        .from('profiles')
-        .select('user_id, full_name')
+        .from('safe_member_profiles')
+        .select('user_id, display_name')
         .in('user_id', userIds);
 
       // Get progress for each user
@@ -108,7 +109,7 @@ const Community = () => {
 
       const profileMap: Record<string, string> = {};
       (profiles || []).forEach(p => {
-        profileMap[p.user_id] = p.full_name || 'Student';
+        profileMap[p.user_id] = p.display_name || 'Student';
       });
 
       // Get replies
@@ -124,11 +125,11 @@ const Community = () => {
       const missingIds = replyUserIds.filter(id => !profileMap[id]);
       if (missingIds.length > 0) {
         const { data: moreProfiles } = await supabase
-          .from('profiles')
-          .select('user_id, full_name')
+          .from('safe_member_profiles')
+          .select('user_id, display_name')
           .in('user_id', missingIds);
         (moreProfiles || []).forEach(p => {
-          profileMap[p.user_id] = p.full_name || 'Student';
+          profileMap[p.user_id] = p.display_name || 'Student';
         });
 
         const { data: moreProgress } = await supabase
