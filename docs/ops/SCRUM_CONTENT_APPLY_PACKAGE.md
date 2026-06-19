@@ -1,5 +1,12 @@
 # Scrum Lessons/Quizzes + Question-Mapping — Apply Package
 
+> 🛑 **SUPERSEDED — read `SCRUM_V2_CONTENT_RECONCILIATION_PACKAGE.md` first.**
+> **Do not apply `20260619010000` to the live v2 flagship unless the pre-flight
+> proves the course is bare.** The current live course appears populated with ~162
+> lessons, so **Path B (populated-v2 reconciliation) is likely** and the
+> bare-course seed below must NOT run. This document is retained as the **Path A
+> (bare-course)** detail only.
+
 > **Reviewable apply package — Claude Code does not auto-apply SQL.** The founder
 > runs each block by hand in the Supabase SQL editor and runs the verification
 > `SELECT`s. **No production data is modified by merging this doc.**
