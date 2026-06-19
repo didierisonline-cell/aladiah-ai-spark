@@ -48,6 +48,7 @@ import FounderControlCenter from "./pages/founder/FounderControlCenter";
 import LocalizationFactory from "./pages/founder/LocalizationFactory";
 import FounderCurriculum from "./pages/founder/FounderCurriculum";
 import FounderReadiness from "./pages/founder/FounderReadiness";
+import LaunchReadiness from "./pages/founder/LaunchReadiness";
 import CeoTruthDashboard from "./pages/founder/CeoTruthDashboard";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
@@ -139,6 +140,7 @@ const AppContent = () => {
         <Route path="/founder/control-center" element={<FounderRoute><FounderControlCenter /></FounderRoute>} />
         <Route path="/founder/curriculum" element={<FounderRoute><FounderCurriculum /></FounderRoute>} />
         <Route path="/founder/readiness" element={<FounderRoute><FounderReadiness /></FounderRoute>} />
+        <Route path="/founder/launch" element={<FounderRoute><LaunchReadiness /></FounderRoute>} />
         <Route path="/founder/truth" element={<FounderRoute><CeoTruthDashboard /></FounderRoute>} />
         <Route path="/founder/localization" element={<FounderRoute><LocalizationFactory /></FounderRoute>} />
         {/* Founder authorities (legacy /admin paths, founder-protected) */}
