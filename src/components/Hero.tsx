@@ -75,7 +75,7 @@ const Hero = () => {
         <div className="absolute w-[62vw] h-[62vw] max-w-[760px] max-h-[760px] rounded-full bg-primary/10 blur-[130px]" />
         <div className="absolute w-[34vw] h-[34vw] max-w-[420px] max-h-[420px] rounded-full bg-secondary/10 blur-[120px]" />
         <img
-          src="/brand/aladiah-mark.svg"
+          src="/brand/aladiah-watermark.svg"
           alt=""
           className="relative h-[80%] w-auto max-h-[780px] opacity-[0.14]"
           style={{ filter: 'drop-shadow(0 0 70px rgba(74,144,245,0.30)) drop-shadow(0 0 40px rgba(245,184,26,0.18))' }}
