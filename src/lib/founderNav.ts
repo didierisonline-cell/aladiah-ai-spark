@@ -1,7 +1,7 @@
 import {
   Award, BarChart3, BookOpen, Briefcase, ClipboardCheck, Cpu, FilePlus2, Footprints, GaugeCircle,
   GraduationCap, Home, Inbox, Languages, LayoutGrid, Megaphone, Rocket, Search, Server, ServerCog,
-  Shield, ShieldCheck, Sparkles,
+  Shield, ShieldCheck, Sparkles, Target,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -26,6 +26,7 @@ export const FOUNDER_NAV_ITEMS: FounderNavItem[] = [
   { to: '/founder/readiness', label: 'Curriculum Readiness', icon: GaugeCircle },
   { to: '/founder/translation', label: 'Translation Truth', icon: Languages },
   { to: '/founder/journey', label: 'Student Journey', icon: Footprints },
+  { to: '/founder/outcomes', label: 'Employment Outcomes', icon: Target },
   { to: '/founder/localization', label: 'Localization Factory', icon: Sparkles },
   { to: '/founder/curriculum', label: 'Question Review', icon: ClipboardCheck },
   { to: '/admin/command-center', label: 'CEO', icon: Sparkles },
