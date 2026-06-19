@@ -13,7 +13,7 @@ BEGIN
 
   UPDATE public.courses
      SET title='AI Enterprise Scrum Master & Agile Transformation Leader',
-         description='An 18-module, AI-augmented professional certification: 54 simulations, 18 labs, 18 portfolio deliverables, 36 assessments, and a 1,080-question bank. Aligned to Scrum.org PSM I/II readiness.',
+         description='An 18-module, AI-augmented Scrum Master flagship pathway with certification-style assessments, simulations, labs, portfolio work, and capstone readiness. The certification question bank, full lesson library, and multilingual content are being expanded through the launch-readiness process. Aligned to Scrum.org PSM I/II readiness.',
          is_flagship=true, flagship_version='v1.0', curriculum_version='v1.0'
    WHERE id=cid;
 

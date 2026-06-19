@@ -1,5 +1,8 @@
 # Certification — AI Enterprise Scrum Master & Agile Transformation Leader
-**Credential level:** Professional · **Passing score:** 85% · **Final exam:** 200 questions.
+
+> ⚠️ **TARGET SPEC — not yet live.** Figures here (162 lessons · 1,080-question bank · 200-question exam · 54 simulations · 18 labs/portfolios) are **design targets**. **Current authored:** 18 modules · 72 lessons · 100 questions + 40 capstone; simulations/labs/portfolio are **code-only** (not on the student DB path). Do **not** use these numbers in public/marketing until `/founder/truth` shows them backed by live data. Evidence: `docs/audits/FLAGSHIP_SCRUM_READINESS_AUDIT.md`.
+
+**Credential level:** Professional · **Passing score:** 85% · **Final exam:** 200 questions _(target — see banner)_.
 
 ## Eligibility (completion logic)
 Candidate is exam-eligible only when all required assets are completed + published-graded:
