@@ -34,8 +34,10 @@ interface State {
   capstoneQuestionsLive: number | null;
   simsInDb: number | null;
   translatedChapters: number | null; // chapters with any non-en translation key
-  oldSeedLive: boolean | null;
-  scrumCourseCount: number | null;
+  oldSeedLive: boolean | null;        // historical old-seed row exists (informational)
+  oldSeedPublished: boolean | null;   // old seed still PUBLISHED / student-facing (blocker)
+  scrumCourseCount: number | null;    // historical Scrum rows (all, incl. unpublished)
+  publishedScrumCount: number | null; // published / student-facing Scrum courses
   secProbe: Probe;       // security migration set
   flagProbe: Probe;      // flagship modules migration
 }
@@ -49,7 +51,8 @@ export default function CeoTruthDashboard() {
     loading: true, err: null, flagshipFound: false, flagshipTitle: null, flagshipDescription: null,
     modulesLive: null, lessonsLive: null, questionsLive: null, modulesWithQuestions: null,
     capstoneQuestionsLive: null, simsInDb: null, translatedChapters: null, oldSeedLive: null,
-    scrumCourseCount: null, secProbe: { applied: null, detail: '' }, flagProbe: { applied: null, detail: '' },
+    oldSeedPublished: null, scrumCourseCount: null, publishedScrumCount: null,
+    secProbe: { applied: null, detail: '' }, flagProbe: { applied: null, detail: '' },
   });
 
   useEffect(() => {
@@ -66,13 +69,17 @@ export default function CeoTruthDashboard() {
         };
 
         // --- find the flagship (Scrum) course ---
-        const { data: courses } = await supabase.from('courses').select('id,title,is_flagship,description');
+        const { data: courses } = await supabase.from('courses').select('id,title,is_flagship,is_published,description');
         const all = courses || [];
         const scrumCourses = all.filter((c: any) => /scrum master/i.test(c.title || ''));
         const flagship = all.find((c: any) => c.is_flagship)
           || scrumCourses.sort((a: any, b: any) => (b.title?.length || 0) - (a.title?.length || 0))[0]
           || null;
+        // Historical = any Scrum row that isn't the flagship. Published-duplicate =
+        // a non-flagship Scrum row that is STILL student-facing (the real blocker).
         const oldSeedLive = all.some((c: any) => c.title === OLD_SEED_TITLE && c.id !== flagship?.id);
+        const oldSeedPublished = scrumCourses.some((c: any) => c.id !== flagship?.id && c.is_published);
+        const publishedScrumCount = scrumCourses.filter((c: any) => c.is_published).length;
 
         let modulesLive: number | null = null, lessonsLive: number | null = null;
         let questionsLive: number | null = null, modulesWithQuestions: number | null = null;
@@ -121,7 +128,8 @@ export default function CeoTruthDashboard() {
           loading: false, err: null,
           flagshipFound: !!flagship, flagshipTitle: flagship?.title ?? null, flagshipDescription: flagship?.description ?? null,
           modulesLive, lessonsLive, questionsLive, modulesWithQuestions, capstoneQuestionsLive, simsInDb,
-          translatedChapters, oldSeedLive, scrumCourseCount: scrumCourses.length, secProbe, flagProbe,
+          translatedChapters, oldSeedLive, oldSeedPublished,
+          scrumCourseCount: scrumCourses.length, publishedScrumCount, secProbe, flagProbe,
         });
       } catch (e: any) {
         setS((p) => ({ ...p, loading: false, err: e?.message || 'query failed' }));
@@ -159,8 +167,8 @@ export default function CeoTruthDashboard() {
   const blockers: string[] = [];
   if (descClaims.length) blockers.push(`Live course description contains unsupported claim(s): ${descClaims.join(', ')}.`);
   if (s.flagProbe.applied === false) blockers.push('Flagship migration NOT applied — live Scrum course is not the 18-module flagship.');
-  if (s.oldSeedLive) blockers.push('Old seed Scrum course still present in live DB (not deprecated).');
-  if ((s.scrumCourseCount ?? 0) > 1) blockers.push(`Duplicate Scrum courses live (${s.scrumCourseCount}).`);
+  if (s.oldSeedPublished) blockers.push('Old seed Scrum course still PUBLISHED (student-facing) — unpublish it.');
+  if ((s.publishedScrumCount ?? 0) > 1) blockers.push(`Duplicate PUBLISHED Scrum courses (${s.publishedScrumCount}) — only the flagship should be student-facing.`);
   if (s.secProbe.applied === false) blockers.push('Security migrations (#25) NOT applied — profiles/email lockdown dormant in production.');
   if ((s.modulesWithQuestions ?? 0) < (s.modulesLive ?? 0)) blockers.push(`${(s.modulesLive ?? 0) - (s.modulesWithQuestions ?? 0)} module(s) have 0 exam questions.`);
 
@@ -236,10 +244,15 @@ export default function CeoTruthDashboard() {
             <Card>
               <CardHeader className="pb-2"><CardTitle className="text-sm">Old seed deprecated?</CardTitle></CardHeader>
               <CardContent className="text-sm">
-                {s.oldSeedLive === null ? <Unknown /> : s.oldSeedLive
-                  ? <span className="text-destructive flex items-center gap-1"><AlertTriangle className="w-4 h-4" /> Old seed still live</span>
-                  : <span className="text-green-600 flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> Not present</span>}
-                <div className="text-xs text-muted-foreground mt-1">Live Scrum courses: {s.scrumCourseCount ?? '—'}</div>
+                {s.oldSeedPublished === null ? <Unknown /> : s.oldSeedPublished
+                  ? <span className="text-destructive flex items-center gap-1"><AlertTriangle className="w-4 h-4" /> Old seed still PUBLISHED (student-facing)</span>
+                  : <span className="text-green-600 flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> Deprecated — unpublished</span>}
+                <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
+                  <div>Published Scrum courses: <span className="text-foreground font-medium">{s.publishedScrumCount ?? '—'}</span></div>
+                  <div>Historical Scrum rows: {s.scrumCourseCount ?? '—'} (kept, not deleted)</div>
+                  <div>Old seeds unpublished: {s.oldSeedLive === null ? '—' : (s.oldSeedLive && !s.oldSeedPublished ? 'yes' : s.oldSeedLive ? 'no' : 'n/a')}</div>
+                  <div>Student-facing duplicate risk: {s.publishedScrumCount === null ? '—' : (s.publishedScrumCount > 1 ? 'present' : 'cleared')}</div>
+                </div>
               </CardContent>
             </Card>
           </div>
