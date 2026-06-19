@@ -1,7 +1,7 @@
 // =============================================================================
 // Build AI Scrum Master Professional Certification v2 — the authoritative
 // master curriculum, fully separate from the live production course.
-// Seeds 18 modules + 162 lessons + 18 quizzes from the reference code
+// Seeds the reference spec (18 modules + 162 lessons target). LIVE/migration currently seeds 72 lessons — see /founder/truth + FLAGSHIP_SCRUM_READINESS_AUDIT.md.
 // curriculum, then drafts all assets. Runs in the founder's browser (RLS admin).
 // =============================================================================
 import { db } from '@/services/aos/_internal';

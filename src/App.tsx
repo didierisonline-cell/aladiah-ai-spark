@@ -48,6 +48,7 @@ import FounderControlCenter from "./pages/founder/FounderControlCenter";
 import LocalizationFactory from "./pages/founder/LocalizationFactory";
 import FounderCurriculum from "./pages/founder/FounderCurriculum";
 import FounderReadiness from "./pages/founder/FounderReadiness";
+import CeoTruthDashboard from "./pages/founder/CeoTruthDashboard";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
@@ -71,6 +72,10 @@ import PortalCertifications from "./pages/PortalCertifications";
 import FlagshipProgram from "./pages/portal/FlagshipProgram";
 import MentorHub from "./pages/portal/MentorHub";
 import ProfileHub from "./pages/portal/ProfileHub";
+// Legal (public)
+import Terms from "./pages/legal/Terms";
+import Privacy from "./pages/legal/Privacy";
+import Contact from "./pages/legal/Contact";
 
 const queryClient = new QueryClient();
 
@@ -95,6 +100,10 @@ const AppContent = () => {
         <Route path="/certifications" element={<Certifications />} />
         <Route path="/talent-network" element={<TalentNetwork />} />
         <Route path="/employers" element={<Employers />} />
+        {/* Legal */}
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/contact" element={<Contact />} />
         {/* Learning */}
         <Route path="/courses" element={<Courses />} />
         <Route path="/course/:courseId/chapter/:chapterId" element={<ProtectedRoute><ChapterView /></ProtectedRoute>} />
@@ -130,6 +139,7 @@ const AppContent = () => {
         <Route path="/founder/control-center" element={<FounderRoute><FounderControlCenter /></FounderRoute>} />
         <Route path="/founder/curriculum" element={<FounderRoute><FounderCurriculum /></FounderRoute>} />
         <Route path="/founder/readiness" element={<FounderRoute><FounderReadiness /></FounderRoute>} />
+        <Route path="/founder/truth" element={<FounderRoute><CeoTruthDashboard /></FounderRoute>} />
         <Route path="/founder/localization" element={<FounderRoute><LocalizationFactory /></FounderRoute>} />
         {/* Founder authorities (legacy /admin paths, founder-protected) */}
         <Route path="/admin" element={<FounderRoute><AdminDashboard /></FounderRoute>} />
