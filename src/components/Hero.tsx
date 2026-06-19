@@ -1,30 +1,12 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Sparkles, Users, TrendingUp, Building2, Play, Pause, Volume2, VolumeX, ExternalLink } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowRight, Sparkles, Users, TrendingUp, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
-import scene1 from '@/assets/story-scene1.mp4';
-import scene2 from '@/assets/story-scene2.mp4';
-import scene3 from '@/assets/story-scene3.mp4';
-import scene4 from '@/assets/story-scene4.mp4';
-import scene5 from '@/assets/story-scene5.mp4';
-
-const sceneSources = [scene1, scene2, scene3, scene4, scene5];
 
 const Hero = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-
-  const scenes = sceneSources.map((src, i) => ({
-    src,
-    caption: t(`hero.scene${i + 1}`),
-  }));
-  const [currentScene, setCurrentScene] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
-  const [showControls, setShowControls] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   const stats = [
     { icon: Users, value: '500+', label: t('hero.stats.students') },
@@ -32,58 +14,27 @@ const Hero = () => {
     { icon: Building2, value: '20+', label: t('hero.stats.partners') },
   ];
 
-  const handleVideoEnd = useCallback(() => {
-    if (currentScene < scenes.length - 1) {
-      setCurrentScene(prev => prev + 1);
-    } else {
-      setCurrentScene(0);
-    }
-  }, [currentScene]);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.load();
-    video.play().catch(() => {});
-  }, [currentScene]);
-
-  const togglePause = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (isPaused) {
-      video.play();
-    } else {
-      video.pause();
-    }
-    setIsPaused(!isPaused);
-  };
-
-  const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-    }
-    setIsMuted(!isMuted);
-  };
-
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-20 lg:pt-0 overflow-hidden bg-gradient-hero">
-      {/* Aladiah emblem watermark — the official icon (spire-A + torch + hidden-9
-          + world-map arc, no wordmark) as a large global watermark behind the
-          hero content. Replaces the country-specific flag: signals a global AI
-          education platform. ~80% of the hero, soft blue/gold glow, low opacity. */}
+      {/* Dark navy overlay for text readability over the emblem watermark. */}
+      <div className="absolute inset-0 bg-[#0B111E]/40 pointer-events-none" />
+
+      {/* Aladiah emblem watermark — the official global mark (spire-A + torch +
+          hidden-9 + world arc) as a premium background. No country flag / no
+          story video: a single global identity, soft blue/gold glow, low opacity. */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" aria-hidden="true">
         <div className="absolute w-[62vw] h-[62vw] max-w-[760px] max-h-[760px] rounded-full bg-primary/10 blur-[130px]" />
         <div className="absolute w-[34vw] h-[34vw] max-w-[420px] max-h-[420px] rounded-full bg-secondary/10 blur-[120px]" />
         <img
           src="/brand/aladiah-watermark.svg"
           alt=""
-          className="relative h-[80%] w-auto max-h-[780px] opacity-[0.14]"
+          className="relative h-[78%] w-auto max-h-[760px] opacity-[0.12]"
           style={{ filter: 'drop-shadow(0 0 70px rgba(74,144,245,0.30)) drop-shadow(0 0 40px rgba(245,184,26,0.18))' }}
         />
       </div>
 
-      {/* Background Elements — more dramatic */}
-      <div className="absolute inset-0 overflow-hidden">
+      {/* Background glow elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 right-10 w-96 h-96 bg-secondary/8 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-20 left-10 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl animate-pulse" />
         <div className="absolute top-1/3 left-1/3 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl" />
@@ -169,86 +120,31 @@ const Hero = () => {
             </motion.div>
           </div>
 
-          {/* Cinematic Story Video — elevated */}
+          {/* Brand emblem showcase — premium global identity (replaces the old
+              country story video). The approved Aladiah mark on a glass panel
+              with the blue/gold glow + the official tagline. */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, x: 50 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative hidden lg:block"
-            onMouseEnter={() => setShowControls(true)}
-            onMouseLeave={() => setShowControls(false)}
+            className="relative hidden lg:flex items-center justify-center"
           >
-            <div className="relative rounded-3xl overflow-hidden shadow-large ring-1 ring-border/20">
-              {/* Video */}
-              <video
-                ref={videoRef}
-                src={scenes[currentScene].src}
-                autoPlay
-                muted={isMuted}
-                playsInline
-                onEnded={handleVideoEnd}
-                className="w-full aspect-video object-cover"
+            <div className="relative w-full max-w-md aspect-square rounded-3xl bg-card/40 backdrop-blur-sm border border-border/30 shadow-large flex flex-col items-center justify-center p-12 overflow-hidden">
+              <div className="absolute w-2/3 h-2/3 rounded-full bg-primary/15 blur-[100px]" />
+              <div className="absolute w-1/2 h-1/2 rounded-full bg-secondary/15 blur-[90px]" />
+              <img
+                src="/brand/aladiah-mark.svg"
+                alt="Aladiah Academy"
+                className="relative w-44 h-auto"
+                style={{ filter: 'drop-shadow(0 0 40px rgba(74,144,245,0.35)) drop-shadow(0 0 26px rgba(245,184,26,0.22))' }}
               />
-
-              {/* Cinematic letterbox gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none" />
-
-              {/* Caption */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentScene}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.6 }}
-                  className="absolute bottom-16 left-5 right-5"
-                >
-                  <p className="text-white text-sm md:text-base font-medium leading-relaxed drop-shadow-lg">
-                    {scenes[currentScene].caption}
-                  </p>
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Scene progress dots */}
-              <div className="absolute bottom-4 left-5 right-5 flex items-center gap-2">
-                {scenes.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentScene(i)}
-                    className={`h-1 rounded-full transition-all duration-300 ${
-                      i === currentScene ? 'bg-white flex-[3]' : i < currentScene ? 'bg-white/60 flex-1' : 'bg-white/30 flex-1'
-                    }`}
-                  />
-                ))}
+              <div className="relative mt-8 text-center">
+                <div className="font-display font-bold tracking-[0.18em] text-foreground text-lg">ALADIAH ACADEMY</div>
+                <div className="mt-2 text-[11px] font-semibold tracking-[0.28em] text-secondary">INTELLIGENCE · PURPOSE · IMPACT</div>
               </div>
-
-              {/* Playback controls */}
-              <AnimatePresence>
-                {showControls && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute top-4 right-4 flex gap-2"
-                  >
-                    <button
-                      onClick={togglePause}
-                      className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
-                    >
-                      {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-                    </button>
-                    <button
-                      onClick={toggleMute}
-                      className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
-                    >
-                      {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
 
-            {/* Floating Elements — refined */}
+            {/* Floating accents */}
             <div className="absolute -top-4 -right-4 p-4 bg-card rounded-2xl shadow-medium animate-float border border-border/30">
               <Sparkles className="w-6 h-6 text-secondary" />
             </div>
