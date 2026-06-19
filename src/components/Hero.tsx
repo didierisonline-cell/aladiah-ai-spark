@@ -67,16 +67,19 @@ const Hero = () => {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-20 lg:pt-0 overflow-hidden bg-gradient-hero">
-      {/* Dominican Republic Flag Background */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-[0.15] pointer-events-none">
-        <svg viewBox="0 0 900 600" className="w-full h-full max-w-[1400px]" preserveAspectRatio="xMidYMid slice">
-          <rect x="0" y="0" width="450" height="300" fill="#002D62"/>
-          <rect x="450" y="300" width="450" height="300" fill="#002D62"/>
-          <rect x="450" y="0" width="450" height="300" fill="#CE1126"/>
-          <rect x="0" y="300" width="450" height="300" fill="#CE1126"/>
-          <rect x="0" y="250" width="900" height="100" fill="#FFFFFF"/>
-          <rect x="400" y="0" width="100" height="600" fill="#FFFFFF"/>
-        </svg>
+      {/* Aladiah emblem watermark — the official icon (spire-A + torch + hidden-9
+          + world-map arc, no wordmark) as a large global watermark behind the
+          hero content. Replaces the country-specific flag: signals a global AI
+          education platform. ~80% of the hero, soft blue/gold glow, low opacity. */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" aria-hidden="true">
+        <div className="absolute w-[62vw] h-[62vw] max-w-[760px] max-h-[760px] rounded-full bg-primary/10 blur-[130px]" />
+        <div className="absolute w-[34vw] h-[34vw] max-w-[420px] max-h-[420px] rounded-full bg-secondary/10 blur-[120px]" />
+        <img
+          src="/brand/aladiah-mark.svg"
+          alt=""
+          className="relative h-[80%] w-auto max-h-[780px] opacity-[0.14]"
+          style={{ filter: 'drop-shadow(0 0 70px rgba(74,144,245,0.30)) drop-shadow(0 0 40px rgba(245,184,26,0.18))' }}
+        />
       </div>
 
       {/* Background Elements — more dramatic */}
