@@ -12,6 +12,7 @@ import Quiz from '@/components/course/Quiz';
 import StarterPaywall from '@/components/StarterPaywall';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { isFounderEmail } from '@/lib/roles';
+import { DEPRECATED_COURSE_REDIRECTS } from '@/lib/courseRedirects';
 import { founderModeOn } from '@/hooks/useFounderMode';
 import MobileLessonPlayer from '@/components/portal/MobileLessonPlayer';
 
@@ -274,6 +275,24 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
     if (!chapterId || !courseId) return;
     setLoading(true);
     try {
+      // Integrity guard (runs BEFORE any lesson/quiz/progress load): never render
+      // an unpublished / deprecated course's chapter via a direct or bookmarked
+      // URL. Known old course ids resolve to the published flagship; any other
+      // unpublished course sends a student back to the catalogue. Founders may
+      // still inspect historical rows.
+      const mapped = DEPRECATED_COURSE_REDIRECTS[courseId];
+      if (mapped && mapped !== courseId) {
+        navigate(`/portal/course/${mapped}`, { replace: true });
+        return;
+      }
+      const { data: { user: guardUser } } = await supabase.auth.getUser();
+      if (!(guardUser && isFounderEmail(guardUser.email))) {
+        const { data: pub } = await supabase.from('courses').select('is_published').eq('id', courseId).maybeSingle();
+        if (pub && pub.is_published === false) {
+          navigate(DEPRECATED_COURSE_REDIRECTS[courseId] ? `/portal/course/${DEPRECATED_COURSE_REDIRECTS[courseId]}` : '/portal/courses', { replace: true });
+          return;
+        }
+      }
       // Fetch each query individually with retry to avoid abort errors
       const fetchWithRetry = async (fn: () => Promise<any>, retries = 3): Promise<any> => {
         for (let i = 0; i < retries; i++) {
