@@ -1,6 +1,9 @@
 # Aladiah Academy — Launch Readiness Report
 ### Curriculum Excellence Authority · Program inventory & readiness
 
+> ⚠️ **TARGET SPEC — not yet live.** Figures here (162 lessons · 1,080-question bank · 200-question exam · 54 simulations · 18 labs/portfolios) are **design targets**. **Current authored:** 18 modules · 72 lessons · 100 questions + 40 capstone; simulations/labs/portfolio are **code-only** (not on the student DB path). Do **not** use these numbers in public/marketing until `/founder/truth` shows them backed by live data. Evidence: `docs/audits/FLAGSHIP_SCRUM_READINESS_AUDIT.md`.
+
+
 **Live dashboard:** `/admin/curriculum-excellence` → **Academy Launch Readiness** (founder-only). Per-program numbers are computed **live** from Supabase content on each scan; this doc is the methodology + reference.
 
 ## What it measures

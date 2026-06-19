@@ -1,5 +1,8 @@
 # AI Scrum Master Professional Certification — Complete Curriculum
 
+> ⚠️ **TARGET SPEC — not yet live.** Figures here (162 lessons · 1,080-question bank · 200-question exam · 54 simulations · 18 labs/portfolios) are **design targets**. **Current authored:** 18 modules · 72 lessons · 100 questions + 40 capstone; simulations/labs/portfolio are **code-only** (not on the student DB path). Do **not** use these numbers in public/marketing until `/founder/truth` shows them backed by live data. Evidence: `docs/audits/FLAGSHIP_SCRUM_READINESS_AUDIT.md`.
+
+
 Status: **Reference implementation** of the Aladiah Program Standard v1.0.
 The complete generated curriculum (data: `src/services/agents/curriculum/programs/
 aiScrumMasterFull.ts`; viewable in-app at `/admin/curriculum-excellence` → **Full
