@@ -18091,3 +18091,43 @@ export const useLanguage = (): LanguageContextType => {
   }
   return context;
 };
+
+// =============================================================================
+// Translation truth — real UI-string coverage, computed from THIS file.
+// Not an estimate: for each language it counts how many of the EN baseline keys
+// are actually defined (non-empty), and how many differ from the EN value (a
+// proxy for "actually localized" — some legitimately equal EN, e.g. "Scrum").
+// Consumed by the Translation Truth Dashboard (/founder/translation).
+// =============================================================================
+export interface LangCoverage {
+  lang: Language;
+  name: string;
+  total: number;      // EN baseline key count
+  present: number;    // keys defined + non-empty in this language
+  missing: number;    // EN keys absent/empty here
+  localized: number;  // present keys whose value differs from EN (translated proxy)
+  pct: number;        // present / total (structural coverage %)
+}
+
+export function uiStringCoverage(): LangCoverage[] {
+  const en = translations.en || {};
+  const enKeys = Object.keys(en);
+  const total = enKeys.length;
+  return (Object.keys(translations) as Language[]).map((lang) => {
+    const tbl = translations[lang] || {};
+    let present = 0, localized = 0;
+    for (const k of enKeys) {
+      const v = tbl[k];
+      if (v != null && String(v).trim().length > 0) {
+        present++;
+        if (String(v) !== String(en[k])) localized++;
+      }
+    }
+    return {
+      lang, name: languageNames[lang], total, present,
+      missing: total - present, localized,
+      pct: total ? Math.round((present / total) * 100) : 0,
+    };
+  });
+}
+
