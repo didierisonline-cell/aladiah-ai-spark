@@ -20,6 +20,7 @@ export interface FounderNavItem {
 // =============================================================================
 export const FOUNDER_NAV_ITEMS: FounderNavItem[] = [
   { to: '/founder', label: 'Founder Home', icon: Home },
+  { to: '/founder/truth', label: 'Truth Dashboard', icon: Shield },
   { to: '/founder/control-center', label: 'Control Center', icon: LayoutGrid },
   { to: '/founder/readiness', label: 'Curriculum Readiness', icon: GaugeCircle },
   { to: '/founder/localization', label: 'Localization Factory', icon: Sparkles },
