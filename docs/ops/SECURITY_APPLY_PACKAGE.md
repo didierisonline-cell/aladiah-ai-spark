@@ -53,15 +53,18 @@ verify after applying.
 
 1. **`050000` revokes admin from every non-aligned account.** Step 3 runs a
    `DELETE FROM public.user_roles WHERE role='admin' AND user_id NOT IN (aligned founders)`.
-   This removes `admin` from the legacy `didiermbok@yahoo.com` account **and any
-   other manually-granted/staff admin**. 
-   - ✅ If the only admins should be `didier@aladiahacademy.com` and
-     `didierisonline@gmail.com` → apply as-is.
-   - ⚠️ If you have other staff admins to keep → **comment out Step 3** before
-     applying, or add their emails to the aligned set in both the SQL and
+   This removes `admin` from any account **not** in the aligned founder set
+   (e.g. a manually-granted/staff admin).
+   - **Founder decision (2026-06-19): keep `didiermbok@yahoo.com` as admin.**
+     The aligned set + the `050000` SQL + `src/lib/roles.ts` have been updated to
+     the **three** founder emails below, so step 3 will **not** strip yahoo.
+   - ⚠️ If you later add other staff admins to keep → **comment out Step 3**
+     before applying, or add their emails to the aligned set in both the SQL and
      `src/lib/roles.ts`.
-2. **Aligned founder set** must match `FOUNDER_EMAILS` in `src/lib/roles.ts`:
-   `didier@aladiahacademy.com`, `didierisonline@gmail.com`.
+2. **Aligned founder set** (matches `FOUNDER_EMAILS` in `src/lib/roles.ts`):
+   - `didiermbok@yahoo.com`  *(original founder identity — retained)*
+   - `didier@aladiahacademy.com`
+   - `didierisonline@gmail.com`
 
 ---
 
@@ -147,6 +150,9 @@ SELECT count(*) FROM pg_policies WHERE tablename = 'email_send_log';   -- expect
 - **Objects affected:**
   - `public.auto_assign_admin()` — `CREATE OR REPLACE` trigger function (aligned set)
   - `public.user_roles` — INSERT (backfill founders), DELETE (revoke non-aligned admins)
+- **Aligned set (updated):** the trigger, backfill, and step-3 DELETE now use
+  the three founder emails — `didiermbok@yahoo.com`, `didier@aladiahacademy.com`,
+  `didierisonline@gmail.com` — matching `FOUNDER_EMAILS` in `src/lib/roles.ts`.
 - **Risks:** **Step 3 DELETE is the destructive one** — see Approval Point #1.
   Misalignment between this SQL's email set and `roles.ts` would grant/deny the
   wrong people; keep them in sync.
@@ -159,10 +165,14 @@ SELECT count(*) FROM pg_policies WHERE tablename = 'email_send_log';   -- expect
 
 **Verification:**
 ```sql
--- exactly the founder accounts hold 'admin':
+-- exactly the three aligned founder accounts hold 'admin':
 SELECT u.email, ur.role
 FROM public.user_roles ur JOIN auth.users u ON u.id = ur.user_id
 WHERE ur.role = 'admin' ORDER BY u.email;
+-- expect exactly:
+--   didier@aladiahacademy.com | admin
+--   didiermbok@yahoo.com      | admin
+--   didierisonline@gmail.com  | admin
 
 -- founder passes aos_is_admin() (sign in as founder first):
 SELECT public.aos_is_admin();  -- expect true
