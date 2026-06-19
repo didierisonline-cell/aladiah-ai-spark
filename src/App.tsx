@@ -72,6 +72,10 @@ import PortalCertifications from "./pages/PortalCertifications";
 import FlagshipProgram from "./pages/portal/FlagshipProgram";
 import MentorHub from "./pages/portal/MentorHub";
 import ProfileHub from "./pages/portal/ProfileHub";
+// Legal (public)
+import Terms from "./pages/legal/Terms";
+import Privacy from "./pages/legal/Privacy";
+import Contact from "./pages/legal/Contact";
 
 const queryClient = new QueryClient();
 
@@ -96,6 +100,10 @@ const AppContent = () => {
         <Route path="/certifications" element={<Certifications />} />
         <Route path="/talent-network" element={<TalentNetwork />} />
         <Route path="/employers" element={<Employers />} />
+        {/* Legal */}
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/contact" element={<Contact />} />
         {/* Learning */}
         <Route path="/courses" element={<Courses />} />
         <Route path="/course/:courseId/chapter/:chapterId" element={<ProtectedRoute><ChapterView /></ProtectedRoute>} />

@@ -71,6 +71,9 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
               onMouseLeave={e => (e.currentTarget.style.color = '#8596AD')}
             >Aladiah Management</a>
             {lnk(t('footer.feedback'), '/feedback')}
+            {lnk('Terms', '/terms')}
+            {lnk('Privacy', '/privacy')}
+            {lnk('Contact', '/contact')}
           </div>
         </div>
         {/* Bottom row */}
