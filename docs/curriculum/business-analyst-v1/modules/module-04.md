@@ -189,6 +189,19 @@ constraints, and decision criteria, prepared in advance. Waste an exec's time wi
 and you won't get a second meeting. Come in sharp and you walk out with the direction that anchors the
 whole engagement.
 
+**The Executive Interview Pyramid.** Executives rarely answer *"what are your requirements?"* — it
+isn't how they think. But they will answer questions that climb this pyramid:
+**Facts → Problems → Risks → Priorities → Success Metrics.**
+- *Facts* — quick grounding: "how does this work today?"
+- *Problems* — "what's not working / what frustrates you most?"
+- *Risks* — "what worries you about this?"
+- *Priorities* — "if we could fix only one thing, what would it be?"
+- *Success metrics* — "what would make this initiative a clear win for *you*?"
+
+Ask *"what worries you?"* and *"what would make this successful?"* and an executive hands you the real
+requirements **indirectly** — framed as risks and outcomes, which is exactly how they should be
+captured. Climbing this pyramid in fifteen minutes yields more than an hour of "requirements gathering."
+
 And carry forward Module 3's nuance: the **difficult stakeholder may be difficult because they're
 right.** Treat persistent resistance as information to elicit, not an obstacle to manage.
 
