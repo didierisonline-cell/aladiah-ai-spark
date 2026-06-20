@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 132" role="img" aria-label="Aladiah Academy mark">
+  <title>Aladiah Academy</title>
+  <defs>
+    <linearGradient id="mS" x1="0" y1="0" x2="0.25" y2="1"><stop offset="0" stop-color="#F4F8FF"/><stop offset="1" stop-color="#9FB2CE"/></linearGradient>
+    <linearGradient id="mSr" x1="0" y1="0" x2="0.25" y2="1"><stop offset="0" stop-color="#C8D4E6"/><stop offset="1" stop-color="#6E82A6"/></linearGradient>
+    <linearGradient id="mG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6D27A"/><stop offset="1" stop-color="#C8902E"/></linearGradient>
+    <clipPath id="mGlobe"><path d="M16 99 Q60 117 104 99 L104 120 Q60 134 16 120 Z"/></clipPath>
+  </defs>
+  <!-- global arc + dotted world map -->
+  <g clip-path="url(#mGlobe)" fill="#C9A24B" opacity="0.5">
+    <circle cx="42" cy="105" r="1.1"/><circle cx="50" cy="103" r="1.1"/><circle cx="58" cy="104" r="1.1"/><circle cx="66" cy="103" r="1.1"/><circle cx="74" cy="105" r="1.1"/><circle cx="80" cy="107" r="1.1"/>
+    <circle cx="46" cy="109" r="1.1"/><circle cx="54" cy="110" r="1.1"/><circle cx="62" cy="109" r="1.1"/><circle cx="70" cy="110" r="1.1"/><circle cx="78" cy="111" r="1.1"/><circle cx="38" cy="108" r="1.1"/>
+  </g>
+  <path d="M16 99 Q60 117 104 99" stroke="url(#mG)" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+  <!-- metallic A-spire (two blades) -->
+  <polygon points="26,98 56,30 63,32 45,98" fill="url(#mS)"/>
+  <polygon points="94,98 64,30 57,32 75,98" fill="url(#mSr)"/>
+  <polygon points="58,72 62,72 61,96 59,96" fill="url(#mG)"/>
+  <!-- hidden gold 9 at the apex -->
+  <path d="M58.5 30 C61.5 28.5 64.5 25.5 64.5 20 A5.5 5.5 0 1 0 58.8 14.8" fill="none" stroke="url(#mG)" stroke-width="3.2" stroke-linecap="round"/>
+</svg>
