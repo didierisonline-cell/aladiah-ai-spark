@@ -10,7 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import ProgressBar from '@/components/ProgressBar';
 import PostCard from '@/components/community/PostCard';
 import { GraduationCap, LogOut, Send, MessageSquareText } from 'lucide-react';
-const aladiahLogo = '/brand/aladiah-logo.svg';
+const aladiahLogo = '/brand/official/official-header-logo.svg';
 import { communityTranslations, type SupportedLanguage } from '@/utils/communityTranslations';
 
 interface PostData {

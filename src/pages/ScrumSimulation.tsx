@@ -9,7 +9,7 @@ import {
   ArrowRight, ChevronLeft, Loader2, Trophy, Star,
   MessageSquare, LayoutGrid, Mail, AlertTriangle, BarChart3, Cloud
 } from 'lucide-react';
-const aladiahLogo = '/brand/aladiah-logo.svg';
+const aladiahLogo = '/brand/official/official-header-logo.svg';
 import {
   Message, DayScore, BoardStory, SimEmail, RiskItem, ExecutiveReport,
   TEAM_MEMBERS, SPRINT_SCHEDULE, INITIAL_BACKLOG

@@ -1,12 +1,39 @@
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, Users, TrendingUp, Building2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, Sparkles, Users, TrendingUp, Building2, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import scene1 from '@/assets/story-scene1.mp4';
+import scene2 from '@/assets/story-scene2.mp4';
+import scene3 from '@/assets/story-scene3.mp4';
+import scene4 from '@/assets/story-scene4.mp4';
+import scene5 from '@/assets/story-scene5.mp4';
+
+// Cinematic story footage on the right. Captions are a UNIVERSAL student
+// journey (canon-clean): aspirational transformation, no named persona and no
+// specific earnings/outcome claim. Caption text comes from the translation
+// system (hero.story.*) so it localizes; the run ends on the official seal.
+const scenes = [
+  { src: scene1, captionKey: 'hero.story.s1' },
+  { src: scene2, captionKey: 'hero.story.s2' },
+  { src: scene3, captionKey: 'hero.story.s3' },
+  { src: scene4, captionKey: 'hero.story.s4' },
+  { src: scene5, captionKey: 'hero.story.s5' },
+];
+
+const SEAL_DURATION = 4000; // ms the seal signature holds before the loop restarts
 
 const Hero = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
+
+  const [currentScene, setCurrentScene] = useState(0);
+  const [showSeal, setShowSeal] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [showControls, setShowControls] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const stats = [
     { icon: Users, value: '500+', label: t('hero.stats.students') },
@@ -14,24 +41,63 @@ const Hero = () => {
     { icon: Building2, value: '20+', label: t('hero.stats.partners') },
   ];
 
+  // After the last scene, fade into the official seal signature, then loop.
+  const handleVideoEnd = useCallback(() => {
+    setCurrentScene(prev => {
+      if (prev < scenes.length - 1) return prev + 1;
+      setShowSeal(true);
+      return prev;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!showSeal) return;
+    const timer = setTimeout(() => {
+      setShowSeal(false);
+      setCurrentScene(0);
+    }, SEAL_DURATION);
+    return () => clearTimeout(timer);
+  }, [showSeal]);
+
+  useEffect(() => {
+    if (showSeal) return;
+    const video = videoRef.current;
+    if (!video) return;
+    video.load();
+    video.play().catch(() => {});
+  }, [currentScene, showSeal]);
+
+  const togglePause = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (isPaused) video.play(); else video.pause();
+    setIsPaused(!isPaused);
+  };
+
+  const toggleMute = () => {
+    if (videoRef.current) videoRef.current.muted = !isMuted;
+    setIsMuted(!isMuted);
+  };
+
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-20 lg:pt-0 overflow-hidden bg-gradient-hero">
-      {/* Dark navy overlay for text readability over the emblem watermark. */}
-      <div className="absolute inset-0 bg-[#0B111E]/40 pointer-events-none" />
-
-      {/* Aladiah emblem watermark — the official global mark (spire-A + torch +
-          hidden-9 + world arc) as a premium background. No country flag / no
-          story video: a single global identity, soft blue/gold glow, low opacity. */}
+      {/* Layer 1 — official logo PNG as the hero background (founder directive:
+          the supplied official logo is the background). Its navy backdrop blends
+          with the page; soft blue/gold glow behind it; low opacity so the hero
+          text stays readable. */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" aria-hidden="true">
         <div className="absolute w-[62vw] h-[62vw] max-w-[760px] max-h-[760px] rounded-full bg-primary/10 blur-[130px]" />
         <div className="absolute w-[34vw] h-[34vw] max-w-[420px] max-h-[420px] rounded-full bg-secondary/10 blur-[120px]" />
         <img
-          src="/brand/aladiah-watermark.svg"
+          src="/brand/official/Aladiah_Academy_Official_Logo.png"
           alt=""
-          className="relative h-[78%] w-auto max-h-[760px] opacity-[0.12]"
+          className="relative h-[92%] w-auto max-h-[860px] object-contain opacity-[0.5]"
           style={{ filter: 'drop-shadow(0 0 70px rgba(74,144,245,0.30)) drop-shadow(0 0 40px rgba(245,184,26,0.18))' }}
         />
       </div>
+      {/* Dark navy overlay so the background logo reads as a backdrop and the
+          hero text stays legible. */}
+      <div className="absolute inset-0 bg-[#0B111E]/55 pointer-events-none" />
 
       {/* Background glow elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -120,28 +186,119 @@ const Hero = () => {
             </motion.div>
           </div>
 
-          {/* Brand emblem showcase — premium global identity (replaces the old
-              country story video). The approved Aladiah mark on a glass panel
-              with the blue/gold glow + the official tagline. */}
+          {/* Right — Santo Domingo cinematic story video (restored). Captions
+              restored per founder directive. */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, x: 50 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative hidden lg:flex items-center justify-center"
+            className="relative hidden lg:block"
+            onMouseEnter={() => setShowControls(true)}
+            onMouseLeave={() => setShowControls(false)}
           >
-            <div className="relative w-full max-w-md aspect-square rounded-3xl bg-card/40 backdrop-blur-sm border border-border/30 shadow-large flex flex-col items-center justify-center p-12 overflow-hidden">
-              <div className="absolute w-2/3 h-2/3 rounded-full bg-primary/15 blur-[100px]" />
-              <div className="absolute w-1/2 h-1/2 rounded-full bg-secondary/15 blur-[90px]" />
-              <img
-                src="/brand/aladiah-mark.svg"
-                alt="Aladiah Academy"
-                className="relative w-44 h-auto"
-                style={{ filter: 'drop-shadow(0 0 40px rgba(74,144,245,0.35)) drop-shadow(0 0 26px rgba(245,184,26,0.22))' }}
-              />
-              <div className="relative mt-8 text-center">
-                <div className="font-display font-bold tracking-[0.18em] text-foreground text-lg">ALADIAH ACADEMY</div>
-                <div className="mt-2 text-[11px] font-semibold tracking-[0.28em] text-secondary">INTELLIGENCE · PURPOSE · IMPACT</div>
-              </div>
+            <div className="relative rounded-3xl overflow-hidden shadow-large border border-border/30 aspect-video bg-[#0B111E]">
+              {showSeal ? (
+                /* Seal signature end-frame — studio-style sign-off, then loop */
+                <motion.div
+                  key="seal"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="absolute inset-0 flex flex-col items-center justify-center bg-[#0B111E]"
+                >
+                  <div className="absolute w-2/3 h-2/3 rounded-full bg-secondary/20 blur-[90px]" />
+                  <motion.img
+                    src="/brand/official/official-seal.svg"
+                    alt="Aladiah Academy seal"
+                    initial={{ opacity: 0, scale: 0.85 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 1, ease: 'easeOut' }}
+                    className="relative w-32 h-32 md:w-40 md:h-40"
+                    style={{ filter: 'drop-shadow(0 0 28px rgba(245,184,26,0.55)) drop-shadow(0 0 14px rgba(74,144,245,0.35))' }}
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.5 }}
+                    className="relative mt-5 text-center"
+                  >
+                    <p className="text-white/90 text-sm md:text-base font-medium mb-3">{t('hero.story.s6')}</p>
+                    <p className="text-white font-display font-bold text-lg md:text-xl tracking-wide">Aladiah Academy</p>
+                    <p className="text-secondary text-xs md:text-sm tracking-[0.2em] uppercase mt-1">Intelligence • Purpose • Impact</p>
+                  </motion.div>
+                </motion.div>
+              ) : (
+                <>
+                  <video
+                    ref={videoRef}
+                    src={scenes[currentScene].src}
+                    autoPlay
+                    muted={isMuted}
+                    playsInline
+                    onEnded={handleVideoEnd}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+
+                  {/* Cinematic letterbox gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none" />
+
+                  {/* Caption */}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentScene}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.6 }}
+                      className="absolute bottom-16 left-4 right-4"
+                    >
+                      <p className="text-white text-sm md:text-base font-medium leading-relaxed drop-shadow-lg">
+                        {t(scenes[currentScene].captionKey)}
+                      </p>
+                    </motion.div>
+                  </AnimatePresence>
+
+                  {/* Scene progress dots */}
+                  <div className="absolute bottom-4 left-4 right-4 flex items-center gap-2">
+                    {scenes.map((_, i) => (
+                      <button
+                        key={i}
+                        aria-label={`Scene ${i + 1}`}
+                        onClick={() => { setShowSeal(false); setCurrentScene(i); }}
+                        className={`h-1 rounded-full transition-all duration-300 ${
+                          i === currentScene ? 'bg-white flex-[3]' : i < currentScene ? 'bg-white/60 flex-1' : 'bg-white/30 flex-1'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {/* Playback controls */}
+              <AnimatePresence>
+                {showControls && !showSeal && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute top-4 right-4 flex gap-2"
+                  >
+                    <button
+                      onClick={togglePause}
+                      aria-label={isPaused ? 'Play' : 'Pause'}
+                      className="p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+                    >
+                      {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                    </button>
+                    <button
+                      onClick={toggleMute}
+                      aria-label={isMuted ? 'Unmute' : 'Mute'}
+                      className="p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+                    >
+                      {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Floating accents */}

@@ -85,9 +85,9 @@ const Header = ({ onProfileClick }: HeaderProps) => {
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '0 2rem',
     }}>
-      {/* Logo */}
+      {/* Logo — official icon mark only (per founder directive) */}
       <a href="/" onClick={e => { e.preventDefault(); navigate('/'); }} style={{ display: 'flex', alignItems: 'center' }}>
-        <Logo variant="full" style={{ height: 44, width: 'auto' }} />
+        <Logo variant="mark" style={{ height: 46, width: 'auto' }} />
       </a>
 
       {/* Desktop Nav */}

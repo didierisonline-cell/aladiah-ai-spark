@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 470" role="img" aria-label="Aladiah Academy">
+  <title>Aladiah Academy</title>
+  <defs>
+    <linearGradient id="fS" x1="0.10" y1="0" x2="0.40" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.16" stop-color="#E9F0FA"/>
+      <stop offset="0.42" stop-color="#AEBED7"/>
+      <stop offset="0.58" stop-color="#DCE6F4"/>
+      <stop offset="0.80" stop-color="#8497B7"/>
+      <stop offset="1" stop-color="#BFCDE3"/>
+    </linearGradient>
+    <linearGradient id="fSr" x1="0.10" y1="0" x2="0.40" y2="1">
+      <stop offset="0" stop-color="#D7E0EF"/>
+      <stop offset="0.20" stop-color="#A9B9D3"/>
+      <stop offset="0.50" stop-color="#6E82A6"/>
+      <stop offset="0.72" stop-color="#9DAFCB"/>
+      <stop offset="1" stop-color="#5A6E92"/>
+    </linearGradient>
+    <linearGradient id="fG" x1="0.10" y1="0" x2="0.22" y2="1">
+      <stop offset="0" stop-color="#FFF4CC"/>
+      <stop offset="0.28" stop-color="#F7D67E"/>
+      <stop offset="0.52" stop-color="#D89B36"/>
+      <stop offset="0.72" stop-color="#F3CD72"/>
+      <stop offset="1" stop-color="#A9741F"/>
+    </linearGradient>
+    <linearGradient id="fWord" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.5" stop-color="#D2DCEC"/>
+      <stop offset="1" stop-color="#94A6C4"/>
+    </linearGradient>
+    <radialGradient id="fSpec" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="fGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.0" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="fDepth" x="-30%" y="-25%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3.5" flood-color="#0A1322" flood-opacity="0.45"/>
+    </filter>
+    <filter id="fTxt" x="-10%" y="-30%" width="120%" height="160%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="1.2" flood-color="#0A1322" flood-opacity="0.5"/>
+    </filter>
+    <clipPath id="fGlobe"><path d="M70 250 Q180 296 290 250 L290 300 Q180 340 70 300 Z"/></clipPath>
+  </defs>
+  <!-- global arc + dotted world -->
+  <g clip-path="url(#fGlobe)" fill="#C9A24B" opacity="0.55">
+    <circle cx="120" cy="262" r="2.1"/><circle cx="140" cy="257" r="2.1"/><circle cx="160" cy="260" r="2.1"/><circle cx="180" cy="257" r="2.1"/><circle cx="200" cy="260" r="2.1"/><circle cx="220" cy="262" r="2.1"/><circle cx="240" cy="266" r="2.1"/>
+    <circle cx="130" cy="272" r="2.1"/><circle cx="170" cy="274" r="2.1"/><circle cx="210" cy="272" r="2.1"/><circle cx="150" cy="276" r="2.1"/><circle cx="190" cy="276" r="2.1"/><circle cx="100" cy="266" r="2.1"/><circle cx="250" cy="270" r="2.1"/>
+  </g>
+  <path d="M70 250 Q180 296 290 250" stroke="url(#fG)" stroke-width="5" fill="none" stroke-linecap="round" filter="url(#fGlow)"/>
+  <!-- A-spire -->
+  <g filter="url(#fDepth)">
+    <polygon points="92,248 178,52 196,57 146,248" fill="url(#fS)"/>
+    <polygon points="268,248 182,52 164,57 214,248" fill="url(#fSr)"/>
+    <polygon points="178,52 190,55 168,118 162,114" fill="#FFFFFF" opacity="0.5"/>
+    <polygon points="174,176 186,176 183,242 177,242" fill="url(#fG)"/>
+    <ellipse cx="180" cy="78" rx="13" ry="26" fill="url(#fSpec)" opacity="0.65"/>
+  </g>
+  <!-- hidden 9 -->
+  <path d="M175 52 C184 47 193 39 193 24 A15 15 0 1 0 176 9" fill="none" stroke="url(#fG)" stroke-width="9" stroke-linecap="round" filter="url(#fGlow)"/>
+  <!-- wordmark -->
+  <text x="180" y="372" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="50" font-weight="600" letter-spacing="7" fill="url(#fWord)" filter="url(#fTxt)">ALADIAH</text>
+  <text x="180" y="408" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="19" letter-spacing="17" fill="url(#fG)">ACADEMY</text>
+  <text x="180" y="440" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="3" fill="#94A6C4">INTELLIGENCE. PURPOSE. IMPACT.</text>
+</svg>
