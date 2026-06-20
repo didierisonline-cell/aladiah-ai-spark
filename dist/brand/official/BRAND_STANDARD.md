@@ -18,12 +18,19 @@ Code reference: `src/components/Logo.tsx` renders `official-header-logo.svg`
 ScrumSimulation/Feedback reference `official-header-logo.svg` directly.
 
 ## How the SVGs relate to the PNG (honest note)
-The SVGs are **clean vector reproductions of the approved design** (silver A-spire,
-gold hidden-9, gold global arc with dotted world, `ALADIAH ACADEMY` wordmark — no
-torch). They are **flat/gradient vectors**, not a pixel copy of the PNG's
-photoreal 3D-metallic/glow render. For a pixel-exact vector, run the PNG through a
-vectorizer (Illustrator image-trace) and replace these files. The PNG stays as the
-premium poster.
+The SVGs reproduce the **approved design** (silver A-spire, gold hidden-9, gold
+global arc with dotted world, `ALADIAH ACADEMY` wordmark — no torch). They are
+hand-built **premium-metal vectors**: multi-stop polished-metal gradients
+(highlight→core→shadow→catch-light banding), a gold glow filter, depth
+drop-shadows, bevel catch-lights, and an apex specular — a deliberate upgrade from
+the earlier flat/gradient version.
+
+They are still **procedural vectors**, not a pixel-exact trace of the PNG's
+photoreal 3D-metallic render. This is the ceiling of a hand-built SVG. If the
+brand requires an exact match to the PNG's render, the correct path is a human
+designer or an Illustrator **image-trace** of the PNG (outside this repo's
+tooling) — drop the result in over these four files and the surfaces light up
+unchanged. The PNG stays as the premium poster.
 
 ## Deprecated (do not use; pending removal)
 - `public/brand/aladiah-logo.svg` — old horizontal lockup (replaced by `official/official-header-logo.svg`).
