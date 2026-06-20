@@ -1,9 +1,9 @@
-> **Status: RATIFICATION CANDIDATE — not yet canon.** This document proposes the
-> Competency Taxonomy V2 (programs PM, BA, DA) plus Program Outcome Definitions for
-> all four launch programs. It does NOT modify the live canon (`COMPETENCY_TAXONOMY.md`).
-> On founder ratification, the new program sections are appended to the canon (append-only),
-> and this file's Program Outcome Definitions become the source of truth for certificates,
-> Talent Score, AI Mentor, simulations, portfolio scoring, and hiring readiness.
+> **Status: RATIFIED — merged into canon.** The canonical source of truth is now
+> `COMPETENCY_TAXONOMY.md` §6–§11 (PM/BA/DA registries, Axis-2 V2 map, Career Outcome
+> Matrix, program-key index). This file is retained as the design rationale + Program
+> Outcome Definitions reference. Where the two differ, the canon wins — in particular the
+> Axis-2 keys use canon names: `people-leadership`, `stakeholder-engagement`,
+> `measurement-outcomes` (+ the ratified `ai-augmentation`).
 > Part of the Aladiah platform canon (`/docs/standards`).
 
 # Competency Taxonomy V2 — Final (ratification candidate)

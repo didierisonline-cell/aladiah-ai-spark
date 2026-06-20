@@ -88,3 +88,107 @@ treat it as a flag to re-check, not a default.
   `quiz_attempt_answers` row at submit (already live as of commit `bc8365b`).
 - **Phase-2 rollup:** groups attempt rows by Axis-1 slug → per-competency accuracy;
   resolves Axis-2 via §3 for cross-program views. No schema change required.
+
+---
+
+# Taxonomy V2 — additional programs (ratified)
+
+> Ratified by the founder. Adds three programs (PM, BA, DA) to the canon, append-only.
+> Scrum (§2–5) is unchanged and remains the gold-standard template. The same conventions
+> in §1 apply to every program below.
+
+## 6. AI Project Manager & Delivery Leader — Axis-1 registry (`pm:`, 11 slugs)
+
+| Slug | Label | Description |
+|---|---|---|
+| `pm:planning` | Project Planning & Scope | Charter, scope/WBS, scheduling, critical path, baselines, plan tailoring. |
+| `pm:risk` | Risk & Issue Management | Identification, qual/quant analysis, response strategies, escalation, contingency. |
+| `pm:finance` | Financial Management & Value | Budgeting, cost control, EVM (CPI/SPI), ROI/benefit cases. |
+| `pm:procurement` | Vendor & Procurement Management | Make/buy, SOWs/contracts, vendor selection & performance, third-party delivery. |
+| `pm:portfolio` | Portfolio & Program Management | Prioritization, cross-project dependencies, benefits realization, governance gates. |
+| `pm:stakeholders` | Stakeholder & Executive Communication | Steering committees, exec/status reporting, expectation & escalation management (up/out). |
+| `pm:delivery-methods` | Delivery Methods & Hybrid Agile | Predictive/agile/hybrid selection, lifecycle tailoring, scaling. |
+| `pm:ai-delivery` | AI-Augmented Delivery | AI for planning, status synthesis, risk prediction, PMO automation. |
+| `pm:change-leadership` | Change Leadership & Adoption | Org-level change, resistance, adoption curves, sponsorship. |
+| `pm:leadership` | Team Leadership & Influence | Leading the delivery team — influence without authority, conflict management, executive presence, cross-functional alignment. |
+| `pm:quality-closure` | Quality, Outcomes & Closure | Acceptance criteria, benefits validation, lessons learned, formal closure. |
+
+Boundary: `pm:stakeholders` (communicate up/out) ≠ `pm:change-leadership` (org transformation) ≠ `pm:leadership` (lead the people on the team).
+
+## 7. AI Business Analyst & Product Discovery Specialist — Axis-1 registry (`ba:`, 11 slugs)
+
+| Slug | Label | Description |
+|---|---|---|
+| `ba:requirements` | Requirements Engineering | Analysis, specification, traceability, validation & lifecycle management of requirements. |
+| `ba:elicitation` | Elicitation & Collaboration | Interviews, workshops, observation, document analysis, prototyping. |
+| `ba:process-analysis` | Business Process Analysis | As-is/to-be modeling (BPMN), gap & root-cause analysis, optimization. |
+| `ba:stakeholders` | Stakeholder Management | Identification, RACI, alignment, negotiation, conflict resolution. |
+| `ba:product-thinking` | Product Thinking & Strategy | Outcomes over outputs, value/vision, business-model thinking, product strategy, north-star metrics. |
+| `ba:product-discovery` | Product Discovery & Solution Definition | Discovery process: opportunity framing, experiments, validation, MVP, prioritization. |
+| `ba:facilitation` | Facilitation & Workshop Leadership | Structured facilitation, decision-making, consensus, design thinking. |
+| `ba:data-analysis` | Data Analysis for BAs | Metrics, SQL basics, data-informed requirements, KPI definition. |
+| `ba:ai-analysis` | AI-Assisted Analysis | LLM-assisted elicitation synthesis, requirement drafting, model generation. |
+| `ba:compliance` | Regulatory, Risk & Compliance | Controls, audit, data-privacy & regulatory requirement analysis. |
+| `ba:solution-eval` | Solution Evaluation & Acceptance | UAT, acceptance, value realization, post-implementation review. |
+
+Boundary: `ba:product-thinking` (strategic mindset / *why*) ≠ `ba:product-discovery` (discovery *process* / *how we learn*).
+
+## 8. AI Data Analyst & Decision Intelligence Professional — Axis-1 registry (`da:`, 10 slugs)
+
+| Slug | Label | Description |
+|---|---|---|
+| `da:sql` | SQL & Data Querying | Joins, aggregation, window functions, query optimization. |
+| `da:data-modeling` | Data Modeling & Preparation | Cleaning/wrangling, schemas, ETL basics, data integrity. |
+| `da:statistics` | Statistics & Analytical Methods | Descriptive/inferential stats, A/B testing, significance, sampling. |
+| `da:visualization` | Data Visualization | Chart selection, dashboard design, Tableau / Power BI craft. |
+| `da:bi` | Business Intelligence & Reporting | KPIs, semantic models, self-serve BI, reporting cadence. |
+| `da:forecasting` | Forecasting & Predictive Analytics | Time-series, regression, trend & scenario modeling. |
+| `da:ai-analytics` | AI-Assisted Analytics | NL-to-SQL, automated insight, ML fundamentals, augmented analysis. |
+| `da:decision-support` | Executive Decision Support | Decision framing, structuring options, recommendation logic (decision intelligence). |
+| `da:data-storytelling` | Data Storytelling & Communication | Executive communication, visual narratives, insight presentation, recommendation framing. |
+| `da:data-ethics` | Data Quality, Governance & Ethics | Privacy, bias, integrity, responsible-use guardrails. |
+
+Boundary: `da:decision-support` (*what to decide & why* — reasoning) ≠ `da:data-storytelling` (*how to communicate it* — delivery craft).
+
+## 9. Axis-2 map — V2 programs (extends §3)
+
+The §3 cross-program vocabulary is reused verbatim. **One ratified addition: `ai-augmentation`**
+(AI fluency is cross-cutting and new; adding an Axis-2 meta is safe — Axis-2 is *derived* from
+Axis-1 at rollup, so it orphans no snapshotted data). Updated Axis-2 set (8):
+`foundations` · `roles-accountabilities` · `process-execution` · `artifacts-tooling` ·
+`people-leadership` · `stakeholder-engagement` · `measurement-outcomes` · `ai-augmentation`.
+
+| Program | `foundations` | `process-execution` | `artifacts-tooling` | `people-leadership` | `stakeholder-engagement` | `measurement-outcomes` | `ai-augmentation` |
+|---|---|---|---|---|---|---|---|
+| **PM** | delivery-methods | planning, risk, portfolio | — | change-leadership, leadership | procurement, stakeholders | finance, quality-closure | ai-delivery |
+| **BA** | product-thinking, compliance | requirements, elicitation, process-analysis, product-discovery | — | facilitation | stakeholders | data-analysis, solution-eval | ai-analysis |
+| **DA** | data-ethics | sql, data-modeling | visualization, bi | — | decision-support, data-storytelling | statistics, forecasting | ai-analytics |
+
+Shared (transferable) competency spine across all programs: `stakeholder-engagement`,
+`measurement-outcomes`, `people-leadership`, and `ai-augmentation` — these power
+cross-program Talent Score comparison and hiring matching.
+
+## 10. Career Outcome Matrix (the north star for every learning path)
+
+Aladiah sells careers, not courses. Every program targets a real hiring ladder. Titles are
+representative market roles; salary context is region-dependent (Aladiah's remote LATAM/Africa
+markets typically index below US bands).
+
+| Program | Entry | Mid | Senior | Executive |
+|---|---|---|---|---|
+| **Scrum Master** | Junior Scrum Master · Agile Team Facilitator | Scrum Master · Agile Delivery Lead | Senior Scrum Master · Agile Coach · RTE | Head of Agile · Director of Delivery |
+| **Project Manager** | Project Coordinator · Junior PM | Project Manager · Delivery Manager | Senior PM · Program Manager · PMO Lead | Director PMO · VP Programs |
+| **Business Analyst** | Junior BA · Requirements Analyst | Business Analyst · Product Analyst | Lead BA · Product Owner | Head of Product Operations · Director of Business Analysis |
+| **Data Analyst** | Reporting Analyst · Junior BI Analyst | Data Analyst · BI Analyst | Senior Data Analyst · Analytics Manager · Decision Intelligence Lead | Director Analytics · Head of Decision Intelligence |
+
+## 11. Program-key index & change log
+
+| Program key | Program | Slugs | Status |
+|---|---|---|---|
+| `scrum` | AI Enterprise Scrum Master & Agile Transformation Leader | 8 | Canon (v1) — gold-standard template |
+| `pm` | AI Project Manager & Delivery Leader | 11 | Canon (v2, ratified) |
+| `ba` | AI Business Analyst & Product Discovery Specialist | 11 | Canon (v2, ratified) |
+| `da` | AI Data Analyst & Decision Intelligence Professional | 10 | Canon (v2, ratified) |
+
+**Total: 40 Axis-1 slugs across 4 programs.** V2 ratification adds the `ai-augmentation`
+Axis-2 meta and the Career Outcome Matrix (§10). Build order: Scrum (≥95%) → BA → PM → DA.
