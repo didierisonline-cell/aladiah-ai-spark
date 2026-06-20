@@ -31,6 +31,20 @@ loud ones from steamrolling, and never let anyone be punished for raising a prob
 creates safety gets the real risks and the real disagreements on the table *early*, where they're
 cheap to resolve — instead of in production, where they're not.
 
+**The Silent Room Problem.** The most dangerous workshop isn't the one full of conflict — it's the one
+where *everybody agrees, nobody speaks, the meeting ends, and the project fails.* Silence is rarely
+consensus; it's usually one of four failure modes a facilitator must actively detect:
+- **False consensus** — people assume everyone agrees because no one objected (no one felt safe to).
+- **Authority bias / the HIPPO effect** (Highest Paid Person's Opinion) — the room defers to the most
+  senior voice and stops thinking independently.
+- **Hidden dissent** — people disagree privately but won't say so publicly, then undermine later.
+- **Groupthink** — the desire for harmony suppresses the dissent that would have caught the problem.
+
+The countermeasures are structural: silent written input *before* discussion (so the HIPPO doesn't
+anchor the room), round-robin to force every voice, anonymous input for risky topics, and explicitly
+asking *"what's the strongest argument against this?"* A facilitator who can't read a silent room
+mistakes compliance for agreement — and ships the wrong answer.
+
 Real example: two teams ran the same requirements workshop. In the first, the senior architect
 dominated and juniors stayed silent; the "agreement" reached was the architect's opinion, and it was
 wrong about a downstream constraint a junior knew. In the second, the facilitator used round-robin
@@ -43,8 +57,9 @@ draw out quiet voices and contain dominant ones.
 
 ### Artifact produced — **Facilitation Playbook** (showcaseable)
 Your personal playbook: structure template, neutrality rules, safety techniques (round-robin, silent
-brainstorming, "yes-and"), and dominance/disengagement countermeasures. A work product that signals
-you can run a room.
+brainstorming, "yes-and"), dominance/disengagement countermeasures, **and a Workshop Risk Checklist**
+(false consensus · authority/HIPPO bias · hidden dissent · groupthink — with a detection cue and a
+countermeasure for each). A work product that signals you can run a room *and* spot when it's lying to you.
 
 > **Gate:** capability = neutral facilitation + safety · artifact = Facilitation Playbook · recruiter ✅ · public ✅ · interview ✅.
 
@@ -191,6 +206,14 @@ facilitation must make dependencies visible, create shared decision points (so t
 locally and break globally), and keep a consistent picture across groups that each see only their
 slice. This is the facilitation a Lead BA or program-level analyst is paid for.
 
+**Executive Decision Logging — make decisions stick.** Most forums end with "decision made" — and two
+weeks later nobody remembers it, owns it, or acts on it. A senior facilitator closes every decision
+with a logged record: **Decision · Owner · Due Date · Success Measure · Risk.** The owner is a single
+*named* person (never "the team"); the success measure is how you'll know it worked; the risk is what
+could derail it. A decision without an owner and a date is just a suggestion. This habit is trivial to
+do, constantly skipped, and one of the highest-leverage practices across BA, PM, Scrum, product, and
+consulting work — it lives in your Decision Forum Pack.
+
 This lesson produces the **Decision Forum Pack** — pre-read, framed decisions, and a facilitation plan —
 the artifact you carry into **Simulation 2 (Executive Steering Committee)**, where you'll facilitate a
 skeptical executive group to a funded decision. Lesson → artifact → simulation → defense, again.
@@ -200,8 +223,9 @@ Design an executive decision forum for a real decision: the pre-read (half a pag
 + recommendation, and how you'll drive to an owned decision in 30 minutes.
 
 ### Artifact produced — **Decision Forum Pack** (showcaseable)
-A pre-read, framed-decision agenda, and facilitation plan for an executive forum — carried into
-**Simulation 2**. A portfolio piece that proves you can run the room where the money decisions happen.
+A pre-read, framed-decision agenda, facilitation plan, **and a Decision Log** (Decision · Owner · Due
+Date · Success Measure · Risk) for an executive forum — carried into **Simulation 2**. A portfolio
+piece that proves you can run the room where the money decisions happen *and* make them stick.
 
 > **Gate:** capability = executive + multi-team facilitation · artifact = Decision Forum Pack (→ Sim 2) · recruiter ✅ · public ✅ · interview ✅.
 
