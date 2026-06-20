@@ -86,6 +86,10 @@ import ProfileHub from "./pages/portal/ProfileHub";
 import Terms from "./pages/legal/Terms";
 import Privacy from "./pages/legal/Privacy";
 import Contact from "./pages/legal/Contact";
+// Certificates
+import CertificateVerify from "./pages/CertificateVerify";
+import PortalMyCertificates from "./pages/portal/PortalMyCertificates";
+import CertificatesTruth from "./pages/founder/CertificatesTruth";
 
 const queryClient = new QueryClient();
 
@@ -112,6 +116,7 @@ const AppContent = () => {
         <Route path="/talent-network" element={<TalentNetwork />} />
         <Route path="/employers" element={<Employers />} />
         {/* Legal */}
+        <Route path="/verify/:code" element={<CertificateVerify />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/contact" element={<Contact />} />
@@ -142,6 +147,7 @@ const AppContent = () => {
         <Route path="/portal/simulations" element={<ProtectedRoute><PortalSimulations /></ProtectedRoute>} />
         <Route path="/portal/resources" element={<ProtectedRoute><PortalResources /></ProtectedRoute>} />
         <Route path="/portal/certifications" element={<ProtectedRoute><PortalCertifications /></ProtectedRoute>} />
+        <Route path="/portal/certificates" element={<ProtectedRoute><PortalMyCertificates /></ProtectedRoute>} />
         {/* Tools */}
         <Route path="/resume-studio" element={<ProtectedRoute><ResumeStudio /></ProtectedRoute>} />
         <Route path="/interview" element={<ProtectedRoute><InterviewSimulator /></ProtectedRoute>} />
@@ -158,6 +164,7 @@ const AppContent = () => {
         <Route path="/founder/admissions" element={<FounderRoute><AdmissionsTruth /></FounderRoute>} />
         <Route path="/founder/marketing" element={<FounderRoute><MarketingTruth /></FounderRoute>} />
         <Route path="/founder/attribution" element={<FounderRoute><AttributionTruth /></FounderRoute>} />
+        <Route path="/founder/certificates" element={<FounderRoute><CertificatesTruth /></FounderRoute>} />
         <Route path="/founder/truth" element={<FounderRoute><CeoTruthDashboard /></FounderRoute>} />
         <Route path="/founder/localization" element={<FounderRoute><LocalizationFactory /></FounderRoute>} />
         {/* Founder authorities (legacy /admin paths, founder-protected) */}

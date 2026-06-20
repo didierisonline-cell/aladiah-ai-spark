@@ -34,6 +34,7 @@ export default function PortalSidebar({ hoursLeft, coursesCount }: PortalSidebar
     { icon: '🌐', lbl: t('nav.simulations'), path: '/portal/simulations' },
     { icon: '⭐', lbl: T('talent'), path: '/portal/talent-score' },
     { icon: '🏅', lbl: T('certs'), path: '/portal/certifications' },
+    { icon: '🎓', lbl: 'My Certificates', path: '/portal/certificates' },
     { icon: '💼', lbl: T('career_tools'), path: '/portal/career' },
     { icon: '🗂️', lbl: T('portfolio'), path: '/portal/portfolio' },
     { icon: '🤖', lbl: t('sidebar.ai_mentor'), path: '/portal/mentor' },
