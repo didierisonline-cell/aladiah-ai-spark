@@ -14,18 +14,6 @@ export default function HeroBackground() {
       {/* base gradient */}
       <div className="absolute inset-0" style={{ background: 'radial-gradient(120% 90% at 70% 8%, #0E1A33 0%, #0A1322 45%, #070D18 100%)' }} />
 
-      {/* hidden glowing 9 behind the headline area */}
-      <svg className="absolute top-[8%] left-[34%] w-[44vw] max-w-[640px] hero-anim-slow" viewBox="0 0 200 280" fill="none" style={{ opacity: 0.16 }}>
-        <defs>
-          <linearGradient id="nine" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#F5B81A" />
-            <stop offset="1" stopColor="#C98A12" />
-          </linearGradient>
-        </defs>
-        <text x="50%" y="74%" textAnchor="middle" fontSize="280" fontFamily="Georgia, serif" fontWeight="700"
-          fill="url(#nine)" style={{ filter: 'drop-shadow(0 0 40px rgba(245,184,26,.55))' }}>9</text>
-      </svg>
-
       {/* starfield (static) */}
       <div className="absolute inset-0" style={{
         backgroundImage: [
