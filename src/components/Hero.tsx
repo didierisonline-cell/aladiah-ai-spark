@@ -193,14 +193,16 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Centered official torch mark + motto (NOT the seal) */}
-      <div className="absolute bottom-7 left-0 right-0 flex flex-col items-center pointer-events-none z-10">
-        <img src="/brand/official/official-mark.svg" alt="Aladiah Academy" className="w-12 h-12 mb-2" style={{ filter: 'drop-shadow(0 0 16px rgba(245,184,26,.5))' }} />
-        <div className="text-[11px] sm:text-xs tracking-[0.35em] font-semibold uppercase">
-          <span className="text-foreground/80">Intelligence. </span>
-          <span className="text-secondary">Purpose. </span>
-          <span className="text-foreground/80">Impact.</span>
-        </div>
+      {/* Centered official Aladiah Academy lockup (emblem + ALADIAH ACADEMY +
+          Intelligence. Purpose. Impact.). Decorative brand presence — NOT the
+          seal (the seal is reserved for certificates and the film finale).
+          Sits behind the content; hidden on small screens to avoid crowding. */}
+      <div className="absolute bottom-0 left-0 right-0 hidden md:flex justify-center pointer-events-none z-[5]" aria-hidden="true">
+        <img
+          src="/brand/official/official-logo.svg"
+          alt=""
+          style={{ width: 'clamp(240px, 25vw, 400px)', filter: 'drop-shadow(0 0 36px rgba(245,184,26,.45)) drop-shadow(0 0 22px rgba(74,144,245,.30))' }}
+        />
       </div>
 
       <VideoStoryModal open={storyOpen} onClose={() => setStoryOpen(false)} />

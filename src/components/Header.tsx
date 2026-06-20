@@ -86,8 +86,8 @@ const Header = ({ onProfileClick }: HeaderProps) => {
       padding: '0 2rem',
     }}>
       {/* Logo — official full wordmark lockup */}
-      <a href="/" onClick={e => { e.preventDefault(); navigate('/'); }} style={{ display: 'flex', alignItems: 'center' }}>
-        <Logo variant="full" style={{ height: 44, width: 'auto' }} />
+      <a href="/" onClick={e => { e.preventDefault(); navigate('/'); }} style={{ display: 'flex', alignItems: 'center' }} aria-label="Aladiah Academy — home">
+        <Logo variant="full" style={{ height: 54, width: 'auto' }} />
       </a>
 
       {/* Desktop Nav */}
