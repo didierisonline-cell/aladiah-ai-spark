@@ -20,7 +20,8 @@ type Beat =
   | { kind: 'video'; src: string; captions: string[]; ms: number }
   | { kind: 'placeholder'; location: string; captions: string[]; ms: number }
   | { kind: 'map'; captions: string[]; ms: number }
-  | { kind: 'mission'; lines: string[]; ms: number };
+  | { kind: 'mission'; lines: string[]; ms: number }
+  | { kind: 'seal'; ms: number };
 
 // Real footage is wired where it exists; the rest are captioned placeholders
 // until production clips are supplied (drop a clip in and switch kind→'video').
@@ -32,6 +33,7 @@ const beats: Beat[] = [
   { kind: 'placeholder', location: 'After Aladiah', captions: ['Leading teams. Working globally.', 'Building with AI — with confidence and dignity.'], ms: 6000 },
   { kind: 'map', captions: ['Talent exists everywhere. Opportunity should too.'], ms: 6000 },
   { kind: 'mission', lines: ['The Future of Work Starts Here', 'Master AI. Transform Your Career.'], ms: 5500 },
+  { kind: 'seal', ms: 5000 },
 ];
 
 const CITIES: { label: string; x: number; y: number }[] = [
@@ -85,6 +87,16 @@ export default function HeroStoryReel() {
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 24, background: 'radial-gradient(120% 100% at 50% 0%, #101d36, #070D18)' }}>
           <div style={{ fontSize: 26, fontWeight: 800, color: '#EDF2F7', marginBottom: 12, lineHeight: 1.2 }}>{beat.lines[0]}</div>
           <div style={{ fontSize: 15, color: '#F5B81A', fontWeight: 600 }}>{beat.lines[1]}</div>
+        </div>
+      )}
+
+      {/* Institutional seal — the story finale only (never the page background). */}
+      {beat.kind === 'seal' && (
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0B111E' }}>
+          <div style={{ position: 'absolute', width: '60%', height: '60%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(245,184,26,.22), transparent 70%)' }} />
+          <img src="/brand/official/official-seal.svg" alt="Aladiah Academy seal" style={{ width: 140, height: 140, filter: 'drop-shadow(0 0 30px rgba(245,184,26,.6))' }} />
+          <div style={{ marginTop: 16, color: '#fff', fontWeight: 800, fontSize: 19 }}>Aladiah Academy</div>
+          <div style={{ marginTop: 6, color: '#F5B81A', fontSize: 11, letterSpacing: '0.25em', textTransform: 'uppercase' }}>Intelligence • Purpose • Impact</div>
         </div>
       )}
 
