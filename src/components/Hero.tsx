@@ -19,14 +19,16 @@ const Hero = () => {
       {/* Dark navy overlay for text readability over the emblem watermark. */}
       <div className="absolute inset-0 bg-[#0B111E]/40 pointer-events-none" />
 
-      {/* Aladiah emblem watermark — the official global mark (spire-A + torch +
-          hidden-9 + world arc) as a premium background. No country flag / no
-          story video: a single global identity, soft blue/gold glow, low opacity. */}
+      {/* Aladiah emblem watermark — the OFFICIAL mark (official-mark.svg: silver
+          A-spire + hidden-9 + gold world arc) as a premium background, so the
+          header, hero card, and watermark all share one official identity.
+          No country flag / no torch-era emblem: a single global identity,
+          soft blue/gold glow, low opacity. */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" aria-hidden="true">
         <div className="absolute w-[62vw] h-[62vw] max-w-[760px] max-h-[760px] rounded-full bg-primary/10 blur-[130px]" />
         <div className="absolute w-[34vw] h-[34vw] max-w-[420px] max-h-[420px] rounded-full bg-secondary/10 blur-[120px]" />
         <img
-          src="/brand/aladiah-watermark.svg"
+          src="/brand/official/official-mark.svg"
           alt=""
           className="relative h-[78%] w-auto max-h-[760px] opacity-[0.12]"
           style={{ filter: 'drop-shadow(0 0 70px rgba(74,144,245,0.30)) drop-shadow(0 0 40px rgba(245,184,26,0.18))' }}
