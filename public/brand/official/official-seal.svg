@@ -1,29 +1,63 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" role="img" aria-label="Aladiah Academy seal">
   <title>Aladiah Academy — Official Seal</title>
   <defs>
-    <linearGradient id="zS" x1="0" y1="0" x2="0.25" y2="1"><stop offset="0" stop-color="#F4F8FF"/><stop offset="1" stop-color="#9FB2CE"/></linearGradient>
-    <linearGradient id="zSr" x1="0" y1="0" x2="0.25" y2="1"><stop offset="0" stop-color="#C8D4E6"/><stop offset="1" stop-color="#6E82A6"/></linearGradient>
-    <linearGradient id="zG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6D27A"/><stop offset="1" stop-color="#C8902E"/></linearGradient>
+    <linearGradient id="zS" x1="0.10" y1="0" x2="0.40" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.16" stop-color="#E9F0FA"/>
+      <stop offset="0.42" stop-color="#AEBED7"/>
+      <stop offset="0.58" stop-color="#DCE6F4"/>
+      <stop offset="0.80" stop-color="#8497B7"/>
+      <stop offset="1" stop-color="#BFCDE3"/>
+    </linearGradient>
+    <linearGradient id="zSr" x1="0.10" y1="0" x2="0.40" y2="1">
+      <stop offset="0" stop-color="#D7E0EF"/>
+      <stop offset="0.20" stop-color="#A9B9D3"/>
+      <stop offset="0.50" stop-color="#6E82A6"/>
+      <stop offset="0.72" stop-color="#9DAFCB"/>
+      <stop offset="1" stop-color="#5A6E92"/>
+    </linearGradient>
+    <linearGradient id="zG" x1="0.10" y1="0" x2="0.22" y2="1">
+      <stop offset="0" stop-color="#FFF4CC"/>
+      <stop offset="0.28" stop-color="#F7D67E"/>
+      <stop offset="0.52" stop-color="#D89B36"/>
+      <stop offset="0.72" stop-color="#F3CD72"/>
+      <stop offset="1" stop-color="#A9741F"/>
+    </linearGradient>
+    <radialGradient id="zSpec" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="zGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="0.9" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="zDepth" x="-30%" y="-25%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="1.2" stdDeviation="1.4" flood-color="#0A1322" flood-opacity="0.4"/>
+    </filter>
     <path id="zTop" d="M110 110 m-78,0 a78,78 0 1,1 156,0" fill="none"/>
     <path id="zBot" d="M40 110 a70,70 0 0,0 140,0" fill="none"/>
   </defs>
   <!-- rings -->
-  <circle cx="110" cy="110" r="104" fill="none" stroke="url(#zG)" stroke-width="2"/>
-  <circle cx="110" cy="110" r="98"  fill="none" stroke="url(#zG)" stroke-width="1" opacity="0.6"/>
-  <circle cx="110" cy="110" r="80"  fill="none" stroke="url(#zG)" stroke-width="1" opacity="0.5"/>
+  <circle cx="110" cy="110" r="104" fill="none" stroke="url(#zG)" stroke-width="2.4" filter="url(#zGlow)"/>
+  <circle cx="110" cy="110" r="98"  fill="none" stroke="url(#zG)" stroke-width="1" opacity="0.7"/>
+  <circle cx="110" cy="110" r="80"  fill="none" stroke="url(#zG)" stroke-width="1" opacity="0.55"/>
   <!-- circular text -->
-  <text font-family="Georgia, serif" font-size="13" letter-spacing="4" fill="url(#zG)">
+  <text font-family="Georgia, serif" font-size="13" font-weight="600" letter-spacing="4" fill="url(#zG)">
     <textPath href="#zTop" startOffset="50%" text-anchor="middle">ALADIAH ACADEMY</textPath>
   </text>
-  <text font-family="Inter, Arial, sans-serif" font-size="8.5" letter-spacing="3" fill="#9FB2CE">
+  <text font-family="Inter, Arial, sans-serif" font-size="8.5" letter-spacing="3" fill="#AEBED7">
     <textPath href="#zBot" startOffset="50%" text-anchor="middle">INTELLIGENCE · PURPOSE · IMPACT</textPath>
   </text>
   <!-- center mark -->
   <g transform="translate(110,108) scale(0.62) translate(-60,-66)">
-    <path d="M16 99 Q60 117 104 99" stroke="url(#zG)" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-    <polygon points="26,98 56,30 63,32 45,98" fill="url(#zS)"/>
-    <polygon points="94,98 64,30 57,32 75,98" fill="url(#zSr)"/>
-    <polygon points="58,72 62,72 61,96 59,96" fill="url(#zG)"/>
-    <path d="M58.5 30 C61.5 28.5 64.5 25.5 64.5 20 A5.5 5.5 0 1 0 58.8 14.8" fill="none" stroke="url(#zG)" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M16 99 Q60 117 104 99" stroke="url(#zG)" stroke-width="2.6" fill="none" stroke-linecap="round" filter="url(#zGlow)"/>
+    <g filter="url(#zDepth)">
+      <polygon points="26,98 56,30 63,32 45,98" fill="url(#zS)"/>
+      <polygon points="94,98 64,30 57,32 75,98" fill="url(#zSr)"/>
+      <polygon points="56,30 60,31 58,52 56.5,50" fill="#FFFFFF" opacity="0.5"/>
+      <polygon points="58,72 62,72 61,96 59,96" fill="url(#zG)"/>
+      <ellipse cx="60" cy="37" rx="5.5" ry="9" fill="url(#zSpec)" opacity="0.65"/>
+    </g>
+    <path d="M58.5 30 C61.5 28.5 64.5 25.5 64.5 20 A5.5 5.5 0 1 0 58.8 14.8" fill="none" stroke="url(#zG)" stroke-width="3.2" stroke-linecap="round" filter="url(#zGlow)"/>
   </g>
 </svg>
