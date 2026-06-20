@@ -437,15 +437,19 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.change_professor': 'Change Professor',
 
     // Hero
-    'hero.badge': 'AI-Powered Professional Training',
-    'hero.title.line1': 'Master Agile Leadership',
-    'hero.title.line2': 'With AI Innovation',
-    'hero.subtitle': 'Transform your career with cutting-edge Scrum Master and Project Management training, enhanced by the latest AI tools. Join the future of AI-powered professional development worldwide.',
+    'hero.badge': 'AI-Powered. Globally Connected. Impact Driven.',
+    'hero.title.line1': 'The Future of',
+    'hero.title.line2': 'Work Starts Here',
+    'hero.subhead': 'Master *AI*. Transform Your *Career*. Build the *Future*.',
+    'hero.subtitle': 'Join a global academy where human potential and artificial intelligence work together to create the next generation of leaders, innovators, and builders.',
+    'hero.video.label': 'Real stories. Real transformations.',
     'hero.cta.primary': 'Explore Programs',
+    'hero.cta.stories': 'Watch Success Stories',
     'hero.cta.secondary': 'Learn More',
     'hero.stats.students': 'Students Trained',
     'hero.stats.rate': 'Success Rate',
     'hero.stats.partners': 'Corporate Partners',
+    'hero.stats.programs': 'Career Programs',
 
     // Programs
     'programs.badge': 'Our Programs',
