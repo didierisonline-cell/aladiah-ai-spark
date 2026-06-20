@@ -193,18 +193,6 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Centered official Aladiah Academy lockup (emblem + ALADIAH ACADEMY +
-          Intelligence. Purpose. Impact.). Decorative brand presence — NOT the
-          seal (the seal is reserved for certificates and the film finale).
-          Sits behind the content; hidden on small screens to avoid crowding. */}
-      <div className="absolute bottom-0 left-0 right-0 hidden md:flex justify-center pointer-events-none z-[5]" aria-hidden="true">
-        <img
-          src="/brand/official/official-logo.svg"
-          alt=""
-          style={{ width: 'clamp(240px, 25vw, 400px)', filter: 'drop-shadow(0 0 36px rgba(245,184,26,.45)) drop-shadow(0 0 22px rgba(74,144,245,.30))' }}
-        />
-      </div>
-
       <VideoStoryModal open={storyOpen} onClose={() => setStoryOpen(false)} />
     </section>
   );
