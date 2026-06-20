@@ -10,23 +10,26 @@ import scene3 from '@/assets/story-scene3.mp4';
 import scene4 from '@/assets/story-scene4.mp4';
 import scene5 from '@/assets/story-scene5.mp4';
 
-// Santo Domingo story footage on the right (restored per founder directive).
-// NOTE (canon flag): captions restored at founder's explicit, informed request.
-// "$60,000 a year" is a specific earnings figure tied to a named persona —
-// recommend it be read as an illustrative journey, not a verified testimonial.
+// Cinematic story footage on the right. Captions are a UNIVERSAL student
+// journey (canon-clean): aspirational transformation, no named persona and no
+// specific earnings/outcome claim. Caption text comes from the translation
+// system (hero.story.*) so it localizes; the run ends on the official seal.
 const scenes = [
-  { src: scene1, caption: "María works long hours at a restaurant in Zona Colonial, Santo Domingo…" },
-  { src: scene2, caption: "One night, she sees an ad on Instagram — Aladiah Academy. A chance to change everything." },
-  { src: scene3, caption: "She enrolls, studies late into the night, and earns her Scrum Master certification." },
-  { src: scene4, caption: "6 months later — she leads a professional team, earning $60,000 a year." },
-  { src: scene5, caption: "She moves to a beautiful apartment on Avenida España. Her life is forever changed." },
+  { src: scene1, captionKey: 'hero.story.s1' },
+  { src: scene2, captionKey: 'hero.story.s2' },
+  { src: scene3, captionKey: 'hero.story.s3' },
+  { src: scene4, captionKey: 'hero.story.s4' },
+  { src: scene5, captionKey: 'hero.story.s5' },
 ];
+
+const SEAL_DURATION = 4000; // ms the seal signature holds before the loop restarts
 
 const Hero = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
 
   const [currentScene, setCurrentScene] = useState(0);
+  const [showSeal, setShowSeal] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [showControls, setShowControls] = useState(false);
@@ -38,16 +41,31 @@ const Hero = () => {
     { icon: Building2, value: '20+', label: t('hero.stats.partners') },
   ];
 
+  // After the last scene, fade into the official seal signature, then loop.
   const handleVideoEnd = useCallback(() => {
-    setCurrentScene(prev => (prev < scenes.length - 1 ? prev + 1 : 0));
+    setCurrentScene(prev => {
+      if (prev < scenes.length - 1) return prev + 1;
+      setShowSeal(true);
+      return prev;
+    });
   }, []);
 
   useEffect(() => {
+    if (!showSeal) return;
+    const timer = setTimeout(() => {
+      setShowSeal(false);
+      setCurrentScene(0);
+    }, SEAL_DURATION);
+    return () => clearTimeout(timer);
+  }, [showSeal]);
+
+  useEffect(() => {
+    if (showSeal) return;
     const video = videoRef.current;
     if (!video) return;
     video.load();
     video.play().catch(() => {});
-  }, [currentScene]);
+  }, [currentScene, showSeal]);
 
   const togglePause = () => {
     const video = videoRef.current;
@@ -178,53 +196,86 @@ const Hero = () => {
             onMouseEnter={() => setShowControls(true)}
             onMouseLeave={() => setShowControls(false)}
           >
-            <div className="relative rounded-3xl overflow-hidden shadow-large border border-border/30">
-              <video
-                ref={videoRef}
-                src={scenes[currentScene].src}
-                autoPlay
-                muted={isMuted}
-                playsInline
-                onEnded={handleVideoEnd}
-                className="w-full aspect-video object-cover"
-              />
-
-              {/* Cinematic letterbox gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none" />
-
-              {/* Caption */}
-              <AnimatePresence mode="wait">
+            <div className="relative rounded-3xl overflow-hidden shadow-large border border-border/30 aspect-video bg-[#0B111E]">
+              {showSeal ? (
+                /* Seal signature end-frame — studio-style sign-off, then loop */
                 <motion.div
-                  key={currentScene}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.6 }}
-                  className="absolute bottom-16 left-4 right-4"
+                  key="seal"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="absolute inset-0 flex flex-col items-center justify-center bg-[#0B111E]"
                 >
-                  <p className="text-white text-sm md:text-base font-medium leading-relaxed drop-shadow-lg">
-                    {scenes[currentScene].caption}
-                  </p>
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Scene progress dots */}
-              <div className="absolute bottom-4 left-4 right-4 flex items-center gap-2">
-                {scenes.map((_, i) => (
-                  <button
-                    key={i}
-                    aria-label={`Scene ${i + 1}`}
-                    onClick={() => setCurrentScene(i)}
-                    className={`h-1 rounded-full transition-all duration-300 ${
-                      i === currentScene ? 'bg-white flex-[3]' : i < currentScene ? 'bg-white/60 flex-1' : 'bg-white/30 flex-1'
-                    }`}
+                  <div className="absolute w-2/3 h-2/3 rounded-full bg-secondary/20 blur-[90px]" />
+                  <motion.img
+                    src="/brand/official/official-seal.svg"
+                    alt="Aladiah Academy seal"
+                    initial={{ opacity: 0, scale: 0.85 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 1, ease: 'easeOut' }}
+                    className="relative w-32 h-32 md:w-40 md:h-40"
+                    style={{ filter: 'drop-shadow(0 0 28px rgba(245,184,26,0.55)) drop-shadow(0 0 14px rgba(74,144,245,0.35))' }}
                   />
-                ))}
-              </div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.5 }}
+                    className="relative mt-5 text-center"
+                  >
+                    <p className="text-white/90 text-sm md:text-base font-medium mb-3">{t('hero.story.s6')}</p>
+                    <p className="text-white font-display font-bold text-lg md:text-xl tracking-wide">Aladiah Academy</p>
+                    <p className="text-secondary text-xs md:text-sm tracking-[0.2em] uppercase mt-1">Intelligence • Purpose • Impact</p>
+                  </motion.div>
+                </motion.div>
+              ) : (
+                <>
+                  <video
+                    ref={videoRef}
+                    src={scenes[currentScene].src}
+                    autoPlay
+                    muted={isMuted}
+                    playsInline
+                    onEnded={handleVideoEnd}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+
+                  {/* Cinematic letterbox gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none" />
+
+                  {/* Caption */}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentScene}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.6 }}
+                      className="absolute bottom-16 left-4 right-4"
+                    >
+                      <p className="text-white text-sm md:text-base font-medium leading-relaxed drop-shadow-lg">
+                        {t(scenes[currentScene].captionKey)}
+                      </p>
+                    </motion.div>
+                  </AnimatePresence>
+
+                  {/* Scene progress dots */}
+                  <div className="absolute bottom-4 left-4 right-4 flex items-center gap-2">
+                    {scenes.map((_, i) => (
+                      <button
+                        key={i}
+                        aria-label={`Scene ${i + 1}`}
+                        onClick={() => { setShowSeal(false); setCurrentScene(i); }}
+                        className={`h-1 rounded-full transition-all duration-300 ${
+                          i === currentScene ? 'bg-white flex-[3]' : i < currentScene ? 'bg-white/60 flex-1' : 'bg-white/30 flex-1'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
 
               {/* Playback controls */}
               <AnimatePresence>
-                {showControls && (
+                {showControls && !showSeal && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
