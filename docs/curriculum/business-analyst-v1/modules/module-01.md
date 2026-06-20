@@ -37,12 +37,33 @@ define "Business Analyst."** They get hired because they can walk into ambiguity
 process is a mess, fix it"* — and come out with an evidence-based recommendation an executive will
 fund. That is a different, higher-paid job than the scribe ever had.
 
-**The modern ladder** (Aladiah's Career Outcome Matrix):
-- **Junior BA / Requirements Analyst** ($60–85k) — elicits and specifies under guidance.
-- **Business Analyst / Product Analyst** ($90–115k) — owns discovery and solution definition.
-- **Lead BA / Product Owner** ($115k+) — drives product and cross-functional outcomes.
-- **Head of Product Ops / Transformation Consultant** ($130–250k) — redesigns how the business
-  itself operates. This is McKinsey/Deloitte/Accenture territory, and it is reachable from here.
+**The salary ladder — where this program takes you.** (Indicative US-market ranges; they vary by
+region, industry, and experience, and Aladiah's global markets often index differently — but the
+*shape* of the climb holds everywhere.)
+
+| Role | Indicative band |
+|---|---|
+| Junior BA | $60k–$90k |
+| Business Analyst | $90k–$130k |
+| Senior BA | $130k–$170k |
+| Product Analyst | $140k–$190k |
+| Business Architect | $170k–$230k |
+| Transformation Consultant | $200k–$300k+ |
+
+The steepest pay increase in the field is the jump from Business Analyst into **Business Architect /
+Transformation Consultant** — and it is *not* earned by memorizing more BABOK definitions. It's earned
+by moving up the value stack: from specifying solutions to **redesigning how a business operates.**
+That is the explicit destination of this program.
+
+**How the curriculum maps to the climb:**
+- **Module 1** — understand the game: where you are, where you're going, your 90-day plan.
+- **Modules 2–7** — become a *strong BA*: planning, stakeholders, elicitation, facilitation, requirements, process modeling.
+- **Modules 8–10** — move into *strategy & discovery*: business architecture, product thinking, product discovery — the inflection point toward the higher bands.
+- **Modules 11–14** — become *transformation-capable*: data, solution evaluation, AI decision intelligence, compliance.
+- **Module 15** — the capstone *portfolio that proves it* to an employer.
+
+Keep your Personal Career Transformation Plan open as you go — every module adds a competency and an
+artifact that moves you one rung up this ladder.
 
 Real example: a BA at a logistics firm who spent two years writing JIRA tickets plateaued at $78k.
 After learning to run discovery, model capabilities, and present transformation cases, the *same
