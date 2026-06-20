@@ -442,7 +442,7 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.title.line2': 'Work Starts Here',
     'hero.subhead': 'Master *AI*. Transform Your *Career*. Build the *Future*.',
     'hero.subtitle': 'Join a global academy where human potential and artificial intelligence work together to create the next generation of leaders, innovators, and builders.',
-    'hero.video.label': 'Real stories. Real transformations.',
+    'hero.video.label': 'From potential to opportunity.',
     'hero.cta.primary': 'Explore Programs',
     'hero.cta.stories': 'Watch Success Stories',
     'hero.cta.secondary': 'Learn More',

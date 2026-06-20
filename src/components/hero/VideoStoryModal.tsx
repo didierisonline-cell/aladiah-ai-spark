@@ -1,5 +1,5 @@
 // =============================================================================
-// VideoStoryModal — the "Real stories. Real transformations." hero film.
+// VideoStoryModal — the "From potential to opportunity." hero film.
 // A data-driven storyboard (DR → Cameroon → France → Ghana → transformation →
 // global map → mission → seal finale). Scenes with real footage play it; scenes
 // awaiting footage show an honest captioned placeholder. The official SEAL
@@ -76,7 +76,7 @@ export default function VideoStoryModal({ open, onClose }: { open: boolean; onCl
 
   return (
     <div
-      role="dialog" aria-modal="true" aria-label="Aladiah Academy — Real stories. Real transformations."
+      role="dialog" aria-modal="true" aria-label="Aladiah Academy — From potential to opportunity."
       onKeyDown={onKey}
       onClick={onClose}
       style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(3,7,15,.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
@@ -84,7 +84,7 @@ export default function VideoStoryModal({ open, onClose }: { open: boolean; onCl
       <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', maxWidth: 960 }}>
         {/* top bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <span style={{ color: '#F5B81A', fontWeight: 700, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase' }}>Real stories. Real transformations.</span>
+          <span style={{ color: '#F5B81A', fontWeight: 700, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase' }}>From potential to opportunity.</span>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={() => setPaused((p) => !p)} aria-label={paused ? 'Play' : 'Pause'}
               style={ctrl}>{paused ? <Play size={16} /> : <Pause size={16} />}</button>
