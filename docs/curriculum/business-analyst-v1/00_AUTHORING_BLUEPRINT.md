@@ -22,7 +22,7 @@ Portfolio Artifact, "P#"). Sim = simulation this lesson is a prerequisite for. L
 ### M1 · Business Analysis in the AI Era  · comp: requirements, ai-analysis, product-thinking · assessment: M1 quiz
 | L | Title | Objective | Competency | Output |
 |---|---|---|---|---|
-| 1 | The Evolution of the Business Analyst | Trace BA history + BABOK; locate self on the career ladder | requirements | Personal BA Career Roadmap |
+| 1 | The Evolution of the Business Analyst | Trace BA history + BABOK; map your current→target role; build a 90-day plan | requirements | **Personal Career Transformation Plan** (current state · target role · salary goal · skill-gap · 90-day plan) |
 | 2 | Deterministic vs Probabilistic: Why AI Changes BA | Distinguish deterministic vs probabilistic systems; AI risks/opportunities | ai-analysis | AI Impact Assessment |
 | 3 | The AI-Native Operating Model | Design human+AI workflows, validation loops, human-in-the-loop | ai-analysis | AI BA Operating Model |
 | 4 | Requirements in the Age of AI | Contrast traditional vs AI/prompt/model/evaluation requirements | requirements | AI Requirements primer → P3 |
@@ -95,7 +95,7 @@ Portfolio Artifact, "P#"). Sim = simulation this lesson is a prerequisite for. L
 | 4 | Target-State Architecture | Design the to-be architecture | business-architecture | Target-State Architecture |
 | 5 | Strategic Alignment & Transformation Framing | Align to strategy; exec framing | business-architecture | Transformation Deck draft → P8, Sim 9 |
 
-## PHASE 4 — Product & Solution
+## PHASE 4 — Product, Data & Solution
 
 ### M9 · Product Thinking & Strategy · comp: product-thinking · Sim 6 · P4 · assessment: M9 quiz
 | L | Title | Objective | Competency | Output |
@@ -115,18 +115,7 @@ Portfolio Artifact, "P#"). Sim = simulation this lesson is a prerequisite for. L
 | 4 | Discovery Research & Evidence | Research methods, behavioral evidence | product-discovery | Discovery Findings |
 | 5 | Working Backwards & the Discovery Report | PR/FAQ; assemble report | product-discovery | **Executive Discovery Report (P1)** → Sim 1 |
 
-### M11 · Solution Evaluation, Validation & Acceptance · comp: solution-eval · Sim 8 · Lab: UAT · P5,P6 · assessment: M11 quiz
-| L | Title | Objective | Competency | Output |
-|---|---|---|---|---|
-| 1 | Solution Options & Trade-offs | Option analysis, buy/build | solution-eval | Options Analysis |
-| 2 | Business Case & ROI | Business case, ROI/benefits | solution-eval | **Business Case (P5)** |
-| 3 | Solution Validation & Acceptance | Validation approach, acceptance | solution-eval | Validation Plan |
-| 4 | UAT Design & Execution | UAT planning, test cases, defects | solution-eval | **UAT Package (P6)** (Lab) |
-| 5 | Value Realization & Post-Implementation Review | Benefits validation, PIR | solution-eval | PIR Report |
-
-## PHASE 5 — Data, AI & Compliance
-
-### M12 · Data Analysis for BAs · comp: data-analysis · Sim 5/6 · Lab: SQL · assessment: M12 quiz
+### M11 · Data Analysis for BAs · comp: data-analysis · Sim 5/6 · Lab: SQL · assessment: M11 quiz
 | L | Title | Objective | Competency | Output |
 |---|---|---|---|---|
 | 1 | Data Fundamentals for BAs | Data literacy, types, quality | data-analysis | Data Concepts Brief |
@@ -135,7 +124,19 @@ Portfolio Artifact, "P#"). Sim = simulation this lesson is a prerequisite for. L
 | 4 | Visualization & Dashboards | Chart selection, dashboards | data-analysis | Dashboard Spec |
 | 5 | Data-Informed Requirements | Tie data to requirements/decisions | data-analysis | Data-Informed Requirements |
 
-### M13 · AI-Augmented Analysis & Prompt Engineering · comp: ai-analysis, ai-prompting · Sim 4 · Lab: AI prompting · P3 · assessment: M13 quiz
+### M12 · Solution Evaluation, Validation & Acceptance · comp: solution-eval · Sim 8 · Lab: UAT · P5,P6 · assessment: M12 quiz
+| L | Title | Objective | Competency | Output |
+|---|---|---|---|---|
+| 1 | Solution Options & Trade-offs | Option analysis, buy/build | solution-eval | Options Analysis |
+| 2 | Business Case & ROI | Business case, ROI/benefits | solution-eval | **Business Case (P5)** |
+| 3 | Solution Validation & Acceptance | Validation approach, acceptance | solution-eval | Validation Plan |
+| 4 | UAT Design & Execution | UAT planning, test cases, defects | solution-eval | **UAT Package (P6)** (Lab) |
+| 5 | Value Realization & Post-Implementation Review | Benefits validation, PIR | solution-eval | PIR Report |
+
+## PHASE 5 — AI & Governance
+
+### M13 · AI Business Analysis & Decision Intelligence · comp: ai-analysis, ai-prompting · Sim 4 · Lab: AI prompting · P3 · assessment: M13 quiz
+*(Prompt engineering is a capability inside this module — Lesson 3 — not the headline.)*
 | L | Title | Objective | Competency | Output |
 |---|---|---|---|---|
 | 1 | AI Requirements Engineering | Extraction, normalization, clustering, gap detection | ai-analysis | AI-Extracted Requirements |
@@ -181,10 +182,10 @@ Portfolio Artifact, "P#"). Sim = simulation this lesson is a prerequisite for. L
 | 2 Steering Committee | M3, M5 |
 | 3 Conflicting Requirements | M5, M6 |
 | 4 AI Requirements Validation | M13 |
-| 5 Compliance Investigation | M7, M12, M14 |
-| 6 Prioritization War Room | M9, M12 |
+| 5 Compliance Investigation | M7, M11, M14 |
+| 6 Prioritization War Room | M9, M11 |
 | 7 Business Architecture Assessment | M8 |
-| 8 Transformation Roadmap | M11, M8 |
+| 8 Transformation Roadmap | M12, M8 |
 | 9 Executive Recommendation Board | M8, M3 |
 | 10 Enterprise Discovery Program | all (M15) |
 
@@ -195,15 +196,15 @@ Portfolio Artifact, "P#"). Sim = simulation this lesson is a prerequisite for. L
 | P2 Current-State BPMN Package | M7.L5 |
 | P3 AI Requirements Package | M13.L5 (+M6.L5) |
 | P4 Product Opportunity Assessment | M9.L5 |
-| P5 Business Case | M11.L2 |
-| P6 UAT Package | M11.L4 (+Lab/Capstone) |
+| P5 Business Case | M12.L2 |
+| P6 UAT Package | M12.L4 (+Lab/Capstone) |
 | P7 Stakeholder Management Plan | M3.L5 |
 | P8 Transformation Recommendation Deck | M8.L5 |
 
 **6. Every competency is covered** ✅ — primary-competency home for each of the 13 slugs:
 requirements (M1/M2/M6) · elicitation (M4) · process-analysis (M7) · business-architecture (M8) ·
 stakeholders (M3) · product-thinking (M9) · product-discovery (M10) · facilitation (M5) ·
-data-analysis (M12) · ai-analysis (M13) · ai-prompting (M13) · compliance (M14) · solution-eval (M11);
+data-analysis (M11) · ai-analysis (M13) · ai-prompting (M13) · compliance (M14) · solution-eval (M12);
 all 13 integrated in the M15 capstone.
 
 **7. Every career outcome maps to curriculum** ✅ (Career Outcome Matrix → modules)
