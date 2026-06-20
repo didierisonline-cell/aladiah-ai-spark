@@ -129,19 +129,17 @@ const Hero = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative hidden lg:flex items-center justify-center"
           >
-            <div className="relative w-full max-w-md aspect-square rounded-3xl bg-card/40 backdrop-blur-sm border border-border/30 shadow-large flex flex-col items-center justify-center p-12 overflow-hidden">
+            <div className="relative w-full max-w-md rounded-3xl bg-card/40 backdrop-blur-sm border border-border/30 shadow-large flex items-center justify-center p-8 overflow-hidden">
               <div className="absolute w-2/3 h-2/3 rounded-full bg-primary/15 blur-[100px]" />
               <div className="absolute w-1/2 h-1/2 rounded-full bg-secondary/15 blur-[90px]" />
+              {/* Official approved logo (PNG, used as-is). The PNG already contains
+                  the ALADIAH ACADEMY wordmark + tagline — no separate text overlay. */}
               <img
-                src="/brand/aladiah-mark.svg"
+                src="/brand/official/Aladiah_Academy_Official_Logo.png"
                 alt="Aladiah Academy"
-                className="relative w-44 h-auto"
-                style={{ filter: 'drop-shadow(0 0 40px rgba(74,144,245,0.35)) drop-shadow(0 0 26px rgba(245,184,26,0.22))' }}
+                className="relative w-auto h-auto max-h-[560px] max-w-full object-contain"
+                style={{ filter: 'drop-shadow(0 0 40px rgba(74,144,245,0.30)) drop-shadow(0 0 26px rgba(245,184,26,0.18))' }}
               />
-              <div className="relative mt-8 text-center">
-                <div className="font-display font-bold tracking-[0.18em] text-foreground text-lg">ALADIAH ACADEMY</div>
-                <div className="mt-2 text-[11px] font-semibold tracking-[0.28em] text-secondary">INTELLIGENCE · PURPOSE · IMPACT</div>
-              </div>
             </div>
 
             {/* Floating accents */}
