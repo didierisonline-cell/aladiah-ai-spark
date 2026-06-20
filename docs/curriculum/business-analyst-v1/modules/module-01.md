@@ -96,6 +96,23 @@ project was scrapped. The failure wasn't bad code; it was the **absence of a BA 
 probabilistic systems: no fairness requirement, no bias evaluation, no governance. That gap is
 exactly the competency this program builds (`ba:compliance`, `ba:ai-prompting`).
 
+**Failed vs. well-governed — the comparison that matters.** Amazon's tool isn't an isolated horror
+story; biased AI is a *pattern* a BA's discipline prevents. Two more landmark cases:
+- **COMPAS** (criminal-justice recidivism scoring): a ProPublica investigation found it falsely
+  flagged Black defendants as high-risk at roughly twice the rate of white defendants. No rule
+  encoded race — the bias rode in on proxy variables, and there was no fairness requirement or
+  transparency to catch it.
+- **Healthcare risk algorithm** (Obermeyer et al., 2019, *Science*): a widely-used US algorithm used
+  *healthcare cost* as a proxy for *health need*. Because less had historically been spent on Black
+  patients, it systematically under-referred them to care — affecting millions of people.
+
+Now contrast a **well-governed** AI system: a modern credit-decisioning model ships with a *fairness
+requirement* (accuracy parity across protected groups), *explainability* (every declined applicant
+gets an adverse-action reason), *human review* for edge cases, and *monitoring* for drift. Same
+probabilistic technology — opposite outcome. The difference isn't the model; it's whether a BA
+specified governance. **That specification is the job**, and it's what separates an elite AI
+Transformation BA from someone who just "uses AI."
+
 **Where this creates opportunity:** AI can now draft requirements, summarize 20 interviews, and
 extract a process from a transcript in seconds. The BA who knows how to *direct and validate* that
 work does in a day what used to take a week — and is far more hireable than one who fears it.
@@ -136,6 +153,24 @@ The AI-native BA loop has four steps:
 developers who treat each suggestion as a *draft to review* ship faster **and** safer. Same tool,
 opposite outcomes — the difference is the operating model. The BA equivalent: using Claude to draft a
 requirements set is a force-multiplier *if* you validate it, and a liability *if* you don't.
+
+**AI operating models — a spectrum, not a tool.** *How* you run the loop depends on *what kind* of AI
+you're working with. Compare three enterprise tools every BA will meet, arranged by how much
+autonomy the AI has:
+- **GitHub Copilot — assistive.** Suggests code inline; the human accepts or rejects each suggestion.
+  Validation is continuous and light. Operating model: *AI proposes, human disposes, line by line.*
+- **Microsoft 365 Copilot — generative, grounded.** Drafts whole documents grounded in your
+  organization's data, with citations to source files. Validation shifts to *checking the grounding* —
+  are the cited sources real and used correctly? Operating model: *AI drafts from your data, human
+  verifies provenance.*
+- **ServiceNow AI / agentic workflows — agentic.** Doesn't just suggest, it *acts*: triages, routes,
+  and resolves requests across a workflow. Stakes jump, so the model demands *guardrails, approval
+  gates, and audit trails* — the human moves from reviewing text to governing a process.
+
+The lesson: there is no single "how to use AI." The **assistive → generative → agentic** spectrum
+changes where the human checkpoint sits and how heavy it must be. The BA's job is to **choose the
+right operating model for the stakes** — light review for assistive drafting, hard approval gates for
+agentic action.
 
 **When to keep a human firmly in the loop** scales with stakes. Drafting a meeting summary? Light
 touch. Generating requirements that drive a safety, legal, financial, or regulatory decision?
@@ -183,6 +218,22 @@ Specifying an AI feature requires **four new requirement categories** on top of 
   false-approval rate by region shall not exceed 2%; a complete audit trail of every decision shall
   be retained per the privacy policy."* The second is fundable, testable, and compliant.
 
+**The AI Requirement Ladder — the framework you'll reuse all program.** For any AI feature, specify
+five stacked layers; each catches what the one below cannot. A traditional BA writes layer 1 and
+stops; an **AI Transformation BA writes all five.**
+1. **Traditional requirement** — the functional behavior. *"Auto-approve eligible returns."*
+2. **AI (probabilistic) requirement** — accuracy threshold + fallback. *"Auto-approve only when the
+   risk-score confidence ≥ 0.85; otherwise route to an agent; ≥ 95% accuracy on the validation set."*
+3. **Validation requirement** — how the output is checked before it's trusted. *"Evaluate weekly
+   against a labeled test set; report precision/recall; accuracy drift > 3 points triggers review."*
+4. **Human-oversight requirement** — where a person must stay in the loop. *"Refund decisions above
+   $500 require agent confirmation; every AI-assisted decision is flagged for review."*
+5. **Compliance requirement** — privacy, auditability, fairness. *"A tamper-evident audit trail of
+   every decision is retained per the privacy policy; false-approval rate by region ≤ 2%."*
+
+This ladder is the spine of the Module 13 AI Requirements Package — and the single clearest signal,
+in an interview or on the job, that you operate at transformation level rather than ticket level.
+
 This is the skill that makes a BA indispensable on AI projects — and it's why "BA who understands AI
 requirements" is one of the fastest-growing job descriptions on the market.
 
@@ -223,6 +274,16 @@ customer outcome first. Weak ideas die on paper, cheaply, instead of after month
 It's a discipline for keeping the team anchored to outcomes, not features — and it's a technique you'll
 use directly in Module 10 (Product Discovery).
 
+**Opportunity Solution Trees (Teresa Torres) — outcomes made visual.** Working Backwards keeps you
+honest about *why*; an Opportunity Solution Tree keeps you honest about *how you'll get there*. The
+tree starts with one **desired outcome** at the top, branches into the **opportunities** (unmet
+customer needs and pains) that could move it, and only then into **solutions** and **experiments**.
+It enforces two disciplines: every solution must trace up to a real opportunity and a measurable
+outcome, and you must weigh *multiple* opportunities before committing — the antidote to the
+"build the portal someone already fell in love with" trap. You'll build full Opportunity Solution
+Trees in Module 10 (Product Discovery); they're introduced here so the outcome-first mindset has a
+concrete tool from Day 1.
+
 **Why this matters for your career:** in interviews and on the job, the analyst who reframes *"they
 asked for X"* into *"the outcome they need is Y, and here's the evidence"* is visibly operating a
 level above. It's the difference between order-taker and trusted advisor — and the compensation
@@ -247,7 +308,10 @@ assumption that most needs validating — a habit you'll carry into every later 
   student's portfolio and the foundation the rest of the program builds on.
 
 ## What makes this the gold standard (the bar for M2–M15)
-Unique body per lesson (zero reuse) · real named case studies (Amazon recruiting AI, GitHub Copilot,
-Amazon Working Backwards) · concrete AI examples · a practical exercise per lesson · a tangible
-artifact per lesson · employment-oriented framing tied to the salary ladder · assessment bound to the
-competency model. Every subsequent module must clear this bar before it ships.
+Unique body per lesson (zero reuse) · multiple real named case studies (Amazon recruiting AI, **COMPAS**,
+**Obermeyer healthcare algorithm**, GitHub Copilot, **Microsoft 365 Copilot**, **ServiceNow agentic AI**,
+Amazon Working Backwards, **Teresa Torres' Opportunity Solution Trees**) · transferable frameworks
+(the **assistive→generative→agentic** operating-model spectrum; the **5-layer AI Requirement Ladder**) ·
+a practical exercise per lesson · a tangible artifact per lesson · employment framing tied to the
+$60k→$250k ladder · assessment bound to the competency model. This is **transformation-level**, not
+"good modern BA." Every subsequent module must clear this bar before it ships.
