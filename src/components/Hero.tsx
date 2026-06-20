@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Users, TrendingUp, Building2, Globe, Play, Pause, Volume2, VolumeX, ArrowRight } from 'lucide-react';
+import { Sparkles, Users, TrendingUp, Building2, GraduationCap, Play, Pause, Volume2, VolumeX, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import HeroBackground from '@/components/hero/HeroBackground';
@@ -40,7 +40,7 @@ const Hero = () => {
     { icon: Users, value: '500+', label: t('hero.stats.students') },
     { icon: TrendingUp, value: '95%', label: t('hero.stats.rate') },
     { icon: Building2, value: '20+', label: t('hero.stats.partners') },
-    { icon: Globe, value: '100+', label: t('hero.stats.countries') },
+    { icon: GraduationCap, value: '30+', label: t('hero.stats.programs') },
   ];
 
   const nextScene = useCallback(() => {

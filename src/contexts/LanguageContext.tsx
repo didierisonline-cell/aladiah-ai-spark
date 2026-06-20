@@ -449,7 +449,7 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.stats.students': 'Students Trained',
     'hero.stats.rate': 'Success Rate',
     'hero.stats.partners': 'Corporate Partners',
-    'hero.stats.countries': 'Countries Reached',
+    'hero.stats.programs': 'Career Programs',
 
     // Programs
     'programs.badge': 'Our Programs',
