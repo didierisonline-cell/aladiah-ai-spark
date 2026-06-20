@@ -1,6 +1,5 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
-import Logo from '@/components/Logo';
 
 interface Props {
   /** Optional page title; when omitted the logo is shown. */
@@ -28,8 +27,9 @@ export default function MobileTopBar({ title, score, back }: Props) {
         {back ? (
           <button onClick={() => navigate(back)} className="tap-target app-tap" style={{ background: 'none', border: 'none', color: '#cbd5e1', fontSize: 22, cursor: 'pointer', display: 'flex', alignItems: 'center' }} aria-label={t('common.back')}>‹</button>
         ) : (
-          <div onClick={() => navigate('/portal')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-            <Logo variant="full" style={{ height: 30, width: 'auto' }} />
+          <div onClick={() => navigate('/portal')} className="flex items-baseline gap-1.5" style={{ cursor: 'pointer' }} aria-label="Aladiah Academy">
+            <span className="font-display font-bold" style={{ fontSize: 16, letterSpacing: '0.04em', color: '#EDF2F7' }}>ALADIAH</span>
+            <span className="font-display" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.28em', color: '#F5B81A' }}>ACADEMY</span>
           </div>
         )}
 

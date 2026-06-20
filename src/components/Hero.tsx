@@ -1,19 +1,11 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Users, TrendingUp, Building2, GraduationCap, Play, Pause, Volume2, VolumeX, ArrowRight } from 'lucide-react';
+import { Sparkles, Users, TrendingUp, Building2, GraduationCap, Play, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import HeroBackground from '@/components/hero/HeroBackground';
-import VideoStoryModal from '@/components/hero/VideoStoryModal';
-import scene1 from '@/assets/story-scene1.mp4';
-import scene2 from '@/assets/story-scene2.mp4';
-import scene3 from '@/assets/story-scene3.mp4';
-import scene4 from '@/assets/story-scene4.mp4';
-import scene5 from '@/assets/story-scene5.mp4';
-
-// Muted teaser loop on the hero card (no seal — the seal is reserved for the
-// final scene of the full film in VideoStoryModal).
-const teaserScenes = [scene1, scene2, scene3, scene4, scene5];
+import HeroStoryReel from '@/components/hero/HeroStoryReel';
+import HeroStoryModal from '@/components/hero/HeroStoryModal';
 
 // Render a string with *gold-accented* segments (markers survive translation).
 function GoldAccented({ text }: { text: string }) {
@@ -28,13 +20,7 @@ function GoldAccented({ text }: { text: string }) {
 
 const Hero = () => {
   const { t } = useLanguage();
-
   const [storyOpen, setStoryOpen] = useState(false);
-  const [currentScene, setCurrentScene] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
-  const [showControls, setShowControls] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   const stats = [
     { icon: Users, value: '500+', label: t('hero.stats.students') },
@@ -43,30 +29,9 @@ const Hero = () => {
     { icon: GraduationCap, value: '30+', label: t('hero.stats.programs') },
   ];
 
-  const nextScene = useCallback(() => {
-    setCurrentScene((prev) => (prev + 1) % teaserScenes.length);
-  }, []);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.load();
-    video.play().catch(() => {});
-  }, [currentScene]);
-
   const exploreProgrames = () => {
     const el = document.getElementById('programs');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-  const togglePause = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (isPaused) video.play(); else video.pause();
-    setIsPaused(!isPaused);
-  };
-  const toggleMute = () => {
-    if (videoRef.current) videoRef.current.muted = !isMuted;
-    setIsMuted(!isMuted);
   };
 
   return (
@@ -116,7 +81,7 @@ const Hero = () => {
                 {t('hero.cta.primary')}
                 <ArrowRight className="w-5 h-5" />
               </Button>
-              <Button variant="heroOutline" size="xl" onClick={() => setStoryOpen(true)} aria-label="Watch Aladiah success stories video">
+              <Button variant="heroOutline" size="xl" onClick={() => setStoryOpen(true)} aria-label="Watch Aladiah success stories">
                 <Play className="w-5 h-5" />
                 {t('hero.cta.stories')}
               </Button>
@@ -139,52 +104,13 @@ const Hero = () => {
             </motion.div>
           </div>
 
-          {/* Right — cinematic story card → opens the full film */}
+          {/* Right — cinematic story reel: auto-plays the chained student
+              journey and loops. No click, no modal. */}
           <motion.div
             initial={{ opacity: 0, scale: 0.94, x: 40 }} animate={{ opacity: 1, scale: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.2 }}
             className="relative hidden lg:block"
-            onMouseEnter={() => setShowControls(true)}
-            onMouseLeave={() => setShowControls(false)}
           >
-            <button
-              onClick={() => setStoryOpen(true)}
-              aria-label="Play Aladiah success stories video"
-              className="group relative block w-full rounded-3xl overflow-hidden border border-border/40 aspect-video bg-[#0B111E] text-left"
-              style={{ boxShadow: '0 30px 80px -20px rgba(0,0,0,.7), 0 0 60px rgba(74,144,245,.12)' }}
-            >
-              <video ref={videoRef} src={teaserScenes[currentScene]} autoPlay muted={isMuted} playsInline onEnded={nextScene}
-                className="absolute inset-0 w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/20 pointer-events-none" />
-
-              {/* label + play affordance */}
-              <div className="absolute bottom-12 left-5 right-5 flex items-center gap-3">
-                <span className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/90 shadow-lg flex-shrink-0 group-hover:scale-105 transition-transform">
-                  <Play className="w-5 h-5 text-white" fill="white" />
-                </span>
-                <span className="text-white text-base font-semibold leading-snug drop-shadow-lg">
-                  {t('hero.video.label')}
-                </span>
-              </div>
-
-              {/* progress segments */}
-              <div className="absolute bottom-5 left-5 right-5 flex items-center gap-2">
-                {teaserScenes.map((_, i) => (
-                  <span key={i} className={`h-1 rounded-full transition-all duration-300 ${i === currentScene ? 'bg-white flex-[3]' : i < currentScene ? 'bg-white/60 flex-1' : 'bg-white/25 flex-1'}`} />
-                ))}
-              </div>
-            </button>
-
-            {/* mute/pause controls (don't trigger the modal) */}
-            {showControls && (
-              <div className="absolute top-4 right-4 flex gap-2">
-                <button onClick={togglePause} aria-label={isPaused ? 'Play preview' : 'Pause preview'} className="p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors">
-                  {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-                </button>
-                <button onClick={toggleMute} aria-label={isMuted ? 'Unmute preview' : 'Mute preview'} className="p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors">
-                  {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                </button>
-              </div>
-            )}
+            <HeroStoryReel />
 
             <div className="absolute -top-4 -right-4 p-3.5 bg-card rounded-2xl shadow-medium animate-float border border-border/30">
               <Sparkles className="w-5 h-5 text-secondary" />
@@ -193,7 +119,7 @@ const Hero = () => {
         </div>
       </div>
 
-      <VideoStoryModal open={storyOpen} onClose={() => setStoryOpen(false)} />
+      <HeroStoryModal open={storyOpen} onClose={() => setStoryOpen(false)} />
     </section>
   );
 };

@@ -8,7 +8,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import Logo from '@/components/Logo';
 import { supabase } from '@/integrations/supabase/client';
 import { useRole } from '@/hooks/useRole';
 import { activeHref } from '@/lib/nav';
@@ -85,9 +84,10 @@ const Header = ({ onProfileClick }: HeaderProps) => {
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '0 2rem',
     }}>
-      {/* Logo — official full wordmark lockup */}
-      <a href="/" onClick={e => { e.preventDefault(); navigate('/'); }} style={{ display: 'flex', alignItems: 'center' }} aria-label="Aladiah Academy — home">
-        <Logo variant="full" style={{ height: 54, width: 'auto' }} />
+      {/* Wordmark — text only, no crest icon */}
+      <a href="/" onClick={e => { e.preventDefault(); navigate('/'); }} className="flex items-baseline gap-2" style={{ textDecoration: 'none' }} aria-label="Aladiah Academy — home">
+        <span className="font-display font-bold" style={{ fontSize: 22, letterSpacing: '0.04em', color: '#EDF2F7' }}>ALADIAH</span>
+        <span className="font-display" style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.3em', color: '#F5B81A' }}>ACADEMY</span>
       </a>
 
       {/* Desktop Nav */}
