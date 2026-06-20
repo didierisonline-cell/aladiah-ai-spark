@@ -29,6 +29,7 @@ export const FOUNDER_NAV_ITEMS: FounderNavItem[] = [
   { to: '/founder/outcomes', label: 'Employment Outcomes', icon: Target },
   { to: '/founder/revenue', label: 'Revenue Truth', icon: DollarSign },
   { to: '/founder/admissions', label: 'Admissions Truth', icon: Inbox },
+  { to: '/founder/marketing', label: 'Marketing Truth', icon: Megaphone },
   { to: '/founder/localization', label: 'Localization Factory', icon: Sparkles },
   { to: '/founder/curriculum', label: 'Question Review', icon: ClipboardCheck },
   { to: '/admin/command-center', label: 'CEO', icon: Sparkles },

@@ -54,6 +54,7 @@ import StudentJourney from "./pages/founder/StudentJourney";
 import EmploymentOutcomes from "./pages/founder/EmploymentOutcomes";
 import RevenueTruth from "./pages/founder/RevenueTruth";
 import AdmissionsTruth from "./pages/founder/AdmissionsTruth";
+import MarketingTruth from "./pages/founder/MarketingTruth";
 import CeoTruthDashboard from "./pages/founder/CeoTruthDashboard";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
@@ -151,6 +152,7 @@ const AppContent = () => {
         <Route path="/founder/outcomes" element={<FounderRoute><EmploymentOutcomes /></FounderRoute>} />
         <Route path="/founder/revenue" element={<FounderRoute><RevenueTruth /></FounderRoute>} />
         <Route path="/founder/admissions" element={<FounderRoute><AdmissionsTruth /></FounderRoute>} />
+        <Route path="/founder/marketing" element={<FounderRoute><MarketingTruth /></FounderRoute>} />
         <Route path="/founder/truth" element={<FounderRoute><CeoTruthDashboard /></FounderRoute>} />
         <Route path="/founder/localization" element={<FounderRoute><LocalizationFactory /></FounderRoute>} />
         {/* Founder authorities (legacy /admin paths, founder-protected) */}
