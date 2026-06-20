@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { noteReferral } from '@/lib/attribution';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -50,6 +51,10 @@ const ReferralProfile = () => {
         recentPosts: (row.recent_posts as ReferrerData['recentPosts']) || [],
       });
       setLoading(false);
+
+      // First-party attribution: remember this referral as first-touch so a later
+      // signup is credited to the referral channel.
+      noteReferral(code);
 
       // Best-effort click tracking (anon INSERT is allowed on referral_tracking).
       if (row.referral_code_id) {

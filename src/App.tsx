@@ -55,7 +55,10 @@ import EmploymentOutcomes from "./pages/founder/EmploymentOutcomes";
 import RevenueTruth from "./pages/founder/RevenueTruth";
 import AdmissionsTruth from "./pages/founder/AdmissionsTruth";
 import MarketingTruth from "./pages/founder/MarketingTruth";
+import AttributionTruth from "./pages/founder/AttributionTruth";
 import CeoTruthDashboard from "./pages/founder/CeoTruthDashboard";
+import { useEffect } from "react";
+import { captureFirstTouch } from "@/lib/attribution";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
@@ -94,6 +97,7 @@ const RouterAwareFloat = () => {
 
 const AppContent = () => {
   useCartSync();
+  useEffect(() => { captureFirstTouch(); }, []);
   return (
     <BrowserRouter>
       <ErrorBoundary>
@@ -153,6 +157,7 @@ const AppContent = () => {
         <Route path="/founder/revenue" element={<FounderRoute><RevenueTruth /></FounderRoute>} />
         <Route path="/founder/admissions" element={<FounderRoute><AdmissionsTruth /></FounderRoute>} />
         <Route path="/founder/marketing" element={<FounderRoute><MarketingTruth /></FounderRoute>} />
+        <Route path="/founder/attribution" element={<FounderRoute><AttributionTruth /></FounderRoute>} />
         <Route path="/founder/truth" element={<FounderRoute><CeoTruthDashboard /></FounderRoute>} />
         <Route path="/founder/localization" element={<FounderRoute><LocalizationFactory /></FounderRoute>} />
         {/* Founder authorities (legacy /admin paths, founder-protected) */}
