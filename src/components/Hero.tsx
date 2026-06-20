@@ -139,7 +139,7 @@ const Hero = () => {
             </motion.div>
           </div>
 
-          {/* Right — "Real stories" cinematic card → opens the full film */}
+          {/* Right — cinematic story card → opens the full film */}
           <motion.div
             initial={{ opacity: 0, scale: 0.94, x: 40 }} animate={{ opacity: 1, scale: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.2 }}
             className="relative hidden lg:block"
