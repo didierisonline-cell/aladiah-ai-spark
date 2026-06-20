@@ -108,6 +108,19 @@ the ask** — opening with background and detail, and losing the decision before
 *on demand*. The structure executives reward: *Here's the decision I need · here's my recommendation ·
 here's the evidence · here are the risks and the ask.*
 
+**The Executive Narrative Framework.** Give every upward communication this spine — it's how
+transformation consultants brief executives:
+**Situation → Impact → Recommendation → Risk → Decision Needed.**
+- *Situation* — the relevant context in one or two lines.
+- *Impact* — why it matters now, in money / risk / outcome terms.
+- *Recommendation* — what you advise (one clear option, not a menu).
+- *Risk* — the main risk and how it's managed.
+- *Decision needed* — the specific ask, and by when.
+
+(An equally strong variant for change cases: **Current State → Risk → Opportunity → Recommendation →
+Expected Outcome.**) The BA who can run this framework on the fly — in a hallway, a steering meeting,
+or a board — gets promoted; the one who only documents gets stuck. Practice it until it's reflexive.
+
 A **steering committee** is the engine room of a transformation — the forum where execs make
 decisions, set priorities, fund work, and resolve escalations. The BA's job is to make that forum
 *productive*: a tight pre-read, a small number of framed decisions (options + recommendation, not
@@ -163,6 +176,18 @@ the VP's real concern (a pet project losing budget), reframed the proposal so bo
 up two respected peers to voice support first. The blocker became a supporter — through influence, not
 authority.
 
+**Transformation-politics case (a real five-way bind).** On one transformation you'll meet the classic
+deadlock: the **VP** champions Solution A (it makes her division look good), a **Director** pushes
+Solution B (it protects his team's scope), **Engineering** insists on Solution C (it's the cleanest
+build), and **Compliance** vetoes all three on data-retention grounds. No amount of analysis "wins"
+this — it's pure influence. The senior BA maps each party's *interest* beneath its *position*
+(visibility, scope protection, technical debt, regulatory risk), satisfies **Compliance's
+non-negotiable first** (a blocker with veto power is the binding constraint), then builds a coalition:
+secure Compliance's conditions, line up Engineering as the credible technical voice, and frame the
+surviving option so both the VP and Director can claim a win. You'll build exactly this kind of
+influence strategy in your artifact — and it becomes one of the strongest stories you can tell in an
+interview.
+
 ### Practical exercise
 For a real initiative, map each key stakeholder's *stated* position vs. their *likely underlying
 interest*. For your toughest blocker, write one influence move (whose support to line up first, what
@@ -205,6 +230,17 @@ win them with **small, reliable follow-through.** Acknowledge the history, make 
 it visibly, repeat. Trust is rebuilt in increments, not arguments. Real example: a store-operations
 manager who'd torpedoed two prior rollouts became a champion of the third — because the BA started by
 fixing one small thing she'd complained about for years, then kept every subsequent promise.
+
+**The hostile stakeholder who was right.** Most courses assume the difficult stakeholder is the
+problem. In reality, the most expensive mistake is dismissing them — because **sometimes they're
+difficult precisely because they know something you don't.** The ops manager who keeps "blocking" your
+elegant new process may be the only person who remembers *why* the old, "inefficient" step exists: it
+catches a fraud case, satisfies an auditor, or handles an edge case that will otherwise blow up in
+production. The senior BA treats persistent resistance as a **signal to investigate**, not just a
+relationship to manage: ask what they know, surface the real constraint, and fold it into the design.
+Recovering that relationship is partly about trust — and partly about being humble enough to learn
+that the "obstacle" was often the firm's institutional memory. Consultants who internalize this make
+far fewer expensive mistakes.
 
 This lesson consolidates the module into **Portfolio Artifact #7 — the Stakeholder Management Plan** —
 and feeds directly into Simulation 2.
