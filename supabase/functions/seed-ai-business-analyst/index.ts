@@ -385,7 +385,13 @@ serve(async (req) => {
     const COURSE_TITLE = courseData.title;
     const { data: ex } = await supabase.from("courses").select("id").eq("title", COURSE_TITLE).maybeSingle();
     if (ex) await supabase.from("courses").delete().eq("id", ex.id);
-    const { data: course, error: ce } = await supabase.from("courses").insert({ title: courseData.title, description: courseData.description, is_published: true, translations: courseData.translations }).select().single();
+    // RETIRED: this seed generates templated/placeholder lessons (bodies are
+    // machine-sliced from the module description; quizzes are 2 boilerplate
+    // questions). It is kept ONLY as an internal prototype and must never be
+    // student-visible. Course is seeded UNPUBLISHED so it does not appear in
+    // student course lists (which filter is_published = true). The launch-grade
+    // BA curriculum is authored per docs/curriculum/business-analyst-v1/.
+    const { data: course, error: ce } = await supabase.from("courses").insert({ title: courseData.title, description: courseData.description, is_published: false, translations: courseData.translations }).select().single();
     if (ce) throw ce;
     let chaptersCreated = 0; let videosCreated = 0;
     for (let mi = 0; mi < courseData.modules.length; mi++) {
