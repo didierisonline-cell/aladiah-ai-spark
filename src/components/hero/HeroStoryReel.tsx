@@ -75,7 +75,7 @@ export default function HeroStoryReel() {
       {beat.kind === 'placeholder' && (
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'radial-gradient(120% 100% at 50% 0%, #15233f, #0B111E)' }}>
           <div style={{ fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: '#8596AD', marginBottom: 8 }}>{beat.location}</div>
-          <div style={{ fontSize: 10, color: '#5b6b86', border: '1px solid #243352', borderRadius: 999, padding: '3px 10px' }}>Footage coming soon</div>
+          <div style={{ fontSize: 10, color: '#5b6b86', border: '1px solid #243352', borderRadius: 999, padding: '3px 10px' }}>Original footage coming soon.</div>
         </div>
       )}
 

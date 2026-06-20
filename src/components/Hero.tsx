@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Users, TrendingUp, Building2, GraduationCap, ArrowRight } from 'lucide-react';
+import { Sparkles, Users, TrendingUp, Building2, GraduationCap, Play, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import HeroBackground from '@/components/hero/HeroBackground';
 import HeroStoryReel from '@/components/hero/HeroStoryReel';
+import HeroStoryModal from '@/components/hero/HeroStoryModal';
 
 // Render a string with *gold-accented* segments (markers survive translation).
 function GoldAccented({ text }: { text: string }) {
@@ -18,6 +20,7 @@ function GoldAccented({ text }: { text: string }) {
 
 const Hero = () => {
   const { t } = useLanguage();
+  const [storyOpen, setStoryOpen] = useState(false);
 
   const stats = [
     { icon: Users, value: '500+', label: t('hero.stats.students') },
@@ -34,16 +37,6 @@ const Hero = () => {
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-24 lg:pt-20 overflow-hidden">
       <HeroBackground />
-
-      {/* Centered official seal — decorative brand watermark behind the hero
-          content. Hidden on small screens to keep copy readable. aria-hidden. */}
-      <div className="absolute inset-0 hidden md:flex items-center justify-center pointer-events-none z-[1]" aria-hidden="true">
-        <img
-          src="/brand/official/official-seal.svg"
-          alt=""
-          style={{ width: 'clamp(320px, 38vw, 560px)', opacity: 0.14, filter: 'drop-shadow(0 0 50px rgba(245,184,26,.35)) drop-shadow(0 0 30px rgba(74,144,245,.25))' }}
-        />
-      </div>
 
       <div className="container mx-auto px-4 pb-28 lg:pb-32 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -79,7 +72,7 @@ const Hero = () => {
               {t('hero.subtitle')}
             </motion.p>
 
-            {/* CTA — primary action */}
+            {/* CTAs — both wired to real actions */}
             <motion.div
               initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.32 }}
               className="flex flex-col sm:flex-row gap-4"
@@ -87,6 +80,10 @@ const Hero = () => {
               <Button variant="hero" size="xl" onClick={exploreProgrames} aria-label="Explore Aladiah programs">
                 {t('hero.cta.primary')}
                 <ArrowRight className="w-5 h-5" />
+              </Button>
+              <Button variant="heroOutline" size="xl" onClick={() => setStoryOpen(true)} aria-label="Watch Aladiah success stories">
+                <Play className="w-5 h-5" />
+                {t('hero.cta.stories')}
               </Button>
             </motion.div>
 
@@ -121,6 +118,8 @@ const Hero = () => {
           </motion.div>
         </div>
       </div>
+
+      <HeroStoryModal open={storyOpen} onClose={() => setStoryOpen(false)} />
     </section>
   );
 };
