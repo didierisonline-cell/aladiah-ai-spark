@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Users, TrendingUp, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import heroVideo from '@/assets/hero-video.mp4';
 
 const Hero = () => {
   const { t } = useLanguage();
@@ -16,8 +17,21 @@ const Hero = () => {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-20 lg:pt-0 overflow-hidden bg-gradient-hero">
-      {/* Dark navy overlay for text readability over the emblem watermark. */}
-      <div className="absolute inset-0 bg-[#0B111E]/40 pointer-events-none" />
+      {/* Layer 1 — generic/global hero video background (muted, looping, no
+          captions, no persona/claims). Founder-confirmed generic clip; the
+          Maria/Dominican story-scenes are intentionally NOT used. */}
+      <video
+        src={heroVideo}
+        autoPlay
+        loop
+        muted
+        playsInline
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+      />
+      {/* Layer 1b — dark navy overlay so the video reads as a subtle backdrop
+          and the hero text stays readable. */}
+      <div className="absolute inset-0 bg-[#0B111E]/65 pointer-events-none" />
 
       {/* Aladiah emblem watermark — the OFFICIAL mark (official-mark.svg: silver
           A-spire + hidden-9 + gold world arc) as a premium background, so the
