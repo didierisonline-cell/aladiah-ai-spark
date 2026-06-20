@@ -115,23 +115,25 @@ treat it as a flag to re-check, not a default.
 
 Boundary: `pm:stakeholders` (communicate up/out) ≠ `pm:change-leadership` (org transformation) ≠ `pm:leadership` (lead the people on the team).
 
-## 7. AI Business Analyst & Product Discovery Specialist — Axis-1 registry (`ba:`, 11 slugs)
+## 7. AI Business Analyst & Product Discovery Specialist — Axis-1 registry (`ba:`, 13 slugs)
 
 | Slug | Label | Description |
 |---|---|---|
 | `ba:requirements` | Requirements Engineering | Analysis, specification, traceability, validation & lifecycle management of requirements. |
 | `ba:elicitation` | Elicitation & Collaboration | Interviews, workshops, observation, document analysis, prototyping. |
-| `ba:process-analysis` | Business Process Analysis | As-is/to-be modeling (BPMN), gap & root-cause analysis, optimization. |
+| `ba:process-analysis` | Business Process Analysis | As-is/to-be modeling (BPMN), gap & root-cause analysis, optimization (process-level). |
+| `ba:business-architecture` | Business Architecture | Enterprise capability maps, value streams, operating models, target-state architecture (enterprise-level, above individual processes). |
 | `ba:stakeholders` | Stakeholder Management | Identification, RACI, alignment, negotiation, conflict resolution. |
-| `ba:product-thinking` | Product Thinking & Strategy | Outcomes over outputs, value/vision, business-model thinking, product strategy, north-star metrics. |
-| `ba:product-discovery` | Product Discovery & Solution Definition | Discovery process: opportunity framing, experiments, validation, MVP, prioritization. |
+| `ba:product-thinking` | Product Thinking & Strategy | Strategy — *choosing* opportunities: outcomes over outputs, value/vision, business-model thinking, north-star metrics, roadmap prioritization. |
+| `ba:product-discovery` | Product Discovery & Solution Definition | Discovery process — *finding* opportunities: opportunity framing, experiments, assumption testing, validation, MVP definition. |
 | `ba:facilitation` | Facilitation & Workshop Leadership | Structured facilitation, decision-making, consensus, design thinking. |
 | `ba:data-analysis` | Data Analysis for BAs | Metrics, SQL basics, data-informed requirements, KPI definition. |
-| `ba:ai-analysis` | AI-Assisted Analysis | LLM-assisted elicitation synthesis, requirement drafting, model generation. |
+| `ba:ai-analysis` | AI-Assisted Analysis | Applying AI across analysis tasks: drafting requirements/acceptance criteria, synthesizing stakeholder input, extracting process steps, summarizing research. |
+| `ba:ai-prompting` | AI Prompt Engineering & Output Validation | Engineering effective prompts/context for analysis, structured prompt patterns, and critically validating AI-generated artifacts (accuracy, bias, hallucination, traceability). |
 | `ba:compliance` | Regulatory, Risk & Compliance | Controls, audit, data-privacy & regulatory requirement analysis. |
 | `ba:solution-eval` | Solution Evaluation & Acceptance | UAT, acceptance, value realization, post-implementation review. |
 
-Boundary: `ba:product-thinking` (strategic mindset / *why*) ≠ `ba:product-discovery` (discovery *process* / *how we learn*).
+Boundaries: `ba:product-thinking` (strategy / *choosing* opportunities) ≠ `ba:product-discovery` (discovery / *finding* opportunities); `ba:business-architecture` (enterprise capabilities, value streams, operating model) ≠ `ba:process-analysis` (process-level BPMN/workflows); `ba:ai-prompting` (engineer & *validate* AI) ≠ `ba:ai-analysis` (*apply* AI to produce artifacts).
 
 ## 8. AI Data Analyst & Decision Intelligence Professional — Axis-1 registry (`da:`, 10 slugs)
 
@@ -161,7 +163,7 @@ Axis-1 at rollup, so it orphans no snapshotted data). Updated Axis-2 set (8):
 | Program | `foundations` | `process-execution` | `artifacts-tooling` | `people-leadership` | `stakeholder-engagement` | `measurement-outcomes` | `ai-augmentation` |
 |---|---|---|---|---|---|---|---|
 | **PM** | delivery-methods | planning, risk, portfolio | — | change-leadership, leadership | procurement, stakeholders | finance, quality-closure | ai-delivery |
-| **BA** | product-thinking, compliance | requirements, elicitation, process-analysis, product-discovery | — | facilitation | stakeholders | data-analysis, solution-eval | ai-analysis |
+| **BA** | product-thinking, compliance, business-architecture | requirements, elicitation, process-analysis, product-discovery | — | facilitation | stakeholders | data-analysis, solution-eval | ai-analysis, ai-prompting |
 | **DA** | data-ethics | sql, data-modeling | visualization, bi | — | decision-support, data-storytelling | statistics, forecasting | ai-analytics |
 
 Shared (transferable) competency spine across all programs: `stakeholder-engagement`,
@@ -187,8 +189,9 @@ markets typically index below US bands).
 |---|---|---|---|
 | `scrum` | AI Enterprise Scrum Master & Agile Transformation Leader | 8 | Canon (v1) — gold-standard template |
 | `pm` | AI Project Manager & Delivery Leader | 11 | Canon (v2, ratified) |
-| `ba` | AI Business Analyst & Product Discovery Specialist | 11 | Canon (v2, ratified) |
+| `ba` | AI Business Analyst & Product Discovery Specialist | 13 | Canon (v2.1, ratified) |
 | `da` | AI Data Analyst & Decision Intelligence Professional | 10 | Canon (v2, ratified) |
 
-**Total: 40 Axis-1 slugs across 4 programs.** V2 ratification adds the `ai-augmentation`
+**Total: 42 Axis-1 slugs across 4 programs.** v2.1 appends `ba:business-architecture`
+and `ba:ai-prompting` (BA 11→13, append-only). V2 ratification adds the `ai-augmentation`
 Axis-2 meta and the Career Outcome Matrix (§10). Build order: Scrum (≥95%) → BA → PM → DA.
