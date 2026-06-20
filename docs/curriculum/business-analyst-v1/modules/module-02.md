@@ -18,7 +18,7 @@
 ### Objectives
 - Map the BABOK knowledge areas onto Aladiah's 13-competency model.
 - Score yourself honestly across all 13 competencies against your target role.
-- Produce a Competency Self-Assessment that targets your effort for the rest of the program.
+- Produce an AI Business Analyst Career Readiness Assessment — a showcaseable proof of where you are and where you're going.
 
 ### Lesson
 In Module 1 you chose a target role on the salary ladder. This lesson tells you *exactly* what
@@ -48,9 +48,16 @@ Score yourself 1–5 on each of the 13 competencies (be honest — this is for y
 competencies your **target role** most requires. The gap between your scores and your target is your
 personal syllabus.
 
-### Artifact produced — **Competency Self-Assessment**
-A 13-competency radar (current vs. target) with your top 3 gaps named — revisited at the capstone to
-show measurable growth.
+### Artifact produced — **AI Business Analyst Career Readiness Assessment** (showcaseable)
+A portfolio-grade, shareable assessment (LinkedIn/GitHub-ready) — not a private worksheet:
+- **Competency scores** — a 13-competency radar (current vs. target).
+- **Gap analysis** — your top 3 competency gaps for the target role.
+- **Target role** — the rung you're climbing to.
+- **Salary target** — the band for that role.
+- **90-day roadmap** — the modules + first portfolio artifact you'll complete.
+
+A hiring manager who reads this sees a candidate who knows exactly where they are, where they're going,
+and how they'll get there — rare and impressive. Revisited at the capstone to evidence measurable growth.
 
 ---
 
@@ -179,7 +186,7 @@ employer to prove you use AI responsibly — increasingly a hiring question.
 ### Objectives
 - Treat communication as a core BA competency, not a soft skill.
 - Tailor the same message to executives, engineers, data scientists, and product partners.
-- Produce a Communication Charter for how you'll work with a team.
+- Produce a Stakeholder Communication Plan + a worked four-audience sample you can showcase.
 
 ### Lesson
 A BA is a **business translator** — the person who makes the executive, the engineer, the data
@@ -209,17 +216,32 @@ gets it built correctly. One analysis, two translations, both land. That is the 
 Take one finding. Write it four ways — for a CFO, an engineer, a data scientist, and a product partner.
 Notice what each audience needs and what they ignore.
 
-### Artifact produced — **Communication Charter**
-How you'll communicate on a team: audience map, cadence, channels, decision-logging, and collaboration
-norms — the foundation for Module 3 (Stakeholders) and Module 5 (Facilitation).
+### Artifact produced — **Stakeholder Communication Plan** (showcaseable)
+A real BA work product, not an internal note: an audience map (who needs what, how often, via which
+channel), a decision-logging approach, and collaboration norms — **plus a worked "one finding, four
+audiences" sample** (CFO / engineer / data-scientist / product) that visibly demonstrates the
+business-translator skill. This is a portfolio piece a hiring manager recognizes as genuine BA work,
+and the foundation for Module 3 (Stakeholders) and Module 5 (Facilitation).
 
 ---
 
 ## Module 2 assessment & competency mapping
 - **Assessment:** 20-Q `chapter_end` quiz from the tagged bank across `ba:requirements`,
   `ba:ai-analysis`, `ba:facilitation`. Pass 85% (competency at submit, never NULL).
-- **Artifacts produced (5):** Competency Self-Assessment · BA Plan · Tool Selection Matrix · AI Usage
-  Guardrails · Communication Charter — all entering the student's growing portfolio.
+- **Artifacts produced (5, all portfolio-grade):** AI Business Analyst Career Readiness Assessment ·
+  BA Plan · Tool Selection Matrix · AI Usage Guardrails · Stakeholder Communication Plan.
+
+## Employment-value review (the quality gate)
+| L | Career capability gained | Artifact | Hiring manager cares? | Publicly showcaseable? |
+|---|---|---|---|---|
+| 1 | Self-direct the career; know gaps + target | AI BA Career Readiness Assessment | Yes — self-awareness + a plan | ✅ LinkedIn/portfolio |
+| 2 | Plan an analysis engagement to context | BA Plan | Yes — a real work product | ✅ portfolio sample |
+| 3 | Run an AI-augmented BA workflow safely | Tool Selection Matrix | Yes — proves AI fluency | ✅ portfolio |
+| 4 | Use AI responsibly (data/validation/governance) | AI Usage Guardrails | Yes — now a common interview question | ✅ LinkedIn/portfolio |
+| 5 | Translate across executive & technical audiences | Stakeholder Communication Plan + 4-audience sample | Yes — the business-translator skill | ✅ portfolio |
+
+L1 and L5 were upgraded from internal worksheets to showcaseable assets so **all five** clear the gate:
+every artifact is something a recruiter would care about and a student can show publicly.
 
 ## Meets the gold standard
 Unique bodies (zero reuse) · real examples (BABOK→13-model mapping, predictive/adaptive/hybrid planning,
