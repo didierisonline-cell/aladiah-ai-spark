@@ -7,6 +7,7 @@
 import { supabase } from '@/integrations/supabase/client';
 
 export interface SavePayload {
+  scenarioId?: string;
   total: number; grade: string; readiness: number; recommendation: string;
   report: unknown; story: unknown; dims: Record<string, number>;
   messages: { role: string; speaker: string; content: string }[];
@@ -20,7 +21,7 @@ export async function saveEngagement(p: SavePayload): Promise<string | null> {
     if (!user) return null;
     const sb = supabase as any;
     const { data: sim, error } = await sb.from('ba_simulations').insert({
-      user_id: user.id, scenario_id: 'aurora-returns', phase: 'recommendation', status: 'completed',
+      user_id: user.id, scenario_id: p.scenarioId || 'aurora-returns', phase: 'recommendation', status: 'completed',
       score: p.total, grade: p.grade, readiness_score: p.readiness, recommendation: p.recommendation,
       report: p.report, story: p.story, completed_at: new Date().toISOString(),
     }).select('id').single();

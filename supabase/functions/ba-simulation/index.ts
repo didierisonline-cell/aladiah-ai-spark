@@ -25,6 +25,7 @@ Deno.serve(async (req) => {
     if (action === "interview") return json(await doInterview(body));
     if (action === "evaluate") return json(await doEvaluate(body));
     if (action === "report") return json(await doReport(body));
+    if (action === "artifact") return json(await doArtifact(body));
     if (action === "story") return json(await doStory(body));
     return json({ error: "unknown action" }, 400);
   } catch (e) {
@@ -53,8 +54,18 @@ Set "finding" only when your answer contains a concrete, capturable insight; oth
   return { reply: parsed?.reply || content, finding: parsed?.finding ?? null };
 }
 
-// --- Action: 7-dimension rubric evaluation ----------------------------------
+// --- Action: generic rubric evaluation (any simulation) ---------------------
+// If `rubric` (array of {key,label}) and `context` are provided, grades against
+// that rubric — so the same engine scores any simulation. Otherwise falls back
+// to the Discovery 7-dimension default below.
 async function doEvaluate(b: any) {
+  if (Array.isArray(b.rubric) && b.context) {
+    const sys = `You are a senior Business Analyst assessor grading a "${b.simName || "BA"}" simulation. Score 0-100 on EACH dimension and give terse, specific feedback. Be fair but demanding; reward evidence and reasoning over assertion.
+Dimensions: ${b.rubric.map((d: any) => d.label).join(", ")}.
+Return STRICT JSON: {"dimensions":{${b.rubric.map((d: any) => `"${d.key}":n`).join(",")}},"total":n,"grade":"A-F","feedback":string}. total = rounded average of the dimensions.`;
+    const content = await callAI(sys, [], b.context);
+    return safeJson(content) || null;
+  }
   const sys = `You are a senior BA assessor grading a discovery engagement. Score 0-100 on each of 7 dimensions and give terse, specific feedback. Be fair but demanding; reward evidence over opinion.
 Dimensions: discovery_quality, evidence_quality, stakeholder_coverage, signal_vs_noise, recommendation_quality, business_impact, executive_communication.
 Return STRICT JSON: {"dimensions":{"discovery_quality":n,"evidence_quality":n,"stakeholder_coverage":n,"signal_vs_noise":n,"recommendation_quality":n,"business_impact":n,"executive_communication":n},"total":n,"grade":"A-F","feedback":string}. total = rounded average.`;
@@ -76,6 +87,14 @@ Evidence gathered:
 ${(b.findings || []).map((f: any) => `- ${f.text} (${f.source})`).join("\n")}
 Analyst's chosen recommendation: "${b.recommendation}".`;
   const content = await callAI(sys, [], payload);
+  return safeJson(content) || null;
+}
+
+// --- Action: generate an arbitrary portfolio artifact (any simulation) ------
+async function doArtifact(b: any) {
+  const sys = `You are a top-tier business analyst producing a portfolio-grade "${b.artifactType}". Use ONLY the provided context; be concise, executive-grade, and credible.
+Return STRICT JSON shaped exactly like: ${b.shape}.`;
+  const content = await callAI(sys, [], b.context || "");
   return safeJson(content) || null;
 }
 

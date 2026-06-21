@@ -26,6 +26,8 @@ export const baSim = {
     call('evaluate', payload) as Promise<{ dimensions: Record<string, number>; total: number; grade: string; feedback: string } | null>,
   report: (payload: any) =>
     call('report', payload) as Promise<{ problem: string; opportunities: string[]; evidence: string[]; recommendation: string; risks: string[]; confidence: string } | null>,
+  artifact: (payload: { artifactType: string; shape: string; context: string }) =>
+    call('artifact', payload) as Promise<Record<string, any> | null>,
   story: (payload: any) =>
     call('story', payload) as Promise<{ situation: string; task: string; action: string; result: string; lessons: string } | null>,
 };
