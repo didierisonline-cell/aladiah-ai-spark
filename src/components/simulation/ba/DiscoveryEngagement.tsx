@@ -17,6 +17,7 @@ import {
   BA_PERSONA_PROFILES, BA_RUBRIC_DIMENSIONS, type InterviewExchange,
 } from '@/components/simulation/ba/BASimulationTypes';
 import { baSim, type AiFinding } from '@/components/simulation/ba/baSimClient';
+import { saveEngagement, readinessScore } from '@/components/simulation/ba/baSimPersist';
 
 type Phase = 'interview' | 'recommend' | 'result';
 interface Finding { text: string; source: string; reliability: string; keySignal?: boolean }
@@ -36,7 +37,7 @@ export default function DiscoveryEngagement({ onExit }: { onExit: () => void }) 
   const [draft, setDraft] = useState('');
   const [aiBusy, setAiBusy] = useState(false);
   // result generation
-  const [gen, setGen] = useState<{ busy: boolean; dims: Record<string, number>; total: number; feedback: string; report: any; story: any } | null>(null);
+  const [gen, setGen] = useState<{ busy: boolean; dims: Record<string, number>; total: number; readiness: number; feedback: string; report: any; story: any; saved: boolean } | null>(null);
 
   const ask = (persona: string, ex: InterviewExchange) =>
     setAsked(a => ({ ...a, [persona]: [...(a[persona] || []), ex.id] }));
@@ -89,7 +90,17 @@ export default function DiscoveryEngagement({ onExit }: { onExit: () => void }) 
     };
     const findings = captured;
     const recText = rec?.text || '';
-    setGen({ busy: true, dims: baseDims, total: avg(baseDims), feedback: rec?.rationale || '', report: null, story: null });
+    setGen({ busy: true, dims: baseDims, total: avg(baseDims), readiness: 0, feedback: rec?.rationale || '', report: null, story: null, saved: false });
+
+    // interview transcript (scripted + dynamic AI) for persistence
+    const messages: { role: string; speaker: string; content: string }[] = [];
+    Object.entries(asked).forEach(([p, ids]) => (ids || []).forEach(id => {
+      const ex = (BA_INTERVIEWS[p] || []).find(e => e.id === id);
+      if (ex) { messages.push({ role: 'user', speaker: p, content: ex.question }); messages.push({ role: 'persona', speaker: p, content: ex.answer }); }
+    }));
+    Object.entries(aiTurns).forEach(([p, turns]) => (turns || []).forEach(t => {
+      messages.push({ role: 'user', speaker: p, content: t.q }); messages.push({ role: 'persona', speaker: p, content: t.a });
+    }));
 
     (async () => {
       const [ev, rep, st] = await Promise.all([
@@ -97,14 +108,19 @@ export default function DiscoveryEngagement({ onExit }: { onExit: () => void }) 
         baSim.report({ company: BA_SCENARIO.company, title: BA_SCENARIO.title, findings, recommendation: recText }),
         baSim.story({ company: BA_SCENARIO.company, title: BA_SCENARIO.title, findings, recommendation: recText }),
       ]);
-      setGen({
-        busy: false,
-        dims: ev?.dimensions || baseDims,
-        total: ev?.total ?? avg(baseDims),
-        feedback: ev?.feedback || rec?.rationale || '',
-        report: rep || fallbackReport(findings, recText, keySignals),
-        story: st || fallbackStory(recText, findings),
+      const dims = ev?.dimensions || baseDims;
+      const total = ev?.total ?? avg(baseDims);
+      const report = rep || fallbackReport(findings, recText, keySignals);
+      const story = st || fallbackStory(recText, findings);
+      const readiness = readinessScore({
+        total,
+        reportComplete: !!(report?.problem && (report?.evidence?.length)),
+        storyComplete: !!(story?.situation && story?.result),
+        competencyProxy: clamp((coverage + signal) / 2),
       });
+      setGen({ busy: false, dims, total, readiness, feedback: ev?.feedback || rec?.rationale || '', report, story, saved: false });
+      const savedId = await saveEngagement({ total, grade: gradeFor(total), readiness, recommendation: recText, report, story, dims, messages, findings });
+      setGen(g => (g ? { ...g, saved: !!savedId } : g));
     })();
   }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -274,6 +290,13 @@ export default function DiscoveryEngagement({ onExit }: { onExit: () => void }) 
               <div className="text-xs uppercase tracking-[0.3em] text-secondary mb-1">Engagement complete</div>
               <div className="text-5xl font-display font-bold">{gradeFor(gen.total)}</div>
               <div className="text-sm text-muted-foreground">Score {gen.total}/100 {gen.total >= 80 ? '· Pass' : '· Below pass (80)'}{gen.busy ? ' · refining with AI…' : ''}</div>
+              <div className="mt-2 inline-flex items-center gap-2 text-xs rounded-full border border-border/40 px-3 py-1">
+                <span className="text-muted-foreground">Simulation Readiness (v1)</span>
+                <span className="font-bold text-secondary">{gen.readiness}/100</span>
+              </div>
+              {!gen.busy && (
+                <div className="text-[11px] text-muted-foreground mt-1">{gen.saved ? '✓ Engagement saved to your record' : 'Not saved (sign in + apply migration to persist)'}</div>
+              )}
             </div>
 
             {/* 7-dimension rubric */}

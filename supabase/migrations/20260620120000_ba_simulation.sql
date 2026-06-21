@@ -20,6 +20,10 @@ CREATE TABLE IF NOT EXISTS public.ba_simulations (
   status       text NOT NULL DEFAULT 'active',   -- active|completed|abandoned
   score        int,
   grade        text,
+  readiness_score int,                  -- Simulation Readiness Score (v1)
+  recommendation  text,                 -- the learner's chosen recommendation
+  report       jsonb,                   -- generated Executive Discovery Report
+  story        jsonb,                   -- generated STAR interview story
   started_at   timestamptz NOT NULL DEFAULT now(),
   completed_at timestamptz,
   created_at   timestamptz NOT NULL DEFAULT now()
@@ -29,9 +33,12 @@ ALTER TABLE public.ba_simulations ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users view own ba sims"   ON public.ba_simulations;
 DROP POLICY IF EXISTS "Users create own ba sims" ON public.ba_simulations;
 DROP POLICY IF EXISTS "Users update own ba sims" ON public.ba_simulations;
+DROP POLICY IF EXISTS "Admins read ba sims"      ON public.ba_simulations;
 CREATE POLICY "Users view own ba sims"   ON public.ba_simulations FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users create own ba sims" ON public.ba_simulations FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users update own ba sims" ON public.ba_simulations FOR UPDATE USING (auth.uid() = user_id);
+-- Founder Review Mode: admins read all engagements (counts/replay/compare).
+CREATE POLICY "Admins read ba sims"      ON public.ba_simulations FOR SELECT USING (public.aos_is_admin());
 
 -- 2) Interview / chat messages ---------------------------------------------
 CREATE TABLE IF NOT EXISTS public.ba_simulation_messages (
@@ -51,6 +58,8 @@ CREATE POLICY "Users view own ba sim messages" ON public.ba_simulation_messages 
   EXISTS (SELECT 1 FROM public.ba_simulations s WHERE s.id = simulation_id AND s.user_id = auth.uid()));
 CREATE POLICY "Users create own ba sim messages" ON public.ba_simulation_messages FOR INSERT WITH CHECK (
   EXISTS (SELECT 1 FROM public.ba_simulations s WHERE s.id = simulation_id AND s.user_id = auth.uid()));
+DROP POLICY IF EXISTS "Admins read ba sim messages" ON public.ba_simulation_messages;
+CREATE POLICY "Admins read ba sim messages" ON public.ba_simulation_messages FOR SELECT USING (public.aos_is_admin());
 
 -- 3) Evidence Board findings (source-linked for traceability) ---------------
 CREATE TABLE IF NOT EXISTS public.ba_simulation_findings (
@@ -72,6 +81,8 @@ CREATE POLICY "Users manage own ba sim findings" ON public.ba_simulation_finding
   EXISTS (SELECT 1 FROM public.ba_simulations s WHERE s.id = simulation_id AND s.user_id = auth.uid()))
   WITH CHECK (
   EXISTS (SELECT 1 FROM public.ba_simulations s WHERE s.id = simulation_id AND s.user_id = auth.uid()));
+DROP POLICY IF EXISTS "Admins read ba sim findings" ON public.ba_simulation_findings;
+CREATE POLICY "Admins read ba sim findings" ON public.ba_simulation_findings FOR SELECT USING (public.aos_is_admin());
 
 -- 4) Per-dimension scores (skills report) -----------------------------------
 CREATE TABLE IF NOT EXISTS public.ba_simulation_scores (
@@ -91,6 +102,8 @@ CREATE POLICY "Users view own ba sim scores" ON public.ba_simulation_scores FOR 
   EXISTS (SELECT 1 FROM public.ba_simulations s WHERE s.id = simulation_id AND s.user_id = auth.uid()));
 CREATE POLICY "Users create own ba sim scores" ON public.ba_simulation_scores FOR INSERT WITH CHECK (
   EXISTS (SELECT 1 FROM public.ba_simulations s WHERE s.id = simulation_id AND s.user_id = auth.uid()));
+DROP POLICY IF EXISTS "Admins read ba sim scores" ON public.ba_simulation_scores;
+CREATE POLICY "Admins read ba sim scores" ON public.ba_simulation_scores FOR SELECT USING (public.aos_is_admin());
 
 CREATE INDEX IF NOT EXISTS idx_ba_sim_user      ON public.ba_simulations (user_id);
 CREATE INDEX IF NOT EXISTS idx_ba_sim_msg_sim   ON public.ba_simulation_messages (simulation_id);
