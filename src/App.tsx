@@ -21,6 +21,7 @@ import Community from "./pages/Community";
 import Feedback from "./pages/Feedback";
 import Store from "./pages/Store";
 import ScrumSimulation from "./pages/ScrumSimulation";
+import BASimulation from "./pages/BASimulation";
 import Referral from "./pages/Referral";
 import MarketingKit from "./pages/MarketingKit";
 import ReferralProfile from "./pages/ReferralProfile";
@@ -123,6 +124,7 @@ const AppContent = () => {
         <Route path="/feedback" element={<Feedback />} />
         <Route path="/store" element={<Store />} />
         <Route path="/simulation" element={<ScrumSimulation />} />
+        <Route path="/simulation/ba-discovery" element={<BASimulation />} />
         <Route path="/referral" element={<Referral />} />
         <Route path="/referral/kit" element={<MarketingKit />} />
         <Route path="/refer/:code" element={<ReferralProfile />} />
