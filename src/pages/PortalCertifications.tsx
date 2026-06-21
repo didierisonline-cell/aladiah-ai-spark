@@ -1,4 +1,5 @@
 import PortalShell from '@/components/portal/PortalShell';
+import FlagshipCompletion from '@/components/portal/FlagshipCompletion';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -60,6 +61,9 @@ export default function PortalCertifications() {
               {t('pcert.sub')}
             </p>
           </div>
+
+          {/* Real Aladiah program completion + certificate */}
+          <FlagshipCompletion />
 
           {/* Main placeholder card */}
           <div style={{
