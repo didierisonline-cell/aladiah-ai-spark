@@ -27,6 +27,16 @@ systems get replaced, but capabilities are remarkably **stable**. That makes a *
 enterprise's most durable backbone for analysis, planning, and transformation — the discipline at the
 heart of business architecture (the Business Architecture Guild's **BIZBOK**).
 
+**Capability vs. org chart — the distinction executives miss.** The most common leadership mistake is
+to confuse the **organization** (who owns work — the Marketing, Sales, IT *departments*) with
+**business architecture** (what the business must be *able to do*). They're different axes. One
+capability almost always spans many departments: **Customer Onboarding** typically involves Sales,
+Operations, Finance, Legal, *and* Customer Success — **one capability, many owners.** That's precisely
+why capabilities, not departments, are the right unit for transformation: reshuffling the org chart
+doesn't change what the business can do, and improving a capability means coordinating across the silos
+that each own a piece of it. Mapping capabilities **against** the org chart exposes the seams where work
+falls between departments — a board-level conversation few BAs can facilitate.
+
 Capability maps are **leveled**: Level 1 is the handful of major capabilities ("Customer Management"),
 Level 2 decomposes each ("Acquire Customer," "Onboard Customer," "Service Customer"), Level 3 goes
 deeper where it matters. The skill is decomposing cleanly — each capability is a distinct *ability*,
@@ -46,11 +56,13 @@ decision. That re-framing is what business architects are paid for.
 Build a Level-1 + Level-2 capability map for an organization you know (8–15 capabilities). Check each
 is a stable "what," not a process or a department.
 
-### Artifact produced — **Capability Map** (showcaseable)
-A clean, leveled capability map of a real business domain — a recognizable, executive-grade business-
-architecture artifact that very few BAs can produce and that signals enterprise-level thinking.
+### Artifact produced — **Capability Map** + **Capability-vs-Organization Mapping Matrix** (showcaseable)
+A clean, leveled capability map of a real business domain — *plus* a **Capability-vs-Organization
+Mapping Matrix** (capabilities × departments) showing which departments touch each capability and where
+the cross-silo seams are. Recognizable, executive-grade business-architecture artifacts that very few
+BAs can produce and that signal enterprise-level thinking.
 
-> **Gate:** capability = capability modeling · artifact = Capability Map · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = capability modeling + capability-vs-org · artifact = Capability Map + Capability-vs-Org Matrix · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -83,16 +95,28 @@ business-architecture insight — strategy and operating model were contradictin
 the whole transformation from "build a portal" to "redesign the operating model." That's the altitude
 shift this module is about.
 
+**Strategic debt — the drag executives can't name.** Everyone knows *technical* debt; few BAs can
+diagnose **strategic debt** — the accumulated structural baggage that quietly prevents a sound strategy
+from becoming reality: **duplicate processes**, **overlapping products**, **conflicting KPIs** (two
+teams incentivized to undermine each other), **legacy operating models**, **shadow IT**, and **siloed
+data ownership**. Strategic debt is why a good strategy stalls while everyone insists they're
+"executing." The business architect surfaces it by asking, relentlessly, *"what is preventing this
+strategy from becoming reality?"* and records it as a **Strategic Debt Register** — an unglamorous
+artifact that often unlocks the transformation, because you can't reach a target state while dragging
+debt you've never named.
+
 ### Practical exercise
 For a real organization, map one value stream to the capabilities that enable it. Then sketch its
 operating model on a canvas (people · process · technology · structure · governance) and flag one place
 where the operating model contradicts the strategy.
 
-### Artifact produced — **Operating Model Canvas** (showcaseable)
-A value-stream-to-capability mapping plus an operating-model canvas with a strategy-alignment flag — an
-artifact that demonstrates you can analyze *how a business is structured to win*, not just its features.
+### Artifact produced — **Operating Model Canvas** + **Strategic Debt Register** (showcaseable)
+A value-stream-to-capability mapping plus an operating-model canvas with a strategy-alignment flag —
+*plus* a **Strategic Debt Register** (duplicate processes · overlapping products · conflicting KPIs ·
+legacy operating models · shadow IT · siloed data, each with its strategic impact). Demonstrates you can
+analyze *how a business is structured to win* — and name what's secretly stopping it.
 
-> **Gate:** capability = value streams + operating models · artifact = Operating Model Canvas · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = operating models + strategic debt · artifact = Operating Model Canvas + Strategic Debt Register · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -124,15 +148,27 @@ flashy customer-facing capability everyone wanted to AI-ify was already strong. 
 the AI budget to where it would move the strategy, and quietly killed several vanity projects. One
 diagram, a year of misallocation avoided.
 
+**From heatmap to investment decision.** A two-factor heatmap (importance × maturity) tells you *where*
+to look; *funding* a transformation needs a fuller score. Elite consultants rate each candidate
+capability investment on multiple factors — **Business Value × Strategic Importance × Readiness ×
+Risk** (and cost) — to rank *what to fund first.* A capability can be strategically critical and weak
+yet **not ready** (no data, no sponsor) — in which case you fund the readiness first. This multi-factor
+view becomes a **Transformation Investment Matrix**: a defensible, board-ready ranking of where the
+money goes and why — the difference between "we should improve these capabilities" and "fund these
+three, in this order, for this return at this risk."
+
 ### Practical exercise
 Take your capability map. Rate each capability on strategic importance (H/M/L) and maturity (H/M/L), and
-color it. Circle the high-importance/low-maturity capabilities — your investment priorities.
+color it. Circle the high-importance/low-maturity capabilities, then rank your top 3 on Value ×
+Importance × Readiness × Risk — your investment priorities.
 
-### Artifact produced — **Capability Heatmap** (showcaseable)
-A heatmapped capability map (importance × maturity) with investment priorities marked — a board-level
-artifact that shows you can turn enterprise complexity into a clear, defensible investment decision.
+### Artifact produced — **Capability Heatmap** + **Transformation Investment Matrix** (showcaseable)
+A heatmapped capability map (importance × maturity) *plus* a **Transformation Investment Matrix** scoring
+candidate investments on Business Value × Strategic Importance × Readiness × Risk, ranked into a
+fund-first order. Board-level artifacts that show you can turn enterprise complexity into a clear,
+defensible *funding* decision — not just a diagnosis.
 
-> **Gate:** capability = capability assessment + investment prioritization · artifact = Capability Heatmap · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = capability assessment + investment prioritization · artifact = Capability Heatmap + Transformation Investment Matrix · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -205,6 +241,13 @@ because every initiative traces to a strategic objective and a capability gap, w
 and numbers, the board funds a multi-year program rather than a pile of disconnected projects. The deck
 is the difference between an analyst with opinions and a consultant with a fundable case.
 
+**The Transformation Deck must follow the executive narrative** (introduced in Module 3, now operational
+at enterprise scale): **Current State → Strategic Risk → Capability Gap → Business Impact →
+Recommendation → Investment → Expected Outcome.** Most analysts can build slides; few can build
+*executive conviction* — and conviction comes from this exact spine, because it answers, in order, every
+question a funding executive has. A deck that opens with the solution instead of the strategic risk
+loses the room. This is where the salary jump lives: turning analysis into a case the board acts on.
+
 This lesson consolidates the module into **Portfolio Artifact #8 — the Transformation Recommendation
 Deck** — and feeds **Simulation 9.** Lesson → artifact → simulation → defense, at the top of the value
 ladder.
@@ -227,9 +270,9 @@ phased roadmap, investment, outcomes, and risks — **Portfolio Artifact #8**, d
 
 | L | Capability gained | Artifact (portfolio-worthy) | Recruiter? | Public? | Interview? |
 |---|---|---|---|---|---|
-| 1 | Capability modeling | Capability Map | ✅ | ✅ | ✅ |
-| 2 | Value streams + operating models | Operating Model Canvas | ✅ | ✅ | ✅ |
-| 3 | Capability assessment + investment prioritization | Capability Heatmap | ✅ | ✅ | ✅ |
+| 1 | Capability modeling + capability-vs-org | Capability Map + Capability-vs-Org Matrix | ✅ | ✅ | ✅ |
+| 2 | Operating models + strategic debt | Operating Model Canvas + Strategic Debt Register | ✅ | ✅ | ✅ |
+| 3 | Capability assessment + investment prioritization | Capability Heatmap + Transformation Investment Matrix | ✅ | ✅ | ✅ |
 | 4 | Target-state design + gap analysis | Target-State Architecture | ✅ | ✅ | ✅ |
 | 5 | Strategic alignment + transformation framing | **Transformation Recommendation Deck** (→ Sim 9, P8) | ✅ | ✅ | ✅ |
 
