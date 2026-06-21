@@ -37,15 +37,31 @@ generated a production incident when "quickly" meant 200ms to the business and 8
 engineering. One untestable adjective cost a release. Quality isn't pedantry; it's the difference
 between a requirement that can be built and verified and one that becomes a fight later.
 
+**Requirements Failure Autopsy.** Elite BAs study catastrophic failures the way doctors study autopsies —
+the most expensive requirements lessons are written in real disasters. The **Boeing 737 MAX (MCAS)** is
+the starkest: MCAS was allowed to trigger on a *single* angle-of-attack sensor (no redundancy
+requirement) on the flawed *assumption* that pilots would diagnose and correct a malfunction in seconds.
+Two crashes, 346 lives. No line of code was "buggy" in isolation — the failure lived in the
+**requirements and assumptions**: a missing redundancy requirement, an unvalidated human-factors
+assumption, and absent failure-mode analysis. The **TSB Bank 2018 migration** (inadequate migration and
+testing requirements locked ~1.9M customers out for weeks) and **Healthcare.gov** (integration and load
+assumptions never validated) teach the same discipline. Run every serious requirement through the
+autopsy questions: **What requirement was missing or wrong? What assumption silently failed? What
+validation should have caught it? How would we prevent recurrence?** You're not just writing
+requirements — you're engineering the *absence of catastrophic failure.*
+
 ### Practical exercise
 Take five real requirements. Score each against the quality markers (unambiguous, testable, atomic,
-necessary, feasible, no solutioning). Rewrite the two worst.
+necessary, feasible, no solutioning). Rewrite the two worst. Then pick one real failure (Boeing MCAS,
+TSB, Healthcare.gov, or one from your domain) and run the four autopsy questions on it.
 
-### Artifact produced — **Requirements Quality Checklist** (showcaseable)
-A reusable checklist (quality markers + an NFR prompt list) you run every requirement through — proof
-to an employer that you produce build-ready, testable requirements, not wish-lists.
+### Artifact produced — **Requirements Quality Checklist** + **Requirements Failure Analysis Report** (showcaseable)
+A reusable quality checklist (markers + NFR prompts) you run every requirement through — *plus* a
+one-page **Requirements Failure Analysis Report** on a real failure: the missing/wrong requirement, the
+failed assumption, the validation that should have existed, and the prevention mechanism. The autopsy
+report is a standout interview piece — very few candidates can analyze failure at this level.
 
-> **Gate:** capability = requirement quality + NFRs · artifact = Quality Checklist · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = requirement quality + NFRs + failure analysis · artifact = Quality Checklist + Failure Analysis Report · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -143,6 +159,13 @@ traces to no real need is scope creep; a need with no requirement is a gap), and
 work — it surfaces **unsupported/hallucinated requirements**, because an AI-fabricated item traces back
 to nothing (Module 1).
 
+**Trace the full chain, not just requirement→test.** A junior RTM has two columns (requirement, test);
+a transformation-grade RTM traces the whole line of sight: **Requirement → Risk → Control → Test →
+Business Outcome.** Each requirement links to the *risk* it mitigates, the *control* that addresses it,
+the *test* that verifies it, and the *business outcome* it serves. This is exactly the structure AI
+governance, compliance, auditability, and executive reporting demand — and it lets you answer the
+executive's question, "why are we building this, and how do we know it works?", in a single row.
+
 Then there's **change**. Requirements change; uncontrolled change is how projects die. Lifecycle
 management means a light but real process: assess each change's impact via the traceability links,
 get the right approval, and update the baseline — so you always know the current truth and why it
@@ -153,12 +176,14 @@ discovered only when an auditor asked for coverage. A traceability matrix would 
 orphaned needs immediately; instead it became a compliance finding.
 
 ### Practical exercise
-Build a small RTM (5–8 rows): requirement → source/need → design element → test case. Mark any row that
-can't trace both directions — each is a real risk.
+Build a small RTM (5–8 rows) across the full chain: requirement → risk → control → test → business
+outcome. Mark any row missing a link — each gap is a real risk.
 
 ### Artifact produced — **Requirements Traceability Matrix** (Lab, showcaseable)
-An RTM linking requirements to sources, design, and tests — produced in the **RTM lab**. A senior-grade
-artifact most BAs talk about but few can actually show; doubles as an AI-hallucination control.
+An RTM that traces each requirement across the full chain — **Requirement → Risk → Control → Test →
+Business Outcome** (not just requirement→test) — produced in the **RTM lab**. A senior-grade artifact
+most BAs talk about but few can show; it doubles as an AI-hallucination control and maps directly to
+compliance/audit and executive reporting.
 
 > **Gate:** capability = traceability + change control · artifact = RTM · recruiter ✅ · public ✅ · interview ✅.
 
