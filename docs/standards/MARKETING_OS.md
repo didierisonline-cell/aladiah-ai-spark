@@ -1,7 +1,68 @@
 # MARKETING_OS.md — Aladiah Marketing Operating System
 
 > **Canon document. Every human and AI agent doing marketing work is bound by this.**
-> Last updated: 2026-06-21
+> Last updated: 2026-06-21 (v2 — org structure, daily quotas, CEO report cadence, Employment Outcomes role)
+
+---
+
+## Organization Structure
+
+```
+CEO
+│
+CMO
+│
+├── Content Studio Director
+│   ├── LinkedIn Team
+│   ├── Blog Team
+│   ├── Email Team
+│   └── Script Team
+│
+├── Storytelling Director
+│   ├── Founder Story Team
+│   ├── Student Story Team
+│   ├── Africa Opportunity Team
+│   └── Documentary Team
+│
+├── Design Director
+│   ├── Social Graphics
+│   ├── Program Graphics
+│   ├── Website Graphics
+│   └── Certificate Graphics
+│
+├── Video Director
+│   ├── Shorts Team
+│   ├── Reels Team
+│   ├── YouTube Team
+│   └── Documentary Editing
+│
+├── Community Director
+│   ├── Instagram
+│   ├── LinkedIn
+│   ├── TikTok
+│   ├── Facebook
+│   ├── Discord
+│   └── WhatsApp
+│
+├── Growth Director
+│   ├── Analytics
+│   ├── Lead Tracking
+│   ├── Waitlist
+│   └── Conversion Tracking
+│
+├── Marketing QA Director
+│   ├── Brand QA
+│   ├── Content QA
+│   ├── Compliance QA
+│   └── Performance QA
+│
+└── Director of Employment Outcomes
+    ├── Resume Reviews
+    ├── Interview Preparation
+    ├── Employer Outreach
+    ├── Placement Partnerships
+    └── Success Stories
+```
 
 ---
 
@@ -380,6 +441,178 @@ Every person and every AI agent must be able to answer:
 | What KPI does it impact? | Metric name + current value |
 
 If any answer is missing, the work is not done.
+
+---
+
+---
+
+### Director of Employment Outcomes
+
+**Mission:** Turn graduates into employees. Every employment success becomes fuel for the entire marketing engine.
+
+**This role exists because the marketing promise is not "take a course." It is "transform your career → get hired."**
+
+**Owns:**
+- Resume reviews (every graduate, every format)
+- Interview preparation (mock interviews, feedback, iteration)
+- Employer outreach (DR, Africa, global remote)
+- Placement partnerships (active hiring agreements with employers)
+- Success stories (documented outcomes, measurable results)
+
+**Definition of Done — a graduate is "placed" when:**
+- [ ] Employment confirmed (offer letter or contract sighted)
+- [ ] Role title, company, and compensation documented
+- [ ] Story captured (video or written, with permission)
+- [ ] Story routed to Storytelling Director for production
+- [ ] KPI updated: graduate → employed
+
+**KPIs:**
+
+| KPI | Frequency |
+|---|---|
+| Graduates placed (month) | Monthly |
+| Average time to placement post-graduation | Monthly |
+| Employer partnerships active | Quarterly |
+| Success stories produced | Weekly |
+| Resume reviews completed | Weekly |
+
+**Why this matters for marketing:** Every employed graduate is a proof point that converts prospects faster than any ad campaign. One real story of career transformation — with a name, a company, and a salary — is worth 1,000 posts. This role feeds the Storytelling Director's most important raw material.
+
+---
+
+## Daily Quotas
+
+These are the minimum daily outputs for each team. They are not aspirational targets.
+They are operating standards. If a team cannot sustain these, the pipeline is under-resourced.
+
+### Content Studio
+
+| Output | Daily Target |
+|---|---|
+| LinkedIn posts | 10 |
+| X (Twitter) posts | 10 |
+| Email campaigns | 5 |
+| Short video scripts | 30 |
+
+### Design
+
+| Output | Daily Target |
+|---|---|
+| Carousels | 10 |
+| Quote graphics | 10 |
+| Salary/outcome graphics | 5 |
+| Program graphics | 5 |
+
+### Video
+
+| Output | Daily Target |
+|---|---|
+| Reels edited | 10 |
+| Shorts edited | 10 |
+| Founder clips storyboarded | 5 |
+
+### Storytelling (launch deliverables)
+
+| Deliverable | Status |
+|---|---|
+| Founder Story Package v1 | Required before MVP launch |
+| The Man Who Refused — Episode 1 | Required before MVP launch |
+| Student Transformation Template | Required before MVP launch |
+| Africa Opportunity Series v1 | Required before MVP launch |
+
+### Community
+
+| Deliverable | Status |
+|---|---|
+| Platform setup audit | Required before MVP launch |
+| Content scheduling system | Required before MVP launch |
+| Response playbook | Required before MVP launch |
+| Community guidelines | Required before MVP launch |
+
+### Growth
+
+| Dashboard | Status |
+|---|---|
+| Waitlist dashboard | Required before MVP launch |
+| Lead dashboard | Required before MVP launch |
+| Enrollment dashboard | Required before MVP launch |
+| Attribution dashboard | Required before MVP launch |
+
+---
+
+## Founder Review Gate
+
+Nothing reaches the founder's desk until it has passed every prior stage.
+
+```
+Definition of Ready
+        ↓
+   Creation
+        ↓
+     QA Review
+        ↓
+  CMO Approval
+        ↓
+Founder Review Queue
+```
+
+**The founder reviews green assets only.**
+The founder does not fix drafts. The founder does not write feedback on unfinished work.
+If something arrives at the Founder Review stage that is not ready, it is returned to QA — not reviewed.
+
+---
+
+## CEO Status Report Format
+
+Reports are submitted at: **5 AM · 9 AM · 12 PM · 3 PM · 6 PM · 9 PM**
+
+No paragraphs. No stories. Only numbers and blockers.
+
+```
+MARKETING STATUS — [DATE] [TIME]
+
+Content Produced:
+- LinkedIn: X/10
+- X Posts: X/10
+- Emails: X/5
+- Scripts: X/30
+
+Design Produced:
+- Carousels: X/10
+- Quote Graphics: X/10
+- Outcome Graphics: X/5
+- Program Graphics: X/5
+
+Video Produced:
+- Reels: X/10
+- Shorts: X/10
+- Founder Clips: X/5
+
+QA Approved:
+- X assets
+
+Awaiting Founder Review:
+- X assets
+
+Scheduled:
+- X assets
+
+Employment Outcomes:
+- Resumes reviewed: X
+- Stories captured: X
+- Placements this month: X
+
+Growth:
+- Waitlist: #
+- Followers: #
+- Leads: #
+- Applications: #
+
+Blockers:
+- BLK-### [one line description]
+```
+
+A report that contains a sentence instead of a number is returned. Resubmit.
 
 ---
 
