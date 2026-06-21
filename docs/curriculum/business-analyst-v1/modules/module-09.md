@@ -39,16 +39,27 @@ from 22% to 35%"), they killed most of the roadmap, focused on the three bets th
 activation, and hit the number with *less* shipped. Same team, opposite result, because they switched
 from counting outputs to moving an outcome.
 
+**Customer value vs. business value — the alignment that must hold.** Outcomes have two sides, and great
+products serve both. Plot any initiative on two axes — *customer value* and *business value* — and four
+quadrants appear: **High customer / High business → invest** (durable winners); **High customer / Low
+business → redesign** the model so you capture the value you create (beloved but unprofitable); **Low
+customer / High business → temporary** (extracts value now but erodes trust — a clock is ticking); **Low
+customer / Low business → kill.** The classic failures live off-diagonal: "customers love it, we lose
+money" and "we profit, customers hate us." Product thinking insists *both* be true before calling
+something a win — and names the quadrant honestly.
+
 ### Practical exercise
 Take a product or initiative. Write its vision in one line, the 2–3 outcomes that would prove progress
 (with metrics), and map three current pieces of work to the outcome each is supposed to move. Flag any
 work that maps to none.
 
-### Artifact produced — **Outcome Map** (showcaseable)
-A vision → outcomes (with metrics) → work map, with orphaned outputs flagged — proof you can connect
-strategy to delivery through value, the core of product thinking.
+### Artifact produced — **Outcome Map** + **Value Alignment Matrix** (showcaseable)
+A vision → outcomes (with metrics) → work map with orphaned outputs flagged, *plus* a **Value Alignment
+Matrix** placing initiatives in the customer-value × business-value quadrants (invest / redesign /
+temporary / kill) — proof you connect strategy to delivery through value and won't ship a beloved
+money-loser or a profitable trust-eroder.
 
-> **Gate:** capability = outcome-driven product thinking · artifact = Outcome Map · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = outcome thinking + value alignment · artifact = Outcome Map + Value Alignment Matrix · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -80,16 +91,26 @@ churned. Reframed around a North-Star of *"repeat purchases from satisfied buyer
 guardrail), behavior shifted toward durable value, and revenue followed *because* the metric finally
 pointed at the real thing. The metric you choose is a strategy decision in disguise.
 
+**AI product strategy — feature, product, or company?** AI shows up in a business model at three very
+different altitudes, and conflating them produces bad strategy. An **AI feature** adds intelligence to an
+existing product (Microsoft Copilot inside Office) — the strategic question is *adoption and
+differentiation.* An **AI product** is a standalone whose core value *is* the AI (Perplexity) — the
+question is *defensibility and moat.* An **AI company** is built end-to-end around AI, models included
+(OpenAI) — the question is *capability, capital, and platform.* Each has different risks, economics, and
+build-vs-buy implications. A product-minded BA places an AI initiative at the right altitude on an **AI
+Product Strategy Canvas** before anyone debates features — the strategic bridge into Module 13.
+
 ### Practical exercise
 Sketch the Business Model Canvas for a product. Propose a North-Star Metric (leading indicator of
 customer value) and two guardrail metrics that prevent gaming it.
 
-### Artifact produced — **North-Star Definition** (showcaseable)
-A North-Star Metric with its rationale (why it predicts value + success) and guardrails, set in the
-business-model context — an artifact that signals you think about products strategically, not feature by
-feature.
+### Artifact produced — **North-Star Definition** + **AI Product Strategy Canvas** (showcaseable)
+A North-Star Metric with rationale and guardrails in business-model context, *plus* an **AI Product
+Strategy Canvas** placing an AI initiative at the right altitude (AI feature / AI product / AI company)
+with its strategic implications — artifacts that signal you think about products *and* AI strategically,
+not feature by feature.
 
-> **Gate:** capability = business-model + north-star thinking · artifact = North-Star Definition · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = business-model/north-star + AI product strategy · artifact = North-Star Definition + AI Product Strategy Canvas · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -121,15 +142,25 @@ the North-Star, and explicitly parking the rest. Focus, not more activity, resta
 to 37 good ideas to fund 3 great ones is the essence of product strategy — and exactly what executives
 need a product-minded analyst to help them do.
 
+**Opportunity cost — the question elites ask.** Amateurs ask *"should we build this?"*; elite product
+leaders ask *"what are we NOT building if we fund this?"* Every yes is a no to something else, and the
+hidden cost of any initiative is the best alternative you forgo. Making that explicit — an **Opportunity
+Cost Assessment** listing each initiative's expected value, cost, risk, and the *alternative forgone* —
+turns prioritization from a popularity contest into an economic decision executives respect. The
+strongest argument against a beloved-but-mediocre project is rarely "it's bad"; it's "funding it means
+*not* funding this better thing."
+
 ### Practical exercise
 List 8–10 candidate opportunities for a product. Score each against the North-Star and strategic fit,
 then choose the 3 you'd fund and write one sentence on why you'd *park* the rest.
 
-### Artifact produced — **Opportunity Shortlist** (showcaseable)
-A shortlist of chosen opportunities with the rationale for inclusion *and* exclusion, tied to the
-North-Star and strategy — proof you can make and defend the hardest product call: what not to do.
+### Artifact produced — **Opportunity Shortlist** + **Opportunity Cost Assessment** (showcaseable)
+A shortlist of chosen opportunities with rationale for inclusion *and* exclusion, *plus* an **Opportunity
+Cost Assessment** (Initiative · Expected Value · Cost · Risk · Alternative Forgone · Recommendation) —
+proof you make the hardest product call, what *not* to do, as an economic decision rather than a
+popularity contest.
 
-> **Gate:** capability = product strategy / choosing opportunities · artifact = Opportunity Shortlist · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = choosing opportunities + opportunity cost · artifact = Opportunity Shortlist + Opportunity Cost Assessment · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -160,15 +191,24 @@ served a shrinking segment with three entrenched incumbents, the other an unders
 Same internal score, opposite bet quality — and only the market-attractiveness lens revealed it. The
 team funded the growing-market opportunity and avoided an efficient march into a dead end.
 
+**Portfolio thinking — zoom out from the product.** Transformation consultants don't think
+feature→product; they think **feature → product → portfolio → enterprise strategy.** At the portfolio
+level you balance bets across horizons: **core** products (defend the cash engine), **growth** products
+(scale the next engine), **experimental** bets (small, optional, high-learning), and **sunset
+candidates** (declining — harvest or retire). A healthy portfolio is balanced — all-core stagnates,
+all-experimental starves. A **Product Portfolio Map** shows leadership where the bets sit and where the
+balance is wrong — a board-level conversation in any large enterprise.
+
 ### Practical exercise
 Take your Opportunity Shortlist. Score each on value vs. effort (or RICE) *and* add a market-
 attractiveness read (size/growth/competition/timing). Note where the market view changes the ranking.
 
-### Artifact produced — **Prioritization Matrix** (showcaseable)
-A prioritization matrix (value/effort or RICE) augmented with market attractiveness, producing a ranked,
-defensible set of bets — an artifact that shows you prioritize with evidence and an outside-in view.
+### Artifact produced — **Prioritization Matrix** + **Product Portfolio Map** (showcaseable)
+A prioritization matrix (value/effort or RICE) augmented with market attractiveness, *plus* a **Product
+Portfolio Map** balancing bets across core / growth / experimental / sunset — artifacts that show you
+prioritize with evidence *and* manage a balanced portfolio, not just a feature list.
 
-> **Gate:** capability = prioritization + market attractiveness · artifact = Prioritization Matrix · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = prioritization + market + portfolio · artifact = Prioritization Matrix + Product Portfolio Map · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -194,6 +234,14 @@ This is also where product thinking meets the boardroom: you'll defend this asse
 method as your shield against politics. A recommendation grounded in outcome, market, and evidence
 survives the war room; an opinion does not.
 
+**Kill, sunset, merge — the decisions few are brave enough to recommend.** Most courses teach launch,
+build, grow; executives spend just as much energy on the opposite — **do-not-build, pause, merge,
+retire, sunset.** Killing a product or feature frees capital and focus, and recommending it credibly is a
+senior skill. A **Product Rationalization Report** assesses an existing portfolio and recommends what to
+keep, merge, harvest, or retire (with rationale and freed-up value) — exactly the analysis large
+organizations need and rarely have the discipline to do. The BA who can say "stop" with evidence is
+worth more than ten who only say "build."
+
 This lesson produces **Portfolio Artifact #4 — the Product Opportunity Assessment** — and feeds
 **Simulation 6.** Lesson → artifact → simulation → defense.
 
@@ -201,12 +249,14 @@ This lesson produces **Portfolio Artifact #4 — the Product Opportunity Assessm
 For one opportunity, draft a one-page Product Opportunity Assessment: outcome/North-Star, strategic fit,
 market read, prioritization, top assumptions/risks, and your recommendation.
 
-### Artifact produced — **Product Opportunity Assessment (P4)** (showcaseable)
+### Artifact produced — **Product Opportunity Assessment (P4)** + **Product Rationalization Report** (showcaseable)
 The module's capstone artifact: a decision-grade opportunity assessment (outcome · strategy · market ·
 prioritization · assumptions/risks · recommendation) — **Portfolio Artifact #4**, defended in
-**Simulation 6.** Exactly what a Product Analyst / Product Owner is hired to produce.
+**Simulation 6** — *plus* a **Product Rationalization Report** recommending what to keep / merge / harvest
+/ retire across an existing portfolio. Exactly what a Product Analyst / Product Owner / product strategist
+is hired to produce — including the courage to recommend "stop."
 
-> **Gate:** capability = opportunity assessment + recommendation · artifact = Product Opportunity Assessment (→ Sim 6, P4) · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = opportunity assessment + rationalization · artifact = Product Opportunity Assessment + Product Rationalization Report (→ Sim 6, P4) · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -215,11 +265,11 @@ prioritization · assumptions/risks · recommendation) — **Portfolio Artifact 
 
 | L | Capability gained | Artifact (portfolio-worthy) | Recruiter? | Public? | Interview? |
 |---|---|---|---|---|---|
-| 1 | Outcome-driven product thinking | Outcome Map | ✅ | ✅ | ✅ |
-| 2 | Business-model + north-star thinking | North-Star Definition | ✅ | ✅ | ✅ |
-| 3 | Product strategy / choosing opportunities | Opportunity Shortlist | ✅ | ✅ | ✅ |
-| 4 | Prioritization + market attractiveness | Prioritization Matrix | ✅ | ✅ | ✅ |
-| 5 | Opportunity assessment + recommendation | **Product Opportunity Assessment** (→ Sim 6, P4) | ✅ | ✅ | ✅ |
+| 1 | Outcome thinking + value alignment | Outcome Map + Value Alignment Matrix | ✅ | ✅ | ✅ |
+| 2 | Business-model/north-star + AI product strategy | North-Star Definition + AI Product Strategy Canvas | ✅ | ✅ | ✅ |
+| 3 | Choosing opportunities + opportunity cost | Opportunity Shortlist + Opportunity Cost Assessment | ✅ | ✅ | ✅ |
+| 4 | Prioritization + market + portfolio | Prioritization Matrix + Product Portfolio Map | ✅ | ✅ | ✅ |
+| 5 | Opportunity assessment + rationalization | **Product Opportunity Assessment** + Product Rationalization Report (→ Sim 6, P4) | ✅ | ✅ | ✅ |
 
 All five clear the Employment Value Gate.
 
