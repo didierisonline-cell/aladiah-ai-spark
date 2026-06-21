@@ -12,6 +12,10 @@
 > **The permanent question.** Every artifact in this module must answer one question that separates AI
 > *users* from AI *transformation leaders*: **"What happens if the AI is wrong?"** It appears in each
 > deliverable below. A BA who can't answer it should not be specifying AI systems.
+>
+> **By the end, the student can answer five questions:** (1) Should we use AI here? (2) What could go
+> wrong? (3) What governance is required? (4) How do we monitor it? (5) How do we transform the business
+> responsibly?
 
 ---
 
@@ -47,17 +51,26 @@ who writes only layer 1 is specifying the next headline.
 **What happens if the AI is wrong?** — answered structurally by layers 2 (fallback), 4 (human oversight),
 and 6 (monitoring catches it). Every AI Requirements Package must make this answer explicit.
 
+**Classify the risk before you specify the controls.** Not every AI system deserves the same rigor —
+**governance proportional to risk** is the principle. Classify each AI use by the stakes of being wrong: a
+**meeting summary** is *low* risk, **resume screening** *medium*, **loan approval** *high*, **medical
+diagnosis** *critical.* An **AI Risk Register** records each AI system, its risk level, and the *governance
+tier* it therefore requires — light-touch for low-risk, the full ladder + monitoring + human oversight for
+high/critical (an approach now mirrored in regulation like the EU AI Act's risk tiers). The question it
+answers: **what level of governance does this AI deserve?** Over-governing a summarizer wastes effort;
+under-governing a loan model is a lawsuit. The BA right-sizes the controls.
+
 ### Practical exercise
 For a real AI feature, write one requirement at each of the six ladder layers — and a one-line answer to
 "what happens if the AI is wrong?"
 
-### Artifact produced — **AI Requirements Package (P3)** (showcaseable)
-A full-ladder AI requirements set (functional → AI → validation → oversight → governance → monitoring) for
-one capability, with an explicit **"what happens if the AI is wrong?"** answer — **Portfolio Artifact #3**,
-carried into **Simulation 4 (AI Requirements Validation).** The clearest proof you can specify AI
-responsibly, which almost no traditional BA can.
+### Artifact produced — **AI Requirements Package (P3)** + **AI Risk Register** (showcaseable)
+A full-ladder AI requirements set (functional → AI → validation → oversight → governance → monitoring) with
+an explicit **"what happens if the AI is wrong?"** answer — **Portfolio Artifact #3**, carried into
+**Simulation 4** — *plus* an **AI Risk Register** classifying AI systems low/medium/high/critical and the
+governance tier each deserves. Proof you specify AI responsibly *and* right-size the controls to the risk.
 
-> **Gate:** capability = full-ladder AI requirements · artifact = AI Requirements Package (P3) · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = full-ladder AI requirements + risk classification · artifact = AI Requirements Package (P3) + AI Risk Register · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -93,16 +106,24 @@ matrix would have caught it.
 **What happens if the AI is wrong?** — at each authority level, name the consequence and the recovery; it's
 the test of whether the level is appropriate.
 
+**The human override principle.** Designing the authority level isn't enough; you must define **when and
+how a human can override the model** — a control many companies deploy AI without ever specifying. A
+**Human Override Matrix** captures, per decision: the AI recommendation, who holds **override authority**,
+how an override is triggered and logged, and the **escalation path** when human and model disagree. Without
+it, "human-in-the-loop" is a slogan — humans rubber-stamp the AI because no one defined their power to say
+no. The override matrix makes human authority real and auditable.
+
 ### Practical exercise
 List 5 decisions in a real process. Place each on the authority spectrum (human-only → AI-autonomous) using
 stakes, reversibility, and cost-of-error — and state what happens if the AI is wrong at that level.
 
-### Artifact produced — **Decision Authority Matrix** (showcaseable)
-A matrix of decisions × authority level (human-only / AI-assisted / human-approved / AI-autonomous) with
-the stakes/reversibility/cost-of-error rationale and the "what if it's wrong?" consequence — proof you can
-design human+AI systems, not just features.
+### Artifact produced — **Decision Authority Matrix** + **Human Override Matrix** (showcaseable)
+A matrix of decisions × authority level (human-only / AI-assisted / human-approved / AI-autonomous) with the
+stakes/reversibility/cost-of-error rationale, *plus* a **Human Override Matrix** (per decision: AI
+recommendation · override authority · trigger · escalation path). Proof you design human+AI systems where
+human authority is real and auditable, not a rubber stamp.
 
-> **Gate:** capability = human+AI decision design · artifact = Decision Authority Matrix · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = human+AI decision design + override · artifact = Decision Authority Matrix + Human Override Matrix · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -175,16 +196,26 @@ failing silently for months (the difference between a managed risk and a Zillow)
 **What happens if the AI is wrong?** — the governance dashboard is precisely the mechanism that answers it
 in production: monitor → detect → escalate → correct.
 
+**AI incident response — borrow it from security.** Cybersecurity has mature incident response; AI systems
+need the same, because *when* (not if) an AI misbehaves — bias surfaces, hallucinations slip through, drift
+is detected, behavior shifts — the organization must respond fast and consistently. An **AI Incident
+Response Playbook** defines the steps: **Detect** (monitoring flags it) → **Contain** (fall back to
+human/safe mode) → **Investigate** (root cause — Lesson 3's autopsy) → **Correct** (retrain, re-validate, or
+retire) → **Monitor** (confirm the fix, watch for recurrence) — with named owners and escalation at each
+step. The difference between a managed incident and a Zillow-scale crisis is whether this playbook existed
+*before* the incident.
+
 ### Practical exercise
 For a deployed (or proposed) AI system, spec a governance dashboard: 5 governance KPIs (drift, bias,
 explainability coverage, override rate, incidents), each with a threshold and an escalation action.
 
-### Artifact produced — **AI Governance Dashboard** (showcaseable)
+### Artifact produced — **AI Governance Dashboard** + **AI Incident Response Playbook** (showcaseable)
 A governance dashboard spec (drift · bias · explainability · override rate · incidents, with thresholds +
-escalation) — proof you can keep AI trustworthy *after* launch, the gap most organizations don't even know
-they have.
+escalation), *plus* an **AI Incident Response Playbook** (Detect → Contain → Investigate → Correct → Monitor,
+with owners). Proof you can keep AI trustworthy *after* launch *and* respond to failures fast — the gap most
+organizations don't know they have until it's a crisis.
 
-> **Gate:** capability = AI governance + monitoring · artifact = AI Governance Dashboard · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = AI governance + incident response · artifact = AI Governance Dashboard + AI Incident Response Playbook · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -215,17 +246,33 @@ in the entire portfolio, and the bridge to **Module 15's capstone** and the Tran
 model, the human-authority boundaries, and the kill-switch criteria (M12) that protect the business as it
 scales AI. An AI transformation plan without that answer is a liability dressed as a strategy.
 
+**Five AI projects, not a hundred.** Organizations in AI hype want to do *everything*; transformation
+advisors help them do the *right few.* An **AI Opportunity Portfolio** scores candidate AI initiatives on
+**impact × complexity × risk × time-to-value × strategic alignment** — connecting directly to Module 8
+(which capabilities matter), Module 9 (product strategy), Module 10 (validated opportunities), and Module
+12 (investment governance). It turns "let's add AI everywhere" into a prioritized, governed portfolio of a
+few high-value, right-risk bets — the difference between an AI strategy and an AI shopping list.
+
+**Ten minutes with the CEO.** The capstone skill is presenting the AI transformation case to the top of the
+house. Given ten minutes, the advisor walks a board through **Current State → AI Opportunity → Risk →
+Governance → Investment → Expected Outcome → Recommendation** — the Executive Narrative (Module 3) at
+AI-transformation scale. The **Executive AI Transformation Board Deck** is that presentation, and it becomes
+one of the strongest portfolio pieces in the program: proof a graduate can advise a CEO on adopting AI
+responsibly — the defining act of an AI Transformation Consultant.
+
 ### Practical exercise
 Draft a one-page AI Transformation Blueprint for a real business: current/future state, top 3 risks,
 governance model, investment + timeline, expected outcomes — and the enterprise answer to "what happens if
 the AI is wrong?"
 
-### Artifact produced — **AI Transformation Blueprint** (showcaseable)
-The module's capstone artifact: a board-ready AI transformation plan (current → future state · risks ·
-governance · investment · timeline · outcomes) with the enterprise-level answer to the permanent question.
-The deliverable that turns an AI *user* into an AI *transformation leader.*
+### Artifact produced — **AI Transformation Blueprint** + **AI Opportunity Portfolio** + **Executive AI Board Deck** (showcaseable)
+The module's capstone artifacts: a board-ready **AI Transformation Blueprint** (current → future state ·
+risks · governance · investment · timeline · outcomes), an **AI Opportunity Portfolio** scoring candidate AI
+initiatives (impact × complexity × risk × time-to-value × strategic alignment), and a 10-minute **Executive
+AI Transformation Board Deck** (Current State → AI Opportunity → Risk → Governance → Investment → Outcome →
+Recommendation). The deliverables that turn an AI *user* into an AI *transformation leader* a CEO listens to.
 
-> **Gate:** capability = AI transformation advisory · artifact = AI Transformation Blueprint · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = AI transformation advisory + prioritization + board pres · artifact = AI Transformation Blueprint + AI Opportunity Portfolio + Executive AI Board Deck · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -234,11 +281,11 @@ The deliverable that turns an AI *user* into an AI *transformation leader.*
 
 | L | Capability gained | Artifact (portfolio-worthy) | Recruiter? | Public? | Interview? |
 |---|---|---|---|---|---|
-| 1 | Full-ladder AI requirements | **AI Requirements Package (P3)** | ✅ | ✅ | ✅ |
-| 2 | Human+AI decision design | Decision Authority Matrix | ✅ | ✅ | ✅ |
+| 1 | Full-ladder AI requirements + risk classification | **AI Requirements Package (P3)** + AI Risk Register | ✅ | ✅ | ✅ |
+| 2 | Human+AI decision design + override | Decision Authority Matrix + Human Override Matrix | ✅ | ✅ | ✅ |
 | 3 | AI failure analysis + prevention | AI Failure Autopsy | ✅ | ✅ | ✅ |
-| 4 | AI governance + monitoring | AI Governance Dashboard | ✅ | ✅ | ✅ |
-| 5 | AI transformation advisory | **AI Transformation Blueprint** | ✅ | ✅ | ✅ |
+| 4 | AI governance + incident response | AI Governance Dashboard + AI Incident Response Playbook | ✅ | ✅ | ✅ |
+| 5 | AI transformation advisory + prioritization + board pres | **AI Transformation Blueprint** + AI Opportunity Portfolio + Executive AI Board Deck | ✅ | ✅ | ✅ |
 
 All five clear the Employment Value Gate. **Every artifact answers "What happens if the AI is wrong?"**
 
