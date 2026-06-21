@@ -120,15 +120,32 @@ seller portal, they ran a **concierge** test — staff listed items manually for
 sellers wouldn't supply the data at all. Weeks of testing saved a year of building the wrong platform.
 The cheapest experiment that can kill a bad idea is the most valuable work in product.
 
+**Discovery economics — cost of the experiment vs. cost of being wrong.** Executives don't fund
+experiments because they're trendy; they fund them because they're *cheap insurance.* The math is simple
+and powerful: a **$500 experiment that prevents a $500,000 mistake** is a 1000× return. Framing
+discovery this way — an **Experiment ROI Assessment** comparing the cost and time of the test against the
+cost of building the wrong thing — turns "can we skip discovery?" into an obviously bad bet, in the
+language executives already use. The riskier and costlier the build, the higher the ROI of testing first.
+
+**The test ladder — match the test to the risk.** Not every assumption deserves a six-month build to
+validate; most deserve a far lighter touch. Tests climb a ladder of cost and fidelity — **interview →
+prototype → Wizard-of-Oz → concierge → MVP → pilot → scale** — and you ascend only as confidence
+demands, spending more *only* once cheaper tests have de-risked the bet. A **Validation Roadmap**
+sequences which tests you'll run, in what order, with what decision gates — so you spend the least money
+to reach the most confidence. A concierge test that costs a week routinely beats a six-month build that
+costs a career.
+
 ### Practical exercise
 For your riskiest assumption, design the *lightest* experiment that could validate or kill it: the test,
 the metric, the success/kill threshold, and the cost/time. Name what you'd do for each outcome.
 
-### Artifact produced — **Experiment Plan** (showcaseable)
-An experiment plan: hypothesis, the lightest credible test, success/kill criteria, and the decision
-each outcome triggers — proof you can validate ideas cheaply before committing build budget.
+### Artifact produced — **Experiment Plan** + **Experiment ROI Assessment** + **Validation Roadmap** (showcaseable)
+An experiment plan (hypothesis · lightest credible test · success/kill criteria · decision), *plus* an
+**Experiment ROI Assessment** (test cost vs. cost-of-being-wrong) and a **Validation Roadmap** sequencing
+the test ladder (interview → prototype → Wizard-of-Oz → concierge → MVP → pilot → scale) with decision
+gates — proof you validate cheaply *and* reason about discovery in executive economics.
 
-> **Gate:** capability = experiment design + MVP · artifact = Experiment Plan · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = experiment design + discovery economics · artifact = Experiment Plan + ROI Assessment + Validation Roadmap · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -159,15 +176,35 @@ near zero. The interviews were attitudinal and cherry-picked (confirmation bias)
 they ignored — low engagement with the existing related feature — had told the truth all along. Evidence
 discipline isn't bureaucracy; it's the difference between learning and fooling yourself.
 
+**The evidence hierarchy — not all evidence is equal.** Rank evidence by how much it deserves your
+trust: **opinion → interview → observation → behavior → transaction data.** A customer's *opinion* ("I'd
+totally use that") is the weakest; their *behavior* and *actual transactions* are the strongest, because
+**what people do beats what they say** every time (*customer says X, customer does Y*). An **Evidence
+Strength Matrix** scores each piece of evidence by type and strength, so a conclusion built on
+transaction data outweighs one built on a few enthusiastic interviews — and every finding carries a
+known confidence.
+
+**Discovery anti-patterns — the traps that produce confident, wrong answers.** Most discovery failures
+are behavioral, not technical. The recurring traps: **confirmation bias** (seeking only support for a
+decision already made), **solution-first thinking** (validating a feature instead of understanding a
+problem), **executive anchoring** (the HIPPO's idea framing the whole inquiry), **leading questions**,
+**false consensus**, **interviewing only power users** (unrepresentative), and **mistaking opinions for
+evidence.** Running a **Discovery Failure Audit** — checking your own process against these anti-patterns
+*before* you trust a conclusion — is what elite consultants do: they spend as much energy avoiding bad
+conclusions as finding good ones.
+
 ### Practical exercise
 For a discovery question, list the evidence you have by type (behavioral vs. attitudinal) and source.
 Write the one result that would change your mind — and check whether you're seeking it or avoiding it.
 
-### Artifact produced — **Discovery Findings** (showcaseable)
-A findings summary: evidence triangulated by type/source, signal vs. noise marked, confidence levels,
-and what would change the conclusion — rigorous, defensible discovery a hiring manager trusts.
+### Artifact produced — **Discovery Findings** + **Evidence Strength Matrix** + **Discovery Failure Audit** (showcaseable)
+A findings summary (triangulated by type/source · signal vs. noise · confidence · what would change the
+conclusion), *plus* an **Evidence Strength Matrix** (opinion → interview → observation → behavior →
+transaction data) and a **Discovery Failure Audit** checking your process against the discovery
+anti-patterns — rigorous, defensible discovery a hiring manager trusts, and proof you avoid bad
+conclusions, not just chase good ones.
 
-> **Gate:** capability = discovery research + evidence rigor · artifact = Discovery Findings · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = evidence rigor + anti-pattern awareness · artifact = Discovery Findings + Evidence Strength Matrix + Discovery Failure Audit · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -187,6 +224,14 @@ problem, and the value in plain language, then answering the hard questions. Wri
 and **kills weak ideas on paper**, cheaply, instead of after months of building. If you can't write a
 compelling, honest PR/FAQ grounded in your evidence, you haven't discovered enough.
 
+**From findings to decision — the Executive Discovery Memo.** Most discovery work stops at "research
+findings"; executives need a **decision.** The senior move converts evidence into a crisp decision memo:
+**Evidence → Insight → Recommendation → Investment Request → Expected Outcome.** The Executive Discovery
+Memo is the one-page version a sponsor can act on in a meeting — it doesn't report what you learned, it
+tells them what to *do*, what it costs, and what they'll get. This is the bridge from discovery back into
+the transformation-consultant track: **discovery as a decision-making discipline, not a research
+activity.**
+
 This synthesizes into the **Executive Discovery Report** — the artifact that answers, with evidence,
 *"what's the real problem, what should we do about it, and how confident are we?"*: the problem framed
 from discovery, the validated opportunities, the evidence (and its confidence), the recommended solution
@@ -204,13 +249,14 @@ is backed by behavioral evidence and a Working-Backwards narrative the sponsor c
 Write a one-page PR/FAQ for a validated solution (press release + 3 hard FAQs). Then outline the
 Executive Discovery Report: problem, opportunities, evidence/confidence, recommendation, risks.
 
-### Artifact produced — **Executive Discovery Report (P1)** (showcaseable)
+### Artifact produced — **Executive Discovery Report (P1)** + **Executive Discovery Memo** (showcaseable)
 The strategic trio's capstone artifact: an evidence-backed discovery report (problem · opportunities ·
 evidence/confidence · recommendation · risks) with a Working-Backwards narrative — **Portfolio Artifact
-#1**, defended in **Simulation 1.** The single clearest proof that you can turn ambiguity into a
-fundable, validated recommendation.
+#1**, defended in **Simulation 1** — *plus* a one-page **Executive Discovery Memo** (Evidence → Insight →
+Recommendation → Investment Request → Expected Outcome) a sponsor can act on in a meeting. The clearest
+proof you can turn ambiguity into a fundable, validated *decision*.
 
-> **Gate:** capability = Working Backwards + discovery synthesis · artifact = Executive Discovery Report (→ Sim 1, P1) · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = Working Backwards + decision synthesis · artifact = Executive Discovery Report + Executive Discovery Memo (→ Sim 1, P1) · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -221,9 +267,9 @@ fundable, validated recommendation.
 |---|---|---|---|---|---|
 | 1 | Continuous discovery + OST | Opportunity Solution Tree | ✅ | ✅ | ✅ |
 | 2 | Assumption mapping + hypotheses | Assumption Map | ✅ | ✅ | ✅ |
-| 3 | Experiment design + MVP | Experiment Plan | ✅ | ✅ | ✅ |
-| 4 | Discovery research + evidence rigor | Discovery Findings | ✅ | ✅ | ✅ |
-| 5 | Working Backwards + discovery synthesis | **Executive Discovery Report** (→ Sim 1, P1) | ✅ | ✅ | ✅ |
+| 3 | Experiment design + discovery economics | Experiment Plan + ROI Assessment + Validation Roadmap | ✅ | ✅ | ✅ |
+| 4 | Evidence rigor + anti-pattern awareness | Discovery Findings + Evidence Strength Matrix + Discovery Failure Audit | ✅ | ✅ | ✅ |
+| 5 | Working Backwards + decision memo | **Executive Discovery Report** + Executive Discovery Memo (→ Sim 1, P1) | ✅ | ✅ | ✅ |
 
 All five clear the Employment Value Gate.
 
