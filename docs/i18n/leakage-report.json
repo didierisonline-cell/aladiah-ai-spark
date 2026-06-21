@@ -1,21 +1,16 @@
 {
-  "generatedAt": "2026-06-21T23:42:11.041Z",
+  "generatedAt": "2026-06-21T23:49:25.109Z",
   "totalEnKeys": 1598,
   "languages": {
     "es": {
-      "keysPresent": 1594,
-      "missing": 4,
+      "keysPresent": 1598,
+      "missing": 0,
       "wrongScript": 0,
-      "untranslated": 27,
+      "untranslated": 24,
       "strandedNative": 0,
       "review": 0,
       "samples": {
-        "missing": [
-          "hero.subhead",
-          "hero.video.label",
-          "hero.cta.stories",
-          "hero.stats.programs"
-        ],
+        "missing": [],
         "wrongScript": [],
         "untranslated": [
           {
@@ -56,19 +51,14 @@
       }
     },
     "fr": {
-      "keysPresent": 1594,
-      "missing": 4,
+      "keysPresent": 1598,
+      "missing": 0,
       "wrongScript": 0,
-      "untranslated": 74,
+      "untranslated": 71,
       "strandedNative": 0,
       "review": 0,
       "samples": {
-        "missing": [
-          "hero.subhead",
-          "hero.video.label",
-          "hero.cta.stories",
-          "hero.stats.programs"
-        ],
+        "missing": [],
         "wrongScript": [],
         "untranslated": [
           {
@@ -112,7 +102,7 @@
       "keysPresent": 1594,
       "missing": 4,
       "wrongScript": 0,
-      "untranslated": 27,
+      "untranslated": 24,
       "strandedNative": 0,
       "review": 0,
       "samples": {
@@ -165,7 +155,7 @@
       "keysPresent": 1594,
       "missing": 4,
       "wrongScript": 0,
-      "untranslated": 62,
+      "untranslated": 59,
       "strandedNative": 0,
       "review": 0,
       "samples": {

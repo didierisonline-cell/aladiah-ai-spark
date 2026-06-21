@@ -52,9 +52,9 @@ const PROTECTED = [
   'SAFe', 'Jira', 'OK', 'API', 'FAQ', 'CV', 'PDF', 'URL',
 ];
 
-// Product tier / plan names: deliberately NOT auto-protected. Whether these
-// localize is a product decision for the founder, so they surface as REVIEW
-// items rather than silent passes or hard failures.
+// Product tier / plan names: founder-ratified to render verbatim (keep English)
+// in every language, like the ™ brands above. Treated as intentional — exempt
+// from both the wrong-script (review) and untranslated checks.
 const TIER_NAMES = new Set([
   'Foundation Builder', 'Career Accelerator', 'Elite Mentorship',
 ]);
@@ -159,7 +159,10 @@ for (const l of LAUNCH) {
       // Latin launch language: native script here is stranded leakage.
       if (reArabic.test(core) || reCJK.test(core) || reDevanagari.test(core)) {
         strandedNative.push({ key, value: String(v).slice(0, 80), looksLike: looksLike(core) });
-      } else if (String(v).trim() === String(en).trim() && stripProtected(String(en))) {
+      } else if (String(v).trim() === String(en).trim() && stripProtected(String(en))
+                 && !TIER_NAMES.has(String(v).trim())) {
+        // Tier names render verbatim in every language (founder-ratified, keep
+        // English) — an English value in a Latin slot is intentional, not leakage.
         untranslated.push({ key, value: String(v).slice(0, 80) });
       }
     }

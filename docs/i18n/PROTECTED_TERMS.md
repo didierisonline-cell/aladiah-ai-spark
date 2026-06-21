@@ -23,6 +23,12 @@ localized. When in doubt, translate.
 | ElevenLabs | Product. |
 | LinkedIn | Product. |
 | DevOps, MLOps, UX | Industry technical tokens kept verbatim inside role titles. |
+| Foundation Builder | Plan/tier name — founder-ratified, keep English in all languages. |
+| Career Accelerator | Plan/tier name — founder-ratified, keep English in all languages. |
+| Elite Mentorship | Plan/tier name — founder-ratified, keep English in all languages. |
+
+> Plan/tier names render verbatim like the ™ brands. The audit exempts them via
+> `TIER_NAMES` in `scripts/i18n-audit.mjs`.
 
 ## "AI" — context-dependent
 
