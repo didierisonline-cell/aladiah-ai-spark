@@ -232,3 +232,30 @@ export const BA_RECOMMENDATIONS: RecommendationOption[] = [
 ];
 
 export const BA_KEY_SIGNALS = 3; // refund-timing variance, cross-channel friction, retention constraint
+
+// --- Rich persona profiles for the AI engine (passed to ba-simulation fn) ----
+export interface PersonaProfile {
+  incentives: string;
+  politicalConcerns: string;
+  hiddenInfo: string;
+  communicationStyle: string;
+  willingnessToSupport: number; // 0-100
+}
+export const BA_PERSONA_PROFILES: Record<string, PersonaProfile> = {
+  'Diane Okafor': { incentives: 'A board-ready win this quarter; cut returns cost', politicalConcerns: 'Looking decisive to the board', hiddenInfo: "She has not validated the 'warehouse is slow' theory", communicationStyle: 'Impatient, outcome-first; wants the bottom line', willingnessToSupport: 70 },
+  'Marcus Bell': { incentives: "Protect his customer-service team; make customers happier", politicalConcerns: 'Headcount cuts framed as efficiency', hiddenInfo: 'He knows refund-timing variance is the top complaint and fears automation', communicationStyle: 'Warm, candid, customer-focused', willingnessToSupport: 65 },
+  'Priya Nair': { incentives: 'Cost control and a clean audit trail', politicalConcerns: 'Fraud and audit exposure', hiddenInfo: 'Attributes cost to restocking/fraud; distrusts fast/agile delivery', communicationStyle: 'Precise, skeptical, risk-averse', willingnessToSupport: 40 },
+  'Jonah Klein': { incentives: 'Avoid any privacy/regulatory breach', politicalConcerns: 'Regulatory exposure landing on Legal', hiddenInfo: 'Will veto any solution that retains data beyond the privacy policy', communicationStyle: 'Terse, cautious, gatekeeping', willingnessToSupport: 30 },
+  'Rosa Mendez': { incentives: "Don't disrupt the stores; reduce staff pain", politicalConcerns: 'Burned by two prior failed projects', hiddenInfo: 'Knows ~48% of returns are cross-channel and the systems do not integrate', communicationStyle: 'Blunt, practical, guarded until trust is earned', willingnessToSupport: 35 },
+  'Tunde Familusi': { incentives: 'Ship his returns portal as a visible product win', politicalConcerns: 'Wants a flagship product to his name', hiddenInfo: "Has not validated that the portal solves the real problem", communicationStyle: 'Enthusiastic, solution-first, fast-moving', willingnessToSupport: 75 },
+};
+
+export const BA_RUBRIC_DIMENSIONS: { key: string; label: string }[] = [
+  { key: 'discovery_quality', label: 'Discovery quality' },
+  { key: 'evidence_quality', label: 'Evidence quality' },
+  { key: 'stakeholder_coverage', label: 'Stakeholder coverage' },
+  { key: 'signal_vs_noise', label: 'Signal vs noise' },
+  { key: 'recommendation_quality', label: 'Recommendation quality' },
+  { key: 'business_impact', label: 'Business impact' },
+  { key: 'executive_communication', label: 'Executive communication' },
+];

@@ -1,24 +1,29 @@
 // =============================================================================
-// Discovery Engagement — the interactive BA Simulation 1 (Increment 2).
-// Playable, client-side: the learner interviews 6 AI stakeholders, captures
-// source-linked findings to an Evidence Board, separates signal from noise, and
-// makes an evidence-scored recommendation — producing a draft Executive Discovery
-// Report (Portfolio Artifact #1). Scoring is deterministic here; the AI-driven
-// dynamic personas + DB persistence land in a later increment (ba-simulation
-// edge function + ba_simulation tables). Architecture: docs/curriculum/
-// business-analyst-v1/simulations/01_DISCOVERY_ENGAGEMENT_BLUEPRINT.md.
+// Discovery Engagement — interactive BA Simulation 1 (Increment 3: AI engine).
+// The reference architecture for all Aladiah simulations. The learner interviews
+// 6 stakeholders (scripted questions + free-text questions answered by DYNAMIC AI
+// personas via the ba-simulation edge function), captures source-linked evidence,
+// separates signal from noise, and recommends. On completion it produces a
+// 7-dimension rubric score, an auto-generated Executive Discovery Report
+// (Portfolio Artifact #1), and a STAR interview story — every output built to
+// pass the hiring-manager test. All AI calls degrade gracefully: if the edge
+// function isn't deployed, deterministic fallbacks keep the sim fully playable.
+// Persistence + Founder Review Mode are the next increment (need the live DB).
 // =============================================================================
-import { useMemo, useState } from 'react';
-import { ArrowLeft, MessageSquare, ClipboardList, Sparkles, CheckCircle2, RotateCcw } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { ArrowLeft, MessageSquare, ClipboardList, Sparkles, CheckCircle2, RotateCcw, Send, FileText, Briefcase } from 'lucide-react';
 import {
   BA_SCENARIO, BA_PERSONAS, BA_INTERVIEWS, BA_RECOMMENDATIONS, BA_KEY_SIGNALS,
-  type InterviewExchange,
+  BA_PERSONA_PROFILES, BA_RUBRIC_DIMENSIONS, type InterviewExchange,
 } from '@/components/simulation/ba/BASimulationTypes';
+import { baSim, type AiFinding } from '@/components/simulation/ba/baSimClient';
 
 type Phase = 'interview' | 'recommend' | 'result';
 interface Finding { text: string; source: string; reliability: string; keySignal?: boolean }
+interface AiTurn { q: string; a: string; finding?: AiFinding | null }
 
 const gradeFor = (s: number) => (s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F');
+const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)));
 
 export default function DiscoveryEngagement({ onExit }: { onExit: () => void }) {
   const [phase, setPhase] = useState<Phase>('interview');
@@ -26,25 +31,82 @@ export default function DiscoveryEngagement({ onExit }: { onExit: () => void }) 
   const [asked, setAsked] = useState<Record<string, string[]>>({});
   const [captured, setCaptured] = useState<Finding[]>([]);
   const [chosenRec, setChosenRec] = useState<string | null>(null);
+  // dynamic AI interview
+  const [aiTurns, setAiTurns] = useState<Record<string, AiTurn[]>>({});
+  const [draft, setDraft] = useState('');
+  const [aiBusy, setAiBusy] = useState(false);
+  // result generation
+  const [gen, setGen] = useState<{ busy: boolean; dims: Record<string, number>; total: number; feedback: string; report: any; story: any } | null>(null);
 
-  const ask = (persona: string, ex: InterviewExchange) => {
+  const ask = (persona: string, ex: InterviewExchange) =>
     setAsked(a => ({ ...a, [persona]: [...(a[persona] || []), ex.id] }));
-  };
-  const capture = (f: Finding) => {
-    if (!captured.some(c => c.text === f.text)) setCaptured(c => [...c, f]);
-  };
+  const capture = (f: Finding) =>
+    setCaptured(c => (c.some(x => x.text === f.text) ? c : [...c, f]));
 
-  const personasInterviewed = Object.keys(asked).filter(p => (asked[p] || []).length > 0).length;
+  const personasInterviewed = useMemo(() => {
+    const names = new Set([...Object.keys(asked).filter(p => (asked[p] || []).length), ...Object.keys(aiTurns).filter(p => (aiTurns[p] || []).length)]);
+    return names.size;
+  }, [asked, aiTurns]);
   const keySignals = captured.filter(c => c.keySignal).length;
 
-  const score = useMemo(() => {
-    const elicitation = Math.round((personasInterviewed / BA_PERSONAS.length) * 100);
-    const synthesis = Math.round((keySignals / BA_KEY_SIGNALS) * 100);
+  async function sendQuestion() {
+    const q = draft.trim();
+    if (!q) return;
+    setDraft('');
+    setAiBusy(true);
+    const persona = BA_PERSONAS.find(p => p.name === selected)!;
+    const history = (aiTurns[selected] || []).flatMap(t => [
+      { role: 'user', content: t.q }, { role: 'assistant', content: t.a },
+    ]);
+    const res = await baSim.interview({
+      persona: { ...persona, ...(BA_PERSONA_PROFILES[selected] || {}) },
+      question: q, history, company: BA_SCENARIO.company,
+    });
+    const turn: AiTurn = res
+      ? { q, a: res.reply, finding: res.finding }
+      : { q, a: `(${selected} is available for scripted questions above — the live AI interviewer isn't connected in this environment.)`, finding: null };
+    setAiTurns(t => ({ ...t, [selected]: [...(t[selected] || []), turn] }));
+    setAiBusy(false);
+  }
+
+  // Generate rubric + report + story on entering the result phase.
+  useEffect(() => {
+    if (phase !== 'result' || gen) return;
     const rec = BA_RECOMMENDATIONS.find(r => r.id === chosenRec);
-    const recommendation = rec ? (rec.quality === 'aligned' ? 100 : rec.quality === 'partial' ? 55 : 20) : 0;
-    const total = Math.round(elicitation * 0.3 + synthesis * 0.4 + recommendation * 0.3);
-    return { elicitation, synthesis, recommendation, total, rec };
-  }, [personasInterviewed, keySignals, chosenRec]);
+    // deterministic 7-dimension baseline (AI refines if available)
+    const coverage = clamp((personasInterviewed / BA_PERSONAS.length) * 100);
+    const evidence = clamp(captured.length * 14 + keySignals * 14);
+    const recQ = rec?.quality === 'aligned' ? 100 : rec?.quality === 'partial' ? 55 : 20;
+    const signal = clamp((keySignals / BA_KEY_SIGNALS) * 100 - (rec?.quality === 'trap' ? 25 : 0));
+    const baseDims: Record<string, number> = {
+      discovery_quality: clamp((coverage + evidence) / 2),
+      evidence_quality: evidence,
+      stakeholder_coverage: coverage,
+      signal_vs_noise: signal,
+      recommendation_quality: recQ,
+      business_impact: rec?.quality === 'aligned' ? 90 : rec?.quality === 'partial' ? 50 : 25,
+      executive_communication: 72,
+    };
+    const findings = captured;
+    const recText = rec?.text || '';
+    setGen({ busy: true, dims: baseDims, total: avg(baseDims), feedback: rec?.rationale || '', report: null, story: null });
+
+    (async () => {
+      const [ev, rep, st] = await Promise.all([
+        baSim.evaluate({ company: BA_SCENARIO.company, title: BA_SCENARIO.title, coverage: personasInterviewed, findings, recommendation: recText }),
+        baSim.report({ company: BA_SCENARIO.company, title: BA_SCENARIO.title, findings, recommendation: recText }),
+        baSim.story({ company: BA_SCENARIO.company, title: BA_SCENARIO.title, findings, recommendation: recText }),
+      ]);
+      setGen({
+        busy: false,
+        dims: ev?.dimensions || baseDims,
+        total: ev?.total ?? avg(baseDims),
+        feedback: ev?.feedback || rec?.rationale || '',
+        report: rep || fallbackReport(findings, recText, keySignals),
+        story: st || fallbackStory(recText, findings),
+      });
+    })();
+  }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const persona = BA_PERSONAS.find(p => p.name === selected)!;
   const exchanges = BA_INTERVIEWS[selected] || [];
@@ -60,12 +122,11 @@ export default function DiscoveryEngagement({ onExit }: { onExit: () => void }) 
           <div className="text-xs uppercase tracking-[0.25em] text-secondary">{BA_SCENARIO.company} · Discovery Engagement</div>
         </div>
 
-        {/* progress */}
         <div className="flex items-center gap-2 text-xs">
           {(['interview', 'recommend', 'result'] as Phase[]).map((p, i) => (
             <div key={p} className={`flex items-center gap-2 ${phase === p ? 'text-secondary' : 'text-muted-foreground'}`}>
               <span className={`w-5 h-5 rounded-full grid place-items-center text-[11px] ${phase === p ? 'bg-secondary text-background' : 'bg-background/60 border border-border/40'}`}>{i + 1}</span>
-              <span className="capitalize">{p === 'recommend' ? 'Recommendation' : p === 'result' ? 'Result' : 'Interviews'}</span>
+              <span>{p === 'recommend' ? 'Recommendation' : p === 'result' ? 'Result' : 'Interviews'}</span>
               {i < 2 && <span className="w-6 h-px bg-border/40" />}
             </div>
           ))}
@@ -73,11 +134,10 @@ export default function DiscoveryEngagement({ onExit }: { onExit: () => void }) 
 
         {phase === 'interview' && (
           <div className="grid md:grid-cols-[200px_1fr] gap-5">
-            {/* persona list */}
             <div className="space-y-2">
               <div className="text-xs font-bold uppercase tracking-wide text-foreground/70 mb-1">Stakeholders</div>
               {BA_PERSONAS.map(p => {
-                const done = (asked[p.name] || []).length;
+                const done = (asked[p.name] || []).length + (aiTurns[p.name] || []).length;
                 return (
                   <button key={p.name} onClick={() => setSelected(p.name)}
                     className={`w-full text-left rounded-xl border p-2.5 flex items-center gap-2 ${selected === p.name ? 'border-secondary bg-secondary/10' : 'border-border/30 bg-background/40'}`}>
@@ -92,7 +152,6 @@ export default function DiscoveryEngagement({ onExit }: { onExit: () => void }) 
               })}
             </div>
 
-            {/* interview room */}
             <div className="space-y-3">
               <div className="rounded-2xl border border-border/40 bg-card/60 p-4">
                 <div className="flex items-center gap-2 mb-3">
@@ -103,6 +162,7 @@ export default function DiscoveryEngagement({ onExit }: { onExit: () => void }) 
                   </div>
                   <MessageSquare className="w-4 h-4 text-secondary ml-auto" />
                 </div>
+
                 <div className="space-y-3">
                   {exchanges.map(ex => {
                     const isAsked = askedHere.includes(ex.id);
@@ -116,8 +176,7 @@ export default function DiscoveryEngagement({ onExit }: { onExit: () => void }) 
                           <div className="mt-1.5 ml-3 pl-3 border-l-2 border-border/40">
                             <p className="text-sm text-foreground/85">{ex.answer}</p>
                             {ex.finding && (
-                              <button onClick={() => capture(ex.finding as Finding)}
-                                disabled={captured.some(c => c.text === ex.finding!.text)}
+                              <button onClick={() => capture(ex.finding as Finding)} disabled={captured.some(c => c.text === ex.finding!.text)}
                                 className="mt-1 text-[11px] inline-flex items-center gap-1 rounded-md border border-secondary/40 text-secondary px-2 py-0.5 disabled:opacity-50">
                                 {captured.some(c => c.text === ex.finding!.text) ? '✓ Captured' : '＋ Capture to Evidence Board'}
                               </button>
@@ -127,10 +186,37 @@ export default function DiscoveryEngagement({ onExit }: { onExit: () => void }) 
                       </div>
                     );
                   })}
+
+                  {/* dynamic AI turns */}
+                  {(aiTurns[selected] || []).map((t, i) => (
+                    <div key={`ai-${i}`}>
+                      <div className="text-sm rounded-lg px-3 py-2 bg-primary/10 text-foreground">❝ {t.q}</div>
+                      <div className="mt-1.5 ml-3 pl-3 border-l-2 border-border/40">
+                        <p className="text-sm text-foreground/85">{t.a}</p>
+                        {t.finding && (
+                          <button onClick={() => capture(t.finding as Finding)} disabled={captured.some(c => c.text === t.finding!.text)}
+                            className="mt-1 text-[11px] inline-flex items-center gap-1 rounded-md border border-secondary/40 text-secondary px-2 py-0.5 disabled:opacity-50">
+                            {captured.some(c => c.text === t.finding!.text) ? '✓ Captured' : '＋ Capture to Evidence Board'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
+
+                {/* free-text question to the dynamic AI persona */}
+                <div className="mt-3 flex items-center gap-2">
+                  <input value={draft} onChange={e => setDraft(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendQuestion()}
+                    placeholder={`Ask ${persona.name} your own question…`}
+                    className="flex-1 text-sm bg-background/60 border border-border/40 rounded-lg px-3 py-2 outline-none focus:border-secondary/60" />
+                  <button onClick={sendQuestion} disabled={aiBusy || !draft.trim()}
+                    className="px-3 py-2 rounded-lg bg-secondary text-background disabled:opacity-40">
+                    {aiBusy ? '…' : <Send className="w-4 h-4" />}
+                  </button>
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-1">Open, behavioural questions earn better answers. Leading questions get guarded ones.</p>
               </div>
 
-              {/* evidence board */}
               <div className="rounded-2xl border border-border/40 bg-card/60 p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <ClipboardList className="w-4 h-4 text-secondary" />
@@ -182,43 +268,68 @@ export default function DiscoveryEngagement({ onExit }: { onExit: () => void }) 
           </div>
         )}
 
-        {phase === 'result' && (
+        {phase === 'result' && gen && (
           <div className="space-y-4">
             <div className="rounded-2xl border border-secondary/30 bg-secondary/5 p-5 text-center">
               <div className="text-xs uppercase tracking-[0.3em] text-secondary mb-1">Engagement complete</div>
-              <div className="text-5xl font-display font-bold">{gradeFor(score.total)}</div>
-              <div className="text-sm text-muted-foreground">Score {score.total}/100 {score.total >= 80 ? '· Pass' : '· Below pass (80)'}</div>
+              <div className="text-5xl font-display font-bold">{gradeFor(gen.total)}</div>
+              <div className="text-sm text-muted-foreground">Score {gen.total}/100 {gen.total >= 80 ? '· Pass' : '· Below pass (80)'}{gen.busy ? ' · refining with AI…' : ''}</div>
             </div>
 
-            <div className="grid sm:grid-cols-3 gap-3">
-              {[['Elicitation', score.elicitation, `${personasInterviewed}/${BA_PERSONAS.length} stakeholders interviewed`],
-                ['Evidence & synthesis', score.synthesis, `${keySignals}/${BA_KEY_SIGNALS} key signals found`],
-                ['Recommendation', score.recommendation, score.rec?.quality === 'aligned' ? 'evidence-aligned' : score.rec?.quality === 'partial' ? 'partial' : 'not supported by evidence']].map(([label, val, sub]) => (
-                <div key={label as string} className="rounded-xl border border-border/40 bg-card/60 p-3">
-                  <div className="text-xs text-muted-foreground">{label}</div>
-                  <div className="text-2xl font-bold text-secondary">{val as number}</div>
-                  <div className="text-[11px] text-muted-foreground">{sub}</div>
+            {/* 7-dimension rubric */}
+            <div className="rounded-2xl border border-border/40 bg-card/60 p-4">
+              <div className="text-xs font-bold uppercase tracking-wide text-foreground/70 mb-3">7-Dimension Rubric</div>
+              <div className="space-y-1.5">
+                {BA_RUBRIC_DIMENSIONS.map(d => (
+                  <div key={d.key} className="flex items-center gap-3">
+                    <div className="w-48 text-xs">{d.label}</div>
+                    <div className="flex-1 h-2 rounded-full bg-background/60 overflow-hidden">
+                      <div className="h-full bg-secondary/70" style={{ width: `${gen.dims[d.key] ?? 0}%` }} />
+                    </div>
+                    <div className="w-8 text-right text-xs text-muted-foreground">{gen.dims[d.key] ?? 0}</div>
+                  </div>
+                ))}
+              </div>
+              {gen.feedback && <p className="text-sm text-foreground/80 mt-3"><Sparkles className="w-3.5 h-3.5 text-secondary inline mr-1" />{gen.feedback}</p>}
+            </div>
+
+            {/* Executive Discovery Report (Portfolio Artifact #1) */}
+            <div className="rounded-2xl border border-border/40 bg-card/60 p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <FileText className="w-4 h-4 text-secondary" />
+                <span className="text-xs font-bold uppercase tracking-wide text-foreground/70">Executive Discovery Report · Portfolio Artifact #1</span>
+                <span className="ml-auto text-[10px] rounded-full border border-secondary/40 text-secondary px-2 py-0.5">Hiring-manager ready ✓</span>
+              </div>
+              {gen.report ? (
+                <div className="space-y-2 text-sm">
+                  <p><span className="text-muted-foreground">Problem: </span>{gen.report.problem}</p>
+                  <div><span className="text-muted-foreground">Opportunities:</span><ul className="list-disc ml-5 text-foreground/85">{(gen.report.opportunities || []).map((o: string, i: number) => <li key={i}>{o}</li>)}</ul></div>
+                  <div><span className="text-muted-foreground">Evidence:</span><ul className="list-disc ml-5 text-foreground/85">{(gen.report.evidence || []).map((o: string, i: number) => <li key={i}>{o}</li>)}</ul></div>
+                  <p><span className="text-muted-foreground">Recommendation: </span>{gen.report.recommendation}</p>
+                  <div><span className="text-muted-foreground">Risks:</span><ul className="list-disc ml-5 text-foreground/85">{(gen.report.risks || []).map((o: string, i: number) => <li key={i}>{o}</li>)}</ul></div>
+                  <p className="text-xs text-muted-foreground">Confidence: {gen.report.confidence}</p>
                 </div>
-              ))}
+              ) : <p className="text-xs text-muted-foreground">Generating…</p>}
             </div>
 
+            {/* STAR interview story */}
             <div className="rounded-2xl border border-border/40 bg-card/60 p-4">
-              <div className="flex items-center gap-2 mb-2"><Sparkles className="w-4 h-4 text-secondary" /><span className="text-xs font-bold uppercase tracking-wide text-foreground/70">Coach feedback</span></div>
-              <p className="text-sm text-foreground/85">{score.rec?.rationale}</p>
-              {keySignals < BA_KEY_SIGNALS && <p className="text-sm text-foreground/70 mt-2">You missed {BA_KEY_SIGNALS - keySignals} key signal(s). The real problem lives in the refund-timing variance, the ~48% cross-channel returns, and the data-retention constraint — interview widely and capture the evidence beneath the loudest opinions.</p>}
-            </div>
-
-            <div className="rounded-2xl border border-border/40 bg-card/60 p-4">
-              <div className="text-xs font-bold uppercase tracking-wide text-foreground/70 mb-2">Draft Executive Discovery Report (Portfolio Artifact #1)</div>
-              <p className="text-xs text-muted-foreground mb-2">Recommendation: <span className="text-foreground/90">{score.rec?.text}</span></p>
-              <div className="text-xs text-muted-foreground">Evidence ({captured.length}):</div>
-              <ul className="text-xs text-foreground/80 list-disc ml-5">
-                {captured.map((c, i) => <li key={i}>{c.text} <span className="text-muted-foreground">— {c.source}</span></li>)}
-              </ul>
+              <div className="flex items-center gap-2 mb-2">
+                <Briefcase className="w-4 h-4 text-secondary" />
+                <span className="text-xs font-bold uppercase tracking-wide text-foreground/70">Interview Story (STAR)</span>
+                <span className="ml-auto text-[10px] rounded-full border border-secondary/40 text-secondary px-2 py-0.5">Tell this in an interview ✓</span>
+              </div>
+              {gen.story ? (
+                <div className="space-y-1.5 text-sm">
+                  {(['situation', 'task', 'action', 'result', 'lessons'] as const).map(k => (
+                    <p key={k}><span className="text-secondary capitalize font-semibold">{k}: </span><span className="text-foreground/85">{gen.story[k]}</span></p>
+                  ))}
+                </div>
+              ) : <p className="text-xs text-muted-foreground">Generating…</p>}
             </div>
 
             <div className="flex gap-3">
-              <button onClick={() => { setPhase('interview'); setAsked({}); setCaptured([]); setChosenRec(null); }}
+              <button onClick={() => { setPhase('interview'); setAsked({}); setCaptured([]); setChosenRec(null); setAiTurns({}); setGen(null); }}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border/40 text-sm">
                 <RotateCcw className="w-4 h-4" /> Run again
               </button>
@@ -229,4 +340,28 @@ export default function DiscoveryEngagement({ onExit }: { onExit: () => void }) 
       </div>
     </div>
   );
+}
+
+function avg(d: Record<string, number>) {
+  const v = Object.values(d);
+  return Math.round(v.reduce((a, b) => a + b, 0) / v.length);
+}
+function fallbackReport(findings: Finding[], rec: string, keySignals: number) {
+  return {
+    problem: 'Returns cost is up ~30% YoY. The evidence points to refund-timing variance and cross-channel (online→in-store) friction as the real drivers — not warehouse speed.',
+    opportunities: ['Reduce refund-timing variance', 'Integrate the cross-channel returns flow', 'Auto-approve low-risk returns with fraud controls'],
+    evidence: findings.map(f => `${f.text} — ${f.source}`),
+    recommendation: rec,
+    risks: ['Finance fraud/audit requirements', 'Legal data-retention constraint', 'Store adoption (history of failed projects)'],
+    confidence: keySignals >= 3 ? 'high' : keySignals >= 2 ? 'medium' : 'low',
+  };
+}
+function fallbackStory(rec: string, findings: Finding[]) {
+  return {
+    situation: 'A retailer’s returns costs were up 30% and leadership wanted a quick fix.',
+    task: 'As the BA, I had to find the real problem before anyone committed to building.',
+    action: `I interviewed six stakeholders, separated signal from noise, and captured ${findings.length} source-linked findings instead of accepting the loudest request.`,
+    result: `I recommended: "${rec}" — grounded in evidence, not opinion.`,
+    lessons: 'The first solution offered is rarely the right one; behavioural evidence beats stated preference.',
+  };
 }
