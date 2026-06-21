@@ -45,7 +45,15 @@ This file is the model every future program extends — append a new Axis-1 sect
 
 ---
 
-## 2A. Business Analyst — Axis-1 registry (9 slugs)
+## 2A. Business Analyst — Axis-1 registry (9 slugs) — ⚠️ SUPERSEDED
+
+> **SUPERSEDED by §7 (the ratified 13-slug `ba:` registry). Do NOT tag content
+> against this section.** This was an early draft of the BA program. The shipped
+> AI Business Analyst & Product Discovery Specialist flagship
+> (`docs/curriculum/business-analyst-v1/`) is built entirely on **§7**, and the
+> change log (§11) confirms §7 as the operative BA registry (BA 11→13,
+> append-only). §2A is retained only for historical traceability. The sole source
+> of BA competency slugs is **§7**.
 
 Program key: `ba`. Appended per the governance rules (append-only; a new program
 **extends** the taxonomy, it does not fork it). Reference program: **AI-Augmented
@@ -145,6 +153,10 @@ treat it as a flag to re-check, not a default.
 Boundary: `pm:stakeholders` (communicate up/out) ≠ `pm:change-leadership` (org transformation) ≠ `pm:leadership` (lead the people on the team).
 
 ## 7. AI Business Analyst & Product Discovery Specialist — Axis-1 registry (`ba:`, 13 slugs)
+
+> **FROZEN — the sole BA competency registry.** All BA content (lessons, exams,
+> simulations, certification) tags against these 13 slugs and no others. Supersedes
+> §2A. Append-only changes require a change-log entry in §11.
 
 | Slug | Label | Description |
 |---|---|---|
