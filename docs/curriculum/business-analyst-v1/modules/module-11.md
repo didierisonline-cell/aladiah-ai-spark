@@ -41,15 +41,26 @@ drove decisions (and added two that were missing). Fewer, sharper numbers; faste
 decision-relevant few are missing or buried → *Recommendation* — replace with 6 actionable KPIs + 2
 guardrails → *Business Impact* — faster, evidence-based executive decisions.
 
+**Metrics can be wrong — the Metric Failure Audit.** A subtler danger than a vanity metric is a *harmful*
+one: a KPI that, when it "improves," makes the business *worse.* Optimize a call center for **speed** and
+customer satisfaction collapses; optimize engineering for **velocity** and the defect rate explodes;
+optimize sales for **volume** and profitability declines. The transformation-consultant question is: **if
+this KPI improves, can the business still get worse?** A **Metric Failure Audit** stress-tests each KPI for
+the perverse behavior it could incentivize and pairs it with the **guardrail metric** that prevents gaming
+(Module 9's North-Star discipline applied to every metric). Few analysts think to ask whether the metric
+itself is the problem.
+
 ### Practical exercise
 Take a real dashboard or KPI set. Label each metric vanity vs. decision-driving, and for each
 decision-driving one, name the decision it informs. Flag missing or gamed metrics.
 
-### Artifact produced — **KPI Health Assessment** (showcaseable)
-An audit of an organization's KPIs (decision-driving vs. vanity, missing, gamed) with recommendations —
-proof you think in decisions, not reports, from the first lesson.
+### Artifact produced — **KPI Health Assessment** + **Metric Failure Audit** (showcaseable)
+An audit of an organization's KPIs (decision-driving vs. vanity, missing, gamed) with recommendations,
+*plus* a **Metric Failure Audit** stress-testing each KPI ("if this improves, can the business still get
+worse?") with its guardrail — proof you think in decisions *and* protect against the metric itself being
+the problem.
 
-> **Gate:** capability = decision-first analytics + KPI health · artifact = KPI Health Assessment · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = decision-first analytics + metric integrity · artifact = KPI Health Assessment + Metric Failure Audit · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -85,15 +96,25 @@ outcome — found by decomposition, not guesswork.
 completion as the weak driver → *Recommendation* — invest in onboarding for the at-risk segment →
 *Business Impact* — retention recovers via the one lever that matters.
 
+**Leading vs. lagging indicators.** Most organizations obsess over **lagging** indicators — revenue,
+churn, profit, NPS — which only tell you what *already* happened, too late to act. The higher-leverage
+skill is identifying **leading** indicators: the early signals that *predict* the outcome before it
+occurs — activation rate, time-to-first-value, feature adoption, training completion, support-ticket
+trends. In a metric tree, the leading indicators are usually the *upstream drivers* you can move **now**
+to change a lagging outcome **later.** A **Leading Indicator Framework** pairs each lagging outcome with
+the leading indicators that predict it — so leadership steers by the windshield, not the rearview mirror.
+The executive question: **which metric predicts the outcome before it happens?**
+
 ### Practical exercise
 Pick a top metric. Build a metric tree two levels deep (drivers → sub-drivers). Mark the current value
 and owner of each leaf, and circle the highest-leverage, most-movable driver.
 
-### Artifact produced — **Metric Tree** (showcaseable)
-A decomposition of a top metric into owned, actionable drivers, with the highest-leverage lever marked —
-an artifact that proves you connect strategy to the metrics teams can actually move.
+### Artifact produced — **Metric Tree** + **Leading Indicator Framework** (showcaseable)
+A decomposition of a top metric into owned, actionable drivers with the highest-leverage lever marked,
+*plus* a **Leading Indicator Framework** pairing each lagging outcome with the leading indicators that
+predict it — proof you connect strategy to movable metrics *and* steer by the windshield, not the rearview.
 
-> **Gate:** capability = metric decomposition / driver analysis · artifact = Metric Tree · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = metric decomposition + leading indicators · artifact = Metric Tree + Leading Indicator Framework · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -174,15 +195,23 @@ weekly business review — because every tile answered "what do we do about this
 *Recommendation* — 8 KPIs with thresholds + triggers + owners → *Business Impact* — the dashboard now
 drives the weekly decisions.
 
+**Decision cadence — turning reporting into governance.** Executives don't (and shouldn't) review every
+metric daily. Different metrics earn different rhythms: **operational** metrics (queue lengths, error
+rates) → daily/weekly at the team level; **management** metrics (funnel conversion, cycle time) →
+weekly/monthly; **strategic** metrics (North-Star, market share) → monthly/quarterly at the leadership
+level. An **Executive Review Calendar** assigns each KPI its cadence, forum, and audience — so the right
+people see the right numbers at the right time, and dashboards become **governance** rather than wallpaper.
+
 ### Practical exercise
 Spec an executive dashboard for a real area: 6–8 decision-driving KPIs, the chart for each, its
 target/threshold, the decision/trigger it supports, and the owner.
 
-### Artifact produced — **Executive KPI Dashboard Spec** (showcaseable)
-A tool-agnostic dashboard spec (KPIs · definitions · visuals · thresholds · decisions/triggers · owners)
-— a senior data-product artifact that proves you design dashboards that drive action, not admiration.
+### Artifact produced — **Executive KPI Dashboard Spec** + **Executive Review Calendar** (showcaseable)
+A tool-agnostic dashboard spec (KPIs · definitions · visuals · thresholds · decisions/triggers · owners),
+*plus* an **Executive Review Calendar** assigning each KPI an operational/management/strategic cadence,
+forum, and audience — proof you design dashboards that drive action *and* turn reporting into governance.
 
-> **Gate:** capability = decision-driving visualization · artifact = Executive KPI Dashboard Spec · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = decision-driving viz + review governance · artifact = Executive KPI Dashboard Spec + Executive Review Calendar · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -219,17 +248,24 @@ Room)**, both of which run on data-driven decisions — and the analytical rigor
 cause isolates a checkout change for mobile users, not a market shift → *Recommendation* — roll back the
 change + A/B the fix → *Business Impact* — recover the 8% (~$X) instead of chasing the wrong cause.
 
+**Decision rights — ownership turns analysis into action.** The reason most reports change nothing is that
+**no one owns the decision.** Before a recommendation can act, four questions need answers: **who owns this
+metric, who can change it, who approves the action, and who is accountable for the outcome?** A **Decision
+Rights Matrix** (a RACI for metrics and decisions) makes that explicit — without it, dashboards are
+decoration and Decision Briefs die in inboxes. Pairing the Decision Brief with clear decision rights is
+what converts an insight into a funded, owned action.
+
 ### Practical exercise
 Take a real metric movement. Do a quick root-cause analysis (segment → 5 Whys → confirm), then write a
 one-page Decision Brief: Observation → Insight → Recommendation → Business Impact.
 
-### Artifact produced — **Root-Cause Analysis Report** + **Decision Brief** (showcaseable)
+### Artifact produced — **Root-Cause Analysis Report** + **Decision Brief** + **Decision Rights Matrix** (showcaseable)
 A data-driven root-cause report (where the change concentrates · the validated cause · ruled-out
-alternatives) *plus* a one-page **Decision Brief** (Observation → Insight → Recommendation → Business
-Impact). The two artifacts that prove you turn data into decisions — exactly what a Decision/BI analyst
-is hired to do.
+alternatives), a one-page **Decision Brief** (Observation → Insight → Recommendation → Business Impact),
+*plus* a **Decision Rights Matrix** (who owns / can change / approves / is accountable). The artifacts that
+prove you turn data into *owned, actionable* decisions — exactly what a Decision/BI analyst is hired to do.
 
-> **Gate:** capability = root-cause analysis + decision brief · artifact = Root-Cause Analysis Report + Decision Brief · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = root-cause + decision brief + decision rights · artifact = Root-Cause Report + Decision Brief + Decision Rights Matrix · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -238,11 +274,11 @@ is hired to do.
 
 | L | Capability gained | Artifact (portfolio-worthy) | Recruiter? | Public? | Interview? |
 |---|---|---|---|---|---|
-| 1 | Decision-first analytics + KPI health | KPI Health Assessment | ✅ | ✅ | ✅ |
-| 2 | Metric decomposition / driver analysis | Metric Tree | ✅ | ✅ | ✅ |
+| 1 | Decision-first analytics + metric integrity | KPI Health Assessment + Metric Failure Audit | ✅ | ✅ | ✅ |
+| 2 | Metric decomposition + leading indicators | Metric Tree + Leading Indicator Framework | ✅ | ✅ | ✅ |
 | 3 | SQL for decision questions | SQL Decision Query Set (Lab) | ✅ | ✅ | ✅ |
-| 4 | Decision-driving visualization | Executive KPI Dashboard Spec | ✅ | ✅ | ✅ |
-| 5 | Root-cause + decision brief | **Root-Cause Analysis Report + Decision Brief** | ✅ | ✅ | ✅ |
+| 4 | Decision-driving viz + review governance | Executive KPI Dashboard Spec + Executive Review Calendar | ✅ | ✅ | ✅ |
+| 5 | Root-cause + decision brief + decision rights | **Root-Cause Report + Decision Brief + Decision Rights Matrix** | ✅ | ✅ | ✅ |
 
 All five clear the Employment Value Gate.
 
