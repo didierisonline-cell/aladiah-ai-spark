@@ -138,6 +138,14 @@ facilitation). Good redesign follows a priority order: **eliminate** unnecessary
 repetitive rule-based parts — and only then add new capability. Automating a wasteful step just makes
 waste faster; eliminate before you automate.
 
+**Automation Readiness — before you automate.** The full optimization ladder is **Eliminate → Simplify
+→ Standardize → Automate → Augment.** Standardize the variants *before* automating — you can't reliably
+automate a process that runs ten different ways — and only **augment** with AI/agentic workflows once
+the process is stable, measurable, repeatable, and governed. Organizations that skip straight to "add
+AI" automate chaos. Before recommending automation, score the process on four readiness questions —
+**Is it stable? Is it measurable? Is it repeatable? Is it governed?** — and green-light automation only
+when the answers hold.
+
 Target the **constraint** from Lesson 3 — improvements elsewhere don't move the end-to-end outcome.
 And mind the trade-offs the to-be introduces: a faster auto-approval flow may need a fraud control and
 an audit trail (the conflict you'll meet again in Sim 5 and Module 14). A senior BA designs the future
@@ -153,11 +161,13 @@ every stakeholder could see their interest was protected before sign-off.
 Design a to-be BPMN for your process: mark each change as eliminate / simplify / automate / redesign,
 target the constraint, and add one control the change requires. Note who must sign off.
 
-### Artifact produced — **To-Be BPMN** (showcaseable)
-A future-state BPMN with changes labelled (eliminate/simplify/automate) and required controls shown — a
-design a hiring manager can see drives measurable improvement, not just a redrawn diagram.
+### Artifact produced — **To-Be BPMN** + **Automation Readiness Scorecard** (showcaseable)
+A future-state BPMN with changes labelled (eliminate/simplify/standardize/automate) and required
+controls shown — *plus* an **Automation Readiness Scorecard** rating the process on stable / measurable
+/ repeatable / governed, with a go / not-yet recommendation on automation. A design a hiring manager can
+see drives measurable improvement — and proof you won't automate chaos.
 
-> **Gate:** capability = future-state design + optimization · artifact = To-Be BPMN · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = future-state design + automation readiness · artifact = To-Be BPMN + Automation Readiness Scorecard · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -177,6 +187,15 @@ turning process discovery from opinion into data. It routinely reveals dozens of
 where everyone assumed one, and pinpoints the exact handoff where time is lost. Where the data exists,
 mining is the most objective as-is you can get.
 
+**Process Mapping vs. Process Mining — and the gap between them.** Traditional BA *maps* the process by
+asking people and documenting it; the modern transformation consultant *mines* it from the data and
+then **compares stated vs. real.** The gap is often where the biggest opportunities hide — the variants
+nobody admits to, the rework loop everyone normalized, the "rare" exception that's actually 30% of
+volume. Capturing that gap is its own deliverable: a **Process Reality Report** answering (1) what
+people *say* happens, (2) what the *data* shows happens, (3) where they differ, (4) the business impact
+of the gap, and (5) what should change. It's the signal-vs-noise, evidence-over-opinion discipline
+(Module 4) applied to process.
+
 **AI** accelerates the rest: drafting BPMN from a narrative, summarizing variants, suggesting
 bottlenecks to investigate — all subject to the validation discipline from Modules 1–2 (AI proposes,
 you verify against the real process and stakeholders; an AI-suggested "optimization" that breaks a
@@ -191,12 +210,13 @@ trace a process against its controls. Lesson → artifact → simulation → def
 For a real process, describe what an event log could reveal that interviews can't. Then take one
 AI-suggested process improvement and write the validation check you'd run before trusting it.
 
-### Artifact produced — **BPMN Package (P2)** (showcaseable)
+### Artifact produced — **BPMN Package (P2)** + **Process Reality Report** (showcaseable)
 The consolidated current-/future-state package (inventory · as-is · gap analysis · to-be · mining
-evidence) — **Portfolio Artifact #2**, carried into **Simulation 5**. Comprehensive, employer-grade
-proof you can model, analyze, and redesign real processes.
+evidence) — **Portfolio Artifact #2** — *plus* a **Process Reality Report** (stated vs. real, the gap,
+business impact, recommendation). Carried into **Simulation 5**. Comprehensive, employer-grade proof you
+can model, analyze, and redesign real processes from evidence, not opinion.
 
-> **Gate:** capability = process mining + AI-assisted analysis · artifact = BPMN Package (→ Sim 5, P2) · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = process mining + stated-vs-real analysis · artifact = BPMN Package + Process Reality Report (→ Sim 5, P2) · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -208,8 +228,8 @@ proof you can model, analyze, and redesign real processes.
 | 1 | Process & value-stream thinking | Process Inventory | ✅ | ✅ | ✅ |
 | 2 | BPMN 2.0 current-state modeling | As-Is BPMN (Lab) | ✅ | ✅ | ✅ |
 | 3 | Waste/constraint/root-cause analysis | Process Gap Analysis | ✅ | ✅ | ✅ |
-| 4 | Future-state design + optimization | To-Be BPMN | ✅ | ✅ | ✅ |
-| 5 | Process mining + AI-assisted analysis | **BPMN Package** (→ Sim 5, P2) | ✅ | ✅ | ✅ |
+| 4 | Future-state design + automation readiness | To-Be BPMN + Automation Readiness Scorecard | ✅ | ✅ | ✅ |
+| 5 | Process mining + stated-vs-real analysis | **BPMN Package** + Process Reality Report (→ Sim 5, P2) | ✅ | ✅ | ✅ |
 
 All five clear the Employment Value Gate.
 
