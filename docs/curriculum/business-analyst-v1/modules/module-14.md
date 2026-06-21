@@ -129,16 +129,33 @@ control (pure gaps) that everyone had assumed "someone handled."
 **What is the consequence if this control fails?** — a required field per control: the risk it stops
 materializing, and the regulatory/financial/safety impact if it doesn't.
 
+**What happens when a control fails — the Control Failure Autopsy.** A control matrix lists controls; the
+visceral lesson is what happens when one *fails.* Study the landmark cases:
+- **Equifax (2017)** — a *known* critical vulnerability went unpatched (a failed patch-management control);
+  **147M records** exposed, ~$1.4B in costs. The control existed on paper; no one verified it operated.
+- **Wells Fargo** — aggressive sales incentives with **no oversight control**; employees opened millions of
+  **fake accounts**, billions in fines and lasting reputational damage. A missing detective control over a
+  known incentive risk.
+- **Boeing 737 MAX** — MCAS governance, pilot-disclosure, and training controls failed together; the
+  consequence was **loss of life** and a grounded global fleet (Module 6's requirements autopsy, now as a
+  *control* failure).
+
+The pattern: the control was absent, untested, or unenforced — and the consequence was orders of magnitude
+larger than the control would have cost. A **Control Failure Autopsy** dissects a real failure into the
+control that failed, *why*, the consequence, and the prevention — making risk **real** rather than
+theoretical, and proving you design controls that are tested and enforced, not just documented.
+
 ### Practical exercise
 For 3 risks/obligations, build a Control Matrix: control + type (preventive/detective/corrective) + test +
 evidence + owner + "consequence if it fails." Flag any obligation with no control.
 
-### Artifact produced — **Control Matrix** (Lab, showcaseable)
+### Artifact produced — **Control Matrix** (Lab) + **Control Failure Autopsy** (showcaseable)
 A control matrix (obligation/risk → control → type → test → evidence → owner → failure consequence) produced
-in the **Compliance Matrix lab** — the demonstrable-compliance artifact every regulated industry needs and
-the most reusable deliverable in the module.
+in the **Compliance Matrix lab**, *plus* a **Control Failure Autopsy** of a real failure (Equifax / Wells
+Fargo / Boeing — control that failed · why · consequence · prevention) — the demonstrable-compliance artifact
+every regulated industry needs, with proof you design controls that are tested and enforced, not theoretical.
 
-> **Gate:** capability = controls + assurance traceability · artifact = Control Matrix · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = controls + assurance + failure analysis · artifact = Control Matrix + Control Failure Autopsy · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -175,15 +192,27 @@ because risk was framed as treatment options, not a red cell.
 **What is the consequence if this control fails?** — for each treated risk, state the residual consequence,
 i.e., what's still on the table after treatment.
 
+**Risk appetite — how much risk are we willing to accept?** Most professionals can list risks; few can
+answer the question that actually governs treatment: **how much risk is the organization willing to
+accept**, and in which categories? A **Risk Appetite Framework** states it explicitly — e.g., *financial
+risk = moderate · cyber risk = low · safety risk = very low · innovation risk = high* — so that
+accept/mitigate/transfer/avoid decisions aren't made ad hoc but against a declared tolerance set by
+leadership. Risk appetite is the missing link between **strategy** (M8/M9), **investment governance**
+(M12), and **AI governance** (M13): it tells you when a residual risk is acceptable (within appetite) and
+when it must be treated regardless of cost (beyond appetite). A BA who can facilitate and document risk
+appetite advises boards, not just registers risks.
+
 ### Practical exercise
 Take 3 quantified risks. Recommend a treatment (accept/mitigate/transfer/avoid) for each, with rationale,
 cost, residual risk, and owner.
 
-### Artifact produced — **Risk Treatment Plan** (showcaseable)
-A risk treatment plan (per risk: accept/mitigate/transfer/avoid · rationale · cost · residual risk · owner)
-— proof you turn risk into accountable executive decisions, not just a register of red cells.
+### Artifact produced — **Risk Treatment Plan** + **Risk Appetite Framework** (showcaseable)
+A risk treatment plan (per risk: accept/mitigate/transfer/avoid · rationale · cost · residual risk · owner),
+*plus* a **Risk Appetite Framework** declaring tolerance by category (financial / cyber / safety / innovation)
+— proof you turn risk into accountable executive decisions *and* govern them against a board-set appetite,
+not ad hoc.
 
-> **Gate:** capability = executive risk treatment decisions · artifact = Risk Treatment Plan · recruiter ✅ · public ✅ · interview ✅.
+> **Gate:** capability = risk treatment + risk appetite · artifact = Risk Treatment Plan + Risk Appetite Framework · recruiter ✅ · public ✅ · interview ✅.
 
 ---
 
@@ -241,8 +270,8 @@ artifact that proves you can govern AI where the stakes — and salaries — are
 |---|---|---|---|---|---|
 | 1 | Regulatory impact analysis | Regulatory Impact Assessment | ✅ | ✅ | ✅ |
 | 2 | Risk quantification | Risk Exposure Register | ✅ | ✅ | ✅ |
-| 3 | Controls + assurance traceability | Control Matrix (Lab) | ✅ | ✅ | ✅ |
-| 4 | Executive risk treatment | Risk Treatment Plan | ✅ | ✅ | ✅ |
+| 3 | Controls + assurance + failure analysis | Control Matrix (Lab) + Control Failure Autopsy | ✅ | ✅ | ✅ |
+| 4 | Risk treatment + risk appetite | Risk Treatment Plan + Risk Appetite Framework | ✅ | ✅ | ✅ |
 | 5 | AI governance in regulated industries | **AI Governance Compliance Blueprint** (→ Sim 5) | ✅ | ✅ | ✅ |
 
 All five clear the Employment Value Gate. **Every artifact answers "What is the consequence if this control fails?"**
