@@ -1040,6 +1040,10 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.stats.students': 'Estudiantes Formados',
     'hero.stats.rate': 'Tasa de Éxito',
     'hero.stats.partners': 'Socios Corporativos',
+    'hero.subhead': 'Domina la *IA*. Transforma tu *Carrera*. Construye el *Futuro*.',
+    'hero.video.label': 'Del potencial a la oportunidad.',
+    'hero.cta.stories': 'Ver Casos de Éxito',
+    'hero.stats.programs': 'Programas de Carrera',
 
     // Programs
 
@@ -2795,6 +2799,10 @@ const translations: Record<Language, Record<string, string>> = {
     'hero.stats.students': 'Étudiants Formés',
     'hero.stats.rate': 'Taux de Réussite',
     'hero.stats.partners': 'Partenaires Corporatifs',
+    'hero.subhead': 'Maîtrisez l\'*IA*. Transformez votre *Carrière*. Construisez l\'*Avenir*.',
+    'hero.video.label': 'Du potentiel à l\'opportunité.',
+    'hero.cta.stories': 'Voir les Témoignages',
+    'hero.stats.programs': 'Programmes de Carrière',
 
     // Programs
 

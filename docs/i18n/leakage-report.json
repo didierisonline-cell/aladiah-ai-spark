@@ -1,16 +1,21 @@
 {
-  "generatedAt": "2026-06-18T01:54:19.230Z",
-  "totalEnKeys": 1599,
+  "generatedAt": "2026-06-21T23:42:11.041Z",
+  "totalEnKeys": 1598,
   "languages": {
     "es": {
-      "keysPresent": 1599,
-      "missing": 0,
+      "keysPresent": 1594,
+      "missing": 4,
       "wrongScript": 0,
       "untranslated": 27,
       "strandedNative": 0,
       "review": 0,
       "samples": {
-        "missing": [],
+        "missing": [
+          "hero.subhead",
+          "hero.video.label",
+          "hero.cta.stories",
+          "hero.stats.programs"
+        ],
         "wrongScript": [],
         "untranslated": [
           {
@@ -51,14 +56,19 @@
       }
     },
     "fr": {
-      "keysPresent": 1599,
-      "missing": 0,
+      "keysPresent": 1594,
+      "missing": 4,
       "wrongScript": 0,
       "untranslated": 74,
       "strandedNative": 0,
       "review": 0,
       "samples": {
-        "missing": [],
+        "missing": [
+          "hero.subhead",
+          "hero.video.label",
+          "hero.cta.stories",
+          "hero.stats.programs"
+        ],
         "wrongScript": [],
         "untranslated": [
           {
@@ -99,14 +109,19 @@
       }
     },
     "pt": {
-      "keysPresent": 1599,
-      "missing": 0,
+      "keysPresent": 1594,
+      "missing": 4,
       "wrongScript": 0,
       "untranslated": 27,
       "strandedNative": 0,
       "review": 0,
       "samples": {
-        "missing": [],
+        "missing": [
+          "hero.subhead",
+          "hero.video.label",
+          "hero.cta.stories",
+          "hero.stats.programs"
+        ],
         "wrongScript": [],
         "untranslated": [
           {
@@ -147,14 +162,19 @@
       }
     },
     "de": {
-      "keysPresent": 1599,
-      "missing": 0,
+      "keysPresent": 1594,
+      "missing": 4,
       "wrongScript": 0,
       "untranslated": 62,
       "strandedNative": 0,
       "review": 0,
       "samples": {
-        "missing": [],
+        "missing": [
+          "hero.subhead",
+          "hero.video.label",
+          "hero.cta.stories",
+          "hero.stats.programs"
+        ],
         "wrongScript": [],
         "untranslated": [
           {
@@ -195,14 +215,18 @@
       }
     },
     "ar": {
-      "keysPresent": 1599,
-      "missing": 1,
+      "keysPresent": 1594,
+      "missing": 5,
       "wrongScript": 0,
       "untranslated": 0,
       "strandedNative": 0,
       "review": 3,
       "samples": {
         "missing": [
+          "hero.subhead",
+          "hero.video.label",
+          "hero.cta.stories",
+          "hero.stats.programs",
           "talent.how_h2b"
         ],
         "wrongScript": [],
@@ -225,14 +249,18 @@
       }
     },
     "zh": {
-      "keysPresent": 1599,
-      "missing": 1,
+      "keysPresent": 1594,
+      "missing": 5,
       "wrongScript": 0,
       "untranslated": 0,
       "strandedNative": 0,
       "review": 3,
       "samples": {
         "missing": [
+          "hero.subhead",
+          "hero.video.label",
+          "hero.cta.stories",
+          "hero.stats.programs",
           "employers.why_h2a"
         ],
         "wrongScript": [],
@@ -255,33 +283,21 @@
       }
     },
     "hi": {
-      "keysPresent": 1599,
-      "missing": 1,
-      "wrongScript": 3,
+      "keysPresent": 1594,
+      "missing": 5,
+      "wrongScript": 0,
       "untranslated": 0,
       "strandedNative": 0,
       "review": 3,
       "samples": {
         "missing": [
+          "hero.subhead",
+          "hero.video.label",
+          "hero.cta.stories",
+          "hero.stats.programs",
           "employers.why_h2a"
         ],
-        "wrongScript": [
-          {
-            "key": "cpanel.interview_title",
-            "value": "Interview Coach AI",
-            "looksLike": "Latin (en/es/fr/pt/de)"
-          },
-          {
-            "key": "cpanel.resume_title",
-            "value": "AI Resume Builder",
-            "looksLike": "Latin (en/es/fr/pt/de)"
-          },
-          {
-            "key": "portpanel.demo",
-            "value": "Demo →",
-            "looksLike": "Latin (en/es/fr/pt/de)"
-          }
-        ],
+        "wrongScript": [],
         "untranslated": [],
         "strandedNative": [],
         "review": [
