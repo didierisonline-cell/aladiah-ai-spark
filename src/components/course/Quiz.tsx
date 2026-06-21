@@ -252,6 +252,28 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
     );
   }
 
+  // No questions mapped to this quiz yet (e.g. modules whose question bank is not
+  // authored). Never render a blank question card or allow a NaN-scored submit /
+  // fake pass — show an honest "coming soon" state with a way back. (Without this
+  // guard, answers=[] makes [].every() === true, enabling Submit and scoring 0/0.)
+  if (questions.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <BookOpen className="w-12 h-12 text-primary mx-auto mb-4" />
+          <h1 className="text-2xl font-display font-bold text-foreground mb-3">Assessment coming soon</h1>
+          <p className="text-muted-foreground mb-8">
+            The questions for this module are being finalized. You can keep going through the lessons and check back soon.
+          </p>
+          <Button onClick={onBack} variant="outline" size="lg">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            {t('quiz.back')}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (showingResults && submitted && passed) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">

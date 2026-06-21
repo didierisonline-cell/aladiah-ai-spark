@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 132" role="img" aria-label="Aladiah Academy mark">
+  <title>Aladiah Academy</title>
+  <defs>
+    <!-- polished silver, lit blade (highlight→core→shadow→catch-light banding) -->
+    <linearGradient id="mS" x1="0.10" y1="0" x2="0.40" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.16" stop-color="#E9F0FA"/>
+      <stop offset="0.42" stop-color="#AEBED7"/>
+      <stop offset="0.58" stop-color="#DCE6F4"/>
+      <stop offset="0.80" stop-color="#8497B7"/>
+      <stop offset="1" stop-color="#BFCDE3"/>
+    </linearGradient>
+    <!-- polished silver, shadow blade -->
+    <linearGradient id="mSr" x1="0.10" y1="0" x2="0.40" y2="1">
+      <stop offset="0" stop-color="#D7E0EF"/>
+      <stop offset="0.20" stop-color="#A9B9D3"/>
+      <stop offset="0.50" stop-color="#6E82A6"/>
+      <stop offset="0.72" stop-color="#9DAFCB"/>
+      <stop offset="1" stop-color="#5A6E92"/>
+    </linearGradient>
+    <!-- polished gold -->
+    <linearGradient id="mG" x1="0.10" y1="0" x2="0.22" y2="1">
+      <stop offset="0" stop-color="#FFF4CC"/>
+      <stop offset="0.28" stop-color="#F7D67E"/>
+      <stop offset="0.52" stop-color="#D89B36"/>
+      <stop offset="0.72" stop-color="#F3CD72"/>
+      <stop offset="1" stop-color="#A9741F"/>
+    </linearGradient>
+    <radialGradient id="mSpec" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="mGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.1" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="mDepth" x="-30%" y="-25%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="1.4" stdDeviation="1.8" flood-color="#0A1322" flood-opacity="0.45"/>
+    </filter>
+    <clipPath id="mGlobe"><path d="M16 99 Q60 117 104 99 L104 120 Q60 134 16 120 Z"/></clipPath>
+  </defs>
+  <!-- global arc + dotted world map -->
+  <g clip-path="url(#mGlobe)" fill="#C9A24B" opacity="0.55">
+    <circle cx="42" cy="105" r="1.1"/><circle cx="50" cy="103" r="1.1"/><circle cx="58" cy="104" r="1.1"/><circle cx="66" cy="103" r="1.1"/><circle cx="74" cy="105" r="1.1"/><circle cx="80" cy="107" r="1.1"/>
+    <circle cx="46" cy="109" r="1.1"/><circle cx="54" cy="110" r="1.1"/><circle cx="62" cy="109" r="1.1"/><circle cx="70" cy="110" r="1.1"/><circle cx="78" cy="111" r="1.1"/><circle cx="38" cy="108" r="1.1"/>
+  </g>
+  <path d="M16 99 Q60 117 104 99" stroke="url(#mG)" stroke-width="2.6" fill="none" stroke-linecap="round" filter="url(#mGlow)"/>
+  <!-- metallic A-spire (two blades) with depth -->
+  <g filter="url(#mDepth)">
+    <polygon points="26,98 56,30 63,32 45,98" fill="url(#mS)"/>
+    <polygon points="94,98 64,30 57,32 75,98" fill="url(#mSr)"/>
+    <!-- bevel catch-light along inner spine of lit blade -->
+    <polygon points="56,30 60,31 58,52 56.5,50" fill="#FFFFFF" opacity="0.55"/>
+    <!-- central gold seam -->
+    <polygon points="58,72 62,72 61,96 59,96" fill="url(#mG)"/>
+    <!-- apex specular -->
+    <ellipse cx="60" cy="37" rx="5.5" ry="9" fill="url(#mSpec)" opacity="0.7"/>
+  </g>
+  <!-- hidden gold 9 at the apex -->
+  <path d="M58.5 30 C61.5 28.5 64.5 25.5 64.5 20 A5.5 5.5 0 1 0 58.8 14.8" fill="none" stroke="url(#mG)" stroke-width="3.4" stroke-linecap="round" filter="url(#mGlow)"/>
+</svg>

@@ -18,8 +18,8 @@ export default function FounderModeBadge() {
       aria-label={on ? 'Founder Mode active — tap to view as student' : 'Viewing as student — tap to re-enable Founder Mode'}
       style={{
         position: 'fixed',
-        left: 12,
-        bottom: 'calc(env(safe-area-inset-bottom, 0px) + 78px)',
+        right: 12,
+        top: 'calc(env(safe-area-inset-top, 0px) + 78px)',
         zIndex: 95,
         display: 'inline-flex', alignItems: 'center', gap: 8,
         padding: '8px 13px', borderRadius: 999, cursor: 'pointer',

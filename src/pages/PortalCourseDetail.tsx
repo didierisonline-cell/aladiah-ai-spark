@@ -7,6 +7,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import MobileCourse from '@/components/portal/MobileCourse';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { DEPRECATED_COURSE_REDIRECTS } from '@/lib/courseRedirects';
+import { roleForEmail } from '@/lib/roles';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', border:'#1E2D47', fg:'#EDF2F7', fm:'#8596AD',
@@ -26,15 +28,33 @@ export default function PortalCourseDetail() {
   const [lessonCounts, setLessonCounts] = useState<Record<string, number>>({});
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [unavailable, setUnavailable] = useState(false);
   const { t, language } = useLanguage();
   const { isPhone } = useBreakpoint();
+  const isFounder = roleForEmail(user?.email) === 'founder';
 
   useEffect(() => {
     if (!user || !courseId) return;
+    setUnavailable(false);
+    // Stale-link safety: a known deprecated course id resolves straight to its
+    // published replacement (the flagship) — no need to load the old row.
+    const mapped = DEPRECATED_COURSE_REDIRECTS[courseId];
+    if (mapped && mapped !== courseId) {
+      navigate(`/portal/course/${mapped}`, { replace: true });
+      return;
+    }
     Promise.all([
-      supabase.from('courses').select('id, title, description, translations').eq('id', courseId).single(),
+      supabase.from('courses').select('id, title, description, translations, is_published').eq('id', courseId).single(),
       supabase.from('chapters').select('id, title, description, order_index, translations').eq('course_id', courseId).order('order_index'),
     ]).then(([courseRes, chaptersRes]) => {
+      // Guard: students must not open an unpublished course. Redirect to the
+      // mapped replacement if known, else show a "course moved" state. Founders
+      // may still view historical rows (with a banner) for inspection.
+      if (courseRes.data && courseRes.data.is_published === false && !isFounder) {
+        const repl = DEPRECATED_COURSE_REDIRECTS[courseId];
+        if (repl) { navigate(`/portal/course/${repl}`, { replace: true }); return; }
+        setUnavailable(true); setLoading(false); return;
+      }
       if (courseRes.data) setCourse(courseRes.data);
       const chaps = chaptersRes.data || [];
       setChapters(chaps);
@@ -75,6 +95,24 @@ export default function PortalCourseDetail() {
     </div>
   );
 
+  // Unpublished / retired course opened by a student (stale link with no mapped
+  // replacement) — do not render old content; point them back to the catalog.
+  if (unavailable) return (
+    <PortalShell background={DS.bg}>
+      <main style={{ padding: '4rem 2.5rem', background: DS.bg, textAlign: 'center', color: DS.fg }}>
+        <div style={{ fontSize: 32, marginBottom: '.75rem' }}>📦</div>
+        <h1 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '.5rem' }}>This course has moved</h1>
+        <p style={{ fontSize: 14, color: DS.fm, maxWidth: 460, margin: '0 auto 1.5rem' }}>
+          This course is no longer available here. Browse the current catalogue for the up-to-date program.
+        </p>
+        <button onClick={() => navigate('/portal/courses')}
+          style={{ background: DS.blue, border: 'none', borderRadius: '.6rem', color: '#fff', fontSize: 13, fontWeight: 700, padding: '10px 22px', cursor: 'pointer' }}>
+          Go to courses
+        </button>
+      </main>
+    </PortalShell>
+  );
+
   if (isPhone) return <MobileCourse course={course} chapters={chapters} lessonCounts={lessonCounts} completed={completed} />;
 
   return (
@@ -88,6 +126,13 @@ export default function PortalCourseDetail() {
           >
             {t('course.back')}
           </button>
+
+          {/* Founder-only notice: viewing a historical/unpublished course row. */}
+          {course && course.is_published === false && isFounder && (
+            <div style={{ marginBottom: '1.25rem', padding: '.7rem 1rem', borderRadius: '.6rem', background: DS.od, border: `1px solid ${DS.ob}`, color: DS.gold, fontSize: 12.5, fontWeight: 600 }}>
+              ⚠️ Founder view: this course is <strong>unpublished</strong> (historical row, not student-facing). Students are redirected to the published flagship.
+            </div>
+          )}
 
           {/* Course Hero */}
           {course && (

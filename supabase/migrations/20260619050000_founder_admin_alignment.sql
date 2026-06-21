@@ -13,8 +13,9 @@
 --   for the aligned founder set.
 --
 -- ALIGNED FOUNDER SET (must match FOUNDER_EMAILS in src/lib/roles.ts):
---   didier@aladiahacademy.com, didierisonline@gmail.com
---   (legacy didiermbok@yahoo.com intentionally NOT an admin — least privilege.)
+--   didiermbok@yahoo.com, didier@aladiahacademy.com, didierisonline@gmail.com
+--   (didiermbok@yahoo.com is the founder's original identity — retained as
+--    admin during launch readiness; tighten later if ever formally retired.)
 -- =============================================================================
 
 BEGIN;
@@ -27,7 +28,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  IF NEW.email IN ('didier@aladiahacademy.com', 'didierisonline@gmail.com') THEN
+  IF NEW.email IN ('didiermbok@yahoo.com', 'didier@aladiahacademy.com', 'didierisonline@gmail.com') THEN
     INSERT INTO public.user_roles (user_id, role)
     VALUES (NEW.id, 'admin')
     ON CONFLICT (user_id, role) DO NOTHING;
@@ -40,18 +41,18 @@ $$;
 INSERT INTO public.user_roles (user_id, role)
 SELECT u.id, 'admin'
 FROM auth.users u
-WHERE lower(u.email) IN ('didier@aladiahacademy.com', 'didierisonline@gmail.com')
+WHERE lower(u.email) IN ('didiermbok@yahoo.com', 'didier@aladiahacademy.com', 'didierisonline@gmail.com')
 ON CONFLICT (user_id, role) DO NOTHING;
 
 -- 3) Revoke any stray admin not in the aligned set (least privilege) ----------
--- Removes admin from accounts that are NOT a current founder email (e.g. the
--- legacy yahoo account, or any manually-granted admin). Comment out if you keep
--- additional staff admins.
+-- Removes admin from accounts that are NOT a current founder email (e.g. any
+-- manually-granted admin). The three aligned founder emails are preserved.
+-- Comment out if you keep additional staff admins.
 DELETE FROM public.user_roles ur
 WHERE ur.role = 'admin'
   AND ur.user_id NOT IN (
     SELECT u.id FROM auth.users u
-    WHERE lower(u.email) IN ('didier@aladiahacademy.com', 'didierisonline@gmail.com')
+    WHERE lower(u.email) IN ('didiermbok@yahoo.com', 'didier@aladiahacademy.com', 'didierisonline@gmail.com')
   );
 
 COMMIT;

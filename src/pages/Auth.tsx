@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { getAttribution } from '@/lib/attribution';
 import { GraduationCap, Mail, Lock, User, Linkedin, Phone, ShieldCheck, CheckCircle, Zap, Crown, MailCheck, Eye, EyeOff, Loader2, KeyRound, Info, AlertCircle } from 'lucide-react';
 import Header from '@/components/Header';
 import Logo from '@/components/Logo';
@@ -108,6 +109,7 @@ const Auth = () => {
               linkedin_url: linkedIn,
               phone_number: phone,
               tier: selectedTier === 'free' ? 'starter' : 'accelerator',
+              ...getAttribution(), // first-party attribution: utm_*, gclid, fbclid, referral_code, landing_page, first_seen_at
             },
           },
         });

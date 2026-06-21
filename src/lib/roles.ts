@@ -1,6 +1,7 @@
 // =============================================================================
 // Role middleware — the single source of truth for who is a founder vs student.
 // Priority #1: Founder vs Student separation.
+//   - didiermbok@yahoo.com       → role 'founder'  (original founder identity)
 //   - didier@aladiahacademy.com  → role 'founder'  (primary / intended)
 //   - didierisonline@gmail.com   → role 'founder'  (the active Supabase Auth
 //                                   account during the email transition)
@@ -11,14 +12,15 @@
 // public.user_roles (migration 20260619050000_founder_admin_alignment.sql). All
 // server-side security keys off user_roles.role = 'admin', so an email here that
 // is not also granted admin would get founder UI but no DB powers, and vice
-// versa. The legacy didiermbok@yahoo.com was removed from BOTH sides during the
-// cutover (it never held the DB admin role).
+// versa. didiermbok@yahoo.com is intentionally retained as a founder/admin
+// during launch readiness (the founder's original identity); tighten later if
+// it is ever formally retired.
 // =============================================================================
 export type Role = 'founder' | 'student';
 
 /** Emails that are automatically granted the founder role. Keep in lockstep
  *  with the aligned founder set in the founder_admin_alignment migration. */
-export const FOUNDER_EMAILS = ['didier@aladiahacademy.com', 'didierisonline@gmail.com'];
+export const FOUNDER_EMAILS = ['didiermbok@yahoo.com', 'didier@aladiahacademy.com', 'didierisonline@gmail.com'];
 
 export const FOUNDER_HOME = '/founder';
 export const STUDENT_HOME = '/portal';
