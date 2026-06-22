@@ -29,7 +29,7 @@
 | ⚠️ Stat unverified | LinkedIn 09: "87M PMI shortage" | Source: PMI Talent Gap 2023 — confirm year/version | QA Director |
 | ⚠️ Salary data | Carousel 03: Africa salary ranges | Verify against LinkedIn Salary Insights + local market data | QA Director |
 
-**RULE:** No asset with an ⚠️ flag is approved for publication until the flag is cleared and replaced with a sourced citation inline.
+**RULE:** No asset with an ⚠️ flag is approved for publication until the flag is cleared and replaced with a sourced citation inline. All flagged statistics are now tracked in `MARKETING_CLAIMS_REGISTRY.md` (claims E-01 through E-11). An asset cannot pass the Accuracy gate while any of its claims are `BLOCKED` in the registry.
 
 ---
 

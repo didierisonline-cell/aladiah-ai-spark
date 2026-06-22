@@ -56,13 +56,29 @@ CMO
 │   ├── Compliance QA
 │   └── Performance QA
 │
-└── Director of Employment Outcomes
-    ├── Resume Reviews
-    ├── Interview Preparation
-    ├── Employer Outreach
-    ├── Placement Partnerships
-    └── Success Stories
+├── Director of Employment Outcomes
+│   ├── Resume Reviews
+│   ├── Interview Preparation
+│   ├── Employer Outreach
+│   ├── Placement Partnerships
+│   └── Success Stories
+│
+└── Director of Social Proof
+    ├── Testimonials
+    ├── Student Stories
+    ├── Certificates Earned
+    ├── Placements
+    ├── Salary Increases
+    ├── Reviews
+    └── Case Studies
 ```
+
+> **Social Proof feeds the flywheel's most powerful loop:**
+> `Student Outcome → Social Proof → Trust → Enrollment → Student Outcome`
+> Employment Outcomes *produces* the outcome. Social Proof *converts it into
+> a published, evidence-backed asset* that recruits the next student. The two
+> roles are partners: every placement the Employment Outcomes Director closes
+> is a raw input the Social Proof Director turns into a proof asset.
 
 ---
 
@@ -477,6 +493,56 @@ If any answer is missing, the work is not done.
 | Resume reviews completed | Weekly |
 
 **Why this matters for marketing:** Every employed graduate is a proof point that converts prospects faster than any ad campaign. One real story of career transformation — with a name, a company, and a salary — is worth 1,000 posts. This role feeds the Storytelling Director's most important raw material.
+
+---
+
+### Director of Social Proof
+
+**Mission:** Convert real student outcomes into published, evidence-backed proof assets that recruit the next student. Proof beats advertising.
+
+**The loop this role owns:**
+```
+Student Outcome → Social Proof → Trust → Enrollment → (next) Student Outcome
+```
+
+**Owns:**
+- Testimonials (written + video, consent-documented)
+- Student transformation stories
+- Certificates earned (verified, displayable)
+- Placements (role, company, start date)
+- Salary increases (documented, permission-granted)
+- Reviews and ratings
+- Case studies (full before/during/after narratives)
+
+**Relationship to Employment Outcomes:** Employment Outcomes *produces* the
+result (the placement, the raise). Social Proof *packages* it into a proof
+asset. Nothing the Social Proof Director publishes is invented — every asset
+traces to a real, documented outcome with consent on file.
+
+**Definition of Ready — a proof asset can be produced when:**
+- [ ] The outcome is real and documented (offer letter, certificate, or salary evidence sighted)
+- [ ] Written consent from the student is on file (name/likeness/story usage)
+- [ ] The claim is specific (no "got a great job" — name the role, the change)
+
+**Definition of Done — a proof asset ships when:**
+- [ ] Outcome verified against source evidence
+- [ ] Consent confirmed and stored
+- [ ] Asset produced (post / video / case study)
+- [ ] Logged in `MARKETING_CLAIMS_REGISTRY.md` with evidence link
+- [ ] Routed through QA (same gates as all content)
+
+**Hard rule:** No social proof asset is published unless it appears in
+`MARKETING_CLAIMS_REGISTRY.md` with a verified evidence source. A testimonial
+without documented consent is not a testimonial — it is a liability. Reject it.
+
+**KPIs:**
+
+| KPI | Frequency |
+|---|---|
+| Verified proof assets produced | Weekly |
+| Consent forms collected | Weekly |
+| Proof assets published | Weekly |
+| Enrollment attributed to proof content | Monthly |
 
 ---
 
