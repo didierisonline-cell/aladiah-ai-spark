@@ -15,14 +15,12 @@ Deno.serve(async (req) => {
     });
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const body = await req.text();
-    let event: Stripe.Event;
-    if (STRIPE_WEBHOOK_SECRET) {
-      const sig = req.headers.get("stripe-signature");
-      if (!sig) throw new Error("Missing stripe-signature header");
-      event = await stripe.webhooks.constructEventAsync(body, sig, STRIPE_WEBHOOK_SECRET);
-    } else {
-      event = JSON.parse(body);
-    }
+    // SECURITY: always verify the Stripe signature. Never accept unsigned JSON — that would
+    // let anyone POST a forged checkout.session.completed and grant themselves a paid tier.
+    if (!STRIPE_WEBHOOK_SECRET) throw new Error("Stripe webhook secret not configured");
+    const sig = req.headers.get("stripe-signature");
+    if (!sig) throw new Error("Missing stripe-signature header");
+    const event: Stripe.Event = await stripe.webhooks.constructEventAsync(body, sig, STRIPE_WEBHOOK_SECRET);
 
     console.log(`Stripe event: ${event.type}`);
 
@@ -30,6 +28,9 @@ Deno.serve(async (req) => {
       const session = event.data.object as Stripe.Checkout.Session;
       const email = session.customer_email || session.metadata?.email || session.customer_details?.email;
       const tier = session.metadata?.tier || "t2";
+      // Validate tier against the known set so a malformed/unexpected metadata value can
+      // never be written as a subscription tier.
+      if (!["t1", "t2", "t3"].includes(tier)) throw new Error(`Invalid tier in metadata: ${tier}`);
       const userId = session.metadata?.user_id;
       const customerId = session.customer as string;
       const subscriptionId = session.subscription as string;
@@ -79,14 +80,6 @@ Deno.serve(async (req) => {
         tier: tier,
         free_course_completed: false,
       }, { onConflict: "user_id" });
-      console.log(`Profile tier updated to ${tier}`);
-
-      // Also update profiles.tier so frontend unlocks immediately
-      await supabase.from('profiles').upsert({
-        user_id: resolvedUserId,
-        tier: tier,
-        free_course_completed: false,
-      }, { onConflict: 'user_id' });
       console.log(`Profile tier updated to ${tier}`);
 
       try {
