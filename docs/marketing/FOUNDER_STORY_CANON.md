@@ -53,10 +53,14 @@ refusal that maps to the mission:
 1. **No invented biography.** Only the facts table above. No invented dates,
    schools, siblings, employers, diplomatic postings, or anecdotes presented as
    fact. Emotional narrative is allowed; *new facts* are not.
-2. **No fabricated metrics.** Any number — salary, success rate, student count,
-   time-to-job, partner name/logo — must be written as `[VERIFY: …]` until the
-   founder supplies a real, defensible figure. Aligns with the Truth Dashboard
-   canon (RevenueTruth / EmploymentOutcomes).
+2. **No fabricated metrics — evidence standard (founder-ratified).** Any statistic
+   shown publicly — salary, placement/success rate, student count, corporate
+   partner, time-to-job, average increase, "success stories" — must carry all four:
+   **Source · Date · Owner · Evidence.** Until it does, it stays `[VERIFY: …]` and
+   **a metric without all four is REJECTED at review** (it does not publish).
+   Examples that must be evidence-backed before use: "95% placement rate", "500
+   students", "20 corporate partners", "average salary increase", named success
+   stories. Aligns with the Truth Dashboard canon (RevenueTruth / EmploymentOutcomes).
 3. **Protected terms verbatim:** Aladiah Academy, Prof. Didier, Talent Score™,
    All-Access Pass™ (see `docs/i18n/PROTECTED_TERMS.md`).
 4. **Do not publish.** Everything is a draft at `pending_approval` for founder

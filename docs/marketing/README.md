@@ -44,8 +44,10 @@ Tracked here so nothing is invented; assets to be produced in Canva Pro:
 ## QA gate (every asset must pass before founder approval)
 
 1. **No invented biography** — only `FOUNDER_STORY_CANON.md` facts.
-2. **No fabricated metrics** — all numbers/prices/outcomes are `[VERIFY]` until
-   the founder supplies a real, defensible figure.
+2. **No fabricated metrics (evidence standard)** — every public statistic must
+   carry **Source · Date · Owner · Evidence**, or it is **REJECTED**. Until it has
+   all four it stays `[VERIFY]`. (e.g. placement rate, student count, partners,
+   salary increase, success stories.)
 3. **Protected terms verbatim** — Aladiah Academy · Prof. Didier · Talent Score™ ·
    All-Access Pass™ (`docs/i18n/PROTECTED_TERMS.md`).
 4. **No publishing** — staged at `pending_approval` for `/admin/marketing-agent`.

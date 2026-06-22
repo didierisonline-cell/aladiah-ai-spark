@@ -16,13 +16,14 @@ Deno.serve(async (req) => {
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const body = await req.text();
     let event: Stripe.Event;
-    if (STRIPE_WEBHOOK_SECRET) {
-      const sig = req.headers.get("stripe-signature");
-      if (!sig) throw new Error("Missing stripe-signature header");
-      event = await stripe.webhooks.constructEventAsync(body, sig, STRIPE_WEBHOOK_SECRET);
-    } else {
-      event = JSON.parse(body);
-    }
+    // SECURITY: signature verification is MANDATORY and fail-closed. An unsigned
+    // fallback (JSON.parse) would let anyone POST a forged checkout.session.completed
+    // with an arbitrary metadata.tier / metadata.user_id and grant themselves a paid
+    // subscription — the core tier-spoofing vector. STRIPE_WEBHOOK_SECRET must be set.
+    if (!STRIPE_WEBHOOK_SECRET) throw new Error("STRIPE_WEBHOOK_SECRET not configured");
+    const sig = req.headers.get("stripe-signature");
+    if (!sig) throw new Error("Missing stripe-signature header");
+    event = await stripe.webhooks.constructEventAsync(body, sig, STRIPE_WEBHOOK_SECRET);
 
     console.log(`Stripe event: ${event.type}`);
 
@@ -79,14 +80,6 @@ Deno.serve(async (req) => {
         tier: tier,
         free_course_completed: false,
       }, { onConflict: "user_id" });
-      console.log(`Profile tier updated to ${tier}`);
-
-      // Also update profiles.tier so frontend unlocks immediately
-      await supabase.from('profiles').upsert({
-        user_id: resolvedUserId,
-        tier: tier,
-        free_course_completed: false,
-      }, { onConflict: 'user_id' });
       console.log(`Profile tier updated to ${tier}`);
 
       try {
