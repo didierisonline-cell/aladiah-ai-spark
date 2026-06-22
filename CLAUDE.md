@@ -2,7 +2,7 @@
 
 ## Read before doing anything
 
-## Required Reading
+**Required Reading:**
 
 Read **`/docs/standards/LAUNCH_DECISION_PRINCIPLE.md`** at the start of every session.
 
