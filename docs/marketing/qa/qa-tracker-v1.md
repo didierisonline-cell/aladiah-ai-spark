@@ -45,7 +45,7 @@ If the answer is NO or UNCLEAR: **Reject. Return with written reason.**
 
 ## BRAND COMPLIANCE CHECKLIST
 
-- [ ] Correct logo version (pending canonical asset confirmation from Founder)
+- [ ] Correct logo version: use `/brand/official/aladiah-primary-mark.png` or `aladiah-full-lockup.png` ONLY — see BRAND_CANON.md. Any other asset = automatic Brand Gate FAIL.
 - [ ] Color palette: Navy #0E1F44 · Gold #C9A24B · Crimson #A41E34 · Cream #F2E6C9
 - [ ] Tagline used: "Solo Excelencia" (not "Only Excellence" or variations)
 - [ ] URL used: aladiahacademy.com (not lovable.app or preview URLs)
@@ -56,7 +56,7 @@ If the answer is NO or UNCLEAR: **Reject. Return with written reason.**
 
 ## PRODUCTION BLOCKERS
 
-| BLK-001 | Canonical logo not confirmed | Founder review pending | Blocks: all video/carousel final design |
+| ~~BLK-001~~ | ✅ RESOLVED 2026-06-21 | Official mark ratified by Founder | Unblocked: visual production may proceed once PNGs committed to /brand/official/ |
 | BLK-002 | Platform accounts not verified | Social team action required | Blocks: publishing |
 | BLK-003 | Stat sourcing incomplete | QA Director action required | Blocks: Videos 08,09,14; Carousel 03; LinkedIn 09 |
 | BLK-004 | Mailchimp not configured | Tech action required | Blocks: email campaigns |

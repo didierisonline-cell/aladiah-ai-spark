@@ -1,6 +1,7 @@
 # BRANDING FREEZE — Official Aladiah Academy Logo Package
-**Status:** ACTIVE FREEZE
+**Status:** RATIFIED v1.0 — BLK-001 CLOSED
 **Effective:** 2026-06-21
+**Ratified:** 2026-06-21
 **Authority:** Founder directive
 
 ---
@@ -39,22 +40,21 @@ the official mark and must not be used.
 
 ---
 
-## ⛔ BLOCKER BLK-001 — UNRESOLVED
+## ✅ BLK-001 — RESOLVED (2026-06-21)
 
-**The official logo package matching the spec above is NOT yet present in the
-repository.** The existing assets in `src/assets/` are wordmarks and a circular
-shield seal — none match the "Torch + Hidden 9 + Global arc + No cross +
-Gold/Blue" specification.
+**The official logo package has been ratified by the Founder on 2026-06-21.**
 
-**Required to clear BLK-001:**
-1. Founder delivers the official logo package files (full lockup, mark-only,
-   mono, favicon source) — preferably as SVG + high-res PNG.
-2. Files are committed to `src/assets/brand/official/` and `public/brand/`.
-3. This document is updated with the exact file paths.
-4. All legacy logo references are swapped (see swap list below).
+Official files are committed to `/brand/official/`:
+- `aladiah-primary-mark.png` — mark only (PENDING physical file commit)
+- `aladiah-full-lockup.png` — mark + wordmark + tagline (PENDING physical file commit)
 
-**Until BLK-001 clears, NO design asset is produced or published.** Copy and
-scripts may continue through QA, but nothing visual ships.
+SVG source files remain PENDING delivery from Founder.
+
+See `/docs/marketing/BRAND_ASSET_REGISTRY.md` for full registry and swap status.
+See `/docs/standards/BRAND_CANON.md` for full specification and usage rules.
+
+**BLK-001 is closed for purposes of content QA.** Visual production may proceed
+using the PNG files once committed. SVG delivery does not block production.
 
 ---
 

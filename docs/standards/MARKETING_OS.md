@@ -398,7 +398,7 @@ Submitting a report that says "I was working on growth" is not a report. Reject 
 - [ ] All numbers sourced
 
 **Gate 2 — Brand**
-- [ ] Correct logo version (approved canonical asset)
+- [ ] Correct logo version: `/brand/official/aladiah-primary-mark.png` or `aladiah-full-lockup.png` ONLY — see `BRAND_CANON.md`. Any other asset = automatic fail.
 - [ ] Correct color palette
 - [ ] Correct voice (authoritative, not casual; professional, not corporate)
 - [ ] Correct language (aligned with NORTH_STAR.md mission)
