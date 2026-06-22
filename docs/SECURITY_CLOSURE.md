@@ -31,32 +31,37 @@ env before deploy, or webhooks will (correctly) be rejected.
 
 ---
 
-## SEC-002 — create-checkout trusts client tier / priceId / userId · CRITICAL · [NEEDS FOUNDER]
+## SEC-002 — create-checkout trusted client tier / priceId / userId · CRITICAL · [APPLIED — server-side; userId follow-up pending]
 
-**Evidence:** `supabase/functions/create-checkout/index.ts:13,27-28` and
-`supabase/config.toml` (`[functions.create-checkout] verify_jwt = false`):
-```ts
-const { priceId, email, tier, userId, … } = await req.json();   // all client-supplied
-metadata: { tier: tier || "t1", user_id: userId || "" }          // tier not derived from price
-```
-**Risk:** the caller can send a **cheap `priceId` with `tier:"t3"`** (pay little,
-get Elite), or set `userId` to another account. `tier` flows through metadata into
-the subscription, so this is a real tier-spoofing path independent of SEC-001.
-**Recommended fix (reviewable — needs your real Stripe price IDs):**
-1. **Derive tier server-side from `priceId`**, ignore any client `tier`:
-   ```ts
-   // env STRIPE_PRICE_TIER_MAP = {"price_xxx":"t1","price_yyy":"t2","price_zzz":"t3"}
-   const MAP = JSON.parse(Deno.env.get("STRIPE_PRICE_TIER_MAP") || "{}");
-   const tier = MAP[priceId];
-   if (!tier) throw new Error("Unknown priceId");   // fail closed
-   ```
-2. **Authenticate the caller** instead of trusting `userId`: flip
-   `verify_jwt = true` for `create-checkout` and read the user id from the verified
-   JWT (`supabase.auth.getUser(token)`), not the request body.
-3. Keep `email` only as a Stripe display hint; never as an identity key.
-> Not auto-applied: it changes the checkout contract and requires your real price
-> IDs + a frontend check that it still sends the auth header. Approve and provide
-> the price→tier mapping and I'll implement + verify.
+**Was (vulnerable):** `create-checkout` read `tier`, `priceId`, `userId` straight
+from the request body and used them: `metadata: { tier: tier || "t1", user_id:
+userId || "" }`. A caller could send a **cheap `priceId` with `tier:"t3"`** (pay
+little, get Elite) — tier flowed through metadata into the subscription.
+
+**Fix applied (this PR):**
+1. **Tier is derived server-side from `priceId`** via a canonical price→tier map
+   (`buildPriceTierMap()`), sourced from env (`STRIPE_PRICE_FOUNDATION/ACCELERATOR/
+   ANNUAL/ELITE` + optional `STRIPE_PRICE_TIER_MAP` JSON). The client `tier` is no
+   longer destructured or trusted.
+2. **Unknown/unconfigured `priceId` is rejected** (fail closed) — the client can
+   only check out a *known* price, and the granted tier is always the one bound to
+   that price. The cheap-price/expensive-tier mismatch is now impossible.
+3. **Identity binding:** when a real user access token is present in the
+   `Authorization` header, the **verified** user id wins over the client claim.
+
+**Residual (userId) — follow-up, needs a small frontend change:** today the
+frontend sends either no token (`/api/create-checkout` proxy, `Auth.tsx`) or the
+**anon** key (`Enroll.tsx`), not the user's session JWT — so the verified-id path
+is usually inert and `userId` still falls back to the client claim. Because tier
+can no longer be escalated, the only residual is paying to upgrade *another* user's
+account (low incentive). To fully close it: have all checkout call sites send the
+user's `access_token`, then set `verify_jwt = true` for `create-checkout` and drop
+the client `userId`. Tracked here; not in this PR (changes runtime auth contract).
+
+**⚠️ Deploy requirement:** the server env must define the `STRIPE_PRICE_*` values
+(matching the live Stripe price IDs the frontend uses, incl. the accelerator price
+currently in `VITE_STRIPE_PRICE_ACCELERATOR`). With no prices configured the map is
+empty and **all** checkouts fail closed — secure, but it must be set before deploy.
 
 ---
 
@@ -102,7 +107,7 @@ redeploy → verify).
 | ID | Area | Severity | Status |
 |----|------|----------|--------|
 | SEC-001 | Webhook signature | CRITICAL | ✅ Applied (fail-closed) |
-| SEC-002 | create-checkout tier spoofing | CRITICAL | ⚠️ Needs founder (price map + auth) |
+| SEC-002 | create-checkout tier spoofing | CRITICAL | ✅ Applied server-side (price→tier map, fail-closed); userId follow-up pending |
 | SEC-003 | Cron secret gating | LOW | ✅ Verified OK (jwt-gated) |
 | SEC-004 | Anon key hardcoded / rotation | MEDIUM | ◻️ Partial — fix on request |
 
