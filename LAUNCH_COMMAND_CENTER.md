@@ -210,6 +210,41 @@ This is the single source of truth for what blocks Aladiah's launch. Every block
 
 ---
 
+## SUSPECTED / HYPOTHESIS (No Evidence Yet)
+
+### HYP-001: Certificate Issuance Broken?
+
+| Field | Value |
+|-------|-------|
+| **Title** | Do students actually NOT receive certificates after completing the BA program? |
+| **Status** | HYPOTHESIS — Conflicting reports. Earlier reports claim capability exists; code scan found no trigger. Unresolved. |
+| **How to Prove** | Founder Validation Runbook: Complete BA program, check PortalCertifications. Screenshot of success or failure. |
+| **Evidence Link** | Pending runbook execution |
+
+---
+
+### HYP-002: Capstone Form Broken?
+
+| Field | Value |
+|-------|-------|
+| **Title** | Is there actually no capstone submission form? |
+| **Status** | HYPOTHESIS — Code scan shows empty "Coming Soon" placeholder. But earlier reports claim "Student UI, capstone submission, founder approval queue built and verified." Which is true? |
+| **How to Prove** | Founder Validation Runbook: Navigate to PortalPortfolio after completing BA. Is there a form? Screenshot. |
+| **Evidence Link** | Pending runbook execution |
+
+---
+
+### HYP-003: Completion Gate Broken?
+
+| Field | Value |
+|-------|-------|
+| **Title** | Is there actually no course completion logic? |
+| **Status** | HYPOTHESIS — Code scan shows per-quiz tracking only, no course-level completion. But earlier reports claim "completion engine, eligibility gate, certificate gate already exist." Which is true? |
+| **How to Prove** | Founder Validation Runbook: Complete final BA module, check profile. Is completion recorded? Query database. |
+| **Evidence Link** | Pending runbook execution |
+
+---
+
 ## RESOLVED BLOCKERS
 
 *None yet. Registry started 2026-06-21.*
@@ -320,14 +355,137 @@ After P0 and P1, fix the free-tier redirect flow.
 
 ---
 
+## Evidence Requirement Rule
+
+**A blocker cannot be added to this registry without proof.**
+
+Proof is one of:
+- **Screenshot** (UI state, error message)
+- **Query result** (database state, missing row)
+- **Log** (error log, webhook failure, timeout)
+- **Video** (recorded walkthrough showing failure)
+- **Error message** (stack trace, API response)
+
+If a blocker is suspected but evidence does not exist yet:
+- Status: `HYPOTHESIS`
+- Do not assign owner, target date, or severity
+- Add to a separate "SUSPECTED" section
+- Move to OPEN BLOCKERS only when evidence is gathered
+
+**Why:** Hypotheses are free to generate. Evidence costs time to collect. By separating the two, the team avoids solving problems that may not exist.
+
+---
+
 ## How to Update This Registry
 
-1. **New Blocker Identified:** Add row under OPEN BLOCKERS. Assign BLK-### (sequential). Populate all fields. Severity must be Blocker, Major, or Minor.
-2. **Blocker Closed:** Move row to RESOLVED BLOCKERS, add `Closed: YYYY-MM-DD` and `Resolution: <brief summary>`.
-3. **Evidence Link:** Cite specific code files (file:line), PR numbers, or test results. Evidence is proof, not opinion.
-4. **Daily Update:** Refresh "Last Updated" and regenerate scorecard. CEO Brief is auto-generated from scorecard + open blockers.
+1. **New Blocker Identified:** Do not add to OPEN BLOCKERS yet. First gather evidence (screenshot, query, log, etc.).
+2. **Evidence Collected:** Add row under OPEN BLOCKERS. Assign BLK-### (sequential). Populate all fields including Evidence type and link. Severity must be Blocker, Major, or Minor.
+3. **Hypothesis (No Evidence Yet):** Add to SUSPECTED section with status HYPOTHESIS. When evidence arrives, promote to OPEN BLOCKERS.
+4. **Blocker Closed:** Move row to RESOLVED BLOCKERS, add `Closed: YYYY-MM-DD` and `Resolution: <brief summary>` with evidence link.
+5. **Daily Update:** Refresh "Last Updated" and regenerate scorecard. CEO Brief is auto-generated from scorecard + open blockers (HYPOTHESIS not included in counts).
+
+---
+
+## NEXT 72 HOURS — FREEZE & FOCUS
+
+**Freeze:** All new feature work, all program expansion, all architecture decisions.
+
+**Focus:** Only these three workstreams.
+
+### Hour 0–24: SEC-002 Tier Spoofing Fix
+
+**Owner:** Security Lead  
+**Task:** Fix vulnerability: authenticated students can access paid content without active subscription.
+
+**Evidence of Problem:**
+- Code: ChapterView.tsx checks `profile?.tier === 'starter'` (line 298) but no server-side subscription validation
+- Risk: Student can craft client-side tier change and see paid content
+
+**Acceptance Criteria:**
+- Server validates subscription status before rendering paid lessons
+- Test: Unauthenticated request to paid lesson endpoint returns 403
+- Test: Authenticated user without active subscription cannot access paid content
+
+**Target:** 2026-06-22 09:00 AM
+
+---
+
+### Hour 1–4: Founder Validation Runbook Execution
+
+**Owner:** Founder  
+**Time Required:** 2–4 hours (real time, not parallel)  
+**What:** Walk the [Founder Validation Runbook](#founder-validation-runbook) on the live site (https://aladiahacademy.com).
+
+**Required Output:** For each of the 7 stages, screenshot:
+- Success (form loaded, data saved, etc.) **or**
+- Failure (error message, missing button, etc.)
+
+**Output Format:** Markdown file with stage-by-stage screenshots + brief note per stage (worked / failed / not applicable).
+
+**Target:** 2026-06-22 or 2026-06-23 EOD
+
+---
+
+### Hour 0–4 (Parallel to above): Revalidate HYP-001/002/003
+
+**Owner:** QA Lead  
+**Task:** While founder runs the runbook, search codebase for:
+1. **completion_date** or **course_completed** logic (HYP-003)
+2. **capstone_submission** form or endpoint (HYP-002)
+3. **certificate issuance trigger** on program completion (HYP-001)
+
+**Evidence Form:** For each, report either:
+- "Found in file X:line Y" (provide code snippet) **or**
+- "Not found after grep of src/ supabase/ api/" (conclusive null result)
+
+**Target:** 2026-06-22 EOD
+
+---
+
+### Hour 4 (After HYP validation + runbook): Decision Gate
+
+**Input:**
+- Founder runbook: passed / failed / partial
+- HYP-001/002/003 revalidation: found / not found
+
+**Decision Tree:**
+
+```
+IF runbook passes all 7 stages:
+  → "MVP launch candidate"
+  → Close HYP-001, HYP-002, HYP-003 (phantom)
+  → Proceed to launch (go/no-go on SEC blockers only)
+
+IF runbook fails at stage 5 (capstone):
+  → HYP-002 confirmed as real blocker
+  → Assign: Frontend + Backend (2 days)
+  → Retest after fix
+
+IF runbook fails at stage 6 (certificate):
+  → HYP-001 confirmed as real blocker
+  → Assign: Backend (2 hours for record only, or 1–2 days for PDF)
+  → Retest after fix
+
+IF runbook fails at stage 4 (final exam):
+  → New blocker discovered (not in HYP list)
+  → Add to OPEN BLOCKERS with screenshot evidence
+  → Assign + estimate
+```
+
+**Target:** 2026-06-23 10:00 AM (decision communicated)
+
+---
+
+## The Rule
+
+**Do not code anything in P2 until P0 and P1 are complete.**
+
+- P0 = SEC blockers (4 days, in progress)
+- P1 = Founder Validation Runbook + decision (4 hours + 24 hrs)
+
+If the runbook passes, launch. If it fails, fix the failures. Do not estimate hypothetical work.
 
 ---
 
 **Ratified:** 2026-06-21  
-**Version:** 1.0 (first registry, seeded with 8 blockers from live code audit + security scan)
+**Version:** 2.0 (revised with proof-based discipline; added Evidence Requirement Rule; added Founder Validation Runbook; downgraded BLK-001/002/003 to HYPOTHESIS; added explicit 72-hour action plan with decision gate)
