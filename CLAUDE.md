@@ -3,7 +3,7 @@
 ## Read before doing anything
 
 This repository is governed by the **Aladiah platform canon** in `/docs/standards`.
-Read these three documents at the start of every session, in order, and treat them as
+Read these five documents at the start of every session, in order, and treat them as
 binding:
 
 1. **`/docs/standards/NORTH_STAR.md`** — why Aladiah exists. The goal is career
@@ -13,6 +13,15 @@ binding:
    building anything.
 3. **`/docs/standards/COMPETENCY_TAXONOMY.md`** — the only approved source of competency
    slugs. Never invent slugs elsewhere; never rename an existing slug.
+4. **`/docs/standards/QA_STANDARD.md`** — what "Ready" and "Done" mean. Nothing reaches
+   Founder Review without DoR + DoD + Evidence + QA Approval. A checkbox is a claim;
+   evidence is proof. The Founder is interrupted only by Blockers, Approval requests, and
+   the daily 9 PM CEO Brief.
+5. **`/docs/standards/LAUNCH_DECISION_PRINCIPLE.md`** — how decisions are made before launch.
+   Claim → Evidence → Classification → Priority → Work. No evidence = not a blocker.
+   Conflicting evidence = hypothesis. Reproducible failure = blocker. Hypotheses don't get
+   estimated; only evidence gets assigned. This is the operating system that separates
+   launch-ready from building-forever.
 
 If a request conflicts with the canon, surface the conflict before proceeding.
 
