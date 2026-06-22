@@ -10,48 +10,49 @@ This is the single source of truth for what blocks Aladiah's launch. Every block
 
 ## OPEN BLOCKERS
 
-### BLK-001: Certificate Issuance Pipeline Missing
+### BLK-001: Certificate Issuance — EVIDENCE NEEDED
 
 | Field | Value |
 |-------|-------|
-| **Title** | Certificate table exists but no issuance trigger on course completion |
-| **Severity** | BLOCKER |
-| **Owner** | Platform Lead |
+| **Title** | Verify: can a certificate record be issued without PDF generation? |
+| **Severity** | BLOCKER (if true) / PHANTOM (if certificate record + verification page is enough) |
+| **Owner** | Founder / Platform Lead |
 | **Opened** | 2026-06-21 |
-| **Target Fix** | 2026-06-24 |
-| **Evidence** | Code: ChapterView.tsx marks free_course_completed (line 821) but never triggers certificate issuance. Database: certificates table exists (53 rows), but no edge function or backend code calls issue_certificate() on final module pass. Supabase function `auto_issue_certificate()` exists but requires manual trigger. |
-| **Status** | In Progress — investigating certificate PDF generation approach |
-| **Acceptance** | A student completes all 8 BA modules, passes final quiz, and receives a certificate ID + PDF link without manual intervention. Certificate record appears in certificates table with issued_at timestamp. Student sees certificate in PortalCertifications page. |
+| **Evidence Status** | PENDING FOUNDER VALIDATION |
+| **Question** | Does MVP require PDF certificate generation, or is a certificate record + verification URL sufficient? |
+| **Prior Reports** | CEO Agent reported "completion engine + eligibility gate + certificate gate already exist." Conflict: code scan found no issuance trigger, but earlier reports claim capability exists. Need proof. |
+| **How to Resolve** | Founder walks through BA program: completes final module → passes exam → submits capstone (mock if not ready) → checks PortalCertifications page. Does a certificate appear? Can it be verified? If yes, no blocker. If no, it's a real blocker. |
+| **Acceptance Criteria** | Student completes BA program and either (a) certificate record appears with issued_at + verification link (MVP OK), or (b) no certificate appears at all (blocker confirmed). |
 
 ---
 
-### BLK-002: Capstone Submission Form Not Implemented
+### BLK-002: Capstone Submission — EVIDENCE NEEDED
 
 | Field | Value |
 |-------|-------|
-| **Title** | No UI or backend for capstone project submission |
-| **Severity** | BLOCKER |
+| **Title** | Verify: is the capstone submission form built or not? |
+| **Severity** | BLOCKER (if missing) / PHANTOM (if built) |
 | **Owner** | Frontend Lead |
 | **Opened** | 2026-06-21 |
-| **Target Fix** | 2026-06-25 |
-| **Evidence** | Code: PortalPortfolio.tsx shows empty state ("Coming Soon"). No form UI for capstone upload. Database: program_capstones table exists (2 rows, likely seed data only). No capstone_submissions table or form endpoint. Certifications page requires "portfolio submission" for L400+ but no submission workflow exists. |
-| **Status** | Not Started — requires form design + backend endpoint |
-| **Acceptance** | A student in BA program can upload a capstone artifact (file or document link) after passing all modules. Submission is stored and linked to their portfolio. Capstone is required before certificate issuance for L400+. |
+| **Evidence Status** | CONFLICTING REPORTS |
+| **Conflict** | Earlier reports: "Student UI, capstone submission, founder approval queue" built and verified. Current scan: PortalPortfolio empty ("Coming Soon"), no form. Need clarification. |
+| **How to Resolve** | Founder navigates to BA program → completes final module → looks for capstone submission UI. Does the form exist? Can a capstone be submitted? |
+| **Acceptance Criteria** | Either (a) capstone submission form is present and functional (blocker closed), or (b) form is genuinely missing (blocker confirmed). Show screenshot. |
 
 ---
 
-### BLK-003: Course Completion Gate Not Tracked
+### BLK-003: Course Completion Gate — EVIDENCE NEEDED
 
 | Field | Value |
 |-------|-----|
-| **Title** | No platform-level "course completed" flag or trigger |
-| **Severity** | BLOCKER |
+| **Title** | Verify: does course completion logic already exist in code? |
+| **Severity** | BLOCKER (if missing) / PHANTOM (if exists) |
 | **Owner** | Backend Lead |
 | **Opened** | 2026-06-21 |
-| **Target Fix** | 2026-06-23 |
-| **Evidence** | Code: user_progress table tracks per-quiz passed flag, but NO course_completions table or aggregate completion check. ChapterView marks free_course_completed (line 821) only for free tier; paid tier has no equivalent. No final_module_passed or course_completion_date on profiles table. Certificate issuance and capstone unlocking both require this gate. |
-| **Status** | Blocked by BLK-001 (certificate issuance must trigger after course completion) |
-| **Acceptance** | When a student passes the final module quiz, a course_completions row is written with course_id, user_id, completed_at, and score. This triggers certificate issuance and capstone unlock. |
+| **Evidence Status** | CONFLICTING REPORTS |
+| **Conflict** | Earlier reports: "completion engine, eligibility gate, certificate gate already exist." Current scan: code shows per-quiz tracking only, no course-level completion. Need definitive proof. |
+| **How to Resolve** | (a) Grep codebase for course_completions table, course-level completion checks, final_module_passed logic. Does it exist? (b) Founder test: pass final BA module and check profile. Is completion recorded? |
+| **Acceptance Criteria** | Either (a) completion gate code exists (show file:line), or (b) it doesn't exist and blocker is confirmed. Do not estimate. Prove. |
 
 ---
 
@@ -130,6 +131,85 @@ This is the single source of truth for what blocks Aladiah's launch. Every block
 
 ---
 
+## FOUNDER VALIDATION RUNBOOK
+
+**Goal:** Run the complete BA student journey on the live site (https://aladiahacademy.com). Every stop in this flow is a decision point: if it works, move to the next. If it fails, open a BLK-### with screenshot evidence.
+
+**Est. Time:** 2–4 hours (includes mockups for capstone if form is missing).
+
+### Stage 1: Sign Up & Email Confirmation
+- [ ] Navigate to https://aladiahacademy.com
+- [ ] Sign up with test email (e.g., founder-test-ba@aladiahacademy.com)
+- [ ] Receive confirmation email
+- [ ] Click confirmation link
+- [ ] Land on course selection or portal
+- **Decision:** Did the free-tier redirect work as expected? Or redirect to portal? (BLK-008 indicator)
+
+### Stage 2: Enroll in BA (Paid Tier)
+- [ ] Select Business Analyst program
+- [ ] Click "Enroll" or "Subscribe"
+- [ ] Proceed to Stripe checkout (test card: 4242 4242 4242 4242)
+- [ ] Complete payment
+- [ ] Verify subscription is active in profile/settings
+- **Decision:** Is subscription immediately active, or does it require manual webhook? (BLK-007 indicator)
+
+### Stage 3: Complete One Full Module (Module 0)
+- [ ] View Module 0 lessons
+- [ ] Watch one lesson (or mock video completion)
+- [ ] Complete Module 0 quiz (pass)
+- [ ] Verify progress is recorded
+- **Decision:** Does the learning path UI work? (Expected: yes)
+
+### Stage 4: Complete BA Program (Fast-Track for Testing)
+- [ ] Admin/founder action: manually mark all other modules as completed in DB (or run test script)
+  - Reason: We don't need to sit through 8 modules; we need to test the *completion gate*
+- [ ] Simulate: student passes final BA module quiz
+- **Decision:** Does the system recognize BA as "complete"? Check profiles table / completion gate.
+
+### Stage 5: Capstone Submission (If Form Exists)
+- [ ] Navigate to PortalPortfolio
+- [ ] Look for capstone submission UI
+- **If form exists:**
+  - [ ] Submit a capstone (file, text, or link)
+  - [ ] Verify submission is stored
+- **If form does NOT exist:**
+  - [ ] Screenshot "Coming Soon" placeholder
+  - [ ] Open BLK-002 (Capstone Submission confirmed missing)
+  - [ ] Continue to Stage 6 with mock capstone data (insert row manually if needed)
+- **Decision:** Form real or phantom? (BLK-002 indicator)
+
+### Stage 6: Certificate Issuance
+- [ ] Navigate to PortalCertifications
+- [ ] Check if a certificate appears for BA program
+- **If certificate appears:**
+  - [ ] Verify it has issued_at timestamp
+  - [ ] Check if verification link works (if present)
+  - [ ] Screenshot the certificate display
+  - [ ] BLK-001 is PHANTOM (certificate system works)
+- **If NO certificate:**
+  - [ ] Screenshot the empty state
+  - [ ] Check certificates table directly (should have a row for user_id + BA course_id)
+  - [ ] If row exists but not displayed: UI bug (new BLK-##)
+  - [ ] If row does NOT exist: issuance trigger missing (BLK-001 confirmed)
+- **Decision:** Certificate issued or not? (BLK-001 indicator)
+
+### Stage 7: Founder Approval Queue (If Capstone Exists)
+- [ ] Navigate to Founder dashboard
+- [ ] Check "Pending Capstone Approvals" or similar
+- [ ] Approve the capstone
+- [ ] Verify student's certificate status updates
+- **Decision:** Approval queue wired? (Expected flow, not a blocker for MVP if capstone approval is manual)
+
+---
+
+**Runbook Output:** For each stage, document:
+- Screenshot of success or failure
+- Any error message
+- Actual behavior vs. expected behavior
+- Assign BLK-### if failure is a blocker, else mark "works"
+
+---
+
 ## RESOLVED BLOCKERS
 
 *None yet. Registry started 2026-06-21.*
@@ -140,12 +220,16 @@ This is the single source of truth for what blocks Aladiah's launch. Every block
 
 | Program | Content | Assessment | Simulation | Portfolio | Cert | Translation | Security | QA | **Overall** |
 |---------|---------|-----------|-----------|----------|------|------------|----------|----|----|
-| **BA** | 25% | 20% | 10% | 0% | 0% | 5% | 40% | 20% | **15%** |
-| **PM** | 20% | 15% | 8% | 0% | 0% | 0% | 40% | 15% | **11%** |
-| **Scrum** | 18% | 12% | 5% | 0% | 0% | 0% | 40% | 10% | **8%** |
-| **DA** | 15% | 10% | 0% | 0% | 0% | 0% | 40% | 8% | **5%** |
+| **BA** | 25% | 20% | 10% | ⏳ | ⏳ | 5% | 🔴 30% | 🔴 20% | **⏳ Pending Founder Validation** |
+| **PM** | 20% | 15% | 8% | ⏳ | ⏳ | 0% | 🔴 30% | 15% | **🔴 Blocked on Security + Validation** |
+| **Scrum** | 18% | 12% | 5% | ⏳ | ⏳ | 0% | 🔴 30% | 10% | **🔴 Blocked on Security + Validation** |
+| **DA** | 15% | 10% | 0% | ⏳ | ⏳ | 0% | 🔴 30% | 8% | **🔴 Blocked on Security** |
 
-**Legend:** Weighted by QA_STANDARD v1.3 formula. **Security blocker = 0% program score until BLK-004, BLK-005, BLK-006 closed.**
+**Legend:** 
+- 🔴 = Security blockers in progress (P0)
+- ⏳ = Certificate/Portfolio pending founder validation (P1)
+- Weighted by QA_STANDARD v1.3 formula
+- **All programs blocked on P0 security until BLK-004, BLK-005, BLK-006 resolved**
 
 ---
 
@@ -179,39 +263,60 @@ Tomorrow's Priorities:
 
 ---
 
-## LAUNCH READINESS: MVP Path
+## PRIORITY ORDER — DO NOT ESTIMATE
 
-The student journey from signup to certificate:
+### P0: Security Blockers (Confirmed, Proven)
 
-```
-✓  STAGE 1: Auth / Sign Up         IMPLEMENTED (90%)
-   └─ Issue: Free tier flow needs direct CourseSelectionGate redirect (BLK-008)
+These are evidenced by Supabase security audit. No founder validation needed.
 
-✓  STAGE 2: Payment / Subscribe    IMPLEMENTED (95%)
-   └─ Issue: Async webhook may race (BLK-007, mitigated by polling)
+1. **BLK-004** (Security DEFINER functions overpermissive) — Est. 1 day
+2. **BLK-005** (RLS policies always-true) — Est. 1 day
+3. **BLK-006** (public_profiles SECURITY DEFINER view) — Est. 0.5 days
+4. **BLK-007** (Webhook signature validation race) — Est. 1 day
 
-✓  STAGE 3: Learning Path          IMPLEMENTED (85%)
-   └─ Ready: Lessons, videos, quizzes, progress tracking all functional
+**Target:** Complete by 2026-06-22 EOD. These affect student data, payment data, founder data, and compliance. Non-negotiable for launch.
 
-✓  STAGE 4: Exam / Pass Logic      IMPLEMENTED (80%)
-   └─ Ready: Module quizzes with pass/fail gates work per-module
+---
 
-✗  STAGE 5: Capstone Submission    MISSING (0%)
-   └─ Blocker: BLK-002 — no submission form or backend
+### P1: Founder Validation Runbook (2–4 hours)
 
-✗  STAGE 6: Certificate Issuance   MISSING (0%)
-   └─ Blocker: BLK-001, BLK-003 — no completion trigger or PDF generation
-```
+Before spending 72 hours building BLK-001, BLK-002, BLK-003, prove they're real blockers.
 
-**MVP Launch Gated On:**
-1. BLK-001 (Certificate Issuance) — CRITICAL
-2. BLK-002 (Capstone Submission) — CRITICAL
-3. BLK-003 (Course Completion Gate) — CRITICAL
-4. BLK-004 (Security DEFINER cleanup) — CRITICAL
-5. BLK-005 (RLS Policy audit) — CRITICAL
-6. BLK-006 (SECURITY DEFINER view) — CRITICAL
+Run the [Founder Validation Runbook](#founder-validation-runbook) on the live site.
 
-**Launch allowed when:** All 6 blockers are closed with evidence. BLK-007 and BLK-008 (Majors) may proceed with owner + target date.
+**Output:** Screenshot evidence of what works and what fails. Every failure becomes a real BLK-### row with evidence.
+
+**Expected outcome:** One of two states:
+- **Outcome A:** "All stages work end-to-end" → BLK-001, BLK-002, BLK-003 are PHANTOM. Delete from registry. MVP is ready to launch.
+- **Outcome B:** "Capstone form missing, certificate not issued, completion gate not triggered" → BLK-001, BLK-002, BLK-003 are CONFIRMED. Re-estimate with proof.
+
+---
+
+### P2: Confirmed Blockers Only (After Runbook)
+
+Once the founder runbook proves which of BLK-001/002/003 are real:
+
+- Capstone form: 2 days (if real)
+- Course completion gate: 1 day (if real)
+- Certificate issuance: Depends on PDF requirement:
+  - **No PDF needed:** Record + verification page = 2 hours
+  - **PDF required:** Add 1–2 days for template + generation
+
+---
+
+### P3: Free-Tier Onboarding (BLK-008) — 1 day
+
+After P0 and P1, fix the free-tier redirect flow.
+
+---
+
+## MVP Launch Gated On
+
+1. **All P0 blockers closed** (Security audit findings resolved)
+2. **Founder Validation Runbook passes** (End-to-end student journey works)
+3. **Any confirmed blockers from runbook closed** (only if runbook reveals failures)
+
+**Do not launch until the founder personally walks the BA student journey on the live site and it works end-to-end.**
 
 ---
 
