@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 340" width="300" height="340" role="img" aria-label="Aladiah Academy — Full Lockup">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 340" width="360" height="340" role="img" aria-label="Aladiah Academy — Full Lockup">
   <title>Aladiah Academy Full Lockup</title>
   <desc>Official full lockup: Primary Mark above wordmark "ALADIAH ACADEMY" and tagline "Intelligence. Purpose. Impact."</desc>
 
@@ -45,12 +45,12 @@
   </defs>
 
   <!-- ── BACKGROUND ── -->
-  <rect width="300" height="340" fill="#0E1F44"/>
-  <rect width="300" height="340" fill="url(#fl-bg)" opacity="0.7"/>
+  <rect width="360" height="340" fill="#0E1F44"/>
+  <rect width="360" height="340" fill="url(#fl-bg)" opacity="0.7"/>
 
   <!-- ── MARK (primary mark, scaled and centered in upper portion) ── -->
   <!-- Translate to center of a 300-wide canvas, scale 0.76 of the 200×200 mark -->
-  <g transform="translate(150, 105) scale(0.76)">
+  <g transform="translate(180, 105) scale(0.76)">
 
     <!-- Torch head -->
     <path d="M -27 -10 L -27 -40 Q -27 -67 0 -69 Q 27 -67 27 -40 L 27 -10 Z"
@@ -124,7 +124,7 @@
   </g>
 
   <!-- ── GOLD DIVIDER ── -->
-  <rect x="60" y="195" width="180" height="0.75" fill="url(#fl-gold-h)"/>
+  <rect x="80" y="195" width="200" height="0.75" fill="url(#fl-gold-h)"/>
 
   <!-- ── WORDMARK: ALADIAH ACADEMY ── -->
   <!--
@@ -132,7 +132,7 @@
     Font stack: Trajan Pro → Times New Roman → serif (closest to classic collegiate).
     Letter-spacing set for maximum legibility at all sizes.
   -->
-  <text x="150"
+  <text x="180"
         y="225"
         font-family="'Trajan Pro', 'Times New Roman', Georgia, serif"
         font-size="22"
@@ -142,10 +142,10 @@
         letter-spacing="6.5">ALADIAH ACADEMY</text>
 
   <!-- ── DIVIDER BELOW WORDMARK ── -->
-  <rect x="90" y="235" width="120" height="0.5" fill="url(#fl-gold-h)" opacity="0.5"/>
+  <rect x="120" y="235" width="120" height="0.5" fill="url(#fl-gold-h)" opacity="0.5"/>
 
   <!-- ── TAGLINE ── -->
-  <text x="150"
+  <text x="180"
         y="260"
         font-family="'Trajan Pro', 'Times New Roman', Georgia, serif"
         font-size="10.5"

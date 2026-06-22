@@ -3,7 +3,7 @@ import { ArrowRight, Sparkles, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
-import aladiahSeal from '@/assets/aladiah-academy-seal.svg';
+import Logo from '@/components/Logo';
 
 const CTA = () => {
   const { t } = useLanguage();
@@ -77,12 +77,8 @@ const CTA = () => {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="mt-14"
           >
-            <div className="w-64 h-64 lg:w-80 lg:h-80 mx-auto drop-shadow-[0_0_30px_rgba(255,255,255,0.15)] flex items-center justify-center">
-              <img
-                src={aladiahSeal}
-                alt="Aladiah Academy Seal"
-                className="w-full h-full object-contain"
-              />
+            <div className="w-64 h-64 lg:w-80 lg:h-80 mx-auto drop-shadow-[0_0_30px_rgba(201,162,75,0.25)] flex items-center justify-center">
+              <Logo variant="mark" className="w-full h-full" />
             </div>
           </motion.div>
         </div>

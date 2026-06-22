@@ -71,7 +71,7 @@ export default function FounderWelcome({ studentName }: { studentName?: string }
               style={{ opacity: 0.12 }}
             >
               <img
-                src="/brand/seal.svg"
+                src="/brand/official/aladiah-primary-mark.svg"
                 alt=""
                 className="w-[360px] h-[360px]"
                 style={{ filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.3))' }}
