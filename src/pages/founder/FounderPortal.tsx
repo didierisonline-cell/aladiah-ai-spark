@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import FounderShell from '@/components/founder/FounderShell';
 import CEOStatusBoard from '@/components/admin/ceo/CEOStatusBoard';
+import LaunchTruthCard from '@/components/founder/LaunchTruthCard';
 import WorkforceLaunchpad from '@/components/admin/workforce/WorkforceLaunchpad';
 import { Crown } from 'lucide-react';
 
@@ -28,6 +29,7 @@ const FounderPortal = () => (
           🎓 Enter Student Portal →
         </Link>
       </div>
+      <LaunchTruthCard />
       <CEOStatusBoard />
       <div className="mt-10">
         <WorkforceLaunchpad />
