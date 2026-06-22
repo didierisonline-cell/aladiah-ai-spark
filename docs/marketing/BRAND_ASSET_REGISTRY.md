@@ -1,6 +1,6 @@
 # BRAND ASSET REGISTRY
 **The single source of truth for every official Aladiah Academy brand asset.**
-**Updated:** 2026-06-21
+**Updated:** 2026-06-22
 **Owner:** Marketing QA Director
 
 ---
@@ -23,16 +23,19 @@ If it's not in this registry as APPROVED, it is not authorized.
 
 | # | Asset | File | Location | Approved By | Date | Status |
 |---|---|---|---|---|---|---|
-| 001 | Primary Mark (PNG) | `aladiah-primary-mark.png` | `/brand/official/` | Founder | 2026-06-21 | PENDING FILE DELIVERY |
-| 002 | Full Lockup (PNG) | `aladiah-full-lockup.png` | `/brand/official/` | Founder | 2026-06-21 | PENDING FILE DELIVERY |
-| 003 | Primary Mark (SVG) | `aladiah-primary-mark.svg` | `/brand/official/` | Founder | — | PENDING |
-| 004 | Full Lockup (SVG) | `aladiah-full-lockup.svg` | `/brand/official/` | Founder | — | PENDING |
-| 005 | Mono variant (SVG) | `aladiah-mark-mono.svg` | `/brand/official/` | Founder | — | PENDING |
-| 006 | Favicon source | `aladiah-favicon.svg` | `/brand/official/` | Founder | — | PENDING |
+| 001 | Primary Mark (PNG) | `aladiah-primary-mark.png` | `/brand/official/` | Founder | 2026-06-21 | PENDING — Founder to commit official PNG |
+| 002 | Full Lockup (PNG) | `aladiah-full-lockup.png` | `/brand/official/` | Founder | 2026-06-21 | PENDING — Founder to commit official PNG |
+| 003 | Primary Mark (SVG) | `aladiah-primary-mark.svg` | `/brand/official/` | Founder | 2026-06-22 | APPROVED — SVG master committed |
+| 004 | Full Lockup (SVG) | `aladiah-full-lockup.svg` | `/brand/official/` | Founder | 2026-06-22 | APPROVED — SVG master committed |
+| 005 | Mono variant (SVG) | `aladiah-mark-mono.svg` | `/brand/official/` | Founder | 2026-06-22 | APPROVED — white/cream on transparent |
+| 006 | Favicon source (SVG) | `aladiah-favicon-source.svg` | `/brand/official/` | Founder | 2026-06-22 | APPROVED — export at 16/32/48/180/512px |
 
-> Assets 001 and 002 were ratified by Founder on 2026-06-21 as the official Aladiah Academy
-> brand mark and full lockup. Files are pending commit to `/brand/official/` — deliver via
-> Founder's local copy or direct upload to repo.
+> SVG masters (#003–006) are committed and canonical. PNGs (#001–002) are the Founder-delivered
+> raster exports — commit them to `/brand/official/` and `/public/brand/official/` to close
+> the final remaining step of BLK-001.
+>
+> **Production rule:** SVG is source of truth. PNG is the export. Canva, CapCut, website,
+> certificates, and press kit all reference `/brand/official/` as the origin.
 
 ---
 
@@ -64,16 +67,16 @@ If it's not in this registry as APPROVED, it is not authorized.
 
 ## SWAP EXECUTION STATUS
 
-These changes are required once `#001` and `#002` files are committed:
+SVG masters (#003–006) are committed — swap execution may begin. PNG files (#001–002) still pending Founder commit.
 
 | Location | Current | Target | Status |
 |---|---|---|---|
-| `src/components/Logo.tsx` | Inline shield SVG | Official mark (#001 or #002) | PENDING file delivery |
-| `src/components/Footer.tsx` | `aladiah-header-logo-new.png` | `#002 full-lockup` | PENDING |
-| `src/pages/Dashboard.tsx` | `aladiah-header-logo-new.png` | `#002 full-lockup` | PENDING |
-| `src/pages/Feedback.tsx` | `aladiah-header-logo-new.png` | `#002 full-lockup` | PENDING |
-| `index.html` favicon | `public/favicon.ico` | Regenerate from `#006` | PENDING |
-| `index.html` OG image | `aladiah-seal.png` (external) | Official hosted asset | PENDING |
+| `src/components/Logo.tsx` | Inline shield SVG | `#003 primary-mark.svg` (or `#004 full-lockup.svg`) | READY — SVG committed |
+| `src/components/Footer.tsx` | `aladiah-header-logo-new.png` | `#004 full-lockup.svg` | READY — SVG committed |
+| `src/pages/Dashboard.tsx` | `aladiah-header-logo-new.png` | `#004 full-lockup.svg` | READY — SVG committed |
+| `src/pages/Feedback.tsx` | `aladiah-header-logo-new.png` | `#004 full-lockup.svg` | READY — SVG committed |
+| `index.html` favicon | `public/favicon.ico` | Regenerate from `#006` | READY — favicon source committed |
+| `index.html` OG image | `aladiah-seal.png` (external) | `#003` hosted at `/public/brand/official/` | READY |
 
 ---
 

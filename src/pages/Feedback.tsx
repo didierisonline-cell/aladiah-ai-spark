@@ -10,7 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import ProgressBar from '@/components/ProgressBar';
 import PostCard from '@/components/community/PostCard';
 import { GraduationCap, LogOut, Send, MessageSquareText } from 'lucide-react';
-import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
+import Logo from '@/components/Logo';
 import { communityTranslations, type SupportedLanguage } from '@/utils/communityTranslations';
 
 interface PostData {
@@ -158,7 +158,7 @@ const Feedback = () => {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <img src={aladiahLogo} alt="Aladiah Academy" className="h-14 w-auto object-contain mix-blend-multiply" />
+            <Logo variant="full" className="h-14 w-auto" />
           </Link>
           <div className="flex items-center gap-3">
             <Link to="/courses"><Button variant="ghost" size="sm">{ct.myCourses}</Button></Link>

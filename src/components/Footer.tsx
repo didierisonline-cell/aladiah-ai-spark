@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import aladiahLogo from '@/assets/aladiah-header-logo-new.png';
+import Logo from '@/components/Logo';
 
 const LANGUAGES = [
   '🇺🇸 EN','🇪🇸 ES','🇫🇷 FR','🇩🇪 DE','🇨🇳 ZH','🇸🇦 AR','🇯🇵 JA',
@@ -30,7 +30,7 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '2.5rem', marginBottom: '2rem' }}>
           {/* Brand */}
           <div>
-            <img src={aladiahLogo} alt="Aladiah Academy" style={{ height: 40, width: 'auto', objectFit: 'contain', marginBottom: '0.4rem' }} />
+            <Logo variant="full" style={{ height: 40, width: 'auto', marginBottom: '0.4rem' }} />
             <div style={{ fontSize: 11, color: '#8596AD', fontStyle: 'italic', marginBottom: '0.75rem' }}>"Solo Excelencia" — Where AI Leaders Are Built</div>
             <p style={{ fontSize: 11, color: '#8596AD', lineHeight: 1.6, maxWidth: 250 }}>AI Workforce Infrastructure. 4 Schools. 30+ Programs. 20+ Languages. Global Placement Network.</p>
             <div style={{ marginTop: '0.85rem' }}>

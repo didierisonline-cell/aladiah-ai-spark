@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Aladiah Academy — Primary Mark">
+  <title>Aladiah Academy Primary Mark</title>
+  <desc>The official Aladiah Academy mark: Torch + Hidden 9 + Global Arc. Gold/Silver on Deep Blue. No cross. No shield.</desc>
+
+  <defs>
+    <!-- Silver-chrome gradient for torch body -->
+    <linearGradient id="am-silver" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#4E6480"/>
+      <stop offset="28%"  stop-color="#9BAFBF"/>
+      <stop offset="55%"  stop-color="#D2E2EE"/>
+      <stop offset="78%"  stop-color="#A8BCCF"/>
+      <stop offset="100%" stop-color="#4E6480"/>
+    </linearGradient>
+
+    <!-- Gold gradient for hidden-9, arc, and accents -->
+    <linearGradient id="am-gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#EDD878"/>
+      <stop offset="45%"  stop-color="#C9A24B"/>
+      <stop offset="100%" stop-color="#8B6218"/>
+    </linearGradient>
+
+    <!-- Subtle inner glow for gold elements -->
+    <filter id="am-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Deep-edge vignette for the background circle -->
+    <radialGradient id="am-bg" cx="50%" cy="45%" r="55%">
+      <stop offset="0%"   stop-color="#132545"/>
+      <stop offset="100%" stop-color="#060E1E"/>
+    </radialGradient>
+  </defs>
+
+  <!-- ── BACKGROUND ── -->
+  <circle cx="100" cy="100" r="98" fill="#0E1F44"/>
+  <circle cx="100" cy="100" r="96" fill="url(#am-bg)"/>
+
+  <!-- ── TORCH BODY (silver-chrome) ── -->
+
+  <!-- Head — broad architectural form, slightly curved sides -->
+  <path d="M 73 90
+           L 73 60
+           Q 73 33 100 31
+           Q 127 33 127 60
+           L 127 90
+           Z"
+        fill="url(#am-silver)"/>
+
+  <!-- Subtle vertical shadow lines on head for depth -->
+  <line x1="86"  y1="33" x2="82"  y2="88" stroke="#1A3050" stroke-width="1.2" opacity="0.22"/>
+  <line x1="114" y1="33" x2="118" y2="88" stroke="#1A3050" stroke-width="1.2" opacity="0.22"/>
+
+  <!-- Horizontal panel lines on head (architectural detail) -->
+  <rect x="73" y="73" width="54" height="2.5" rx="1" fill="#0E1F44" opacity="0.18"/>
+  <rect x="73" y="81" width="54" height="2"   rx="1" fill="#0E1F44" opacity="0.14"/>
+
+  <!-- Gold collar — where head meets shaft -->
+  <rect x="82" y="88" width="36" height="7" rx="3.5" fill="url(#am-gold)"/>
+
+  <!-- Shaft -->
+  <rect x="91" y="95" width="18" height="50" rx="2" fill="url(#am-silver)"/>
+
+  <!-- Subtle mid-band on shaft -->
+  <rect x="88" y="116" width="24" height="2.5" rx="1" fill="url(#am-gold)" opacity="0.55"/>
+
+  <!-- Gold lower collar -->
+  <rect x="87" y="143" width="26" height="4" rx="2" fill="url(#am-gold)"/>
+
+  <!-- Base flare -->
+  <path d="M 81 151
+           L 87 143
+           L 113 143
+           L 119 151
+           Q 100 157 81 151 Z"
+        fill="url(#am-silver)"/>
+
+  <!-- ── HIDDEN 9 (GOLD) ── -->
+  <!--
+    The 9 is concealed in the torch's geometry:
+    — The circle traces the torch head's upper crown (the 9's bowl)
+    — The vertical line on the right edge descends to the collar (the 9's tail)
+    Together they form the numeral 9, visible only to those who look.
+  -->
+
+  <!-- 9 circle (bowl) -->
+  <circle cx="100" cy="61"
+          r="21"
+          fill="none"
+          stroke="url(#am-gold)"
+          stroke-width="3.8"
+          filter="url(#am-glow)"/>
+
+  <!-- 9 tail — right edge, from circle down to collar -->
+  <path d="M 121 61 L 121 88"
+        fill="none"
+        stroke="url(#am-gold)"
+        stroke-width="3.8"
+        stroke-linecap="round"
+        filter="url(#am-glow)"/>
+
+  <!-- Flame tip — stylised gold tip at apex of torch -->
+  <path d="M 93 33 Q 100 18 107 33"
+        fill="none"
+        stroke="url(#am-gold)"
+        stroke-width="2.4"
+        stroke-linecap="round"/>
+
+  <!-- ── GLOBAL ARC (GOLD) ── -->
+  <!-- Primary arc — the Earth horizon, representing borderless reach -->
+  <path d="M 44 155 Q 100 132 156 155"
+        fill="none"
+        stroke="url(#am-gold)"
+        stroke-width="3.8"
+        stroke-linecap="round"
+        filter="url(#am-glow)"/>
+
+  <!-- Echo arc (subtle) -->
+  <path d="M 54 162 Q 100 142 146 162"
+        fill="none"
+        stroke="url(#am-gold)"
+        stroke-width="1.4"
+        stroke-linecap="round"
+        opacity="0.38"/>
+
+  <!-- Small star accents flanking arc (subtle) -->
+  <circle cx="56"  cy="130" r="1.4" fill="#C9A24B" opacity="0.45"/>
+  <circle cx="144" cy="130" r="1.4" fill="#C9A24B" opacity="0.45"/>
+  <circle cx="43"  cy="120" r="1.0" fill="#C9A24B" opacity="0.28"/>
+  <circle cx="157" cy="120" r="1.0" fill="#C9A24B" opacity="0.28"/>
+</svg>

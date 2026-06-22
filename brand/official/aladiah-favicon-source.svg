@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Aladiah Academy Favicon Source">
+  <title>Aladiah Academy Favicon Source</title>
+  <desc>Source SVG for favicon generation. Export at 16, 32, 48, 180, 512px. Navy background, gold hidden 9 and arc, silver torch.</desc>
+
+  <defs>
+    <linearGradient id="fv-s" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#5A6E88"/>
+      <stop offset="50%"  stop-color="#C8D8E8"/>
+      <stop offset="100%" stop-color="#5A6E88"/>
+    </linearGradient>
+    <linearGradient id="fv-g" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#EDD878"/>
+      <stop offset="100%" stop-color="#9B7522"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="64" height="64" rx="10" fill="#0E1F44"/>
+
+  <!-- Torch head (silver) -->
+  <path d="M 22 30 L 22 20 Q 22 10 32 9 Q 42 10 42 20 L 42 30 Z" fill="url(#fv-s)"/>
+
+  <!-- Gold collar -->
+  <rect x="20" y="28" width="24" height="4" rx="2" fill="url(#fv-g)"/>
+
+  <!-- Shaft -->
+  <rect x="28" y="32" width="8" height="18" rx="1.5" fill="url(#fv-s)"/>
+
+  <!-- Base -->
+  <path d="M 24 51 L 28 48 L 36 48 L 40 51 Q 32 54 24 51 Z" fill="url(#fv-s)"/>
+
+  <!-- Hidden 9 circle -->
+  <circle cx="32" cy="20" r="8" fill="none" stroke="url(#fv-g)" stroke-width="2"/>
+
+  <!-- Hidden 9 tail -->
+  <path d="M 40 20 L 40 30" fill="none" stroke="url(#fv-g)" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Flame tip -->
+  <path d="M 28 10 Q 32 4 36 10" fill="none" stroke="url(#fv-g)" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Global arc -->
+  <path d="M 12 52 Q 32 43 52 52" fill="none" stroke="url(#fv-g)" stroke-width="2" stroke-linecap="round"/>
+</svg>
