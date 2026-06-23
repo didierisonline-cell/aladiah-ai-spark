@@ -1,7 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { X, Send, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Message { role: 'user' | 'assistant'; content: string; }
+
+// Localization directive appended to the system prompt (EN/FR/ES). Empty for English.
+const LANG_DIRECTIVE: Record<string, string> = {
+  fr: ' Always respond in French (Français).',
+  es: ' Always respond in Spanish (Español).',
+};
 
 const FALLBACKS: Record<string, string> = {
   price: 'We have one simple plan: $99.99/month — full access to all programs, Prof. Didier AI voice instructor, AI Interview Coach, Resume Builder, and everything in 7 languages. Click Get Busy above to start! 🚀',
@@ -30,6 +38,7 @@ export default function HomepageBot() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const { language } = useLanguage();
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -42,33 +51,21 @@ export default function HomepageBot() {
     setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
     setLoading(true);
 
-    const apiKey = (import.meta as any).env?.VITE_ANTHROPIC_API_KEY;
-
-    if (!apiKey) {
-      setTimeout(() => {
-        setMessages(prev => [...prev, { role: 'assistant', content: getFallback(userMsg) }]);
-        setLoading(false);
-      }, 600);
-      return;
-    }
+    const system = 'You are Aladiah, the admissions assistant for Aladiah Academy. Only answer questions about programs, pricing, and enrollment. Never teach course content — direct content questions to Prof. Didier inside the course portal. Programs: Scrum Master, PMP, AI for PMs, Data Analytics, Cybersecurity, DevOps, Solution Architect, Business Analysis. Plan: All-Access Pass $99.99/mo — everything included. Always end with a gentle call to action. Keep responses under 3 sentences.'
+      + (LANG_DIRECTIVE[language] || '');
 
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
+      // Routed through the server-side ai-proxy edge function — no API key in the browser.
+      const { data, error } = await supabase.functions.invoke('ai-proxy', {
+        body: {
           model: 'claude-haiku-4-5-20251001',
           max_tokens: 250,
-          system: 'You are Aladiah, the admissions assistant for Aladiah Academy. Only answer questions about programs, pricing, and enrollment. Never teach course content — direct content questions to Prof. Didier inside the course portal. Programs: Scrum Master, PMP, AI for PMs, Data Analytics, Cybersecurity, DevOps, Solution Architect, Business Analysis. Plan: All-Access Pass $99.99/mo — everything included. Always end with a gentle call to action. Keep responses under 3 sentences.',
-          messages: messages.concat({ role: 'user', content: userMsg }).map(m => ({ role: m.role, content: m.content }))
-        })
+          system,
+          messages: messages.concat({ role: 'user', content: userMsg }).map(m => ({ role: m.role, content: m.content })),
+        },
       });
-      const data = await res.json();
-      const reply = data.content?.[0]?.text || getFallback(userMsg);
+      if (error) throw error;
+      const reply = data?.content?.[0]?.text || getFallback(userMsg);
       setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
     } catch {
       setMessages(prev => [...prev, { role: 'assistant', content: getFallback(userMsg) }]);

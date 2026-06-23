@@ -11,7 +11,12 @@ serve(async (req) => {
   }
 
   try {
-    const { mode, submission, rubric, studentContext } = await req.json();
+    const { mode, submission, rubric, studentContext, language } = await req.json();
+    const langLine = language === "fr"
+      ? "\n\nIMPORTANT: Respond in French (Français). Keep any specified JSON keys, structure, and formatting exactly as instructed above; only human-readable text values should be translated."
+      : language === "es"
+      ? "\n\nIMPORTANT: Respond in Spanish (Español). Keep any specified JSON keys, structure, and formatting exactly as instructed above; only human-readable text values should be translated."
+      : "";
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -85,7 +90,7 @@ Return JSON:
       body: JSON.stringify({
         model: "google/gemini-3-flash-preview",
         messages: [
-          { role: "system", content: systemPrompt },
+          { role: "system", content: systemPrompt + langLine },
           { role: "user", content: typeof submission === 'string' ? submission : JSON.stringify(submission || 'Analyze the student data provided in the system prompt.') },
         ],
       }),

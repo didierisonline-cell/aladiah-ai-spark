@@ -103,7 +103,12 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) throw new Error("Unauthorized");
 
-    const { action, simulation_id, day, message, ceremony } = await req.json();
+    const { action, simulation_id, day, message, ceremony, language } = await req.json();
+    const langLine = language === "fr"
+      ? "\n\nIMPORTANT: Respond in French (Français). Keep any specified JSON keys, structure, and formatting exactly as instructed above; only human-readable text values should be translated."
+      : language === "es"
+      ? "\n\nIMPORTANT: Respond in Spanish (Español). Keep any specified JSON keys, structure, and formatting exactly as instructed above; only human-readable text values should be translated."
+      : "";
 
     if (action === "start") {
       const { data: sim, error } = await supabase
@@ -125,7 +130,7 @@ Also generate:
 
 Make it feel like a real enterprise Sprint Planning session.`;
 
-      const aiResponse = await callAI(openingPrompt, []);
+      const aiResponse = await callAI(openingPrompt, [], langLine);
       const parsed = parseAIResponse(aiResponse);
 
       for (const msg of parsed.messages) {
@@ -164,7 +169,7 @@ Respond in character as the relevant team members. Be realistic. Include board_u
         content: h.role === "user" ? h.content : `[${h.speaker}]: ${h.content}`,
       }));
 
-      const aiResponse = await callAI(contextPrompt, conversationHistory);
+      const aiResponse = await callAI(contextPrompt, conversationHistory, langLine);
       const parsed = parseAIResponse(aiResponse);
 
       for (const msg of parsed.messages) {
@@ -194,7 +199,7 @@ ${(dayMessages || []).map(m => `[${m.speaker || m.role}]: ${m.content}`).join('\
 
 Score this day's Scrum Master performance. Also generate an executive_report with health status, summary, risks, and next_focus. Return the score JSON and a daily risk broadcast.`;
 
-      const aiResponse = await callAI(scorePrompt, []);
+      const aiResponse = await callAI(scorePrompt, [], langLine);
       const parsed = parseAIResponse(aiResponse);
 
       if (parsed.score) {
@@ -234,7 +239,7 @@ ${day === 3 ? 'EVENT: Network peering approval is delayed. Maya flags this as a 
 
 Set the scene. If there's a Daily StandUp (every day except Day 1), team members give updates: what they did yesterday, plan today, blockers. Generate relevant emails and board_updates too.`;
 
-      const aiResponse = await callAI(prompt, []);
+      const aiResponse = await callAI(prompt, [], langLine);
       const parsed = parseAIResponse(aiResponse);
 
       for (const msg of parsed.messages) {
@@ -255,7 +260,7 @@ Set the scene. If there's a Daily StandUp (every day except Day 1), team members
   }
 });
 
-async function callAI(prompt: string, history: { role: "user" | "assistant"; content: string }[]) {
+async function callAI(prompt: string, history: { role: "user" | "assistant"; content: string }[], langLine = "") {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
   if (!LOVABLE_API_KEY) throw new Error("AI not configured");
 
@@ -268,7 +273,7 @@ async function callAI(prompt: string, history: { role: "user" | "assistant"; con
     body: JSON.stringify({
       model: "google/gemini-3-flash-preview",
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: SYSTEM_PROMPT + langLine },
         ...history,
         { role: "user", content: prompt },
       ],
