@@ -9,12 +9,16 @@
 - **Slug:** `product-builder`
 - **Mandate:** `AGENT_SPEC.md` (+ `CAREER_TRANSFORMATION_ARCHITECTURE.md`, `QUALITY_STANDARD.md`)
 - **Owns scorecards:** #3 Programs · #4 Assessments · #5 Simulations/Projects ·
-  **#2 Translation (provisional — see note)**
+  **#2 Translation** (see Localization remit below)
 
-> **Localization note:** no `localization` cell exists in the repo. Translation (#2) is a
-> top gap (6 of 7 AI tutors are English-only). Until the founder decides whether to stand
-> up a dedicated localization cell, `product-builder` owns it provisionally because it
-> authors the prompts/content. Flagged for a structural decision.
+## Localization remit (founder decision, 2026-06-23)
+`product-builder` **owns localization for EN/FR/ES and future languages until a dedicated
+Localization cell is created.** Responsibilities: translation readiness for **UI, AI
+tutors, quizzes, simulations, and system messages**. AI-tutor localization (6 of 7 tutors
+are English-only) is the active gap and is captured in the seeded tasks below.
+**Split-out trigger:** when translation crosses ~8 live languages or the African Languages
+Initiative is in motion, spin Localization into its own cell (own `AGENT_SPEC.md` +
+`OPERATING_BRIEF.md` + scorecards).
 
 ## Operating model & protocol
 Inherit CEO brief §1 (`CLAIM→EVIDENCE→CLASSIFICATION→PRIORITY→WORK`) and §2 (session
