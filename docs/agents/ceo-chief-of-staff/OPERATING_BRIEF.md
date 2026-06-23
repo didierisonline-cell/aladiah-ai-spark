@@ -73,7 +73,7 @@ Every status is one of **PROVEN · HYPOTHESIS · BROKEN**, and carries evidence
 
 **Monday — frame the week (CEO agent):**
 - Post last week's live numbers from `ceoStatus.getCEOStatus()` + a one-line **R/Y/G** per
-  domain (the 8 scorecards in §4), each linked to evidence.
+  domain (the 9 scorecards in §4), each linked to evidence.
 - Each cell reads the dashboard and writes **3–5** priorities for the week into `aos_tasks`
   (`assigned_agent = <slug>`, `priority`, `payload.evidence_required`).
 
@@ -88,7 +88,7 @@ Every status is one of **PROVEN · HYPOTHESIS · BROKEN**, and carries evidence
 
 ---
 
-## 4. The 8 scorecards → data sources → current evidence status
+## 4. The 9 scorecards → data sources → current evidence status
 
 R/Y/G is set **only** from evidence; "no data yet" is **⚠️ HYPOTHESIS**, never green.
 
@@ -99,9 +99,10 @@ R/Y/G is set **only** from evidence; "no data yet" is **⚠️ HYPOTHESIS**, nev
 | 3 | Programs (flagships) | `courses/chapters/quizzes` + seed fns | ⚠️ 2 of 4 authored (Scrum, BA); BA sim not built |
 | 4 | Assessments | `quiz_attempts` pass/fail | ⚠️ unverified end-to-end |
 | 5 | Simulations / Projects | `scrum_simulations` (live); BA = blueprint | ⚠️ Scrum only |
-| 6 | Payments | `create-checkout` / `handle-payment-webhook` + `subscriptions` | ⚠️ code merged (#81), **not deployed**, E2E unproven |
-| 7 | Founder Control | `aos_*` + `ceoStatus` + RLS (`aos_is_admin`) | ✅ role separation client+server |
-| 8 | Marketing | email subscribers · enrollment-page traffic · signups | ❌ not measured (RPCs not installed) |
+| 6 | Employer Alignment | `placement-authority` cell + employer/placement tables | ❌ not built — **North Star metric** (employment proof); highest strategic gap |
+| 7 | Payments | `create-checkout` / `handle-payment-webhook` + `subscriptions` | ⚠️ code merged (#81), **not deployed**, E2E unproven |
+| 8 | Founder Control | `aos_*` + `ceoStatus` + RLS (`aos_is_admin`) | ✅ role separation client+server |
+| 9 | Marketing | email subscribers · enrollment-page traffic · signups | ❌ not measured (RPCs not installed) |
 
 > Revenue/Marketing/Admissions/Journey dashboards already render **honest "not measured"**
 > states; they light up when (a) the two payment functions are deployed, (b) students flow,
