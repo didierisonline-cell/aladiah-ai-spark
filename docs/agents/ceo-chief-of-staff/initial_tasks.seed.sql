@@ -126,3 +126,57 @@ VALUES
 -- FROM public.aos_tasks
 -- WHERE payload->>'source' LIKE 'exec-01%'
 -- ORDER BY rank, title;
+
+
+-- =============================================================================
+-- Execution Script #2 — AI tutor localization + secure routing
+-- =============================================================================
+-- Splits two related-but-distinct problems by owner: operations-platform owns
+-- secure routing (kill the client-side Anthropic key; route 3 client files through
+-- the EXISTING ai-proxy); product-builder owns language behavior (EN/FR/ES via the
+-- existing useLanguage() context); qa-authority verifies. Scope is fixed to the 3
+-- client files + 6 edge tutor functions + ai-proxy — nothing else. Same canon:
+-- Claude Code does NOT auto-apply SQL; paste by hand. Columns verified against
+-- migration 20260610130000_agent_operating_system.sql:119-136 — none invented.
+-- =============================================================================
+
+-- 5) PASTE-READY SEED (exec-02) -------------------------------------------------
+INSERT INTO public.aos_tasks
+  (title, description, created_by_agent, assigned_agent, status, priority, payload)
+VALUES
+  ('Add allowlisted model passthrough to ai-proxy (not an open router)',
+   'ai-proxy/index.ts:12 — accept optional model, ALLOWLISTED to models already in use (default claude-sonnet-4-20250514; permit claude-haiku-4-5-20251001); any unlisted value falls back to default (fail closed). Do NOT make ai-proxy a generic model router.',
+   'ceo-chief-of-staff', 'operations-platform', 'ready', 'medium',
+   '{"owner":"claude","evidence_required":"default + allowlisted haiku forward; an unlisted model is coerced to default, not forwarded; existing callers unbroken","risk":"low","founder_approval":true,"source":"exec-02 #1"}'::jsonb),
+
+  ('Route 3 client AI files through ai-proxy; remove client Anthropic key',
+   'Repoint HomepageBot (1 call), InteractiveLessonEngine (1), ResumeStudio (4) from api.anthropic.com to the existing ai-proxy via the app standard Edge Function invocation; delete VITE_ANTHROPIC_API_KEY usage; keep offline fallbacks. No new endpoint.',
+   'ceo-chief-of-staff', 'operations-platform', 'pending', 'high',
+   '{"owner":"claude","evidence_required":"grep -rn api.anthropic.com src/ = 0; network tab shows ai-proxy; no x-api-key in browser","risk":"medium","founder_approval":true,"after":"exec-02 #1","source":"exec-02 #2"}'::jsonb),
+
+  ('Localize client AI surfaces to EN/FR/ES via useLanguage()',
+   'HomepageBot, InteractiveLessonEngine, ResumeStudio aiSuggest: append a localeLine(language) directive from useLanguage(); keep JSON-extraction prompts structural (English keys).',
+   'ceo-chief-of-staff', 'product-builder', 'pending', 'high',
+   '{"owner":"claude","evidence_required":"FR/ES UI yields FR/ES AI replies (test L1,L2)","risk":"low","founder_approval":true,"after":"exec-02 #2","source":"exec-02 #3"}'::jsonb),
+
+  ('Add language param + directive to 6 edge tutor functions',
+   'student-assistant, lesson-qa, interview-simulator, enrollment-chat, ai-grading, scrum-simulation: accept optional language, append localeLine() to systemPrompt, default en (back-compat). Client callers pass useLanguage().language.',
+   'ceo-chief-of-staff', 'product-builder', 'pending', 'high',
+   '{"owner":"claude","evidence_required":"language:fr yields French; omitted yields English (test L3)","risk":"low","founder_approval":true,"source":"exec-02 #4"}'::jsonb),
+
+  ('QA: FR/ES localization + key-elimination verification',
+   'Execute L1-L3 + S1; record pass/fail with screenshots and grep output.',
+   'ceo-chief-of-staff', 'qa-authority', 'pending', 'high',
+   '{"owner":"founder+claude","evidence_required":"L1-L3 screenshots; S1 grep=0 + network tab","risk":"low","founder_approval":true,"after":"exec-02 #2,#3,#4","source":"exec-02 #5"}'::jsonb),
+
+  ('Flip Translation #2 + Security posture with evidence',
+   'After QA passes, update scorecard #2 (EN/FR/ES proven; German/Mandarin/Arabic/Japanese still gap) and close the client-key security finding in securityPosture/ceoStatus.',
+   'ceo-chief-of-staff', 'operations-platform', 'pending', 'medium',
+   '{"owner":"claude","evidence_required":"scorecard #2 shows EN/FR/ES proven; security finding closed with grep evidence","risk":"low","founder_approval":true,"after":"exec-02 #5","source":"exec-02 #6"}'::jsonb);
+
+-- 6) VERIFICATION (exec-02; run after the INSERT; success = these 6 rows return) -
+-- SELECT array_position(ARRAY['critical','high','medium','low'], priority) AS rank,
+--        priority, status, assigned_agent, title
+-- FROM public.aos_tasks
+-- WHERE payload->>'source' LIKE 'exec-02%'
+-- ORDER BY rank, title;
