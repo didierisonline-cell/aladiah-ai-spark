@@ -1,4 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useLanguage } from '@/contexts/LanguageContext';
+
+// Localization directive appended to the system prompt (EN/FR/ES). Empty for English.
+const LANG_DIRECTIVE: Record<string, string> = {
+  fr: ' Always respond in French (Français).',
+  es: ' Always respond in Spanish (Español).',
+};
 
 interface Props {
   courseTitle: string;
@@ -27,10 +35,11 @@ const InteractiveLessonEngine = ({
   const [score, setScore] = useState<number | null>(null);
   const [started, setStarted] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const { language } = useLanguage();
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages, loading]);
 
-  const systemPrompt = `You are Professor Didier, an expert Scrum Master and Project Management coach at Aladiah Academy. You are teaching "${lessonTitle}" — lesson ${lessonIndex + 1} of ${totalLessons} in module "${moduleTitle}" from course "${courseTitle}". Be warm, direct, and use real-world Agile/Scrum examples. Ask one focused question at a time. After 4-5 exchanges, score the student out of 100 based on engagement. Include exactly: SCORE: [number] on its own line when scoring. Keep responses concise (max 3 paragraphs). Start by greeting the student and giving a 2-sentence overview of the lesson, then ask your first question.`;
+  const systemPrompt = `You are Professor Didier, an expert Scrum Master and Project Management coach at Aladiah Academy. You are teaching "${lessonTitle}" — lesson ${lessonIndex + 1} of ${totalLessons} in module "${moduleTitle}" from course "${courseTitle}". Be warm, direct, and use real-world Agile/Scrum examples. Ask one focused question at a time. After 4-5 exchanges, score the student out of 100 based on engagement. Include exactly: SCORE: [number] on its own line when scoring. Keep responses concise (max 3 paragraphs). Start by greeting the student and giving a 2-sentence overview of the lesson, then ask your first question.` + (LANG_DIRECTIVE[language] || '');
 
   const checkScore = (text: string) => {
     const match = text.match(/SCORE:\s*(\d+)/i);
@@ -38,18 +47,17 @@ const InteractiveLessonEngine = ({
   };
 
   const callAPI = async (msgs: Message[]) => {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    // Routed through the server-side ai-proxy edge function — no API key in the browser.
+    const { data, error } = await supabase.functions.invoke('ai-proxy', {
+      body: {
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
         system: systemPrompt,
         messages: msgs.map(m => ({ role: m.role, content: m.content })),
-      }),
+      },
     });
-    const data = await res.json();
-    return data.content?.[0]?.text || '';
+    if (error) throw error;
+    return data?.content?.[0]?.text || '';
   };
 
   const startLesson = async () => {
