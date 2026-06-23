@@ -80,12 +80,23 @@ ${payloadIn}`;
     }),
   });
   const d = await r.json();
-  let t = (d?.content?.[0]?.text || "{}").trim().replace(/^```[\w]*\n?/, "").replace(/```$/, "");
-  try {
-    return JSON.parse(t);
-  } catch {
-    throw new Error("Model returned non-JSON for lang " + langCode + ": " + t.slice(0, 200));
+  // Surface API failures instead of silently writing nothing.
+  if (!r.ok || d?.error) {
+    throw new Error("anthropic_error status=" + r.status + " body=" + JSON.stringify(d?.error || d).slice(0, 300));
   }
+  let t = (d?.content?.[0]?.text || "").trim().replace(/^```[\w]*\n?/, "").replace(/```$/, "");
+  if (!t) throw new Error("empty_model_text resp=" + JSON.stringify(d).slice(0, 200));
+  let parsed: Partial<Record<Field, string>>;
+  try {
+    parsed = JSON.parse(t);
+  } catch {
+    throw new Error("non_json_response for " + langCode + ": " + t.slice(0, 200));
+  }
+  const got = Object.keys(source).filter((k) => (parsed as any)[k]);
+  if (got.length === 0) {
+    throw new Error("no_expected_keys_returned keys=" + Object.keys(parsed).join(",") + " text=" + t.slice(0, 150));
+  }
+  return parsed;
 }
 
 serve(async (req) => {
@@ -107,6 +118,7 @@ serve(async (req) => {
     const fields: Field[] = Array.isArray(body.fields) && body.fields.length ? body.fields : [...DEFAULT_FIELDS];
     const overwrite: boolean = !!body.overwrite;
     const limit: number = Number.isFinite(body.limit) ? body.limit : 15;
+    const offset: number = Number.isFinite(body.offset) ? body.offset : 0;
     const dryRun: boolean = !!body.dryRun;
 
     const apiKey = Deno.env.get("ANTHROPIC_API_KEY") || "";
@@ -154,7 +166,7 @@ serve(async (req) => {
         chapterIds = (chs || []).map((c: any) => c.id);
       }
       if (chapterIds.length) {
-        const { data } = await supabase.from("videos").select("id, title, description, translations, chapter_id").in("chapter_id", chapterIds);
+        const { data } = await supabase.from("videos").select("id, title, description, translations, chapter_id, order_index").in("chapter_id", chapterIds).order("order_index");
         (data || []).forEach((v: any) => {
           const tr = v.translations || {};
           rows.push({
@@ -197,7 +209,7 @@ serve(async (req) => {
 
     // Process up to `limit` work items this invocation. Group writes by row so a
     // row touched in multiple langs in this batch is written once at the end.
-    const slice = work.slice(0, limit);
+    const slice = work.slice(offset, offset + limit);
     const pending: Record<string, Row> = {};   // id -> row (mutated translations)
     let done = 0;
     const errors: any[] = [];
@@ -226,9 +238,10 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({
       processedWorkItems: done,
-      remainingWorkItems: Math.max(0, totalRemaining - done),
+      totalWorkItems: totalRemaining,
+      nextOffset: offset + slice.length,
       rowsWritten: Object.keys(pending).length,
-      languages, target, fields, overwrite, limit,
+      languages, target, fields, overwrite, limit, offset,
       errors,
     }), { headers: { ...cors, "Content-Type": "application/json" } });
   } catch (e) {

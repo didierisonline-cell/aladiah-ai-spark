@@ -1,5 +1,5 @@
 > **Status: Canonical** — Required reading for: Claude Code · AI agents · developers · product owners.
-> Part of the Aladiah platform canon (`/docs/standards`): NORTH_STAR (why) · ARCHITECTURE_PRINCIPLE (what qualifies) · COMPETENCY_TAXONOMY (how competency is named).
+> Part of the Aladiah platform canon (`/docs/standards`): NORTH_STAR (why) · ARCHITECTURE_PRINCIPLE (what qualifies) · COMPETENCY_TAXONOMY (how competency is named) · QA_STANDARD (what "Ready" and "Done" mean).
 > Append-only where noted; do not delete or fork. Changes to these documents are platform-level decisions.
 
 # NORTH_STAR.md — Aladiah Execution North Star
