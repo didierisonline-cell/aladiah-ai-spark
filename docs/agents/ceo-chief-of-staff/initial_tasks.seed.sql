@@ -74,3 +74,55 @@ VALUES
 -- FROM public.aos_tasks
 -- WHERE payload->>'source' LIKE 'audit Top-10%'
 -- ORDER BY array_position(ARRAY['critical','high','medium','low'], priority), title;
+
+
+-- =============================================================================
+-- Execution Script #1 — Payments deploy + runbook tasks (Section E, rev. 2)
+-- =============================================================================
+-- Decomposes the audit Top-10 #1 (deploy payment fns) into the assigned execution
+-- tasks for the payments + Founder Validation Runbook phase. Same canon as above:
+-- Claude Code does NOT auto-apply SQL; paste into the Supabase SQL editor by hand.
+-- Columns verified against migration 20260610130000_agent_operating_system.sql
+-- :119-136 — none invented. Ordering is expressed via payload.after (not UUIDs).
+-- =============================================================================
+
+-- 3) PASTE-READY SEED (exec-01) -------------------------------------------------
+INSERT INTO public.aos_tasks
+  (title, description, created_by_agent, assigned_agent, status, priority, payload)
+VALUES
+  ('Set STRIPE_* secrets, deploy payment fns, register Stripe webhook',
+   'supabase secrets set STRIPE_SECRET_KEY/STRIPE_PRICE_ACCELERATOR/STRIPE_WEBHOOK_SECRET; supabase secrets list; supabase functions list; deploy create-checkout + handle-payment-webhook; register Stripe endpoint .../functions/v1/handle-payment-webhook; verify versions bumped.',
+   'ceo-chief-of-staff', 'operations-platform', 'ready', 'critical',
+   '{"owner":"founder","evidence_required":"terminal capture of supabase secrets list showing STRIPE_SECRET_KEY, STRIPE_PRICE_ACCELERATOR, STRIPE_WEBHOOK_SECRET present; supabase functions list showing higher versions than baseline; Stripe test webhook delivery shows 2xx","risk":"medium","founder_approval":true,"source":"exec-01 #1"}'::jsonb),
+
+  ('Validate Accelerator price alignment (frontend == STRIPE_PRICE_ACCELERATOR)',
+   'Confirm the price the frontend sends (VITE_STRIPE_PRICE_ACCELERATOR, else hardcoded fallback price_1TW7U21wgazWak4Atj7TblB3) equals the server STRIPE_PRICE_ACCELERATOR and both resolve to the live $99.99 Stripe price. See Price Alignment Check (exec-01).',
+   'ceo-chief-of-staff', 'operations-platform', 'ready', 'critical',
+   '{"owner":"founder+claude","evidence_required":"a real checkout returns a session url (HTTP 200), NOT 500 Unknown priceId","risk":"high","founder_approval":true,"source":"exec-01 #2"}'::jsonb),
+
+  ('Apply founder_revenue_stats RPC + verify RevenueTruth installed',
+   'Apply supabase/migrations/20260619070000_founder_revenue_stats.sql by hand; run its verification; reload /founder/revenue.',
+   'ceo-chief-of-staff', 'operations-platform', 'pending', 'high',
+   '{"owner":"founder","evidence_required":"RPC resolves; RevenueTruth shows live subscription counts (no not-installed banner)","risk":"low","founder_approval":true,"note":"migration is independent of function deploy — apply in parallel; meaningful active>0 proof only after Scenario A (exec-01 #4)","source":"exec-01 #3"}'::jsonb),
+
+  ('Scenario A: verify t2 grant after successful test payment',
+   'Walk happy path; confirm subscriptions row {tier:t2,status:active} + profiles.tier=t2 + paid modules unlock.',
+   'ceo-chief-of-staff', 'product-builder', 'pending', 'high',
+   '{"owner":"founder+claude","evidence_required":"subscriptions+profiles rows queried; unlocked-content screenshot","risk":"low","founder_approval":true,"after":"exec-01 #1,#2","source":"exec-01 #4"}'::jsonb),
+
+  ('Walk Founder Validation Runbook Scenarios A/B/C; record pass/fail',
+   'QA gate: execute happy path, declined/canceled, and forged-webhook scenarios; produce a pass/fail table with evidence.',
+   'ceo-chief-of-staff', 'qa-authority', 'pending', 'high',
+   '{"owner":"founder+claude","evidence_required":"completed 3-scenario results table + screenshots/log excerpts","risk":"low","founder_approval":true,"after":"exec-01 #1,#2","source":"exec-01 #5"}'::jsonb),
+
+  ('Security: invalid/forged/missing-sig webhook returns 400, zero writes',
+   'POST to handle-payment-webhook with (a) no stripe-signature, (b) bad signature, (c) forged metadata.tier; confirm HTTP 400 and no subscriptions row created.',
+   'ceo-chief-of-staff', 'qa-authority', 'pending', 'high',
+   '{"owner":"founder+claude","evidence_required":"curl -i shows 400 for all 3; subscriptions row count unchanged before/after","risk":"low","founder_approval":true,"after":"exec-01 #1","source":"exec-01 #6"}'::jsonb);
+
+-- 4) VERIFICATION (exec-01; run after the INSERT; success = these 6 rows return) -
+-- SELECT array_position(ARRAY['critical','high','medium','low'], priority) AS rank,
+--        priority, status, assigned_agent, title
+-- FROM public.aos_tasks
+-- WHERE payload->>'source' LIKE 'exec-01%'
+-- ORDER BY rank, title;
