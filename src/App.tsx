@@ -21,6 +21,10 @@ import Community from "./pages/Community";
 import Feedback from "./pages/Feedback";
 import Store from "./pages/Store";
 import ScrumSimulation from "./pages/ScrumSimulation";
+import BASimulation from "./pages/BASimulation";
+import BASimSteering from "./pages/BASimSteering";
+import BASimConflict from "./pages/BASimConflict";
+import BASimHub from "./pages/BASimHub";
 import Referral from "./pages/Referral";
 import MarketingKit from "./pages/MarketingKit";
 import ReferralProfile from "./pages/ReferralProfile";
@@ -45,6 +49,7 @@ import Approvals from "./pages/admin/Approvals";
 import Security from "./pages/admin/Security";
 import FounderPortal from "./pages/founder/FounderPortal";
 import FounderControlCenter from "./pages/founder/FounderControlCenter";
+import SimulationReview from "./pages/founder/SimulationReview";
 import LocalizationFactory from "./pages/founder/LocalizationFactory";
 import FounderCurriculum from "./pages/founder/FounderCurriculum";
 import FounderReadiness from "./pages/founder/FounderReadiness";
@@ -123,6 +128,10 @@ const AppContent = () => {
         <Route path="/feedback" element={<Feedback />} />
         <Route path="/store" element={<Store />} />
         <Route path="/simulation" element={<ScrumSimulation />} />
+        <Route path="/simulation/ba" element={<BASimHub />} />
+        <Route path="/simulation/ba-discovery" element={<BASimulation />} />
+        <Route path="/simulation/ba-steering" element={<BASimSteering />} />
+        <Route path="/simulation/ba-conflict" element={<BASimConflict />} />
         <Route path="/referral" element={<Referral />} />
         <Route path="/referral/kit" element={<MarketingKit />} />
         <Route path="/refer/:code" element={<ReferralProfile />} />
@@ -159,6 +168,7 @@ const AppContent = () => {
         <Route path="/founder/marketing" element={<FounderRoute><MarketingTruth /></FounderRoute>} />
         <Route path="/founder/attribution" element={<FounderRoute><AttributionTruth /></FounderRoute>} />
         <Route path="/founder/truth" element={<FounderRoute><CeoTruthDashboard /></FounderRoute>} />
+        <Route path="/founder/simulations" element={<FounderRoute><SimulationReview /></FounderRoute>} />
         <Route path="/founder/localization" element={<FounderRoute><LocalizationFactory /></FounderRoute>} />
         {/* Founder authorities (legacy /admin paths, founder-protected) */}
         <Route path="/admin" element={<FounderRoute><AdminDashboard /></FounderRoute>} />
