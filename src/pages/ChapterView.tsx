@@ -214,8 +214,19 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       } catch (e) {
         console.warn('[lesson] signed URL unavailable, falling back to agentId:', e);
       }
+      // Voice output: the agent whitelists override voices — without a tts.voiceId the
+      // text streams but the audio can come back silent (LiveClassroom sends this; the
+      // lesson player did not, which is why Prof. Didier "answered" with no sound).
+      const DIDIER_VOICES: Record<string, string> = {
+        en: 'bQxW1c7YCr6VQgQhw8KX', es: 'bQxW1c7YCr6VQgQhw8KX',
+        fr: 'IBGoh6rlxdauchOCULhL', de: 'WPbK7Qv9rbyhvUDiwJ0A',
+        zh: 'pU9NaAwkoR3v0Mrg3uKz', ar: 'Ojb0nFbyzZn95u0i5a5p', ja: 'Mv8AjrYZCBkdsmDHNwcB',
+      };
       const sessionOpts: any = {
-        overrides: { agent: { prompt: { prompt: systemPrompt }, language: langCode } },
+        overrides: {
+          agent: { prompt: { prompt: systemPrompt }, language: langCode },
+          tts: { voiceId: DIDIER_VOICES[language] || 'bQxW1c7YCr6VQgQhw8KX', stability: 0.71, similarityBoost: 0.55 },
+        },
       };
       if (signedUrl) sessionOpts.signedUrl = signedUrl; else sessionOpts.agentId = AGENT_ID;
       await conversation.startSession(sessionOpts);
