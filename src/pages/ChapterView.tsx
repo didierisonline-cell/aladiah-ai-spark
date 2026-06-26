@@ -193,13 +193,34 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
         yo: 'yo', ha: 'ha', ig: 'ig', vi: 'vi', th: 'th'
       };
       const langCode = langCodeMap[language] || 'en';
-      await conversation.startSession({
-        agentId: AGENT_ID,
-        overrides: {
-          agent: { prompt: { prompt: systemPrompt }, language: langCode },
-        }
-      });
-    } catch {
+
+      // Prof. Didier IS the lesson body — if the ElevenLabs agent can't start, the
+      // whole class reads as "empty". Fail loud, and prefer a signed URL (works with
+      // PRIVATE agents) with a fallback to the public agentId — mirrors LiveClassroom.
+      if (!AGENT_ID) {
+        console.error('[lesson] VITE_ELEVENLABS_AGENT_ID is not set — Prof. Didier cannot start.');
+        setConvStatus('error');
+        isStartingRef.current = false;
+        return;
+      }
+      let signedUrl: string | null = null;
+      try {
+        const tokenRes = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-conversation-token`,
+          { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` } }
+        );
+        const tokenData = await tokenRes.json();
+        if (tokenData.signed_url) signedUrl = tokenData.signed_url;
+      } catch (e) {
+        console.warn('[lesson] signed URL unavailable, falling back to agentId:', e);
+      }
+      const sessionOpts: any = {
+        overrides: { agent: { prompt: { prompt: systemPrompt }, language: langCode } },
+      };
+      if (signedUrl) sessionOpts.signedUrl = signedUrl; else sessionOpts.agentId = AGENT_ID;
+      await conversation.startSession(sessionOpts);
+    } catch (e) {
+      console.error('[lesson] Prof. Didier startSession failed:', e);
       setConvStatus('error');
       isStartingRef.current = false;
     }
