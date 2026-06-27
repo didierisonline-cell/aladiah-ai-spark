@@ -271,11 +271,14 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       const res = await supabase.functions.invoke('generate-visuals', {
         body: { lessonTitle: getTitle(lesson), lessonDescription: getDescription(lesson), courseTitle, language }
       });
+      console.log('[visuals] response:', JSON.stringify({ invokeError: res.error?.message, funcError: res.data?.error, svgsCount: res.data?.svgs?.length ?? 0 }));
+      if (res.error) console.error('[visuals] invoke error:', res.error);
+      if (res.data?.error) console.error('[visuals] function returned error:', res.data.error);
       if (res.data?.svgs?.length > 0) {
         setLessonVisuals(res.data.svgs);
         supabase.from('lesson_visuals').upsert({ lesson_id: key, svgs: res.data.svgs }).then(() => { });
       }
-    } catch (e) { console.warn('visuals failed', e); }
+    } catch (e) { console.error('[visuals] exception:', e); }
     setVisualsLoading(false);
   };
 
