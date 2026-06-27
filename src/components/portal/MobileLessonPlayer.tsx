@@ -31,6 +31,7 @@ function Video({ url }: { url: string }) {
 export default function MobileLessonPlayer(p: LessonPlayerProps) {
   const { t } = useLanguage();
   const [showReading, setShowReading] = useState(true);
+  const [showStudyGuide, setShowStudyGuide] = useState(false);
   const lesson = p.currentLesson;
   const reading = p.getDescription(lesson);
   const transcript = p.getTranscript(lesson);
@@ -122,6 +123,67 @@ export default function MobileLessonPlayer(p: LessonPlayerProps) {
             )}
           </div>
         </div>
+
+        {/* Study Guide */}
+        {p.course && p.videos.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <button onClick={() => setShowStudyGuide(s => !s)} className="app-tap" style={{ width: '100%', padding: '13px 0', borderRadius: 12, border: `1px solid ${showStudyGuide ? 'rgba(212,175,55,0.5)' : 'rgba(212,175,55,0.3)'}`, background: showStudyGuide ? 'rgba(212,175,55,0.14)' : 'rgba(212,175,55,0.06)', color: '#d4af37', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+              📖 {showStudyGuide ? t('chapter.close_study_guide') : t('chapter.course_study_guide')}
+            </button>
+            {showStudyGuide && (
+              <div style={{ marginTop: 10, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(212,175,55,0.2)' }}>
+                <div style={{ padding: '7px 14px', borderBottom: '1px solid rgba(212,175,55,0.15)', background: 'rgba(212,175,55,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#d4af37' }}>📚 {p.getTitle(p.course)} — {t('chapter.study_guide')}</span>
+                  <span style={{ fontSize: 11, color: '#64748b' }}>{t('chapter.read_only')}</span>
+                </div>
+                <div style={{ background: '#ffffff', fontFamily: 'Georgia, "Times New Roman", serif', padding: '28px 18px', color: '#1e293b' }}>
+                  <div style={{ borderBottom: '3px solid #f59e0b', marginBottom: 28, paddingBottom: 18 }}>
+                    <div style={{ fontSize: 9, letterSpacing: '0.18em', color: '#94a3b8', textTransform: 'uppercase' as const, fontFamily: 'system-ui, sans-serif', marginBottom: 14 }}>ALADIAH ACADEMY</div>
+                    <h1 style={{ fontSize: 20, fontWeight: 900, color: '#0a0f1e', margin: '0 0 8px', lineHeight: 1.25, fontFamily: 'Georgia, serif' }}>{p.getTitle(p.chapter)}</h1>
+                    <p style={{ fontSize: 12, color: '#64748b', margin: 0, fontFamily: 'system-ui, sans-serif' }}>Module Study Guide · {p.videos.length} Lesson{p.videos.length !== 1 ? 's' : ''} · Solo Excelencia™</p>
+                  </div>
+                  {p.videos.map((video, idx) => {
+                    const lessonTranscript = p.getTranscript(video);
+                    const lessonDesc = p.getDescription(video);
+                    const lessonTitle = p.getTitle(video);
+                    return (
+                      <div key={video.id} style={{ marginBottom: 40, paddingBottom: 40, borderBottom: idx < p.videos.length - 1 ? '1px solid #e2e8f0' : 'none' }}>
+                        <span style={{ fontSize: 9, letterSpacing: '0.18em', color: '#f59e0b', textTransform: 'uppercase' as const, fontFamily: 'system-ui, sans-serif', fontWeight: 700 }}>LESSON {idx + 1}</span>
+                        <h2 style={{ fontSize: 17, fontWeight: 800, color: '#0a0f1e', margin: '4px 0 10px', lineHeight: 1.3, fontFamily: 'Georgia, serif' }}>{lessonTitle}</h2>
+                        {lessonDesc && (
+                          <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.7, margin: '0 0 14px', fontStyle: 'italic', borderLeft: '3px solid #f59e0b', paddingLeft: 12, fontFamily: 'Georgia, serif' }}>{lessonDesc}</p>
+                        )}
+                        {lessonTranscript ? (
+                          <div style={{ fontSize: 13.5, lineHeight: 1.8, color: '#1e293b', fontFamily: 'Georgia, serif' }}>
+                            {lessonTranscript.split('\n').map((line, i) => {
+                              const trimmed = line.trim();
+                              if (!trimmed) return <div key={i} style={{ height: 8 }} />;
+                              if (trimmed.length >= 4 && trimmed === trimmed.toUpperCase() && /[A-Z]/.test(trimmed) && !/\d{4}/.test(trimmed)) {
+                                return <h3 key={i} style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', color: '#0a0f1e', textTransform: 'uppercase' as const, margin: '22px 0 8px', fontFamily: 'system-ui, sans-serif', borderBottom: '1px solid #f1f5f9', paddingBottom: 4 }}>{trimmed}</h3>;
+                              }
+                              if (/^[-•–]\s/.test(trimmed)) {
+                                return <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 4, paddingLeft: 2 }}><span style={{ color: '#f59e0b', flexShrink: 0, lineHeight: 1.8, fontWeight: 700 }}>•</span><span>{trimmed.replace(/^[-•–]\s*/, '')}</span></div>;
+                              }
+                              if (/^\d+[.)]\s/.test(trimmed)) {
+                                return <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 4, paddingLeft: 2 }}><span style={{ color: '#f59e0b', flexShrink: 0, lineHeight: 1.8, fontWeight: 700, minWidth: 18 }}>{trimmed.match(/^\d+/)?.[0]}.</span><span>{trimmed.replace(/^\d+[.)]\s*/, '')}</span></div>;
+                              }
+                              return <p key={i} style={{ margin: '0 0 9px' }}>{trimmed}</p>;
+                            })}
+                          </div>
+                        ) : (
+                          <p style={{ fontSize: 12, color: '#94a3b8', fontStyle: 'italic', fontFamily: 'system-ui, sans-serif' }}>Content for this lesson is being prepared.</p>
+                        )}
+                      </div>
+                    );
+                  })}
+                  <div style={{ marginTop: 20, paddingTop: 16, borderTop: '3px solid #f59e0b', textAlign: 'center' }}>
+                    <p style={{ fontSize: 10, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase' as const, fontFamily: 'system-ui, sans-serif', margin: 0 }}>Aladiah Academy · Solo Excelencia™</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Quiz entry */}
         {chapterEndQuiz && (
