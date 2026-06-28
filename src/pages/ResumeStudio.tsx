@@ -80,7 +80,7 @@ const Section = ({ title, accent, onAI, loading, children }:
 
 const ResumeStudio = () => {
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
   const [resume, setResume] = useState<ResumeData>(MOCK);
   const [template, setTemplate] = useState('zenith');
@@ -171,18 +171,17 @@ const ResumeStudio = () => {
         setUploadMsg(t('resume.up_pdf'));
         const buf = await file.arrayBuffer();
         const base64 = toBase64(buf);
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        const { data, error } = await supabase.functions.invoke('ai-proxy', {
+          body: {
             model: 'claude-sonnet-4-20250514', max_tokens: 2000,
             messages: [{ role: 'user', content: [
               { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } },
               { type: 'text', text: 'Extract resume information from this PDF. Return ONLY a valid JSON object with these exact keys: fullName, email, phone, location, summary, experience, education, skills, certifications, projects. Use newlines between entries in multi-line fields. Empty string for missing fields. No markdown, no preamble, just the JSON.' }
             ]}]
-          })
+          },
         });
-        const data = await res.json();
-        if (data.error) throw new Error(data.error.message);
+        if (error) throw new Error(error.message);
+        if (data?.error) throw new Error(data.error.message);
         const raw = data.content?.[0]?.text || '{}';
         const parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
         applyResumeData(parsed);
@@ -203,15 +202,14 @@ const ResumeStudio = () => {
         const text = result.value || '';
         if (!text.trim()) throw new Error(t('resume.up_word_err'));
         setUploadMsg(t('resume.up_parsing'));
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        const { data, error } = await supabase.functions.invoke('ai-proxy', {
+          body: {
             model: 'claude-sonnet-4-20250514', max_tokens: 2000,
             messages: [{ role: 'user', content: `Extract resume information from this text. Return ONLY a valid JSON object with these exact keys: fullName, email, phone, location, summary, experience, education, skills, certifications, projects. Use newlines between entries in multi-line fields. Empty string for missing fields. No markdown, no preamble.\n\n${text.slice(0, 8000)}` }]
-          })
+          },
         });
-        const data = await res.json();
-        if (data.error) throw new Error(data.error.message);
+        if (error) throw new Error(error.message);
+        if (data?.error) throw new Error(data.error.message);
         const raw = data.content?.[0]?.text || '{}';
         const parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
         applyResumeData(parsed);
@@ -220,15 +218,14 @@ const ResumeStudio = () => {
         setUploadMsg(t('resume.up_generic'));
         const text = await file.text();
         setUploadMsg('AI is parsing your resume...');
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        const { data, error } = await supabase.functions.invoke('ai-proxy', {
+          body: {
             model: 'claude-sonnet-4-20250514', max_tokens: 2000,
             messages: [{ role: 'user', content: `Extract resume information from this text. Return ONLY a valid JSON object with these exact keys: fullName, email, phone, location, summary, experience, education, skills, certifications, projects. Use newlines between entries in multi-line fields. Empty string for missing fields. No markdown, no preamble.\n\n${text.slice(0, 8000)}` }]
-          })
+          },
         });
-        const data = await res.json();
-        const raw = data.content?.[0]?.text || '{}';
+        if (error) throw new Error(error.message);
+        const raw = data?.content?.[0]?.text || '{}';
         const parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
         applyResumeData(parsed);
         setUploadMsg(t('resume.up_ok'));
@@ -243,15 +240,16 @@ const ResumeStudio = () => {
   const aiSuggest = async (field: keyof ResumeData, label: string) => {
     setAiLoading(field);
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
+      const langNote = language === 'fr' ? ' Write the content in French (Français).'
+        : language === 'es' ? ' Write the content in Spanish (Español).' : '';
+      const { data, error } = await supabase.functions.invoke('ai-proxy', {
+        body: {
           model:'claude-sonnet-4-20250514', max_tokens:600,
-          messages:[{ role:'user', content:`You are an expert executive resume writer. Write a strong ${label} for an AI professional named ${resume.fullName||'the student'}. Their experience: ${resume.experience||'not yet provided'}. Return ONLY the text content, no preamble, no labels.` }]
-        })
+          messages:[{ role:'user', content:`You are an expert executive resume writer. Write a strong ${label} for an AI professional named ${resume.fullName||'the student'}. Their experience: ${resume.experience||'not yet provided'}. Return ONLY the text content, no preamble, no labels.${langNote}` }]
+        },
       });
-      const data = await res.json();
-      const text = data.content?.[0]?.text || '';
+      if (error) throw new Error(error.message);
+      const text = data?.content?.[0]?.text || '';
       const newResume = { ...resume, [field]: text };
       historyRef.current = [...historyRef.current.slice(0, historyIdxRef.current + 1), newResume];
       historyIdxRef.current = historyRef.current.length - 1;

@@ -2,17 +2,27 @@
 
 ## Read before doing anything
 
-This repository is governed by the **Aladiah platform canon** in `/docs/standards`.
-Read these three documents at the start of every session, in order, and treat them as
-binding:
+**Required Reading:**
 
-1. **`/docs/standards/NORTH_STAR.md`** — why Aladiah exists. The goal is career
-   transformation, not course completion. Orders what to build *now*.
-2. **`/docs/standards/ARCHITECTURE_PRINCIPLE.md`** — what qualifies to be built. Every
-   feature must serve ≥ 1 Core System and block 0 Core Systems. Run this test before
-   building anything.
-3. **`/docs/standards/COMPETENCY_TAXONOMY.md`** — the only approved source of competency
-   slugs. Never invent slugs elsewhere; never rename an existing slug.
+Read **`/docs/standards/LAUNCH_DECISION_PRINCIPLE.md`** at the start of every session.
+
+This is Aladiah's root operating principle: **Hypothesis ≠ Fact. Evidence creates truth.**
+
+Decision flow: Claim → Evidence → Classification → Priority → Work.
+
+No blocker without proof. No hypothesis treated as fact. No work without ownership.
+
+---
+
+## Platform Canon
+
+These five documents implement the root principle:
+
+1. **NORTH_STAR.md** — why Aladiah exists (career transformation, not course completion)
+2. **ARCHITECTURE_PRINCIPLE.md** — what qualifies to be built (serve ≥1 Core System, block 0)
+3. **COMPETENCY_TAXONOMY.md** — approved competency slugs (single source of truth)
+4. **QA_STANDARD.md** — DoR/DoD/Evidence gates (feeds blocker evidence into registry)
+5. **LAUNCH_DECISION_PRINCIPLE.md** — root decision-making framework (required for all decisions)
 
 If a request conflicts with the canon, surface the conflict before proceeding.
 

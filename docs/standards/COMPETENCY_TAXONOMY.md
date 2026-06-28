@@ -1,5 +1,5 @@
 > **Status: Canonical** — Required reading for: Claude Code · AI agents · developers · product owners.
-> Part of the Aladiah platform canon (`/docs/standards`): NORTH_STAR (why) · ARCHITECTURE_PRINCIPLE (what qualifies) · COMPETENCY_TAXONOMY (how competency is named).
+> Part of the Aladiah platform canon (`/docs/standards`): NORTH_STAR (why) · ARCHITECTURE_PRINCIPLE (what qualifies) · COMPETENCY_TAXONOMY (how competency is named) · QA_STANDARD (what "Ready" and "Done" mean).
 > Append-only where noted; do not delete or fork. Changes to these documents are platform-level decisions.
 
 # Competency Taxonomy — Canonical Standard (repo source of truth)
@@ -73,6 +73,32 @@ Business Analyst & Product Intelligence Specialist**. A program uses a SUBSET pe
 
 ---
 
+## 2.1 Cybersecurity — Axis-1 registry (13 slugs)
+
+Second formally-registered program (program key `cyber`). Appended per §1 governance —
+this extends the Scrum model, it does not fork it. These slugs are the source of truth for
+the Cybersecurity flagship; the 15-module curriculum architecture
+(`/docs/programs/CYBERSECURITY_FLAGSHIP_ARCHITECTURE.md`) maps each module to a SUBSET of
+these. A program using only some slugs per module is expected (§1 rule 4).
+
+| Slug | Label | Description |
+|---|---|---|
+| `cyber:foundations` | Security Foundations & Threat Landscape | CIA triad, defense-in-depth, security models and principles, the modern threat landscape, attacker motivations, and how every control traces back to a risk decision. |
+| `cyber:governance-risk` | Governance, Risk & Compliance | Risk frameworks (NIST CSF, ISO 27001), risk quantification (probability × impact × exposure), risk appetite, control assurance (risk → control → test → evidence), and compliance as a decision-changing force rather than memorized regulation. |
+| `cyber:roles-operations` | Security Roles & Operations | Security org and SOC roles (analyst tiers, IR lead, threat hunter, CISO org), RACI and decision rights, escalation paths, and how security operations workflows are owned and run. |
+| `cyber:identity-access` | Identity & Access Management | Authentication, authorization, least privilege, privileged access management, and zero-trust architecture (never trust, always verify). |
+| `cyber:network-infrastructure` | Network & Infrastructure Security | Secure network architecture, segmentation and micro-segmentation, firewalls, endpoint and infrastructure hardening, and secure-by-design infrastructure. |
+| `cyber:data-protection` | Data Protection & Cryptography | Cryptography (symmetric/asymmetric, hashing, PKI, key management), data classification, privacy, and data-loss prevention. |
+| `cyber:appsec-cloud` | Application & Cloud Security | Secure SDLC, application security (OWASP), DevSecOps gates, cloud security posture, shared-responsibility model, and software supply-chain security. |
+| `cyber:threat-detection` | Threat Intelligence & Detection | Threat intelligence, detection engineering, SIEM/monitoring, threat hunting, and separating signal from noise in security telemetry. |
+| `cyber:incident-response` | Incident Response & Forensics | IR lifecycle (detect, contain, eradicate, recover), digital forensics, evidence handling, playbooks, and the blameless post-incident review. |
+| `cyber:offensive-security` | Offensive Security & Vulnerability Management | Ethical hacking, penetration testing, red/purple teaming, attack-path analysis, and risk-based vulnerability prioritization. |
+| `cyber:ai-security` | AI & Emerging-Threat Security | Securing AI systems, adversarial ML, AI threat modeling, model/data poisoning and prompt-injection defense, and AI security governance & monitoring. The AI-era differentiator. |
+| `cyber:security-leadership` | Security Leadership & Culture | CISO-level decision-making, security strategy, building a security culture, team coordination, and translating technical risk into executive and board language. |
+| `cyber:stakeholder-trust` | Stakeholder Trust & Assurance | Third-party/vendor and supply-chain risk, audit and assurance, customer-trust and regulator engagement, and communicating security posture to non-technical stakeholders. |
+
+---
+
 ## 3. Axis-2 cross-program meta-category map (CONFIRMED — locked for Phase-2 build)
 
 Phase-2 analytics resolves each Axis-1 slug to a cross-program meta-category at rollup
@@ -98,6 +124,19 @@ Meta-category keys are deliberately generic so other programs map into the same 
 | `ba:testing-acceptance` | `measurement-outcomes` |
 | `ba:agile-delivery` | `process-execution` |
 | `ba:analytics-monitoring` | `measurement-outcomes` |
+| `cyber:foundations` | `foundations` |
+| `cyber:ai-security` | `foundations` |
+| `cyber:roles-operations` | `roles-accountabilities` |
+| `cyber:identity-access` | `process-execution` |
+| `cyber:threat-detection` | `process-execution` |
+| `cyber:incident-response` | `process-execution` |
+| `cyber:offensive-security` | `process-execution` |
+| `cyber:network-infrastructure` | `artifacts-tooling` |
+| `cyber:appsec-cloud` | `artifacts-tooling` |
+| `cyber:data-protection` | `artifacts-tooling` |
+| `cyber:security-leadership` | `people-leadership` |
+| `cyber:stakeholder-trust` | `stakeholder-engagement` |
+| `cyber:governance-risk` | `measurement-outcomes` |
 
 Cross-program meta-category set (the fixed Axis-2 vocabulary future programs map into):
 `foundations` · `roles-accountabilities` · `process-execution` · `artifacts-tooling` ·

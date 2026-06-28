@@ -78,6 +78,7 @@ export default function ChapterView() {
   const [currentLesson, setCurrentLesson] = useState<Video | null>(null);
   const [passedQuizzes, setPassedQuizzes] = useState<string[]>([]);
   const [paywallReason, setPaywallReason] = useState<'wrong_course' | 'module_locked' | null>(null);
+  const [checkoutError, setCheckoutError] = useState(false);
   const [isStarter, setIsStarter] = useState(false);
   const [freeCourseName, setFreeCourseName] = useState<string>('');
   const [loading, setLoading] = useState(true);
@@ -488,25 +489,39 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               onClick={async () => {
                 const { data: { user: u } } = await supabase.auth.getUser();
                 if (!u) return;
+                setCheckoutError(false);
                 localStorage.setItem(`starter-course-done-${u.id}`, 'true');
                 await supabase.from('profiles').update({ free_course_completed: true }).eq('user_id', u.id);
-                const res = await fetch('/api/create-checkout', {
-                  method: 'POST', headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TW7U21wgazWak4Atj7TblB3',
-                    email: u.email, tier: 't2', userId: u.id,
-                    successUrl: `${window.location.origin}/portal?payment=success`,
-                    cancelUrl: `${window.location.origin}/portal`
-                  })
-                });
-                const d = await res.json();
-                if (d.url) window.location.href = d.url;
-                else navigate('/portal');
+                try {
+                  const res = await fetch('/api/create-checkout', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TW7U21wgazWak4Atj7TblB3',
+                      email: u.email, tier: 't2', userId: u.id,
+                      successUrl: `${window.location.origin}/portal?payment=success`,
+                      cancelUrl: `${window.location.origin}/portal`
+                    })
+                  });
+                  const d = await res.json().catch(() => ({}));
+                  // Only proceed to Stripe on a real Checkout URL. Never silently route to
+                  // /portal on failure — that masked checkout errors as a "success" landing.
+                  if (res.ok && d.url) { window.location.href = d.url; return; }
+                  console.error('create-checkout failed:', d?.error || res.status);
+                  setCheckoutError(true);
+                } catch (e) {
+                  console.error('create-checkout error:', e);
+                  setCheckoutError(true);
+                }
               }}
               style={{ width: '100%', padding: '16px', borderRadius: '12px', background: 'linear-gradient(135deg,#f59e0b,#d97706)', border: 'none', color: '#000', fontSize: '16px', fontWeight: 800, cursor: 'pointer', marginBottom: '12px' }}
             >
               {t('paywall.unlock_cta')}
             </button>
+            {checkoutError && (
+              <p style={{ fontSize: '12px', color: '#fca5a5', marginBottom: '10px' }}>
+                Checkout is temporarily unavailable. Please try again in a moment.
+              </p>
+            )}
             <button onClick={() => navigate('/portal')} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: '12px', cursor: 'pointer' }}>
               {t('paywall.go_back')}
             </button>
