@@ -709,6 +709,55 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               ))}
             </div>
 
+            {/* Sim History */}
+            <div style={{ background: 'linear-gradient(155deg,rgba(8,20,52,.88),rgba(5,13,38,.92))', border: '1px solid rgba(255,255,255,.08)', borderRadius: 16, padding: '16px 20px', backdropFilter: 'blur(28px)', marginBottom: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                <span style={{ fontSize: 14, fontWeight: 800 }}>⚡ Simulation History</span>
+                <button
+                  onClick={() => navigate('/portal/simulations')}
+                  style={{ background: 'none', border: 'none', color: '#6366f1', fontSize: 12, fontWeight: 700, cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}
+                >
+                  Run a Sim →
+                </button>
+              </div>
+              {simHistory.length === 0 ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 0' }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(99,102,241,.12)', border: '1px solid rgba(99,102,241,.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>🎯</div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f8', marginBottom: 3 }}>No simulations yet</div>
+                    <div style={{ fontSize: 11, color: '#475569', lineHeight: 1.5 }}>Complete a real-world simulation to see your results, scores, and XP here.</div>
+                  </div>
+                  <button
+                    onClick={() => navigate('/portal/simulations')}
+                    style={{ marginLeft: 'auto', flexShrink: 0, background: 'linear-gradient(90deg,#4f8ef7,#6366f1)', border: 'none', borderRadius: 10, color: '#fff', fontSize: 12, fontWeight: 700, padding: '9px 18px', cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 0 16px rgba(79,142,247,.3)', whiteSpace: 'nowrap' }}
+                  >
+                    Start First Sim →
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 10 }}>
+                  {simHistory.map((a, i) => (
+                    <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'center', background: 'rgba(4,10,32,.5)', border: '1px solid rgba(255,255,255,.06)', borderRadius: 12, padding: '10px 12px' }}>
+                      <div style={{ width: 36, height: 36, borderRadius: 9, flexShrink: 0, background: 'rgba(74,144,245,.12)', border: '1px solid rgba(74,144,245,.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15 }}>
+                        {SIM_TYPE_ICONS[a.sim_type] || '🎯'}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: '#e2e8f8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.sim_title}</div>
+                        <div style={{ fontSize: 10, color: '#475569', marginTop: 2 }}>
+                          {a.verdict && <span style={{ color: VERDICT_COLORS[a.verdict] || '#8596AD', fontWeight: 600 }}>{a.verdict}</span>}
+                          <span style={{ marginLeft: a.verdict ? 5 : 0 }}>{formatTimeAgo(a.completed_at)}</span>
+                        </div>
+                      </div>
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <div style={{ fontSize: 16, fontWeight: 800, color: scoreRingColor(a.score), lineHeight: 1 }}>{a.score}</div>
+                        <div style={{ fontSize: 9, color: '#34d399', fontWeight: 600, marginTop: 2 }}>+{a.xp_earned} XP</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Programs */}
             <div style={{ background: 'linear-gradient(155deg,rgba(8,20,52,.85),rgba(5,13,38,.9))', border: '1px solid rgba(255,255,255,.08)', borderRadius: 16, overflow: 'hidden', backdropFilter: 'blur(28px)', marginBottom: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px 10px' }}>
@@ -901,66 +950,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
             )}
           </div>
 
-          {/* 4. SIM HISTORY */}
-          <div style={{ background: 'linear-gradient(155deg,rgba(8,20,52,.88),rgba(5,13,38,.92))', border: '1px solid rgba(255,255,255,.08)', borderRadius: 15, padding: 14, boxShadow: '0 4px 20px rgba(0,0,0,.4)', flexShrink: 0 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <span style={{ fontSize: 12, fontWeight: 700 }}>⚡ Sim History</span>
-              <button
-                onClick={() => navigate('/portal/simulations')}
-                style={{ background: 'none', border: 'none', color: '#6366f1', fontSize: 10, fontWeight: 700, cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}
-              >
-                View All →
-              </button>
-            </div>
-            {simHistory.length === 0 ? (
-              <div style={{ fontSize: 11, color: '#64748b', lineHeight: 1.55 }}>
-                Complete your first simulation to see your results here.
-              </div>
-            ) : (
-              simHistory.map((a, i) => (
-                <div key={i} style={{
-                  display: 'flex', gap: 8, alignItems: 'center',
-                  marginBottom: i < simHistory.length - 1 ? 8 : 0,
-                  paddingBottom: i < simHistory.length - 1 ? 8 : 0,
-                  borderBottom: i < simHistory.length - 1 ? '1px solid rgba(255,255,255,.05)' : 'none',
-                }}>
-                  {/* Type icon */}
-                  <div style={{
-                    width: 30, height: 30, borderRadius: 7, flexShrink: 0,
-                    background: 'rgba(74,144,245,.12)', border: '1px solid rgba(74,144,245,.2)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12,
-                  }}>
-                    {SIM_TYPE_ICONS[a.sim_type] || '🎯'}
-                  </div>
-                  {/* Title + time */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: '#e2e8f8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {a.sim_title}
-                    </div>
-                    <div style={{ fontSize: 9, color: '#475569', marginTop: 1 }}>
-                      {formatTimeAgo(a.completed_at)}
-                      {a.verdict && (
-                        <span style={{ marginLeft: 5, color: VERDICT_COLORS[a.verdict] || '#8596AD', fontWeight: 600 }}>
-                          {a.verdict}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  {/* Score + XP */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2, flexShrink: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 800, color: scoreRingColor(a.score) }}>
-                      {a.score}
-                    </div>
-                    <div style={{ fontSize: 8, color: '#34d399', fontWeight: 600 }}>
-                      +{a.xp_earned} XP
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-
-          {/* 5. FUTURE READY */}
+          {/* 4. FUTURE READY */}
           <div style={{ background: 'linear-gradient(135deg,rgba(37,99,235,.28),rgba(124,58,237,.34))', border: '1px solid rgba(99,102,241,.32)', borderRadius: 15, padding: 14, display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
             <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'radial-gradient(#22d3ee,#4338ca)', display: 'grid', placeItems: 'center', fontSize: 21, flexShrink: 0, boxShadow: '0 0 14px rgba(34,211,238,.3)' }}>🚀</div>
             <div>
