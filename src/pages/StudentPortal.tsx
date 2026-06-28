@@ -4,8 +4,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { overviewT } from '@/contexts/overviewStrings';
+import { composeProfFirstMessage, composeProfRecommendation, type ProfMode } from '@/lib/profDidierMessage';
+import { getLocalizedField } from '@/lib/i18nData';
 import { useProgress } from '@/hooks/useProgress';
 import { talentScoreFromProgress } from '@/hooks/useTalentScore';
+import { careerHoursLeft } from '@/lib/progressModel';
+import { useLearningProfile } from '@/hooks/useLearningProfile';
+import { competencyBarsFromProfile } from '@/lib/competencyBars';
 import { useIdentity } from '@/hooks/useIdentity';
 import { activeHref } from '@/lib/nav';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
@@ -42,13 +47,35 @@ function getDateStr(lang?: string) {
 // "Sarah K. hired … $120,000"). Cleared to avoid showing fabricated social proof
 // in production; populate from real verified graduate outcomes when available.
 const MOMENTUM: { name: string; action: string; role?: string; company?: string; salary?: string; program?: string; cert?: string; time: string }[] = [];
-const SKILLS = [
-  { labelKey: 'skill.cloud_arch', pct: 92, color: '#6366f1' },
-  { labelKey: 'skill.problem_solving', pct: 88, color: '#8b5cf6' },
-  { labelKey: 'skill.ai_ml', pct: 85, color: '#10b981' },
-  { labelKey: 'skill.system_design', pct: 78, color: '#f59e0b' },
-  { labelKey: 'skill.communication', pct: 74, color: '#f97316' },
-];
+// ── Sim History helpers ──────────────────────────────────────────────────────
+const SIM_TYPE_ICONS: Record<string, string> = {
+  incident:'🚨', architecture:'🏗️', negotiation:'🤝', audit:'🔍',
+  crisis:'⚡', design:'✏️', review:'🔎', investigation:'🔬',
+  pitch:'🎤', triage:'📋', roleplay:'🎭', analysis:'📊',
+  ethics:'⚖️', coaching:'👥',
+};
+const VERDICT_COLORS: Record<string, string> = {
+  'Elite Performance': '#F5B81A',
+  'Expert Performance': '#22C98A',
+  'Solid Performance': '#4A90F5',
+  'Good Start': '#A78BFA',
+  'Needs Practice': '#8596AD',
+};
+function formatTimeAgo(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+function scoreRingColor(score: number): string {
+  if (score >= 85) return '#F5B81A';
+  if (score >= 70) return '#22C98A';
+  if (score >= 50) return '#4A90F5';
+  return '#8596AD';
+}
+
 const TOOLS = [
   { icon: '🎤', lbl: 'ai_interview', sub: 'practice_now', path: '/portal/career' },
   { icon: '📄', lbl: 'resume_builder', sub: 'optimize_cv', path: '/portal/career' },
@@ -126,7 +153,13 @@ export default function StudentPortal() {
   const location = useLocation();
   const { user } = useAuth();
   const { language, t } = useLanguage();
-  const { progress: overallProgress } = useProgress(user?.id);
+  // Canonical headline progress — the ONE definition used by every metric on
+  // this page (stat card, Talent Score, Career Path hours, skill bars, mobile).
+  const { pct: overallProgress } = useProgress(user?.id);
+  // Real, quiz-derived competency strengths (cross-program learning profile).
+  // 0% per competency until there is quiz evidence — never a synthetic value.
+  const { profile: learningProfile } = useLearningProfile(user?.id);
+  const competencyBars = competencyBarsFromProfile(learningProfile);
   const { isPhone, isDesktop } = useBreakpoint();
   // Founder God Mode: unrestricted only when the founder has the toggle ON.
   // When OFF, the founder sees the real student experience (gates apply).
@@ -154,14 +187,14 @@ export default function StudentPortal() {
   const [profChat, setProfChat] = useState(false);
   const [profGreeting, setProfGreeting] = useState<string>('');
   const [profLoading, setProfLoading] = useState(false);
+  const [simHistory, setSimHistory] = useState<any[]>([]);
   const [profileRow, setProfileRow] = useState<any | null>(null); // extended profiles row (recap-state cols); consumers (mute/DB day-gate) land in a follow-up
   const [recap, setRecap] = useState<any | null>(null);           // get-student-recap response (Option-A contract); text-only this step
-  // Talent Score — single source of truth (derived from real quiz progress).
+  // Talent Score — single source of truth (derived from canonical progress).
   // Same formula the Talent Score page uses, so the two screens always agree.
   const talentScore = talentScoreFromProgress(overallProgress);
-  // "Hours to employable" derived from real progress against a 600-hour program
-  // target (was a hardcoded 412 placeholder).
-  const hoursLeft = Math.round(((100 - Math.max(0, Math.min(100, overallProgress))) / 100) * 600);
+  // "Hours to employable" derived from the SAME canonical progress (single 600h source).
+  const hoursLeft = careerHoursLeft(overallProgress);
 
   const T = (key: string) => overviewT(language || 'en', key);
 
@@ -242,6 +275,20 @@ export default function StudentPortal() {
     return () => { cancelled = true; };
   }, [user?.id]);
 
+  // Simulation attempt history (most recent 5)
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    supabase
+      .from('simulation_attempts')
+      .select('sim_id,sim_title,sim_type,score,xp_earned,verdict,completed_at')
+      .eq('user_id', user.id)
+      .order('completed_at', { ascending: false })
+      .limit(5)
+      .then(({ data }) => { if (!cancelled && data) setSimHistory(data); });
+    return () => { cancelled = true; };
+  }, [user?.id]);
+
   // Load all student data
   useEffect(() => {
     if (!user) return;
@@ -296,7 +343,9 @@ export default function StudentPortal() {
           );
           school = key ? COURSE_SCHOOL[key] : null;
         }
-        return { id: course.id, title: (course.translations?.[language]?.title || course.title), total, done: doneCount, pct, school, isCert };
+        // Catalog-aware localized title (DB translations → static program catalog →
+        // English/base). Re-runs on language switch via the effect dependency below.
+        return { id: course.id, title: getLocalizedField(course, language, 'title', 'course'), total, done: doneCount, pct, school, isCert };
       });
 
       // Include ALL courses (even unseeded ones) so school counts are correct
@@ -320,7 +369,9 @@ export default function StudentPortal() {
       setStreak(s);
     }
     load();
-  }, [user?.id]);
+    // `language` is a dependency so course titles re-localize on a language switch
+    // (the Next Action "Continue: …" card and program cards stay in sync).
+  }, [user?.id, language]);
 
   // Generate personalized AI greeting from Prof. Didier
   const generateProfGreeting = async () => {
@@ -342,7 +393,7 @@ export default function StudentPortal() {
       const studentContext = `
 Student name: ${userName}
 Time of day: ${timeOfDay}
-Overall progress across all courses: ${overallPct}%
+Overall progress across all courses: ${overallProgress}%
 Day streak: ${streak} consecutive days
 Total points earned: ${totalPoints}
 Certifications earned: ${certCount}
@@ -392,12 +443,12 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
       if (text) {
         setProfGreeting(text);
       } else {
-        setProfGreeting(`Good ${timeOfDay}, ${userName}! I've analyzed your progress across Aladiah Academy. You're at ${overallPct}% overall with a ${streak}-day streak — that consistency is exactly what separates students who make it to the top. Let's keep pushing forward. Your AI career starts here.`);
+        setProfGreeting(`Good ${timeOfDay}, ${userName}! I've analyzed your progress across Aladiah Academy. You're at ${overallProgress}% overall with a ${streak}-day streak — that consistency is exactly what separates students who make it to the top. Let's keep pushing forward. Your AI career starts here.`);
       }
     } catch {
       const hour = new Date().getHours();
       const timeOfDay = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
-      setProfGreeting(`Good ${timeOfDay}, ${userName}! I've reviewed your progress across Aladiah Academy. You're at ${overallPct}% overall with a ${streak}-day streak. Keep that momentum going — consistency is everything in this field. Let's get to work.`);
+      setProfGreeting(`Good ${timeOfDay}, ${userName}! I've reviewed your progress across Aladiah Academy. You're at ${overallProgress}% overall with a ${streak}-day streak. Keep that momentum going — consistency is everything in this field. Let's get to work.`);
     } finally {
       setProfLoading(false);
     }
@@ -413,13 +464,6 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
   // greets with the CURRENT student's first name (useIdentity) — never a stale/old
   // recap value, and never a prior/test name.
   const recapName = firstName;
-  // The server-composed first_message embeds the student's full name; rewrite any
-  // occurrence of the server's name to the live FIRST name, so the program-confirmation
-  // message reads e.g. "Congratulations, Test2Real!" / "Congratulations, Didier!" and
-  // can never surface an old/test name carried by the recap payload.
-  const profFirstMessage = recap?.first_message
-    ? (recap?.student_name ? String(recap.first_message).split(recap.student_name).join(firstName) : recap.first_message)
-    : T('prof_analyzed');
   const modeGreeting =
     recap?.mode === 'onboarding' ? T('prof_greet_onboarding') :
     recap?.mode === 'daily_briefing' ? T('prof_greet_daily') :
@@ -451,7 +495,28 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
         ? { id: recapCourse.id, title: recapCourse.title || recapCourseProg?.title || '', prog: recapCourseProg }
         : (topCourse ? { id: topCourse.id, title: topCourse.title, prog: topCourse } : null));
   const nextActionHasProgress = !!(nextActionCourse?.prog && (nextActionCourse.prog.total ?? 0) > 0);
-  const overallPct = courses.length > 0 ? Math.round(courses.reduce((s, c) => s + c.pct, 0) / courses.length) : 0;
+  // Prof. Didier card copy is composed CLIENT-SIDE in the SELECTED UI language
+  // (not the server recap, which was bound to the stored profiles.preferred_language
+  // and only covered en/es/fr — the root cause of the stale-Spanish card). It reads
+  // only the recap's raw data buckets (mode, lessons since last login) plus the
+  // already-localized selected-program title, so it re-renders instantly on a
+  // language switch across all 8 launch languages with no refetch.
+  const profMode: ProfMode =
+    recap?.mode === 'onboarding' || recap?.mode === 'upgrade_coach' ? recap.mode : 'daily_briefing';
+  const profCourseTitle = nextActionCourse?.title || recapCourse?.title || '';
+  const profFirstMessage = recap
+    ? composeProfFirstMessage(profMode, language || 'en', {
+        name: firstName,
+        course: profCourseTitle,
+        lessons: recap?.since_last_login?.lessons_completed ?? 0,
+      })
+    : T('prof_analyzed');
+  const profRecommendation = recap
+    ? composeProfRecommendation(profMode, language || 'en', profCourseTitle)
+    : '';
+  // NOTE: headline progress is the canonical `overallProgress` (lesson completion
+  // from useProgress), NOT a separate per-course average. `courses[].pct` remains
+  // only for the per-course breakdown cards below.
   const ALL_SCHOOLS = ['AI Engineering', 'AI Business', 'Governance & Risk', 'Human-AI Experience'];
   const schoolCourses = courses.filter(c => c.school === activeSchool);
   const certCourses = courses.filter(c => c.isCert);
@@ -630,7 +695,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
             {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', background: 'linear-gradient(155deg,rgba(8,20,52,.85),rgba(5,13,38,.9))', border: '1px solid rgba(255,255,255,.08)', borderRadius: 16, overflow: 'hidden', backdropFilter: 'blur(28px)', marginBottom: 14 }}>
               {[
-                { val: `${overallPct}%`, lbl: T('overall_progress'), sub: T('keep_going'), color: '#6366f1', onClick: () => navigate('/portal/my-career-path') },
+                { val: `${overallProgress}%`, lbl: T('overall_progress'), sub: T('keep_going'), color: '#6366f1', onClick: () => navigate('/portal/my-career-path') },
                 { val: streak, lbl: `${T('day_streak')} 🔥`, sub: T('amazing'), color: '#f97316', onClick: () => setStreakModal(true) },
                 { val: totalPoints.toLocaleString(), lbl: T('points_earned'), sub: T('this_week'), color: '#f59e0b', onClick: () => setPointsModal(true) },
                 { val: labs.filter((l: any) => l.completed).length, lbl: T('labs_completed'), sub: T('labs_week'), color: '#34d399', onClick: () => setLabsModal(true) },
@@ -642,6 +707,55 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                   <div style={{ fontSize: 9.5, color: '#475569' }}>{s.sub}</div>
                 </div>
               ))}
+            </div>
+
+            {/* Sim History */}
+            <div style={{ background: 'linear-gradient(155deg,rgba(8,20,52,.88),rgba(5,13,38,.92))', border: '1px solid rgba(255,255,255,.08)', borderRadius: 16, padding: '16px 20px', backdropFilter: 'blur(28px)', marginBottom: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                <span style={{ fontSize: 14, fontWeight: 800 }}>⚡ Simulation History</span>
+                <button
+                  onClick={() => navigate('/portal/simulations')}
+                  style={{ background: 'none', border: 'none', color: '#6366f1', fontSize: 12, fontWeight: 700, cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}
+                >
+                  Run a Sim →
+                </button>
+              </div>
+              {simHistory.length === 0 ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 0' }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(99,102,241,.12)', border: '1px solid rgba(99,102,241,.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>🎯</div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f8', marginBottom: 3 }}>No simulations yet</div>
+                    <div style={{ fontSize: 11, color: '#475569', lineHeight: 1.5 }}>Complete a real-world simulation to see your results, scores, and XP here.</div>
+                  </div>
+                  <button
+                    onClick={() => navigate('/portal/simulations')}
+                    style={{ marginLeft: 'auto', flexShrink: 0, background: 'linear-gradient(90deg,#4f8ef7,#6366f1)', border: 'none', borderRadius: 10, color: '#fff', fontSize: 12, fontWeight: 700, padding: '9px 18px', cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 0 16px rgba(79,142,247,.3)', whiteSpace: 'nowrap' }}
+                  >
+                    Start First Sim →
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 10 }}>
+                  {simHistory.map((a, i) => (
+                    <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'center', background: 'rgba(4,10,32,.5)', border: '1px solid rgba(255,255,255,.06)', borderRadius: 12, padding: '10px 12px' }}>
+                      <div style={{ width: 36, height: 36, borderRadius: 9, flexShrink: 0, background: 'rgba(74,144,245,.12)', border: '1px solid rgba(74,144,245,.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15 }}>
+                        {SIM_TYPE_ICONS[a.sim_type] || '🎯'}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: '#e2e8f8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.sim_title}</div>
+                        <div style={{ fontSize: 10, color: '#475569', marginTop: 2 }}>
+                          {a.verdict && <span style={{ color: VERDICT_COLORS[a.verdict] || '#8596AD', fontWeight: 600 }}>{a.verdict}</span>}
+                          <span style={{ marginLeft: a.verdict ? 5 : 0 }}>{formatTimeAgo(a.completed_at)}</span>
+                        </div>
+                      </div>
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <div style={{ fontSize: 16, fontWeight: 800, color: scoreRingColor(a.score), lineHeight: 1 }}>{a.score}</div>
+                        <div style={{ fontSize: 9, color: '#34d399', fontWeight: 600, marginTop: 2 }}>+{a.xp_earned} XP</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Programs */}
@@ -748,12 +862,12 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
                 {modeGreeting}, {recapName}! <span style={{ color: '#f59e0b' }}>🌟</span>
               </div>
               {/* Step 2: data-driven recap (first_message) with static fallback — never blank */}
-              <p style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.55, marginBottom: recap?.recommendation ? 5 : 10 }}>
+              <p style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.55, marginBottom: profRecommendation ? 5 : 10 }}>
                 {profFirstMessage}
               </p>
-              {recap?.recommendation && (
+              {profRecommendation && (
                 <p style={{ fontSize: 11, color: '#67e8f9', fontWeight: 600, lineHeight: 1.5, marginBottom: 10 }}>
-                  {modeRecLabel ? `${modeRecLabel}: ` : '→ '}{recap.recommendation}
+                  {modeRecLabel ? `${modeRecLabel}: ` : '→ '}{profRecommendation}
                 </p>
               )}
               <button onClick={generateProfGreeting} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, width: '100%', minHeight: 38, padding: '8px 12px', background: 'linear-gradient(90deg,#1d4ed8,#2563eb)', border: 'none', borderRadius: 9, color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 0 20px rgba(37,99,235,.38)' }}>
@@ -787,21 +901,17 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
               {T('view_breakdown')}
             </button>
             <div style={{ fontSize: 11.5, fontWeight: 700, marginBottom: 9, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,.06)' }}>{T('top_skills')}</div>
-            {SKILLS.map((sk, i) => {
-              // Scale the aspirational target by REAL overall progress so the bar
-              // reflects actual learning (0 progress → 0%), never a fabricated value.
-              const pct = Math.round((sk.pct * overallProgress) / 100);
-              return (
-              <div key={i} style={{ marginBottom: i < 4 ? 8 : 0 }}>
+            {competencyBars.map((sk, i) => (
+              <div key={sk.label} style={{ marginBottom: i < competencyBars.length - 1 ? 8 : 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, fontSize: 10.5 }}>
-                  <span style={{ color: '#64748b' }}>{t(sk.labelKey)}</span>
-                  <span style={{ fontWeight: 700, color: sk.color }}>{pct}%</span>
+                  <span style={{ color: '#64748b' }}>{sk.label}</span>
+                  <span style={{ fontWeight: 700, color: sk.color }}>{sk.score}%</span>
                 </div>
                 <div style={{ height: 4, background: 'rgba(255,255,255,.07)', borderRadius: 99, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${pct}%`, background: sk.color, borderRadius: 99, opacity: .9 }} />
+                  <div style={{ height: '100%', width: `${sk.score}%`, background: sk.color, borderRadius: 99, opacity: .9 }} />
                 </div>
               </div>
-            );})}
+            ))}
           </div>
 
           {/* 3. CAREER MOMENTUM */}
@@ -900,7 +1010,7 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
             {!profLoading && (
               <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
                 {[
-                  { val: `${overallPct}%`, lbl: t('portal.stat_overall'), color: '#6366f1' },
+                  { val: `${overallProgress}%`, lbl: t('portal.stat_overall'), color: '#6366f1' },
                   { val: `${streak}🔥`, lbl: t('portal.stat_streak'), color: '#f97316' },
                   { val: totalPoints.toLocaleString(), lbl: t('portal.stat_points'), color: '#f59e0b' },
                   { val: `${courses.filter(c => c.pct > 0 && !c.isCert).length}`, lbl: t('portal.stat_active'), color: '#34d399' },

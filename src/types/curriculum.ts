@@ -22,6 +22,12 @@ export interface ModuleBlueprint {
   portfolioArtifact: string;
   quizTiers: ('practice' | 'adaptive' | 'final')[];
   careerOutcome: string;
+  // AI-readiness fields (optional so existing blueprints stay valid):
+  //   aiSkills    — explicit, hireable AI/automation skills the module teaches.
+  //   futureOfWork — how AI reshapes this competency / the future-of-role angle.
+  // Both feed the AI-Readiness score (src/services/standards/aiReadiness.ts).
+  aiSkills?: string[];
+  futureOfWork?: string;
 }
 
 export interface ModuleGap {

@@ -24,6 +24,7 @@ export const FOUNDER_NAV_ITEMS: FounderNavItem[] = [
   { to: '/founder/truth', label: 'Truth Dashboard', icon: Shield },
   { to: '/founder/control-center', label: 'Control Center', icon: LayoutGrid },
   { to: '/founder/readiness', label: 'Curriculum Readiness', icon: GaugeCircle },
+  { to: '/founder/capstones', label: 'Capstone Review', icon: Award },
   { to: '/founder/translation', label: 'Translation Truth', icon: Languages },
   { to: '/founder/journey', label: 'Student Journey', icon: Footprints },
   { to: '/founder/outcomes', label: 'Employment Outcomes', icon: Target },

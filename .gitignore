@@ -13,3 +13,4 @@ supabase/.temp/
 .vercel
 translations_output.json
 *.bak*
+.claude/

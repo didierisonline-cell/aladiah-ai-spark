@@ -194,13 +194,45 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
         yo: 'yo', ha: 'ha', ig: 'ig', vi: 'vi', th: 'th'
       };
       const langCode = langCodeMap[language] || 'en';
-      await conversation.startSession({
-        agentId: AGENT_ID,
+
+      // Prof. Didier IS the lesson body — if the ElevenLabs agent can't start, the
+      // whole class reads as "empty". Fail loud, and prefer a signed URL (works with
+      // PRIVATE agents) with a fallback to the public agentId — mirrors LiveClassroom.
+      if (!AGENT_ID) {
+        console.error('[lesson] VITE_ELEVENLABS_AGENT_ID is not set — Prof. Didier cannot start.');
+        setConvStatus('error');
+        isStartingRef.current = false;
+        return;
+      }
+      let signedUrl: string | null = null;
+      try {
+        const tokenRes = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-conversation-token`,
+          { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` } }
+        );
+        const tokenData = await tokenRes.json();
+        if (tokenData.signed_url) signedUrl = tokenData.signed_url;
+      } catch (e) {
+        console.warn('[lesson] signed URL unavailable, falling back to agentId:', e);
+      }
+      // Voice output: the agent whitelists override voices — without a tts.voiceId the
+      // text streams but the audio can come back silent (LiveClassroom sends this; the
+      // lesson player did not, which is why Prof. Didier "answered" with no sound).
+      const DIDIER_VOICES: Record<string, string> = {
+        en: 'bQxW1c7YCr6VQgQhw8KX', es: 'bQxW1c7YCr6VQgQhw8KX',
+        fr: 'IBGoh6rlxdauchOCULhL', de: 'WPbK7Qv9rbyhvUDiwJ0A',
+        zh: 'pU9NaAwkoR3v0Mrg3uKz', ar: 'Ojb0nFbyzZn95u0i5a5p', ja: 'Mv8AjrYZCBkdsmDHNwcB',
+      };
+      const sessionOpts: any = {
         overrides: {
           agent: { prompt: { prompt: systemPrompt }, language: langCode },
-        }
-      });
-    } catch {
+          tts: { voiceId: DIDIER_VOICES[language] || 'bQxW1c7YCr6VQgQhw8KX', stability: 0.71, similarityBoost: 0.55 },
+        },
+      };
+      if (signedUrl) sessionOpts.signedUrl = signedUrl; else sessionOpts.agentId = AGENT_ID;
+      await conversation.startSession(sessionOpts);
+    } catch (e) {
+      console.error('[lesson] Prof. Didier startSession failed:', e);
       setConvStatus('error');
       isStartingRef.current = false;
     }
@@ -240,11 +272,14 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       const res = await supabase.functions.invoke('generate-visuals', {
         body: { lessonTitle: getTitle(lesson), lessonDescription: getDescription(lesson), courseTitle, language }
       });
+      console.log('[visuals] response:', JSON.stringify({ invokeError: res.error?.message, funcError: res.data?.error, svgsCount: res.data?.svgs?.length ?? 0 }));
+      if (res.error) console.error('[visuals] invoke error:', res.error);
+      if (res.data?.error) console.error('[visuals] function returned error:', res.data.error);
       if (res.data?.svgs?.length > 0) {
         setLessonVisuals(res.data.svgs);
         supabase.from('lesson_visuals').upsert({ lesson_id: key, svgs: res.data.svgs }).then(() => { });
       }
-    } catch (e) { console.warn('visuals failed', e); }
+    } catch (e) { console.error('[visuals] exception:', e); }
     setVisualsLoading(false);
   };
 
@@ -588,105 +623,140 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.7, marginBottom: 24 }}>{getDescription(currentLesson)}</p>
             )}
 
-            {/* ── LESSON TRANSCRIPT ── */}
-            {getTranscript(currentLesson) && (
-              <div style={{ marginBottom: 32 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                  <div style={{ width: 3, height: 18, borderRadius: 2, background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)' }} />
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    {t('chapter.transcript')}
-                  </span>
-                </div>
-                {language !== 'en' && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, padding: '8px 14px', background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 8 }}>
-                    <span style={{ fontSize: 18 }}>🌐</span>
-                    <span style={{ fontSize: 12, color: '#60a5fa' }}>{t('chapter.transcript_notice')}</span>
-                  </div>
-                )}
-                <div style={{
-                  background: 'rgba(15,23,42,0.6)',
-                  border: '1px solid rgba(59,130,246,0.15)',
-                  borderRadius: 14,
-                  padding: '20px 22px',
-                  maxHeight: 320,
-                  overflowY: 'auto',
-                  position: 'relative'
-                }}>
-                  {(() => {
-                    const raw = getTranscript(currentLesson);
-                    // Split on real newlines first, then on ". " followed by capital to break dense paragraphs
-                    const lines = raw.split(/\n+/);
-                    const paras: string[] = [];
-                    lines.forEach(line => {
-                      // Further split long lines on sentence boundaries
-                      if (line.length > 300) {
-                        const sentences = line.replace(/\.\s+(?=[A-Z])/g, '.\n').split('\n');
-                        // Group sentences into ~150 char chunks
-                        let chunk = '';
-                        sentences.forEach(s => {
-                          if ((chunk + s).length > 250 && chunk) {
-                            paras.push(chunk.trim());
-                            chunk = s + ' ';
-                          } else {
-                            chunk += s + ' ';
-                          }
-                        });
-                        if (chunk.trim()) paras.push(chunk.trim());
-                      } else {
-                        paras.push(line);
-                      }
-                    });
-                    return paras;
-                  })()
-                    .map(line => line.trim())
-                    .filter(line => line.length > 0)
-                    .map((para, i) => (
-                      <p key={i} style={{
-                        margin: '0 0 14px',
-                        fontSize: 13,
-                        lineHeight: 1.8,
-                        color: para.match(/^[A-Z][A-Z\s&:0-9]{3,}:?$/) || para.match(/^\d+:\d+/) || para.match(/^[A-Z]{2,}/)
-                          ? '#93c5fd'
-                          : '#cbd5e1',
-                        fontWeight: para.match(/^[A-Z][A-Z\s&:0-9]{3,}:?$/) ? 600 : 400,
-                        letterSpacing: para.match(/^[A-Z][A-Z\s&:0-9]{3,}:?$/) ? '0.04em' : 'normal',
-                        borderLeft: para.match(/^\d+:\d+/) ? '2px solid rgba(96,165,250,0.3)' : 'none',
-                        paddingLeft: para.match(/^\d+:\d+/) ? 10 : 0,
-                      }}>
-                        {para}
-                      </p>
-                    ))
+            {/* ── CHAPTER CONTENT — textbook layout ── */}
+            {getTranscript(currentLesson) && (() => {
+              const raw = getTranscript(currentLesson);
+              const lines = raw.split('\n');
+
+              type BlockKind =
+                | { kind: 'section'; text: string }
+                | { kind: 'paragraph'; text: string }
+                | { kind: 'bullets'; items: string[] }
+                | { kind: 'numbered'; items: string[] }
+                | { kind: 'callout'; variant: 'ai' | 'example' | 'principle'; lines: string[] };
+              const blocks: BlockKind[] = [];
+              let li = 0;
+              while (li < lines.length) {
+                const line = lines[li].trim();
+                if (!line) { li++; continue; }
+                const isAllCaps = line.length > 3 && line === line.toUpperCase() && /[A-Z]/.test(line);
+                const isAICallout = isAllCaps && /^AI (IN|FOR|APPLICATION|AMPLIFIED|TOOLS|AUGMENT|SCRUM MASTER)/.test(line);
+                const isPrincipleCallout = /^(PRINCIPLE:|KEY CONCEPT|THE EMPIRICAL SCRUM MASTER)/.test(line);
+                const isExampleCallout = /^(EXAMPLE|WHY SCRUM FAILS|THE FAILURE OF|TRUST:|HOW VALUES)/.test(line);
+                if (isAICallout || isPrincipleCallout || isExampleCallout) {
+                  const body: string[] = [line]; li++;
+                  while (li < lines.length && lines[li].trim() && !(lines[li].trim() === lines[li].trim().toUpperCase() && lines[li].trim().length > 3 && /[A-Z]/.test(lines[li].trim()) && !lines[li].trim().startsWith('-'))) {
+                    body.push(lines[li].trim()); li++;
                   }
+                  blocks.push({ kind: 'callout', variant: isAICallout ? 'ai' : isPrincipleCallout ? 'principle' : 'example', lines: body });
+                } else if (line.startsWith('- ')) {
+                  const items: string[] = [line.slice(2)]; li++;
+                  while (li < lines.length && lines[li].trim().startsWith('- ')) { items.push(lines[li].trim().slice(2)); li++; }
+                  blocks.push({ kind: 'bullets', items });
+                } else if (/^\d+\.\s/.test(line)) {
+                  const items: string[] = [line.replace(/^\d+\.\s/, '')]; li++;
+                  while (li < lines.length && /^\d+\.\s/.test(lines[li].trim())) { items.push(lines[li].trim().replace(/^\d+\.\s/, '')); li++; }
+                  blocks.push({ kind: 'numbered', items });
+                } else if (isAllCaps && line.length < 90) {
+                  blocks.push({ kind: 'section', text: line }); li++;
+                } else {
+                  blocks.push({ kind: 'paragraph', text: line }); li++;
+                }
+              }
+
+              const calloutStyle = {
+                ai: { bg: 'rgba(245,158,11,0.06)', border: 'rgba(245,158,11,0.28)', label: '#f59e0b', icon: '🤖' },
+                principle: { bg: 'rgba(59,130,246,0.07)', border: 'rgba(59,130,246,0.28)', label: '#60a5fa', icon: '💡' },
+                example: { bg: 'rgba(34,197,138,0.06)', border: 'rgba(34,197,138,0.28)', label: '#22c98a', icon: '📌' },
+              };
+
+              return (
+                <div style={{ marginBottom: 32 }}>
+                  {language !== 'en' && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '8px 14px', background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 8 }}>
+                      <span style={{ fontSize: 18 }}>🌐</span>
+                      <span style={{ fontSize: 12, color: '#60a5fa' }}>{t('chapter.transcript_notice')}</span>
+                    </div>
+                  )}
+                  {blocks.map((block, idx) => {
+                    if (block.kind === 'section') return (
+                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 12, margin: idx === 0 ? '0 0 20px' : '40px 0 16px' }}>
+                        <div style={{ width: 4, height: 30, background: 'linear-gradient(180deg,#3b82f6,#8b5cf6)', borderRadius: 2, flexShrink: 0 }} />
+                        <h2 style={{ fontSize: 17, fontWeight: 800, color: '#e2e8f0', margin: 0, letterSpacing: '0.01em' }}>{block.text}</h2>
+                      </div>
+                    );
+                    if (block.kind === 'paragraph') return (
+                      <p key={idx} style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.85, margin: '0 0 16px', paddingLeft: 16 }}>{block.text}</p>
+                    );
+                    if (block.kind === 'bullets') return (
+                      <ul key={idx} style={{ margin: '0 0 20px', padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10, paddingLeft: 16 }}>
+                        {block.items.map((item, j) => (
+                          <li key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, fontSize: 15, color: '#94a3b8', lineHeight: 1.75 }}>
+                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#3b82f6', flexShrink: 0, marginTop: 9 }} />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    );
+                    if (block.kind === 'numbered') return (
+                      <ol key={idx} style={{ margin: '0 0 20px', padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 14, paddingLeft: 16 }}>
+                        {block.items.map((item, j) => (
+                          <li key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, fontSize: 15, color: '#94a3b8', lineHeight: 1.75 }}>
+                            <span style={{ minWidth: 28, height: 28, borderRadius: '50%', background: 'rgba(59,130,246,0.14)', border: '1px solid rgba(59,130,246,0.3)', color: '#60a5fa', fontSize: 12, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{j + 1}</span>
+                            {item}
+                          </li>
+                        ))}
+                      </ol>
+                    );
+                    if (block.kind === 'callout') {
+                      const cs = calloutStyle[block.variant];
+                      return (
+                        <div key={idx} style={{ background: cs.bg, border: `1px solid ${cs.border}`, borderRadius: 14, padding: '18px 20px', margin: '4px 0 24px', display: 'flex', gap: 14 }}>
+                          <span style={{ fontSize: 22, flexShrink: 0, marginTop: 1 }}>{cs.icon}</span>
+                          <div style={{ flex: 1 }}>
+                            {block.lines[0] && <div style={{ fontSize: 11, fontWeight: 800, color: cs.label, textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 10 }}>{block.lines[0]}</div>}
+                            {block.lines.slice(1).map((ln, j) =>
+                              ln.startsWith('- ')
+                                ? <div key={j} style={{ display: 'flex', gap: 8, marginBottom: 7, fontSize: 14, color: '#94a3b8', lineHeight: 1.65 }}><span style={{ color: cs.label, flexShrink: 0 }}>•</span>{ln.slice(2)}</div>
+                                : <p key={j} style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.75, margin: '0 0 8px' }}>{ln}</p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
+                  <p style={{ fontSize: 11, color: '#334155', textAlign: 'right', marginTop: 8 }}>
+                    {t('chapter.read_along')}
+                  </p>
                 </div>
-                <p style={{ margin: '8px 0 0', fontSize: 11, color: '#475569', textAlign: 'right' }}>
-                  {t('chapter.read_along')}
-                </p>
-              </div>
-            )}
+              );
+            })()}
           </motion.div>
 
-
-          {/* Visual Breakdown */}
-          <div style={{ marginBottom: 32 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-              <div style={{ width: 3, height: 18, borderRadius: 2, background: 'linear-gradient(135deg,#1d4ed8,#7c3aed)' }} />
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>{t('chapter.visual_breakdown')}</span>
-            </div>
-            {visualsLoading && (
-              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(96,165,250,0.12)', borderRadius: 14, padding: '28px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-                <div style={{ width: 18, height: 18, border: '2px solid #1e40af', borderTop: '2px solid #60a5fa', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-                <span style={{ fontSize: 13, color: '#475569' }}>{t('chapter.generating_visuals')}</span>
+          {/* Visual Diagrams — only renders when loading or when SVGs are ready */}
+          {(visualsLoading || lessonVisuals.length > 0) && (
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+                <div style={{ width: 3, height: 18, borderRadius: 2, background: 'linear-gradient(135deg,#1d4ed8,#7c3aed)' }} />
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>{t('chapter.visual_breakdown')}</span>
               </div>
-            )}
-            {lessonVisuals.map((svg, i) => (
-              <div key={i} style={{ marginBottom: 16, borderRadius: 12, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 2px 16px rgba(0,0,0,0.15)' }}>
-                <div style={{ background: '#f8fafc', padding: '6px 14px', borderBottom: '1px solid #e2e8f0' }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase' as const, letterSpacing: '.06em' }}>{t('chapter.diagram')} {i + 1}</span>
+              {visualsLoading && (
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(96,165,250,0.12)', borderRadius: 14, padding: '28px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+                  <div style={{ width: 18, height: 18, border: '2px solid #1e40af', borderTop: '2px solid #60a5fa', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                  <span style={{ fontSize: 13, color: '#475569' }}>{t('chapter.generating_visuals')}</span>
                 </div>
-                <div style={{ background: '#fff', padding: '12px', display: 'flex', justifyContent: 'center' }} dangerouslySetInnerHTML={{ __html: svg }} />
-              </div>
-            ))}
-          </div>
+              )}
+              {lessonVisuals.map((svg, i) => (
+                <div key={i} style={{ marginBottom: 16, borderRadius: 12, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 2px 16px rgba(0,0,0,0.15)' }}>
+                  <div style={{ background: '#f8fafc', padding: '6px 14px', borderBottom: '1px solid #e2e8f0' }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase' as const, letterSpacing: '.06em' }}>{t('chapter.diagram')} {i + 1}</span>
+                  </div>
+                  <div style={{ background: '#fff', padding: '12px', display: 'flex', justifyContent: 'center' }} dangerouslySetInnerHTML={{ __html: svg }} />
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* ── Prof. Didier Embedded Panel ── */}
           <div style={{ background: 'linear-gradient(160deg,#0f172a,#0d1b3e)', border: '1px solid rgba(96,165,250,0.2)', borderRadius: 20, overflow: 'hidden', marginBottom: 32 }}>
@@ -753,27 +823,112 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               )}
             </div>
 
-            {course && getStudyGuidePdf(course.title) && (
-              <div style={{ borderTop: '1px solid rgba(96,165,250,0.08)', padding: '16px 24px' }}>
-                <button onClick={() => setShowStudyGuide(v => !v)} style={{ width: '100%', padding: '12px 0', borderRadius: 12, border: '1px solid rgba(212,175,55,0.3)', background: showStudyGuide ? 'rgba(212,175,55,0.12)' : 'rgba(212,175,55,0.06)', color: '#d4af37', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                  📖 {showStudyGuide ? t('chapter.close_study_guide') : t('chapter.course_study_guide')}
-                </button>
-                {showStudyGuide && (
-                  <div style={{ marginTop: 12, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(212,175,55,0.2)' }}>
-                    <div style={{ padding: '8px 14px', borderBottom: '1px solid rgba(212,175,55,0.15)', background: 'rgba(212,175,55,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#d4af37' }}>📚 {getLocalizedField(course, language, 'title')} — {t('chapter.study_guide')}</span>
-                      <span style={{ fontSize: 11, color: '#64748b' }}>{t('chapter.read_only')}</span>
-                    </div>
-                    <iframe src={getStudyGuidePdf(course.title) + '#toolbar=0&navpanes=0&scrollbar=1'} style={{ width: '100%', height: 520, border: 'none', background: '#0a0f1e' }} title={t('lesson.study_guide')} />
-                    <div style={{ padding: '6px 14px', borderTop: '1px solid rgba(212,175,55,0.1)', textAlign: 'center' }}>
-                      <span style={{ fontSize: 11, color: '#475569' }}>Aladiah Academy · Solo Excelencia™</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
 
           </div>
+
+          {/* Course Study Guide — sits between the AI mentor and the Continue button */}
+          {course && videos.length > 0 && (
+            <div style={{ marginBottom: 32 }}>
+              <button onClick={() => setShowStudyGuide(v => !v)} style={{ width: '100%', padding: '14px 0', borderRadius: 12, border: `1px solid ${showStudyGuide ? 'rgba(212,175,55,0.5)' : 'rgba(212,175,55,0.3)'}`, background: showStudyGuide ? 'rgba(212,175,55,0.14)' : 'rgba(212,175,55,0.06)', color: '#d4af37', fontSize: 15, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                📖 {showStudyGuide ? t('chapter.close_study_guide') : t('chapter.course_study_guide')}
+              </button>
+              {showStudyGuide && (
+                <div style={{ marginTop: 12, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(212,175,55,0.2)' }}>
+                  <div style={{ padding: '8px 14px', borderBottom: '1px solid rgba(212,175,55,0.15)', background: 'rgba(212,175,55,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: '#d4af37' }}>📚 {getLocalizedField(course, language, 'title')} — {t('chapter.study_guide')}</span>
+                    <span style={{ fontSize: 11, color: '#64748b' }}>{t('chapter.read_only')}</span>
+                  </div>
+                  <div style={{ height: 520, overflowY: 'auto', background: '#ffffff', fontFamily: 'Georgia, "Times New Roman", serif', padding: '40px 52px', color: '#1e293b' }}>
+                    <div style={{ borderBottom: '3px solid #f59e0b', marginBottom: 36, paddingBottom: 24 }}>
+                      <div style={{ fontSize: 10, letterSpacing: '0.2em', color: '#94a3b8', textTransform: 'uppercase' as const, fontFamily: 'system-ui, sans-serif', display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
+                        <span>ALADIAH ACADEMY</span>
+                        <span style={{ textAlign: 'right', maxWidth: '50%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{getLocalizedField(course, language, 'title').toUpperCase()}</span>
+                      </div>
+                      <h1 style={{ fontSize: 26, fontWeight: 900, color: '#0a0f1e', margin: '0 0 10px', lineHeight: 1.25, fontFamily: 'Georgia, serif' }}>
+                        {getTitle(chapter)}
+                      </h1>
+                      <p style={{ fontSize: 13, color: '#64748b', margin: 0, fontFamily: 'system-ui, sans-serif', letterSpacing: '0.02em' }}>
+                        Module Study Guide &nbsp;·&nbsp; {videos.length} Lesson{videos.length !== 1 ? 's' : ''} &nbsp;·&nbsp; Solo Excelencia™
+                      </p>
+                    </div>
+                    {videos.map((video, idx) => {
+                      const lessonTranscript = getTranscript(video);
+                      const lessonDesc = getDescription(video);
+                      const lessonTitle = getTitle(video);
+                      return (
+                        <div key={video.id} style={{ marginBottom: 52, paddingBottom: 52, borderBottom: idx < videos.length - 1 ? '1px solid #e2e8f0' : 'none' }}>
+                          <div style={{ marginBottom: 18 }}>
+                            <span style={{ fontSize: 10, letterSpacing: '0.18em', color: '#f59e0b', textTransform: 'uppercase' as const, fontFamily: 'system-ui, sans-serif', fontWeight: 700 }}>
+                              LESSON {idx + 1}
+                            </span>
+                            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0a0f1e', margin: '4px 0 12px', lineHeight: 1.3, fontFamily: 'Georgia, serif' }}>
+                              {lessonTitle}
+                            </h2>
+                            {lessonDesc && (
+                              <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 0', fontStyle: 'italic', borderLeft: '3px solid #f59e0b', paddingLeft: 14, fontFamily: 'Georgia, serif' }}>
+                                {lessonDesc}
+                              </p>
+                            )}
+                          </div>
+                          {lessonTranscript ? (
+                            <div style={{ fontSize: 14, lineHeight: 1.85, color: '#1e293b', fontFamily: 'Georgia, serif' }}>
+                              {lessonTranscript.split('\n').map((line, i) => {
+                                const trimmed = line.trim();
+                                if (!trimmed) return <div key={i} style={{ height: 10 }} />;
+                                if (trimmed.length >= 4 && trimmed === trimmed.toUpperCase() && /[A-Z]/.test(trimmed) && !/\d{4}/.test(trimmed)) {
+                                  return (
+                                    <h3 key={i} style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.14em', color: '#0a0f1e', textTransform: 'uppercase' as const, margin: '28px 0 10px', fontFamily: 'system-ui, sans-serif', borderBottom: '1px solid #f1f5f9', paddingBottom: 5 }}>
+                                      {trimmed}
+                                    </h3>
+                                  );
+                                }
+                                if (/^[-•–]\s/.test(trimmed)) {
+                                  return (
+                                    <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 5, paddingLeft: 4 }}>
+                                      <span style={{ color: '#f59e0b', flexShrink: 0, lineHeight: 1.85, fontWeight: 700 }}>•</span>
+                                      <span>{trimmed.replace(/^[-•–]\s*/, '')}</span>
+                                    </div>
+                                  );
+                                }
+                                if (/^\d+[.)]\s/.test(trimmed)) {
+                                  return (
+                                    <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 5, paddingLeft: 4 }}>
+                                      <span style={{ color: '#f59e0b', flexShrink: 0, lineHeight: 1.85, fontWeight: 700, minWidth: 20 }}>{trimmed.match(/^\d+/)?.[0]}.</span>
+                                      <span>{trimmed.replace(/^\d+[.)]\s*/, '')}</span>
+                                    </div>
+                                  );
+                                }
+                                if (line.startsWith('  ') || line.startsWith('\t')) {
+                                  return (
+                                    <div key={i} style={{ fontFamily: '"Courier New", Courier, monospace', fontSize: 12, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 4, padding: '2px 8px', margin: '3px 0', color: '#334155', whiteSpace: 'pre-wrap' as const }}>
+                                      {trimmed}
+                                    </div>
+                                  );
+                                }
+                                return <p key={i} style={{ margin: '0 0 10px' }}>{trimmed}</p>;
+                              })}
+                            </div>
+                          ) : (
+                            <p style={{ fontSize: 13, color: '#94a3b8', fontStyle: 'italic', fontFamily: 'system-ui, sans-serif' }}>
+                              Content for this lesson is being prepared.
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                    <div style={{ marginTop: 24, paddingTop: 20, borderTop: '3px solid #f59e0b', textAlign: 'center' }}>
+                      <p style={{ fontSize: 11, color: '#94a3b8', letterSpacing: '0.12em', textTransform: 'uppercase' as const, fontFamily: 'system-ui, sans-serif', margin: 0 }}>
+                        Aladiah Academy &nbsp;·&nbsp; Solo Excelencia™
+                      </p>
+                    </div>
+                  </div>
+                  <div style={{ padding: '6px 14px', borderTop: '1px solid rgba(212,175,55,0.1)', textAlign: 'center' }}>
+                    <span style={{ fontSize: 11, color: '#475569' }}>Aladiah Academy · Solo Excelencia™</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Spec A: app-owned lesson progression — independent of the voice agent.
               Lesson → Continue → next lesson; after the last lesson → chapter_end quiz. */}

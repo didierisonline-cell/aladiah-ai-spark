@@ -1,8 +1,15 @@
 
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/hooks/useAuth';
+import { useLearningProfile } from '@/hooks/useLearningProfile';
+import { competencyBarsFromProfile } from '@/lib/competencyBars';
 
 const PortalCareerPanel = () => {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  // Real, quiz-derived competency strengths (shared source with the dashboard).
+  const { profile: learningProfile } = useLearningProfile(user?.id);
+  const competencyBars = competencyBarsFromProfile(learningProfile);
   return (
   <div>
     <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1.25rem',marginBottom:'1.25rem'}}>
@@ -19,10 +26,10 @@ const PortalCareerPanel = () => {
       <div style={{background:'var(--card)',border:'1px solid var(--border)',borderTop:'2px solid #F0622A',borderRadius:'0.75rem',padding:'1.5rem'}}>
         <div style={{fontSize:'14px',fontWeight:700,color:'var(--foreground)',marginBottom:'0.5rem',display:'flex',alignItems:'center',gap:'0.5rem'}}><span>📊</span>{t('cpanel.skill_title')}</div>
         <p style={{fontSize:'12px',color:'var(--muted-foreground)',lineHeight:1.6,marginBottom:'1rem'}}>{t('cpanel.skill_sub')}</p>
-        {[{s:'LangGraph / Agent Frameworks',p:45,col:'linear-gradient(90deg,#F0622A,#F5895E)',st:'in_progress'},{s:'RAG Systems',p:0,col:'linear-gradient(90deg,#4A90F5,#7AB5FF)',st:'not_started'},{s:'MCP Protocol',p:0,col:'linear-gradient(90deg,#4A90F5,#7AB5FF)',st:'not_started'},{s:'Python Advanced',p:72,col:'linear-gradient(90deg,#22C98A,#5EEAB8)',st:'good'},{s:'AWS Bedrock',p:0,col:'linear-gradient(90deg,#4A90F5,#7AB5FF)',st:'not_started'}].map(x=>(
-          <div key={x.s} style={{marginBottom:'0.75rem'}}>
-            <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',marginBottom:'3px'}}><span style={{color:'var(--foreground)',fontWeight:500}}>{x.s}</span><span style={{color:x.p>0?'#22C98A':'var(--muted-foreground)'}}>{x.st==='in_progress'?t('cpanel.in_progress'):x.st==='not_started'?t('cpanel.not_started'):x.st}</span></div>
-            <div style={{height:'4px',background:'rgba(255,255,255,0.06)',borderRadius:'2px',overflow:'hidden'}}><div style={{height:'100%',width:`${x.p}%`,background:x.col}}/></div>
+        {competencyBars.map(x=>(
+          <div key={x.label} style={{marginBottom:'0.75rem'}}>
+            <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',marginBottom:'3px'}}><span style={{color:'var(--foreground)',fontWeight:500}}>{x.label}</span><span style={{color:x.score>0?'#22C98A':'var(--muted-foreground)'}}>{x.score>0?`${x.score}%`:t('cpanel.not_started')}</span></div>
+            <div style={{height:'4px',background:'rgba(255,255,255,0.06)',borderRadius:'2px',overflow:'hidden'}}><div style={{height:'100%',width:`${x.score}%`,background:x.color}}/></div>
           </div>
         ))}
       </div>

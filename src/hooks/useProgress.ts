@@ -1,74 +1,77 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import {
+  computeCanonicalProgress, EMPTY_PROGRESS, type StudentProgress,
+} from '@/lib/progressModel';
 
-export const useProgress = (userId: string | undefined) => {
-  const [progress, setProgress] = useState(0);
-  const [loading, setLoading] = useState(true);
+// =============================================================================
+// useProgress — THE single canonical progress source for every surface.
+// =============================================================================
+// Fetches the published lesson/chapter universe + the student's user_progress,
+// then defers to the pure `computeCanonicalProgress` (src/lib/progressModel.ts)
+// for the actual math. The returned object is consumed identically by
+// StudentPortal, Dashboard, PortalSidebar, ProgressBar, MobileHome/MobileLearn
+// and (via useTalentScore) the Talent Score surfaces — so headline progress can
+// never diverge between screens again.
+//
+// `progress` (number) is kept as a deprecated alias of `pct` so legacy consumers
+// that destructured `{ progress }` keep working and now read the canonical value.
+// =============================================================================
+
+export type { StudentProgress } from '@/lib/progressModel';
+
+export function useProgress(userId: string | undefined): StudentProgress {
+  const [state, setState] = useState<StudentProgress>({ ...EMPTY_PROGRESS, loading: true });
 
   useEffect(() => {
-    if (!userId) {
-      setLoading(false);
-      return;
-    }
+    if (!userId) { setState({ ...EMPTY_PROGRESS, loading: false }); return; }
+    let cancelled = false;
 
-    const calculate = async () => {
+    (async () => {
       try {
-        // Get all chapter_end quizzes (one per chapter = lesson completion)
-        const { data: quizzes } = await supabase
-          .from('quizzes')
-          .select('id, chapter_id, quiz_type')
-          .eq('quiz_type', 'chapter_end');
+        // Published-course universe → its chapters → its videos (lessons).
+        const { data: courses } = await supabase
+          .from('courses').select('id').eq('is_published', true);
+        const courseIds = (courses || []).map((c) => c.id);
+        if (courseIds.length === 0) { if (!cancelled) setState({ ...EMPTY_PROGRESS, loading: false }); return; }
 
-        if (!quizzes || quizzes.length === 0) {
-          setProgress(0);
-          setLoading(false);
-          return;
-        }
+        const { data: chapters } = await supabase
+          .from('chapters').select('id').in('course_id', courseIds);
+        const chapterIds = (chapters || []).map((c) => c.id);
 
-        // Get user's passed quizzes with scores
-        const { data: progressData } = await supabase
-          .from('user_progress')
-          .select('quiz_id, score')
-          .eq('user_id', userId)
-          .not('quiz_id', 'is', null);
+        const [vidsRes, quizRes, progRes] = await Promise.all([
+          chapterIds.length
+            ? supabase.from('videos').select('id').in('chapter_id', chapterIds)
+            : Promise.resolve({ data: [] as { id: string }[] }),
+          supabase.from('quizzes').select('id').eq('quiz_type', 'chapter_end'),
+          supabase.from('user_progress')
+            .select('video_id, quiz_id, score, completed_at')
+            .eq('user_id', userId),
+        ]);
 
-        const passedIds = (progressData || []).map(p => p.quiz_id);
-        const passedQuizzes = quizzes.filter(q => passedIds.includes(q.id));
-        const totalQuizzes = quizzes.length;
-        const passedCount = passedQuizzes.length;
+        const result = computeCanonicalProgress({
+          lessonIds: (vidsRes.data || []).map((v: { id: string }) => v.id),
+          chapterEndQuizIds: (quizRes.data || []).map((q: { id: string }) => q.id),
+          progressRows: (progRes.data || []) as any[],
+        });
 
-        // Average score of passed quizzes (lesson quality)
-        const scores = (progressData || [])
-          .filter(p => passedIds.includes(p.quiz_id) && p.score != null)
-          .map(p => p.score as number);
-        const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
-
-        // Overall = 50% completion weight + 50% score weight
-        const completionPct = totalQuizzes > 0 ? Math.round((passedCount / totalQuizzes) * 100) : 0;
-        const overall = scores.length > 0
-          ? Math.round((completionPct + avgScore) / 2)
-          : completionPct;
-
-        setProgress(overall);
+        if (!cancelled) setState(result);
       } catch {
-        setProgress(0);
-      } finally {
-        setLoading(false);
+        if (!cancelled) setState({ ...EMPTY_PROGRESS, loading: false });
       }
-    };
+    })();
 
-    calculate();
+    return () => { cancelled = true; };
   }, [userId]);
 
-  return { progress, loading };
-};
+  return state;
+}
 
 /**
  * Returns a color in HSL based on progress percentage.
  * 0% = sky blue (195, 85%, 60%), 100% = deep navy (215, 70%, 22%)
  */
 export const getProgressColor = (progress: number): string => {
-  // Interpolate from sky blue to deep navy
   const h = 195 + (progress / 100) * (215 - 195); // 195 -> 215
   const s = 85 + (progress / 100) * (70 - 85);     // 85 -> 70
   const l = 60 + (progress / 100) * (22 - 60);     // 60 -> 22

@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Award, BookOpen, GitBranch, GraduationCap, Layers, Play, RefreshCw, Rocket, Send, ShieldCheck, Target } from 'lucide-react';
+import { Award, BookOpen, Bot, GitBranch, GraduationCap, Layers, Play, RefreshCw, Rocket, Send, ShieldCheck, Target } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { aos, AgentHealth } from '@/services/aos';
 import { CURRICULUM_AGENT_SLUG, CurriculumAudit } from '@/types/curriculum';
@@ -12,11 +12,14 @@ import { SCRUM_18_BLUEPRINT, SCRUM_18_TITLE } from '@/services/agents/curriculum
 import { delegateModule, delegateRedesign, getLatestAudit } from '@/services/agents/curriculumExcellenceAgent';
 import { PROGRAM_ARCHITECTURES, WORLD_CLASS_CES, scoreBlueprint } from '@/services/standards/programStandard';
 import { CANONICAL_MODULE_STRUCTURE, FUTURE_SPECS, REFERENCE_SPEC } from '@/services/standards/programFactory';
+import { scoreProgramAIReadiness, AI_READY_BAR } from '@/services/standards/aiReadiness';
 import ProgramScorecard from './ProgramScorecard';
 import FlagshipArchitecturePanel from './FlagshipArchitecturePanel';
 import FullCurriculumPanel from './FullCurriculumPanel';
+import AIReadinessPanel from './AIReadinessPanel';
 
 const STANDARD_EVAL = scoreBlueprint(SCRUM_18_BLUEPRINT, 'scrum');
+const AI_READINESS = scoreProgramAIReadiness(SCRUM_18_BLUEPRINT);
 
 const CurriculumExcellenceDashboard = () => {
   const { toast } = useToast();
@@ -65,8 +68,9 @@ const CurriculumExcellenceDashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         <Tile icon={Award} label={`CES (Standard ${STANDARD_EVAL.version})`} value={`${audit?.ces ?? STANDARD_EVAL.ces}/100`} accent={(audit?.ces ?? STANDARD_EVAL.ces) >= WORLD_CLASS_CES ? 'text-green-600' : 'text-amber-600'} />
+        <Tile icon={Bot} label={`AI-Readiness (bar ${AI_READY_BAR})`} value={`${AI_READINESS.programScore}/100`} accent={AI_READINESS.ready ? 'text-green-600' : 'text-amber-600'} />
         <Tile icon={Target} label="Build Progress" value={`${audit?.excellence_score ?? 0}%`} accent={(audit?.excellence_score ?? 0) >= 70 ? 'text-green-600' : 'text-amber-600'} />
         <Tile icon={Layers} label="Target Modules" value={SCRUM_18_BLUEPRINT.length} />
         <Tile icon={BookOpen} label="Elements Present" value={audit?.present_count ?? 0} accent="text-green-600" />
@@ -78,6 +82,7 @@ const CurriculumExcellenceDashboard = () => {
           <TabsTrigger value="scorecard"><Award className="w-3.5 h-3.5 mr-1" />Scorecard</TabsTrigger>
           <TabsTrigger value="full"><BookOpen className="w-3.5 h-3.5 mr-1" />Full Curriculum</TabsTrigger>
           <TabsTrigger value="standard"><ShieldCheck className="w-3.5 h-3.5 mr-1" />Program Standard</TabsTrigger>
+          <TabsTrigger value="ai-readiness"><Bot className="w-3.5 h-3.5 mr-1" />AI Readiness</TabsTrigger>
           <TabsTrigger value="audit"><Target className="w-3.5 h-3.5 mr-1" />Audit &amp; Gaps</TabsTrigger>
           <TabsTrigger value="standards"><ShieldCheck className="w-3.5 h-3.5 mr-1" />Framework</TabsTrigger>
           <TabsTrigger value="blueprint"><Layers className="w-3.5 h-3.5 mr-1" />18-Module Blueprint</TabsTrigger>
@@ -88,6 +93,7 @@ const CurriculumExcellenceDashboard = () => {
 
         <TabsContent value="scorecard"><ProgramScorecard /></TabsContent>
         <TabsContent value="full"><FullCurriculumPanel /></TabsContent>
+        <TabsContent value="ai-readiness"><AIReadinessPanel /></TabsContent>
 
         <TabsContent value="standard" className="space-y-4">
           <Card className="border-primary/30">

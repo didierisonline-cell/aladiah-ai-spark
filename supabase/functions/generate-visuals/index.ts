@@ -28,16 +28,24 @@ LAYOUT & RENDERING RULES (diagrams must look clean, not broken):
 - Leave clear spacing between boxes so nothing overlaps.
 
 Return JSON array: ["<svg viewBox='0 0 700 380' xmlns='http://www.w3.org/2000/svg'>...</svg>","<svg viewBox='0 0 700 380' xmlns='http://www.w3.org/2000/svg'>...</svg>"]. White bg, dark text #1e293b, blue #1d4ed8, professional O-Reilly style, clear title and labels.`;
+    if (!key) { console.error("[generate-visuals] ANTHROPIC_API_KEY is not set"); throw new Error("ANTHROPIC_API_KEY not configured"); }
+    console.log(`[generate-visuals] calling Anthropic for: ${lessonTitle}`);
     const r = await fetch("https://api.anthropic.com/v1/messages",{
       method:"POST",
       headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01"},
       body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:4000,system:"Return ONLY a valid JSON array of 2 SVG strings. No markdown.",messages:[{role:"user",content:prompt}]})
     });
+    console.log(`[generate-visuals] Anthropic status: ${r.status}`);
     const d = await r.json();
-    let t = (d.content?.[0]?.text||"[]").trim().replace(/^```[\w]*\n?/,"").replace(/```$/,"");
+    if (d.error) { console.error("[generate-visuals] Anthropic error:", JSON.stringify(d.error)); throw new Error(d.error.message || "Anthropic API error"); }
+    const rawText = d.content?.[0]?.text || "[]";
+    console.log(`[generate-visuals] raw text length: ${rawText.length}, preview: ${rawText.slice(0,120)}`);
+    let t = rawText.trim().replace(/^```[\w]*\n?/,"").replace(/```$/,"");
     const svgs = JSON.parse(t);
+    console.log(`[generate-visuals] parsed ${svgs.length} SVGs`);
     return new Response(JSON.stringify({svgs}),{headers:{...cors,"Content-Type":"application/json"}});
   } catch(e) {
+    console.error("[generate-visuals] error:", String(e));
     return new Response(JSON.stringify({error:String(e),svgs:[]}),{status:200,headers:{...cors,"Content-Type":"application/json"}});
   }
 });

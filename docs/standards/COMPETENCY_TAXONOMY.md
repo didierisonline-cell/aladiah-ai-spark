@@ -45,6 +45,34 @@ This file is the model every future program extends — append a new Axis-1 sect
 
 ---
 
+## 2A. Business Analyst — Axis-1 registry (9 slugs) — ⚠️ SUPERSEDED
+
+> **SUPERSEDED by §7 (the ratified 13-slug `ba:` registry). Do NOT tag content
+> against this section.** This was an early draft of the BA program. The shipped
+> AI Business Analyst & Product Discovery Specialist flagship
+> (`docs/curriculum/business-analyst-v1/`) is built entirely on **§7**, and the
+> change log (§11) confirms §7 as the operative BA registry (BA 11→13,
+> append-only). §2A is retained only for historical traceability. The sole source
+> of BA competency slugs is **§7**.
+
+Program key: `ba`. Appended per the governance rules (append-only; a new program
+**extends** the taxonomy, it does not fork it). Reference program: **AI-Augmented
+Business Analyst & Product Intelligence Specialist**. A program uses a SUBSET per module.
+
+| Slug | Label | Description |
+|---|---|---|
+| `ba:foundations` | The AI-Era BA Role | The BA as requirements translator and AI-adoption champion, the AI requirements lifecycle, and probabilistic vs. deterministic thinking. |
+| `ba:requirements` | AI Requirements Engineering | Functional and non-functional requirements for AI (accuracy, latency, fairness, explainability), AI acceptance criteria, and managing requirements uncertainty. |
+| `ba:data-analysis` | Data Analysis (SQL & Python) | SQL (joins, window functions, CTEs), Python/pandas EDA, and statistical reasoning to validate requirements with evidence. |
+| `ba:process-modeling` | Process Modeling & AI Opportunity | BPMN AS-IS/TO-BE modeling, process simulation, and identifying/prioritizing AI opportunities from process analysis. |
+| `ba:stakeholders` | Stakeholder Analysis & AI Communication | Stakeholder mapping, tailoring AI communication across executives/data science/users/regulators, and the BA's role in AI governance. |
+| `ba:data-governance` | Data Governance & Quality for AI | Data quality dimensions and lineage (DAMA-DMBOK) and how they drive model performance; governance requirements for AI data. |
+| `ba:testing-acceptance` | AI Testing & Acceptance | Test planning for AI systems, bias/adversarial testing, edge-case catalogs, and monitoring-based definitions of done. |
+| `ba:agile-delivery` | Agile BA for AI Teams | ML sprint models (research/experiment/deployment), estimating uncertain ML work, and cross-functional AI-team collaboration. |
+| `ba:analytics-monitoring` | BI & AI Monitoring | Analytics and BI requirements for AI monitoring and governance: drift, fairness and value KPIs, dashboards and alerting. |
+
+---
+
 ## 2.1 Cybersecurity — Axis-1 registry (13 slugs)
 
 Second formally-registered program (program key `cyber`). Appended per §1 governance —
@@ -87,6 +115,15 @@ Meta-category keys are deliberately generic so other programs map into the same 
 | `scrum:team-dynamics` | `people-leadership` |
 | `scrum:stakeholders` | `stakeholder-engagement` |
 | `scrum:delivery-metrics` | `measurement-outcomes` |
+| `ba:foundations` | `foundations` |
+| `ba:requirements` | `artifacts-tooling` |
+| `ba:data-analysis` | `measurement-outcomes` |
+| `ba:process-modeling` | `process-execution` |
+| `ba:stakeholders` | `stakeholder-engagement` |
+| `ba:data-governance` | `artifacts-tooling` |
+| `ba:testing-acceptance` | `measurement-outcomes` |
+| `ba:agile-delivery` | `process-execution` |
+| `ba:analytics-monitoring` | `measurement-outcomes` |
 | `cyber:foundations` | `foundations` |
 | `cyber:ai-security` | `foundations` |
 | `cyber:roles-operations` | `roles-accountabilities` |
@@ -155,6 +192,10 @@ treat it as a flag to re-check, not a default.
 Boundary: `pm:stakeholders` (communicate up/out) ≠ `pm:change-leadership` (org transformation) ≠ `pm:leadership` (lead the people on the team).
 
 ## 7. AI Business Analyst & Product Discovery Specialist — Axis-1 registry (`ba:`, 13 slugs)
+
+> **FROZEN — the sole BA competency registry.** All BA content (lessons, exams,
+> simulations, certification) tags against these 13 slugs and no others. Supersedes
+> §2A. Append-only changes require a change-log entry in §11.
 
 | Slug | Label | Description |
 |---|---|---|

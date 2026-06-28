@@ -49,6 +49,7 @@ import LocalizationFactory from "./pages/founder/LocalizationFactory";
 import FounderCurriculum from "./pages/founder/FounderCurriculum";
 import FounderReadiness from "./pages/founder/FounderReadiness";
 import LaunchReadiness from "./pages/founder/LaunchReadiness";
+import CapstoneReview from "./pages/founder/CapstoneReview";
 import TranslationTruth from "./pages/founder/TranslationTruth";
 import StudentJourney from "./pages/founder/StudentJourney";
 import EmploymentOutcomes from "./pages/founder/EmploymentOutcomes";
@@ -151,6 +152,7 @@ const AppContent = () => {
         <Route path="/founder/curriculum" element={<FounderRoute><FounderCurriculum /></FounderRoute>} />
         <Route path="/founder/readiness" element={<FounderRoute><FounderReadiness /></FounderRoute>} />
         <Route path="/founder/launch" element={<FounderRoute><LaunchReadiness /></FounderRoute>} />
+        <Route path="/founder/capstones" element={<FounderRoute><CapstoneReview /></FounderRoute>} />
         <Route path="/founder/translation" element={<FounderRoute><TranslationTruth /></FounderRoute>} />
         <Route path="/founder/journey" element={<FounderRoute><StudentJourney /></FounderRoute>} />
         <Route path="/founder/outcomes" element={<FounderRoute><EmploymentOutcomes /></FounderRoute>} />
