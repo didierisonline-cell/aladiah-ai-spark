@@ -4,6 +4,7 @@ import PortalShell from '@/components/portal/PortalShell';
 import SimEngine from '@/components/SimEngine';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
 import {
   ALL_SIMULATIONS, PROGRAMS, SCHOOLS,
   getSimsForProgram, type Simulation, type SimType,
@@ -98,6 +99,26 @@ export default function PortalSimulations() {
         onClose={() => setActiveSim(null)}
         onComplete={result => {
           handleComplete(activeSim.id, result.xpEarned);
+          // Persist result to DB (fire-and-forget; local state updates regardless)
+          if (user) {
+            supabase.from('simulation_attempts').insert({
+              user_id: user.id,
+              sim_id: activeSim.id,
+              program_key: activeSim.programKey,
+              module_num: activeSim.module,
+              sim_index: activeSim.index,
+              sim_title: activeSim.title,
+              sim_type: activeSim.type,
+              difficulty: activeSim.difficulty,
+              xp_available: activeSim.xp,
+              score: result.score,
+              xp_earned: result.xpEarned,
+              verdict: result.verdict,
+              strengths: result.strengths,
+              improvements: result.improvements,
+              key_decisions: result.keyDecisions,
+            });
+          }
           setActiveSim(null);
         }}
       />
