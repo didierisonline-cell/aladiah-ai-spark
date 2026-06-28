@@ -1,3 +1,19 @@
+-- =============================================================================
+-- DA Lesson Content — Modules 6–9 (18-module structure)
+-- Course: AI Data Analyst & Decision Intelligence Professional (da-v1)
+-- Apply AFTER: 20260628030000_seed_da_structure.sql
+-- =============================================================================
+
+DO $$
+DECLARE
+  v_da_id UUID;
+  v_ch    UUID;
+BEGIN
+  SELECT id INTO v_da_id FROM public.courses
+    WHERE title = 'AI Data Analyst & Decision Intelligence Professional'
+      AND curriculum_version = 'da-v1';
+  IF v_da_id IS NULL THEN RAISE EXCEPTION 'DA course not found'; END IF;
+
 -- ══════════════════════════════════════════════════════════════════════════════
 -- MODULE 6 — Descriptive Statistics & Probability for Analysts  (OFFSET 5, order_index = 6)
 -- ══════════════════════════════════════════════════════════════════════════════
