@@ -47,6 +47,35 @@ function getDateStr(lang?: string) {
 // "Sarah K. hired … $120,000"). Cleared to avoid showing fabricated social proof
 // in production; populate from real verified graduate outcomes when available.
 const MOMENTUM: { name: string; action: string; role?: string; company?: string; salary?: string; program?: string; cert?: string; time: string }[] = [];
+// ── Sim History helpers ──────────────────────────────────────────────────────
+const SIM_TYPE_ICONS: Record<string, string> = {
+  incident:'🚨', architecture:'🏗️', negotiation:'🤝', audit:'🔍',
+  crisis:'⚡', design:'✏️', review:'🔎', investigation:'🔬',
+  pitch:'🎤', triage:'📋', roleplay:'🎭', analysis:'📊',
+  ethics:'⚖️', coaching:'👥',
+};
+const VERDICT_COLORS: Record<string, string> = {
+  'Elite Performance': '#F5B81A',
+  'Expert Performance': '#22C98A',
+  'Solid Performance': '#4A90F5',
+  'Good Start': '#A78BFA',
+  'Needs Practice': '#8596AD',
+};
+function formatTimeAgo(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+function scoreRingColor(score: number): string {
+  if (score >= 85) return '#F5B81A';
+  if (score >= 70) return '#22C98A';
+  if (score >= 50) return '#4A90F5';
+  return '#8596AD';
+}
+
 const TOOLS = [
   { icon: '🎤', lbl: 'ai_interview', sub: 'practice_now', path: '/portal/career' },
   { icon: '📄', lbl: 'resume_builder', sub: 'optimize_cv', path: '/portal/career' },
@@ -158,6 +187,7 @@ export default function StudentPortal() {
   const [profChat, setProfChat] = useState(false);
   const [profGreeting, setProfGreeting] = useState<string>('');
   const [profLoading, setProfLoading] = useState(false);
+  const [simHistory, setSimHistory] = useState<any[]>([]);
   const [profileRow, setProfileRow] = useState<any | null>(null); // extended profiles row (recap-state cols); consumers (mute/DB day-gate) land in a follow-up
   const [recap, setRecap] = useState<any | null>(null);           // get-student-recap response (Option-A contract); text-only this step
   // Talent Score — single source of truth (derived from canonical progress).
@@ -242,6 +272,20 @@ export default function StudentPortal() {
         if (!cancelled) { console.error('get-student-recap exception:', e); setRecap(null); }
       }
     })();
+    return () => { cancelled = true; };
+  }, [user?.id]);
+
+  // Simulation attempt history (most recent 5)
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    supabase
+      .from('simulation_attempts')
+      .select('sim_id,sim_title,sim_type,score,xp_earned,verdict,completed_at')
+      .eq('user_id', user.id)
+      .order('completed_at', { ascending: false })
+      .limit(5)
+      .then(({ data }) => { if (!cancelled && data) setSimHistory(data); });
     return () => { cancelled = true; };
   }, [user?.id]);
 
@@ -857,7 +901,66 @@ Keep it under 200 words. Be specific, not generic. Sound human, not robotic. No 
             )}
           </div>
 
-          {/* 4. FUTURE READY */}
+          {/* 4. SIM HISTORY */}
+          <div style={{ background: 'linear-gradient(155deg,rgba(8,20,52,.88),rgba(5,13,38,.92))', border: '1px solid rgba(255,255,255,.08)', borderRadius: 15, padding: 14, boxShadow: '0 4px 20px rgba(0,0,0,.4)', flexShrink: 0 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <span style={{ fontSize: 12, fontWeight: 700 }}>⚡ Sim History</span>
+              <button
+                onClick={() => navigate('/portal/simulations')}
+                style={{ background: 'none', border: 'none', color: '#6366f1', fontSize: 10, fontWeight: 700, cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}
+              >
+                View All →
+              </button>
+            </div>
+            {simHistory.length === 0 ? (
+              <div style={{ fontSize: 11, color: '#64748b', lineHeight: 1.55 }}>
+                Complete your first simulation to see your results here.
+              </div>
+            ) : (
+              simHistory.map((a, i) => (
+                <div key={i} style={{
+                  display: 'flex', gap: 8, alignItems: 'center',
+                  marginBottom: i < simHistory.length - 1 ? 8 : 0,
+                  paddingBottom: i < simHistory.length - 1 ? 8 : 0,
+                  borderBottom: i < simHistory.length - 1 ? '1px solid rgba(255,255,255,.05)' : 'none',
+                }}>
+                  {/* Type icon */}
+                  <div style={{
+                    width: 30, height: 30, borderRadius: 7, flexShrink: 0,
+                    background: 'rgba(74,144,245,.12)', border: '1px solid rgba(74,144,245,.2)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12,
+                  }}>
+                    {SIM_TYPE_ICONS[a.sim_type] || '🎯'}
+                  </div>
+                  {/* Title + time */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: '#e2e8f8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {a.sim_title}
+                    </div>
+                    <div style={{ fontSize: 9, color: '#475569', marginTop: 1 }}>
+                      {formatTimeAgo(a.completed_at)}
+                      {a.verdict && (
+                        <span style={{ marginLeft: 5, color: VERDICT_COLORS[a.verdict] || '#8596AD', fontWeight: 600 }}>
+                          {a.verdict}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {/* Score + XP */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2, flexShrink: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: scoreRingColor(a.score) }}>
+                      {a.score}
+                    </div>
+                    <div style={{ fontSize: 8, color: '#34d399', fontWeight: 600 }}>
+                      +{a.xp_earned} XP
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* 5. FUTURE READY */}
           <div style={{ background: 'linear-gradient(135deg,rgba(37,99,235,.28),rgba(124,58,237,.34))', border: '1px solid rgba(99,102,241,.32)', borderRadius: 15, padding: 14, display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
             <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'radial-gradient(#22d3ee,#4338ca)', display: 'grid', placeItems: 'center', fontSize: 21, flexShrink: 0, boxShadow: '0 0 14px rgba(34,211,238,.3)' }}>🚀</div>
             <div>
