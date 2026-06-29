@@ -416,6 +416,20 @@ export const AI_BUSINESS_OPERATIONS_SIMS = buildModuleSims('ai-business-operatio
   {theme:'Future of AI Business Operations',focus:'ops evolution',company:'FutureAI Ops'},
 ]);
 
+// ── AI DATA ANALYST ─────────────────────────────────────────────
+export const AI_DATA_ANALYST_SIMS = buildModuleSims('ai-data-analyst', [
+  {theme:'Data Foundations & SQL Mastery',focus:'data querying and schema design',company:'DataFirst Analytics'},
+  {theme:'Python for Data Analysis',focus:'pandas and analytics pipelines',company:'PyInsight Corp'},
+  {theme:'Statistical Analysis & Probability',focus:'statistical reasoning and inference',company:'StatEdge AI'},
+  {theme:'Data Visualization & Storytelling',focus:'charts, narrative, and insight communication',company:'VisualIQ Inc'},
+  {theme:'Business Intelligence & Dashboards',focus:'BI reporting and executive dashboards',company:'DashMetrics Corp'},
+  {theme:'Machine Learning for Analysts',focus:'applied ML models and predictions',company:'PredictIQ Labs'},
+  {theme:'AI-Augmented Analytics',focus:'AI tools and copilots for data work',company:'AugmentDA AI'},
+  {theme:'Decision Intelligence & Experimentation',focus:'A/B testing and causal decision science',company:'DecisionIQ Labs'},
+  {theme:'Data Strategy & Governance',focus:'data quality, governance, and compliance',company:'DataGov Solutions'},
+  {theme:'Analytics Leadership & Communication',focus:'stakeholder influence and data-driven culture',company:'AnalyticsEdge Inc'},
+]);
+
 // ═══════════════════════════════════════════════════════════════
 //  SCHOOL OF GOVERNANCE & RISK
 // ═══════════════════════════════════════════════════════════════
@@ -601,6 +615,7 @@ export const ALL_SIMULATIONS: Simulation[] = [
   ...AI_SALES_ENGINEER_SIMS,
   ...AI_ENTERPRISE_ARCHITECT_SIMS,
   ...AI_BUSINESS_OPERATIONS_SIMS,
+  ...AI_DATA_ANALYST_SIMS,
   ...AI_GOVERNANCE_PROFESSIONAL_SIMS,
   ...RESPONSIBLE_AI_SPECIALIST_SIMS,
   ...AI_COMPLIANCE_OFFICER_SIMS,
@@ -635,6 +650,7 @@ export const PROGRAMS = [
   { key:'ai-sales-engineer',        label:'AI Sales Engineer',        school:'AI Business', icon:'🎯',  color:'#F07830' },
   { key:'ai-enterprise-architect',  label:'AI Enterprise Architect',  school:'AI Business', icon:'🏢',  color:'#E09020' },
   { key:'ai-business-operations',   label:'AI Business Operations',   school:'AI Business', icon:'⚡',  color:'#F5A020' },
+  { key:'ai-data-analyst',           label:'AI Data Analyst',           school:'AI Business', icon:'📊', color:'#14B8A6' },
   // Governance & Risk
   { key:'ai-governance-professional',  label:'AI Governance Professional', school:'Governance & Risk', icon:'⚖️',  color:'#22C98A' },
   { key:'responsible-ai-specialist',   label:'Responsible AI Specialist',  school:'Governance & Risk', icon:'🛡️',  color:'#34D399' },
@@ -653,7 +669,7 @@ export const PROGRAMS = [
 
 export const SCHOOLS = [
   { label:'AI Engineering',      color:'#4A90F5', bg:'rgba(74,144,245,.12)', count:8  },
-  { label:'AI Business',         color:'#F0622A', bg:'rgba(240,98,42,.12)',  count:8  },
+  { label:'AI Business',         color:'#F0622A', bg:'rgba(240,98,42,.12)',  count:9  },
   { label:'Governance & Risk',   color:'#22C98A', bg:'rgba(34,201,138,.12)',count:7  },
   { label:'Human-AI Experience', color:'#C084FC', bg:'rgba(192,132,252,.12)',count:5  },
 ];
