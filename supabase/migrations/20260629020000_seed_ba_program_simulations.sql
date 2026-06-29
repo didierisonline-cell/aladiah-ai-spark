@@ -16,7 +16,7 @@ DECLARE
   v_course_id uuid;
 
   -- 10 sim modules mapped to 15 BA chapters (order_index 1-based)
-  v_chapter_order int[] := ARRAY[1, 3, 4, 5, 6, 7, 8, 9, 12, 14];
+  v_chapter_order int[] := ARRAY[1, 3, 4, 5, 6, 7, 9, 11, 12, 14];
 
   v_themes text[] := ARRAY[
     'Business Analysis Fundamentals & AI Toolkit',
