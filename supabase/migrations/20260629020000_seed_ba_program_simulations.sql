@@ -15,20 +15,20 @@ DO $$
 DECLARE
   v_course_id uuid;
 
-  -- 10 sim modules mapped to 15 BA chapters (order_index 1-based)
-  v_chapter_order int[] := ARRAY[1, 3, 4, 5, 6, 7, 9, 11, 12, 14];
+  -- 10 sim modules mapped to 18 BA chapters (order_index 1-based)
+  v_chapter_order int[] := ARRAY[1, 3, 6, 7, 9, 11, 12, 16, 17, 18];
 
   v_themes text[] := ARRAY[
     'Business Analysis Fundamentals & AI Toolkit',
     'Stakeholder Analysis & Engagement',
-    'Elicitation & Collaboration Techniques',
-    'Facilitation & Workshop Leadership',
     'Requirements Engineering & Specification',
     'Process Analysis & Business Architecture',
     'Product Thinking & Discovery',
     'Data Analysis & Decision Intelligence',
     'Solution Evaluation & Acceptance',
-    'Regulatory, Risk & Transformation Leadership'
+    'Agile BA & Product Ownership',
+    'Enterprise Architecture & Digital Transformation',
+    'BA Career Acceleration & Portfolio'
   ];
 
   v_industries text[] := ARRAY[

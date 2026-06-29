@@ -365,16 +365,16 @@ export const AI_TRANSFORMATION_MANAGER_SIMS = buildModuleSims('ai-transformation
 ]);
 
 export const AI_BUSINESS_ANALYST_SIMS = buildModuleSims('ai-business-analyst', [
-  {theme:'AI Business Analysis Fundamentals',focus:'AI requirements',company:'AnalyzeAI Corp'},
-  {theme:'Data Analysis for AI BAs',focus:'data analysis',company:'DataAnalAI'},
-  {theme:'AI Use Case Development',focus:'use case design',company:'UseCaseAI'},
-  {theme:'AI Testing & Quality Assurance',focus:'AI testing',company:'TestAI Corp'},
-  {theme:'Advanced AI Business Analysis',focus:'advanced BA',company:'AdvancedBAI'},
-  {theme:'AI for Specific Business Domains',focus:'domain analysis',company:'DomainAI BA'},
-  {theme:'AI BA Leadership',focus:'BA leadership',company:'LeadAI BA'},
-  {theme:'Future of AI Business Analysis',focus:'BA evolution',company:'FutureAI BA'},
-  {theme:'Domain AI Requirements Projects',focus:'domain requirements',company:'DomainReqAI'},
-  {theme:'AI BA Portfolio Capstone',focus:'BA portfolio',company:'PortfolioAI BA'},
+  {theme:'Business Analysis Fundamentals & AI Toolkit',focus:'AI-assisted requirements and elicitation',company:'AnalyzeAI Corp'},
+  {theme:'Stakeholder Analysis & Engagement',focus:'stakeholder mapping and communication',company:'StakeholderIQ Inc'},
+  {theme:'Requirements Engineering & Specification',focus:'BRD, user stories, and acceptance criteria',company:'RequirementsEdge Corp'},
+  {theme:'Process Analysis & Business Architecture',focus:'BPMN modeling and capability mapping',company:'ProcessAI Solutions'},
+  {theme:'Product Thinking & Discovery',focus:'product discovery and solution definition',company:'ProductDiscovery Labs'},
+  {theme:'Data Analysis & Decision Intelligence',focus:'data-driven BA and analytics',company:'DataIQ Analytics'},
+  {theme:'Solution Evaluation & Acceptance',focus:'UAT design and quality acceptance',company:'QualityBA Corp'},
+  {theme:'Agile BA & Product Ownership',focus:'user stories, backlog refinement, and SAFe',company:'AgileSprint BA'},
+  {theme:'Enterprise Architecture & Digital Transformation',focus:'capability maps and transformation roadmaps',company:'EnterpriseIQ Partners'},
+  {theme:'BA Career Acceleration & Portfolio',focus:'certification, portfolio, and AI-era career skills',company:'CareerEdge BA'},
 ]);
 
 export const AI_SALES_ENGINEER_SIMS = buildModuleSims('ai-sales-engineer', [
