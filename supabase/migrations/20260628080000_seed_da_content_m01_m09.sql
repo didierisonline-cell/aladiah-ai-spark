@@ -13,7 +13,6 @@ BEGIN
     WHERE title = 'AI Data Analyst & Decision Intelligence Professional'
       AND curriculum_version = 'da-v1';
   IF v_da_id IS NULL THEN RAISE EXCEPTION 'DA course not found'; END IF;
-
 -- ══════════════════════════════════════════════════════════════════════════════
 -- MODULE 6 — Descriptive Statistics & Probability for Analysts  (OFFSET 5, order_index = 6)
 -- ══════════════════════════════════════════════════════════════════════════════
