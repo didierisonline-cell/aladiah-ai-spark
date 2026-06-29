@@ -365,16 +365,16 @@ export const AI_TRANSFORMATION_MANAGER_SIMS = buildModuleSims('ai-transformation
 ]);
 
 export const AI_BUSINESS_ANALYST_SIMS = buildModuleSims('ai-business-analyst', [
-  {theme:'AI Business Analysis Fundamentals',focus:'AI requirements',company:'AnalyzeAI Corp'},
-  {theme:'Data Analysis for AI BAs',focus:'data analysis',company:'DataAnalAI'},
-  {theme:'AI Use Case Development',focus:'use case design',company:'UseCaseAI'},
-  {theme:'AI Testing & Quality Assurance',focus:'AI testing',company:'TestAI Corp'},
-  {theme:'Advanced AI Business Analysis',focus:'advanced BA',company:'AdvancedBAI'},
-  {theme:'AI for Specific Business Domains',focus:'domain analysis',company:'DomainAI BA'},
-  {theme:'AI BA Leadership',focus:'BA leadership',company:'LeadAI BA'},
-  {theme:'Future of AI Business Analysis',focus:'BA evolution',company:'FutureAI BA'},
-  {theme:'Domain AI Requirements Projects',focus:'domain requirements',company:'DomainReqAI'},
-  {theme:'AI BA Portfolio Capstone',focus:'BA portfolio',company:'PortfolioAI BA'},
+  {theme:'Business Analysis Fundamentals & AI Toolkit',focus:'AI-assisted requirements and elicitation',company:'AnalyzeAI Corp'},
+  {theme:'Stakeholder Analysis & Engagement',focus:'stakeholder mapping and communication',company:'StakeholderIQ Inc'},
+  {theme:'Requirements Engineering & Specification',focus:'BRD, user stories, and acceptance criteria',company:'RequirementsEdge Corp'},
+  {theme:'Process Analysis & Business Architecture',focus:'BPMN modeling and capability mapping',company:'ProcessAI Solutions'},
+  {theme:'Product Thinking & Discovery',focus:'product discovery and solution definition',company:'ProductDiscovery Labs'},
+  {theme:'Data Analysis & Decision Intelligence',focus:'data-driven BA and analytics',company:'DataIQ Analytics'},
+  {theme:'Solution Evaluation & Acceptance',focus:'UAT design and quality acceptance',company:'QualityBA Corp'},
+  {theme:'Agile BA & Product Ownership',focus:'user stories, backlog refinement, and SAFe',company:'AgileSprint BA'},
+  {theme:'Enterprise Architecture & Digital Transformation',focus:'capability maps and transformation roadmaps',company:'EnterpriseIQ Partners'},
+  {theme:'BA Career Acceleration & Portfolio',focus:'certification, portfolio, and AI-era career skills',company:'CareerEdge BA'},
 ]);
 
 export const AI_SALES_ENGINEER_SIMS = buildModuleSims('ai-sales-engineer', [
@@ -414,6 +414,20 @@ export const AI_BUSINESS_OPERATIONS_SIMS = buildModuleSims('ai-business-operatio
   {theme:'AI Operations Governance',focus:'ops governance',company:'GovernOpsAI'},
   {theme:'Measuring AI Operations ROI',focus:'ROI measurement',company:'ROIAIOps'},
   {theme:'Future of AI Business Operations',focus:'ops evolution',company:'FutureAI Ops'},
+]);
+
+// ── AI DATA ANALYST ─────────────────────────────────────────────
+export const AI_DATA_ANALYST_SIMS = buildModuleSims('ai-data-analyst', [
+  {theme:'Data Foundations & SQL Mastery',focus:'data querying and schema design',company:'DataFirst Analytics'},
+  {theme:'Python for Data Analysis',focus:'pandas and analytics pipelines',company:'PyInsight Corp'},
+  {theme:'Statistical Analysis & Probability',focus:'statistical reasoning and inference',company:'StatEdge AI'},
+  {theme:'Data Visualization & Storytelling',focus:'charts, narrative, and insight communication',company:'VisualIQ Inc'},
+  {theme:'Business Intelligence & Dashboards',focus:'BI reporting and executive dashboards',company:'DashMetrics Corp'},
+  {theme:'Machine Learning for Analysts',focus:'applied ML models and predictions',company:'PredictIQ Labs'},
+  {theme:'AI-Augmented Analytics',focus:'AI tools and copilots for data work',company:'AugmentDA AI'},
+  {theme:'Decision Intelligence & Experimentation',focus:'A/B testing and causal decision science',company:'DecisionIQ Labs'},
+  {theme:'Data Strategy & Governance',focus:'data quality, governance, and compliance',company:'DataGov Solutions'},
+  {theme:'Analytics Leadership & Communication',focus:'stakeholder influence and data-driven culture',company:'AnalyticsEdge Inc'},
 ]);
 
 // ═══════════════════════════════════════════════════════════════
@@ -601,6 +615,7 @@ export const ALL_SIMULATIONS: Simulation[] = [
   ...AI_SALES_ENGINEER_SIMS,
   ...AI_ENTERPRISE_ARCHITECT_SIMS,
   ...AI_BUSINESS_OPERATIONS_SIMS,
+  ...AI_DATA_ANALYST_SIMS,
   ...AI_GOVERNANCE_PROFESSIONAL_SIMS,
   ...RESPONSIBLE_AI_SPECIALIST_SIMS,
   ...AI_COMPLIANCE_OFFICER_SIMS,
@@ -635,6 +650,7 @@ export const PROGRAMS = [
   { key:'ai-sales-engineer',        label:'AI Sales Engineer',        school:'AI Business', icon:'🎯',  color:'#F07830' },
   { key:'ai-enterprise-architect',  label:'AI Enterprise Architect',  school:'AI Business', icon:'🏢',  color:'#E09020' },
   { key:'ai-business-operations',   label:'AI Business Operations',   school:'AI Business', icon:'⚡',  color:'#F5A020' },
+  { key:'ai-data-analyst',           label:'AI Data Analyst',           school:'AI Business', icon:'📊', color:'#14B8A6' },
   // Governance & Risk
   { key:'ai-governance-professional',  label:'AI Governance Professional', school:'Governance & Risk', icon:'⚖️',  color:'#22C98A' },
   { key:'responsible-ai-specialist',   label:'Responsible AI Specialist',  school:'Governance & Risk', icon:'🛡️',  color:'#34D399' },
@@ -653,7 +669,7 @@ export const PROGRAMS = [
 
 export const SCHOOLS = [
   { label:'AI Engineering',      color:'#4A90F5', bg:'rgba(74,144,245,.12)', count:8  },
-  { label:'AI Business',         color:'#F0622A', bg:'rgba(240,98,42,.12)',  count:8  },
+  { label:'AI Business',         color:'#F0622A', bg:'rgba(240,98,42,.12)',  count:9  },
   { label:'Governance & Risk',   color:'#22C98A', bg:'rgba(34,201,138,.12)',count:7  },
   { label:'Human-AI Experience', color:'#C084FC', bg:'rgba(192,132,252,.12)',count:5  },
 ];
