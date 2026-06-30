@@ -636,6 +636,7 @@ export const AI_CYBERSECURITY_SIMS = buildModuleSims('ai-cybersecurity-governanc
   {theme:'Enterprise Capstone — Full Security Engagement', focus:'end-to-end security program for a regulated fintech', company:'TechNova Financial'},
 ]);
 
+
 export const AI_ENTERPRISE_SCRUM_MASTER_SIMS = buildModuleSims('ai-enterprise-scrum-master', [
   {theme:'Scrum Fundamentals & Agile Manifesto',focus:'scrum foundations',company:'AgileStart Corp'},
   {theme:'Product Backlog & Sprint Planning',focus:'backlog management',company:'SprintCore Tech'},
