@@ -46,7 +46,7 @@ BEGIN
   UPDATE public.courses
   SET
     is_published  = true,
-    launch_status = 'live'
+    launch_status = 'production'
   WHERE id = v_cid;
 
   RAISE NOTICE 'Published cyber-v1: % chapters, % lessons, % quizzes, % questions.',
