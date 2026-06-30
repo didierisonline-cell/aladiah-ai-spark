@@ -611,6 +611,31 @@ export const AI_PROJECT_MANAGER_SIMS = buildModuleSims('ai-project-manager', [
   {theme:'PM Career Acceleration & PMP',focus:'PM career development',company:'FreightMind Logistics'},
 ]);
 
+// ═══════════════════════════════════════════════════════════════
+//  SCHOOL OF AI CYBERSECURITY
+// ═══════════════════════════════════════════════════════════════
+
+export const AI_CYBERSECURITY_SIMS = buildModuleSims('ai-cybersecurity-governance', [
+  {theme:'Cybersecurity Foundations & Zero Trust',     focus:'CIA triad, zero trust architecture, risk quantification', company:'CipherTrust Financial'},
+  {theme:'Enterprise SOC, SIEM & XDR',                focus:'SOC operations, detection engineering, threat response',  company:'VaultSentinel Corp'},
+  {theme:'Cloud Security & Container Defense',         focus:'AWS/Azure/GCP security, Kubernetes, CSPM',               company:'NimbusShield AI'},
+  {theme:'Network Security & Penetration Testing',     focus:'network segmentation, pen testing, vulnerability management', company:'RedFort Security'},
+  {theme:'Application Security & DevSecOps',           focus:'OWASP, SAST/DAST, supply chain security, IaC scanning',  company:'CodeGuard Systems'},
+  {theme:'Digital Forensics & Incident Response',      focus:'DFIR, memory forensics, incident command, reporting',     company:'Forensiq Labs'},
+  {theme:'GRC & Compliance Architecture',              focus:'GRC program design, risk registers, continuous compliance', company:'GovRisk Advisors'},
+  {theme:'SOC 2 & ISO 27001 Mastery',                 focus:'SOC 2 Type II, ISO 27001 ISMS, audit readiness',          company:'TrustFrame Compliance'},
+  {theme:'Privacy Engineering & Data Protection',      focus:'GDPR, HIPAA, CCPA, privacy-by-design, DPIAs',            company:'PrivacyCore Financial'},
+  {theme:'Third-Party & Vendor Risk Management',       focus:'TPRM, vendor tiering, continuous monitoring, N-party risk', company:'SupplyGuard Enterprise'},
+  {theme:'AI Security & AI Governance',                focus:'OWASP LLM Top 10, NIST AI RMF, EU AI Act, ISO 42001',    company:'IntelliSecure AI'},
+  {theme:'Identity Security & PAM',                    focus:'Zero Trust Identity, PAM, IGA, MFA fatigue, FIDO2',       company:'IdentityVault Systems'},
+  {theme:'Threat Intelligence & Threat Hunting',       focus:'CTI lifecycle, MITRE ATT&CK, hypothesis-driven hunting',  company:'HuntOps Intelligence'},
+  {theme:'Security Automation, SOAR & Compliance Tools', focus:'SOAR playbooks, CCM platforms, OPA, Python automation', company:'AutoDefend Tech'},
+  {theme:'Audit Readiness & Executive Communication',  focus:'audit prep, evidence mapping, board reporting, metrics',  company:'AuditPrime Consulting'},
+  {theme:'CISO Leadership & Security Strategy',        focus:'CISO role, team building, ROSI, roadmap, crisis comm',    company:'Apex Security Group'},
+  {theme:'Security Architecture & Program Design',     focus:'enterprise security architecture, maturity modeling',      company:'ArchSecure Partners'},
+  {theme:'Enterprise Capstone — Full Security Engagement', focus:'end-to-end security program for a regulated fintech', company:'TechNova Financial'},
+]);
+
 export const AI_ENTERPRISE_SCRUM_MASTER_SIMS = buildModuleSims('ai-enterprise-scrum-master', [
   {theme:'Scrum Fundamentals & Agile Manifesto',focus:'scrum foundations',company:'AgileStart Corp'},
   {theme:'Product Backlog & Sprint Planning',focus:'backlog management',company:'SprintCore Tech'},
@@ -660,6 +685,7 @@ export const ALL_SIMULATIONS: Simulation[] = [
   ...AI_EXPERIENCE_ARCHITECT_SIMS,
   ...AI_PROJECT_MANAGER_SIMS,
   ...AI_ENTERPRISE_SCRUM_MASTER_SIMS,
+  ...AI_CYBERSECURITY_SIMS,
 ];
 
 // ─── Program metadata ──────────────────────────────────────────
@@ -693,6 +719,8 @@ export const PROGRAMS = [
   { key:'ai-auditor',                  label:'AI Auditor',                 school:'Governance & Risk', icon:'🔍',  color:'#34D399' },
   { key:'ai-ethics-specialist',        label:'AI Ethics Specialist',       school:'Governance & Risk', icon:'🌍',  color:'#22C98A' },
   { key:'ai-policy-designer',          label:'AI Policy Designer',         school:'Governance & Risk', icon:'📜',  color:'#10B981' },
+  // AI Cybersecurity
+  { key:'ai-cybersecurity-governance', label:'AI Cybersecurity, Governance & Enterprise Compliance', school:'AI Cybersecurity', icon:'🔐', color:'#EF4444' },
   // Human-AI Experience
   { key:'ai-ux-designer',               label:'AI UX Designer',               school:'Human-AI Experience', icon:'🎨', color:'#C084FC' },
   { key:'conversation-designer',        label:'Conversation Designer',         school:'Human-AI Experience', icon:'💬', color:'#E879F9' },
@@ -704,8 +732,9 @@ export const PROGRAMS = [
 export const SCHOOLS = [
   { label:'AI Engineering',      color:'#4A90F5', bg:'rgba(74,144,245,.12)', count:8  },
   { label:'AI Business',         color:'#F0622A', bg:'rgba(240,98,42,.12)',  count:11 },
-  { label:'Governance & Risk',   color:'#22C98A', bg:'rgba(34,201,138,.12)',count:7  },
+  { label:'Governance & Risk',   color:'#22C98A', bg:'rgba(34,201,138,.12)', count:7  },
   { label:'Human-AI Experience', color:'#C084FC', bg:'rgba(192,132,252,.12)',count:5  },
+  { label:'AI Cybersecurity',    color:'#EF4444', bg:'rgba(239,68,68,.12)',   count:1  },
 ];
 
 export const getSimsForProgram = (programKey: string) =>
