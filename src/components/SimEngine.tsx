@@ -154,7 +154,11 @@ When student types START_SIMULATION: Open with the most dramatic, vivid, urgent 
         }
       );
       const data = await res.json();
-      return data?.content?.[0]?.text || '[No response]';
+      if (!res.ok || data?.type === 'error' || data?.error) {
+        const msg = data?.error?.message || data?.error || `AI service returned status ${res.status}`;
+        return `⚠️ ${msg}`;
+      }
+      return data?.content?.[0]?.text || '⚠️ No response received from AI. Please try again.';
     } catch {
       return '⚠️ Connection error. Please check your network and try again.';
     }

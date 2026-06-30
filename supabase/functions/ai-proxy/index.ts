@@ -13,10 +13,10 @@ serve(async (req) => {
 
     // SECURITY: model is allowlisted to the set actually used in the app — ai-proxy is
     // NOT an open model router. Any other value fails closed to the safe default.
-    const ALLOWED_MODELS = new Set(["claude-sonnet-4-20250514", "claude-haiku-4-5-20251001"]);
+    const ALLOWED_MODELS = new Set(["claude-sonnet-4-6", "claude-haiku-4-5-20251001", "claude-sonnet-4-20250514"]);
     const useModel = typeof model === "string" && ALLOWED_MODELS.has(model)
       ? model
-      : "claude-sonnet-4-20250514";
+      : "claude-sonnet-4-6";
 
     const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
     if (!ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY not configured");
