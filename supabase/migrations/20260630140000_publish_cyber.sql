@@ -1,6 +1,6 @@
 -- =============================================================
 -- Aladiah Academy — Publish AI Cybersecurity course
--- Sets is_published = true and enrollable = true
+-- Sets is_published = true, launch_status = 'live'
 -- Run AFTER all content and quiz migrations have been applied
 -- =============================================================
 
@@ -45,9 +45,9 @@ BEGIN
 
   UPDATE public.courses
   SET
-    is_published = true,
-    enrollable   = true,
-    updated_at   = NOW()
+    is_published  = true,
+    launch_status = 'live',
+    updated_at    = NOW()
   WHERE id = v_cid;
 
   RAISE NOTICE 'Published cyber-v1: % chapters, % lessons, % quizzes, % questions.',
@@ -55,6 +55,6 @@ BEGIN
 END $body$;
 
 -- Verify publish:
--- SELECT id, title, is_published, enrollable, curriculum_version, updated_at
+-- SELECT id, title, is_published, launch_status, curriculum_version, updated_at
 -- FROM public.courses
 -- WHERE curriculum_version = 'cyber-v1';
