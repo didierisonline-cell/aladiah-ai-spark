@@ -339,16 +339,16 @@ export const AI_PRODUCT_MANAGER_SIMS = buildModuleSims('ai-product-manager', [
 ]);
 
 export const AI_PROGRAM_MANAGER_SIMS = buildModuleSims('ai-program-manager', [
-  {theme:'AI Program Management Fundamentals',focus:'program governance',company:'ProgramAI Corp'},
-  {theme:'AI Transformation Programs',focus:'enterprise transformation',company:'TransformAI PMO'},
-  {theme:'AI Program Planning & OKRs',focus:'program planning',company:'PlanAI Programs'},
-  {theme:'Managing AI Teams',focus:'AI team leadership',company:'TeamAI Management'},
-  {theme:'AI Program Operations',focus:'program delivery',company:'OpsAI Programs'},
-  {theme:'Strategic AI Program Leadership',focus:'executive leadership',company:'StrategicAI PMO'},
-  {theme:'Specialized AI Programs',focus:'specialized delivery',company:'SpecialAI Programs'},
-  {theme:'AI Program Careers',focus:'program career growth',company:'CareerAI PMO'},
-  {theme:'Future of AI Program Management',focus:'program evolution',company:'FutureAI PMO'},
-  {theme:'AI Program Capstone',focus:'enterprise program delivery',company:'CapstoneAI Programs'},
+  {theme:'PM Fundamentals & AI-Powered Delivery',focus:'delivery framework selection and AI tooling',company:'DeliverAI Corp'},
+  {theme:'Project Initiation & Business Case',focus:'project initiation and stakeholder alignment',company:'InitiateAI Projects'},
+  {theme:'Scope Management & WBS',focus:'scope definition and change control',company:'ScopeMind PM'},
+  {theme:'Schedule & Critical Path Management',focus:'schedule planning and compression',company:'ScheduleAI Delivery'},
+  {theme:'Risk Intelligence & Contingency Planning',focus:'risk identification and response',company:'RiskShield PMO'},
+  {theme:'Financial Management & Earned Value',focus:'cost control and EVM reporting',company:'FinanceAI Projects'},
+  {theme:'Stakeholder Engagement & Communication',focus:'stakeholder management and executive reporting',company:'StakeholderAI Corp'},
+  {theme:'Agile & Hybrid Project Delivery',focus:'agile delivery and sprint management',company:'AgileAI Delivery'},
+  {theme:'Portfolio & Program Leadership',focus:'portfolio governance and benefits realization',company:'PortfolioAI PMO'},
+  {theme:'PM Career Acceleration & PMP',focus:'certification and PM career strategy',company:'CareerAI Projects'},
 ]);
 
 export const AI_TRANSFORMATION_MANAGER_SIMS = buildModuleSims('ai-transformation-manager', [
