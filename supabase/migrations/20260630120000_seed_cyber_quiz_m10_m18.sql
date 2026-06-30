@@ -25,7 +25,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'GDPR Article 17 grants individuals the "right to erasure" (right to be forgotten). Under which condition can an organization REFUSE this request?',
    '["When the deletion would be technically complex or expensive","When the data is necessary for compliance with a legal obligation, or for the establishment, exercise, or defense of legal claims","When the individual originally consented to data processing","When the data has been stored for less than 1 year"]'::jsonb, 1,
@@ -99,7 +99,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'The foundational premise of Third-Party Risk Management (TPRM) is that:',
    '["Vendor contracts eliminate all security risk from the relationship","Your organization''s risk posture extends to every vendor, supplier, and partner that accesses your systems or data — their breach can directly become your breach","SOC 2 certified vendors require no additional due diligence","Third-party risk is exclusively a legal and contractual issue, not a technical security concern"]'::jsonb, 1,
@@ -169,7 +169,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'OWASP LLM Top 10 lists Prompt Injection as the #1 risk for large language model applications. What does a direct prompt injection attack do?',
    '["It injects SQL commands into LLM-connected databases","An attacker crafts input that overrides the LLM''s system prompt instructions, causing the model to disregard its safety guidelines and perform unintended actions — such as revealing confidential system prompts, bypassing content filters, or executing unauthorized API calls","It corrupts the LLM''s training data to introduce biases","It intercepts LLM API traffic to extract user queries"]'::jsonb, 1,
@@ -239,7 +239,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'Privileged Access Management (PAM) solutions (e.g., CyberArk, BeyondTrust, Delinea) primarily address which security risk?',
    '["Unauthorized access through phishing of regular end users","Abuse or compromise of privileged accounts (admins, service accounts, root access) which, if breached, give attackers the highest level of access — PAM vaults credentials, records sessions, and enforces just-in-time access","Malware propagation through user workstations","Data loss from removable media and USB devices"]'::jsonb, 1,
@@ -305,7 +305,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'The Cyber Threat Intelligence (CTI) lifecycle phases are:',
    '["Collect → Analyze → Share","Planning & Direction → Collection → Processing → Analysis → Dissemination → Feedback","Detect → Investigate → Respond → Recover","Identify → Assess → Treat → Monitor"]'::jsonb, 1,
@@ -375,7 +375,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'SOAR (Security Orchestration, Automation and Response) reduces analyst workload by:',
    '["Replacing all Tier 1 and Tier 2 analysts with automated systems","Automating high-volume, repetitive response tasks through playbooks — IP enrichment via threat intel lookups, automatic ticket creation, endpoint isolation via EDR API, notification routing — so analysts focus on decisions requiring human judgment","Eliminating the need for a SIEM by processing events directly","Automating penetration testing for continuous security validation"]'::jsonb, 1,
@@ -437,7 +437,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'The primary objective of an internal audit in a security program is to:',
    '["Identify evidence of employee misconduct for HR investigation","Independently assess whether security controls are designed and operating effectively before an external auditor or regulator reviews them — providing management with objective assurance and identifying gaps before they become audit findings","Replace the need for external certification audits","Conduct penetration testing to identify technical vulnerabilities"]'::jsonb, 1,
@@ -499,7 +499,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'The modern CISO role has evolved from a technical function to a business leadership role. This shift means CISOs must:',
    '["Spend most of their time writing security policies and reviewing audit evidence","Translate security risks into business outcomes, participate in executive strategy discussions, build relationships across the C-suite, and advocate for security investment using business cases — not just technical justifications","Avoid engaging with sales processes to maintain security objectivity","Report exclusively to the CTO to maintain technical independence"]'::jsonb, 1,
@@ -565,7 +565,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'In the TechNova Financial capstone scenario — a $200M fintech under a $15M contract requirement for SOC 2 Type II, ISO 27001, GDPR, and AI governance compliance — what is the correct first deliverable?',
    '["Begin implementing technical security controls immediately to maximize time before the audit","Conduct a comprehensive gap assessment mapping current control posture against all four frameworks simultaneously, identifying the highest-priority gaps that represent both the greatest risk and the longest remediation timeline","Hire an external auditor and begin the certification process immediately","Implement MFA for all systems as the highest-priority control"]'::jsonb, 1,
@@ -622,6 +622,40 @@ BEGIN
   (v_qid, 'A truly integrated AI + cybersecurity + GRC professional, exemplified by the Aladiah AI Security Pro Certification capstone, distinguishes themselves in the market because they can:',
    '["Perform both penetration testing and compliance auditing simultaneously","Bridge the three domains that enterprise organizations struggle to integrate: technical security operations (SOC, cloud, identity, DFIR), governance and compliance (SOC 2, ISO 27001, GDPR, AI Act), and AI security and governance (LLM security, AI risk management, bias assessment, model governance) — speaking all three languages fluently and translating between technical teams, compliance teams, and executive stakeholders","Write code in Python and perform network penetration testing","Manage both the security budget and the IT budget simultaneously"]'::jsonb, 1,
    'The integrated practitioner is rare: most professionals are deep in one domain (technical security OR compliance OR AI governance) but cannot translate effectively across all three. Organizations building AI systems in regulated industries need people who understand both the attack surface of AI (OWASP LLM Top 10, model security) and the governance requirements (NIST AI RMF, EU AI Act, ISO 42001) while also managing the broader security and compliance program. This T-shaped expertise commands premium compensation — $150K–$280K+ in enterprise roles.');
+
+  -- Set competency by module (chapter order_index 9–17)
+  UPDATE public.quiz_questions qq
+  SET competency = CASE ch.order_index
+    WHEN  9 THEN 'cyber:data-protection'
+    WHEN 10 THEN 'cyber:stakeholder-trust'
+    WHEN 11 THEN 'cyber:ai-security'
+    WHEN 12 THEN 'cyber:identity-access'
+    WHEN 13 THEN 'cyber:threat-detection'
+    WHEN 14 THEN 'cyber:roles-operations'
+    WHEN 15 THEN 'cyber:stakeholder-trust'
+    WHEN 16 THEN 'cyber:security-leadership'
+    WHEN 17 THEN 'cyber:governance-risk'
+  END
+  FROM public.quizzes qz
+  JOIN public.chapters ch ON ch.id = qz.chapter_id
+  WHERE qq.quiz_id = qz.id
+    AND ch.course_id = v_cid
+    AND qq.competency IS NULL;
+
+  -- Set order_index by insertion order within each quiz
+  WITH _ord AS (
+    SELECT id, ROW_NUMBER() OVER (PARTITION BY quiz_id ORDER BY ctid) AS rn
+    FROM public.quiz_questions
+    WHERE quiz_id IN (
+      SELECT q.id FROM public.quizzes q
+      JOIN public.chapters ch ON ch.id = q.chapter_id
+      WHERE ch.course_id = v_cid AND ch.order_index BETWEEN 9 AND 17
+    ) AND order_index = 0
+  )
+  UPDATE public.quiz_questions SET order_index = _ord.rn
+  FROM _ord WHERE quiz_questions.id = _ord.id;
+
+  RAISE NOTICE 'M10–M18 quiz questions inserted and tagged.';
 
 END $body$;
 

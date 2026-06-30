@@ -25,7 +25,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'Which CIA Triad property ensures that sensitive data is accessible only to authorized individuals?',
    '["Availability","Integrity","Confidentiality","Authentication"]'::jsonb, 2,
@@ -95,7 +95,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'In a tiered SOC model, what is the primary function of Tier 1 (L1) analysts?',
    '["Conducting advanced malware reverse engineering","Monitoring alert queues and triaging low-severity events for escalation","Performing threat hunting for unknown threats","Managing SIEM infrastructure and tuning detection rules"]'::jsonb, 1,
@@ -165,7 +165,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'Under the AWS Shared Responsibility Model, which security domain is ALWAYS the customer''s responsibility regardless of which service model (IaaS/PaaS/SaaS) is used?',
    '["Patching the hypervisor","Physical data center security","Customer data and access management (IAM)","Network infrastructure between availability zones"]'::jsonb, 2,
@@ -235,7 +235,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'What is the primary security benefit of network segmentation?',
    '["It eliminates the need for endpoint antivirus","It contains the blast radius of a breach by preventing attackers from freely moving between network zones","It removes the requirement for network-level encryption","It speeds up application performance by reducing network congestion"]'::jsonb, 1,
@@ -305,7 +305,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'The OWASP Top 10 2021 lists Broken Access Control as the #1 web application risk. A real-world example is:',
    '["A user providing a weak password that is brute-forced","A user changing the "id" parameter in an API URL to access another user''s account data","An attacker injecting SQL commands through a login form","An application serving JavaScript from an unvalidated CDN"]'::jsonb, 1,
@@ -375,7 +375,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'NIST SP 800-61 defines the Incident Response Lifecycle in four phases. What is the correct order?',
    '["Detect → Contain → Eradicate → Recover","Preparation → Detection & Analysis → Containment, Eradication & Recovery → Post-Incident Activity","Identify → Protect → Detect → Respond → Recover","Triage → Investigate → Remediate → Report"]'::jsonb, 1,
@@ -445,7 +445,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'GRC stands for Governance, Risk, and Compliance. Which statement best describes the relationship between these three disciplines?',
    '["They are independent programs that operate in separate silos","Governance sets organizational direction and accountability; Risk identifies and manages threats to objectives; Compliance verifies adherence to laws and standards — together they form an integrated management system","Governance is a technical function; Risk is a legal function; Compliance is a finance function","GRC is exclusively a regulatory requirement with no operational value"]'::jsonb, 1,
@@ -515,7 +515,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'SOC 2 is governed by which organization, and what framework does it use to define security requirements?',
    '["ISO — International Organization for Standardization, using ISO 27002 controls","AICPA — American Institute of Certified Public Accountants, using the Trust Services Criteria (TSC)","NIST — National Institute of Standards and Technology, using NIST CSF functions","PCI SSC — Payment Card Industry Security Standards Council, using the PCI DSS requirements"]'::jsonb, 1,
@@ -585,7 +585,7 @@ BEGIN
   SELECT id INTO v_qid FROM public.quizzes
     WHERE chapter_id = v_ch AND quiz_type = 'chapter_end';
 
-  INSERT INTO public.quiz_questions (quiz_id, question, options, correct_answer, explanation) VALUES
+  INSERT INTO public.quiz_questions (quiz_id, question_text, options, correct_answer_index, explanation) VALUES
 
   (v_qid, 'The ISO/IEC 27001:2022 update reduced the Annex A control count compared to 2013. How many controls does the 2022 edition contain, and how many Annex A themes?',
    '["114 controls across 14 domains","93 controls across 4 themes (Organizational, People, Physical, Technological)","138 controls across 18 categories","77 controls across 10 sections"]'::jsonb, 1,
@@ -646,6 +646,40 @@ BEGIN
   (v_qid, 'An asset inventory is a foundational ISO 27001 requirement. What information must be documented for each asset?',
    '["Manufacturer, model number, and purchase date only","Asset owner, asset classification (confidentiality level), location, and associated risk treatment — the owner is accountable for appropriate protection throughout the asset lifecycle","IP address, MAC address, and operating system version","Cost, depreciation schedule, and replacement value"]'::jsonb, 1,
    'ISO 27001 clause 8.1 and Annex A 5.9 require an asset inventory covering: asset identification, classification (what sensitivity level does the information have), ownership (who is accountable), location, and status. The asset owner is responsible for ensuring appropriate controls are applied — without ownership, accountability is diffused and controls drift.');
+
+  -- Set competency by module (chapter order_index 0–8)
+  UPDATE public.quiz_questions qq
+  SET competency = CASE ch.order_index
+    WHEN 0 THEN 'cyber:foundations'
+    WHEN 1 THEN 'cyber:roles-operations'
+    WHEN 2 THEN 'cyber:appsec-cloud'
+    WHEN 3 THEN 'cyber:network-infrastructure'
+    WHEN 4 THEN 'cyber:appsec-cloud'
+    WHEN 5 THEN 'cyber:incident-response'
+    WHEN 6 THEN 'cyber:governance-risk'
+    WHEN 7 THEN 'cyber:stakeholder-trust'
+    WHEN 8 THEN 'cyber:governance-risk'
+  END
+  FROM public.quizzes qz
+  JOIN public.chapters ch ON ch.id = qz.chapter_id
+  WHERE qq.quiz_id = qz.id
+    AND ch.course_id = v_cid
+    AND qq.competency IS NULL;
+
+  -- Set order_index by insertion order within each quiz
+  WITH _ord AS (
+    SELECT id, ROW_NUMBER() OVER (PARTITION BY quiz_id ORDER BY ctid) AS rn
+    FROM public.quiz_questions
+    WHERE quiz_id IN (
+      SELECT q.id FROM public.quizzes q
+      JOIN public.chapters ch ON ch.id = q.chapter_id
+      WHERE ch.course_id = v_cid AND ch.order_index BETWEEN 0 AND 8
+    ) AND order_index = 0
+  )
+  UPDATE public.quiz_questions SET order_index = _ord.rn
+  FROM _ord WHERE quiz_questions.id = _ord.id;
+
+  RAISE NOTICE 'M01–M09 quiz questions inserted and tagged.';
 
 END $body$;
 
