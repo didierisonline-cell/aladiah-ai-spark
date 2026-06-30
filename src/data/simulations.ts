@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 //  ALADIAH ACADEMY — WORLD-CLASS SIMULATION CATALOG
-//  28 Programs × 10 Modules × 10 Simulations = 2,800 Simulations
+//  30 Programs × 10 Modules × 10 Simulations = 3,000 Simulations
 // ═══════════════════════════════════════════════════════════════
 
 export type SimType =
@@ -339,16 +339,16 @@ export const AI_PRODUCT_MANAGER_SIMS = buildModuleSims('ai-product-manager', [
 ]);
 
 export const AI_PROGRAM_MANAGER_SIMS = buildModuleSims('ai-program-manager', [
-  {theme:'AI Program Management Fundamentals',focus:'program governance',company:'ProgramAI Corp'},
-  {theme:'AI Transformation Programs',focus:'enterprise transformation',company:'TransformAI PMO'},
-  {theme:'AI Program Planning & OKRs',focus:'program planning',company:'PlanAI Programs'},
-  {theme:'Managing AI Teams',focus:'AI team leadership',company:'TeamAI Management'},
-  {theme:'AI Program Operations',focus:'program delivery',company:'OpsAI Programs'},
-  {theme:'Strategic AI Program Leadership',focus:'executive leadership',company:'StrategicAI PMO'},
-  {theme:'Specialized AI Programs',focus:'specialized delivery',company:'SpecialAI Programs'},
-  {theme:'AI Program Careers',focus:'program career growth',company:'CareerAI PMO'},
-  {theme:'Future of AI Program Management',focus:'program evolution',company:'FutureAI PMO'},
-  {theme:'AI Program Capstone',focus:'enterprise program delivery',company:'CapstoneAI Programs'},
+  {theme:'PM Fundamentals & AI-Powered Delivery',focus:'delivery framework selection and AI tooling',company:'DeliverAI Corp'},
+  {theme:'Project Initiation & Business Case',focus:'project initiation and stakeholder alignment',company:'InitiateAI Projects'},
+  {theme:'Scope Management & WBS',focus:'scope definition and change control',company:'ScopeMind PM'},
+  {theme:'Schedule & Critical Path Management',focus:'schedule planning and compression',company:'ScheduleAI Delivery'},
+  {theme:'Risk Intelligence & Contingency Planning',focus:'risk identification and response',company:'RiskShield PMO'},
+  {theme:'Financial Management & Earned Value',focus:'cost control and EVM reporting',company:'FinanceAI Projects'},
+  {theme:'Stakeholder Engagement & Communication',focus:'stakeholder management and executive reporting',company:'StakeholderAI Corp'},
+  {theme:'Agile & Hybrid Project Delivery',focus:'agile delivery and sprint management',company:'AgileAI Delivery'},
+  {theme:'Portfolio & Program Leadership',focus:'portfolio governance and benefits realization',company:'PortfolioAI PMO'},
+  {theme:'PM Career Acceleration & PMP',focus:'certification and PM career strategy',company:'CareerAI Projects'},
 ]);
 
 export const AI_TRANSFORMATION_MANAGER_SIMS = buildModuleSims('ai-transformation-manager', [
@@ -595,7 +595,37 @@ export const AI_EXPERIENCE_ARCHITECT_SIMS = buildModuleSims('ai-experience-archi
 ]);
 
 // ═══════════════════════════════════════════════════════════════
-//  MASTER CATALOG — all 2,800 simulations indexed
+//  SCHOOL OF AI BUSINESS (continued) — PM & Scrum Master
+// ═══════════════════════════════════════════════════════════════
+
+export const AI_PROJECT_MANAGER_SIMS = buildModuleSims('ai-project-manager', [
+  {theme:'PM Fundamentals & AI-Powered Delivery',focus:'project management foundations',company:'FinServe Capital'},
+  {theme:'Project Initiation & Business Case',focus:'project initiation',company:'MedPath Health Systems'},
+  {theme:'Scope Management & WBS',focus:'scope planning',company:'CloudBuild Technologies'},
+  {theme:'Schedule & Critical Path Management',focus:'schedule management',company:'OpsFlow Manufacturing'},
+  {theme:'Risk Intelligence & Contingency Planning',focus:'risk management',company:'CivicTech Agency'},
+  {theme:'Financial Management & Earned Value',focus:'project finance',company:'ShopStream Retail'},
+  {theme:'Stakeholder Engagement & Communication',focus:'stakeholder management',company:'CoverIQ Insurance'},
+  {theme:'Agile & Hybrid Project Delivery',focus:'agile delivery',company:'MediaLogic Corp'},
+  {theme:'Portfolio & Program Leadership',focus:'portfolio management',company:'PowerGrid Energy'},
+  {theme:'PM Career Acceleration & PMP',focus:'PM career development',company:'FreightMind Logistics'},
+]);
+
+export const AI_ENTERPRISE_SCRUM_MASTER_SIMS = buildModuleSims('ai-enterprise-scrum-master', [
+  {theme:'Scrum Fundamentals & Agile Manifesto',focus:'scrum foundations',company:'AgileStart Corp'},
+  {theme:'Product Backlog & Sprint Planning',focus:'backlog management',company:'SprintCore Tech'},
+  {theme:'Sprint Execution & Daily Scrum',focus:'sprint facilitation',company:'IterateAI Systems'},
+  {theme:'Sprint Review & Retrospective',focus:'continuous improvement',company:'RetroLoop Inc'},
+  {theme:'Scaling Agile with SAFe & LeSS',focus:'scaled agile frameworks',company:'EnterpriseScale AI'},
+  {theme:'Agile Coaching & Team Performance',focus:'agile coaching',company:'CoachAI Delivery'},
+  {theme:'Agile Metrics & Velocity Management',focus:'agile metrics',company:'MetricSprint Analytics'},
+  {theme:'Stakeholder Management in Agile',focus:'agile stakeholders',company:'StakeholderAgile Corp'},
+  {theme:'AI-Enhanced Agile Delivery',focus:'AI in agile',company:'ScrumAI Innovations'},
+  {theme:'Enterprise Agile Transformation Leadership',focus:'agile transformation',company:'TransformAgile Global'},
+]);
+
+// ═══════════════════════════════════════════════════════════════
+//  MASTER CATALOG — all 3,000 simulations indexed
 // ═══════════════════════════════════════════════════════════════
 
 export const ALL_SIMULATIONS: Simulation[] = [
@@ -628,6 +658,8 @@ export const ALL_SIMULATIONS: Simulation[] = [
   ...HUMAN_AI_INTERACTION_SIMS,
   ...AI_WORKFLOW_DESIGNER_SIMS,
   ...AI_EXPERIENCE_ARCHITECT_SIMS,
+  ...AI_PROJECT_MANAGER_SIMS,
+  ...AI_ENTERPRISE_SCRUM_MASTER_SIMS,
 ];
 
 // ─── Program metadata ──────────────────────────────────────────
@@ -650,7 +682,9 @@ export const PROGRAMS = [
   { key:'ai-sales-engineer',        label:'AI Sales Engineer',        school:'AI Business', icon:'🎯',  color:'#F07830' },
   { key:'ai-enterprise-architect',  label:'AI Enterprise Architect',  school:'AI Business', icon:'🏢',  color:'#E09020' },
   { key:'ai-business-operations',   label:'AI Business Operations',   school:'AI Business', icon:'⚡',  color:'#F5A020' },
-  { key:'ai-data-analyst',           label:'AI Data Analyst',           school:'AI Business', icon:'📊', color:'#14B8A6' },
+  { key:'ai-data-analyst',             label:'AI Data Analyst',                               school:'AI Business', icon:'📊', color:'#14B8A6' },
+  { key:'ai-project-manager',          label:'AI Project Manager & Delivery Leader',           school:'AI Business', icon:'📋', color:'#10B981' },
+  { key:'ai-enterprise-scrum-master',  label:'AI Enterprise Scrum Master & Agile Leader',     school:'AI Business', icon:'🔄', color:'#059669' },
   // Governance & Risk
   { key:'ai-governance-professional',  label:'AI Governance Professional', school:'Governance & Risk', icon:'⚖️',  color:'#22C98A' },
   { key:'responsible-ai-specialist',   label:'Responsible AI Specialist',  school:'Governance & Risk', icon:'🛡️',  color:'#34D399' },
@@ -669,7 +703,7 @@ export const PROGRAMS = [
 
 export const SCHOOLS = [
   { label:'AI Engineering',      color:'#4A90F5', bg:'rgba(74,144,245,.12)', count:8  },
-  { label:'AI Business',         color:'#F0622A', bg:'rgba(240,98,42,.12)',  count:9  },
+  { label:'AI Business',         color:'#F0622A', bg:'rgba(240,98,42,.12)',  count:11 },
   { label:'Governance & Risk',   color:'#22C98A', bg:'rgba(34,201,138,.12)',count:7  },
   { label:'Human-AI Experience', color:'#C084FC', bg:'rgba(192,132,252,.12)',count:5  },
 ];
