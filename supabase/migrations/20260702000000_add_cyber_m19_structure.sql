@@ -33,21 +33,35 @@ BEGIN
 
   IF v_ch IS NULL THEN RAISE EXCEPTION 'M19 chapter insert/fetch failed'; END IF;
 
-  -- ── Insert 5 lesson slots ─────────────────────────────────────────────────
-  INSERT INTO public.videos (chapter_id, title, url, order_index, duration)
-  VALUES
-    (v_ch, 'Autonomous AI SOCs — The Self-Defending Enterprise',            'https://placeholder.aladiah.academy/cyber/m19/l1', 1, 600),
-    (v_ch, 'Quantum-Resistant Cryptography & Post-Quantum Security',         'https://placeholder.aladiah.academy/cyber/m19/l2', 2, 600),
-    (v_ch, 'Agentic Security Systems & AI Red vs. Blue Teams',               'https://placeholder.aladiah.academy/cyber/m19/l3', 3, 600),
-    (v_ch, 'Digital Identity, Decentralized Trust & Human–AI Collaboration', 'https://placeholder.aladiah.academy/cyber/m19/l4', 4, 600),
-    (v_ch, 'Cybersecurity Careers 2030–2050 — The 25-Year Roadmap',         'https://placeholder.aladiah.academy/cyber/m19/l5', 5, 600)
-  ON CONFLICT DO NOTHING;
+  -- ── Insert 5 lesson slots (idempotent) ───────────────────────────────────
+  IF NOT EXISTS (SELECT 1 FROM public.videos WHERE chapter_id = v_ch AND order_index = 1) THEN
+    INSERT INTO public.videos (chapter_id, title, description, order_index, translations)
+    VALUES (v_ch, 'Autonomous AI SOCs — The Self-Defending Enterprise', '', 1, '{}'::jsonb);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.videos WHERE chapter_id = v_ch AND order_index = 2) THEN
+    INSERT INTO public.videos (chapter_id, title, description, order_index, translations)
+    VALUES (v_ch, 'Quantum-Resistant Cryptography & Post-Quantum Security', '', 2, '{}'::jsonb);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.videos WHERE chapter_id = v_ch AND order_index = 3) THEN
+    INSERT INTO public.videos (chapter_id, title, description, order_index, translations)
+    VALUES (v_ch, 'Agentic Security Systems & AI Red vs. Blue Teams', '', 3, '{}'::jsonb);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.videos WHERE chapter_id = v_ch AND order_index = 4) THEN
+    INSERT INTO public.videos (chapter_id, title, description, order_index, translations)
+    VALUES (v_ch, 'Digital Identity, Decentralized Trust & Human–AI Collaboration', '', 4, '{}'::jsonb);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.videos WHERE chapter_id = v_ch AND order_index = 5) THEN
+    INSERT INTO public.videos (chapter_id, title, description, order_index, translations)
+    VALUES (v_ch, 'Cybersecurity Careers 2030–2050 — The 25-Year Roadmap', '', 5, '{}'::jsonb);
+  END IF;
 
-  -- ── Insert quiz ───────────────────────────────────────────────────────────
-  INSERT INTO public.quizzes (chapter_id, title)
-  VALUES (v_ch, 'Module 19 Assessment — The Future of AI Cybersecurity')
-  ON CONFLICT DO NOTHING
-  RETURNING id INTO v_qid;
+  -- ── Insert quiz (idempotent) ──────────────────────────────────────────────
+  IF NOT EXISTS (SELECT 1 FROM public.quizzes WHERE chapter_id = v_ch AND quiz_type = 'chapter_end') THEN
+    INSERT INTO public.quizzes (chapter_id, quiz_type, passing_score)
+    VALUES (v_ch, 'chapter_end', 70);
+  END IF;
+
+  SELECT id INTO v_qid FROM public.quizzes WHERE chapter_id = v_ch LIMIT 1;
 
   IF v_qid IS NULL THEN
     SELECT id INTO v_qid FROM public.quizzes WHERE chapter_id = v_ch LIMIT 1;
