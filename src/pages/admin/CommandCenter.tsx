@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import CommandCenterDashboard from '@/components/admin/CommandCenterDashboard';
+import CEOStatusBoard from '@/components/admin/ceo/CEOStatusBoard';
 import FounderShell from '@/components/founder/FounderShell';
 import {
   getLatestReport,
@@ -66,12 +67,16 @@ const CommandCenter = () => {
 
   return (
     <FounderShell>
-        <CommandCenterDashboard
-          report={report}
-          loading={loading}
-          generating={generating}
-          onGenerate={handleGenerate}
-        />
+        {/* Live executive status board (moved here from the founder home cockpit) */}
+        <CEOStatusBoard />
+        <div className="mt-10">
+          <CommandCenterDashboard
+            report={report}
+            loading={loading}
+            generating={generating}
+            onGenerate={handleGenerate}
+          />
+        </div>
       </FounderShell>
   );
 };

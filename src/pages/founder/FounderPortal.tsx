@@ -1,40 +1,103 @@
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import FounderShell from '@/components/founder/FounderShell';
-import CEOStatusBoard from '@/components/admin/ceo/CEOStatusBoard';
 import LaunchTruthCard from '@/components/founder/LaunchTruthCard';
-import WorkforceLaunchpad from '@/components/admin/workforce/WorkforceLaunchpad';
-import { Crown } from 'lucide-react';
+import ExecutiveCommandHeader from '@/components/founder/cockpit/ExecutiveCommandHeader';
+import LaunchReadinessCockpit from '@/components/founder/cockpit/LaunchReadinessCockpit';
+import AgentOperatingGrid from '@/components/founder/cockpit/AgentOperatingGrid';
+import ApprovalQueuePanel from '@/components/founder/cockpit/ApprovalQueuePanel';
+import WorkOrderBoard from '@/components/founder/cockpit/WorkOrderBoard';
+import CompanyBrainPanel from '@/components/founder/cockpit/CompanyBrainPanel';
+import { Button } from '@/components/ui/button';
+import { Crown, LayoutGrid, RefreshCw } from 'lucide-react';
+import { aos } from '@/services/aos';
+import { getCockpitSnapshot, type CockpitSnapshot } from '@/services/aos/cockpit';
 
 /**
- * /founder — the Founder Portal home.
- * Exposes every founder authority (CEO, Curriculum, QA, Admissions, Success,
- * Placement, Analytics, Operations, Approval Queue) via the launchpad.
- * Founder-only; students are redirected to /portal by <FounderRoute>.
+ * /founder — the Founder Portal home: an executive cockpit, not a card wall.
+ * Command header → launch readiness → agent operating grid → approvals +
+ * work orders → company brain. Deep surfaces (CEO brief, workforce launchpad,
+ * per-agent control centers) remain one click away and founder-only via
+ * <FounderRoute>.
  */
-const FounderPortal = () => (
-  <FounderShell>
+const FounderPortal = () => {
+  const [snap, setSnap] = useState<CockpitSnapshot | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      await aos.ensure();
+      setSnap(await getCockpitSnapshot());
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  return (
+    <FounderShell wide>
+      {/* Page header */}
       <div className="mb-6 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
             <Crown className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Founder Portal</h1>
+            <h1 className="text-2xl font-bold text-foreground">Founder Command</h1>
             <p className="text-sm text-muted-foreground">
-              Command the entire Aladiah AI Workforce. Founder access only.
+              {snap ? `As of ${new Date(snap.generatedAt).toLocaleString()} — read live, never fabricated.` : 'Compiling the executive picture…'}
             </p>
           </div>
         </div>
-        <Link to="/portal" className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-bold text-white" style={{ background: 'linear-gradient(135deg,#2563eb,#4A90F5)', boxShadow: '0 4px 14px rgba(37,99,235,.35)' }}>
-          🎓 Enter Student Portal →
-        </Link>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={load} disabled={loading}>
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} /> Refresh
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link to="/admin/ai-workforce">
+              <LayoutGrid className="w-4 h-4 mr-2" /> All surfaces
+            </Link>
+          </Button>
+          <Link
+            to="/portal"
+            className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-bold text-white"
+            style={{ background: 'linear-gradient(135deg,#2563eb,#4A90F5)', boxShadow: '0 4px 14px rgba(37,99,235,.35)' }}
+          >
+            🎓 Student Portal →
+          </Link>
+        </div>
       </div>
-      <LaunchTruthCard />
-      <CEOStatusBoard />
-      <div className="mt-10">
-        <WorkforceLaunchpad />
-      </div>
-  </FounderShell>
-);
+
+      {loading && !snap ? (
+        <div className="py-24 text-center text-sm text-muted-foreground">Reading the live operating picture…</div>
+      ) : snap ? (
+        <div className="space-y-8">
+          {/* 1. Executive Command Header */}
+          <ExecutiveCommandHeader snap={snap} />
+
+          {/* Launch Truth — founder-ratified proven/hypothesis/broken doctrine */}
+          <LaunchTruthCard />
+
+          {/* 2. Launch Readiness Cockpit */}
+          <LaunchReadinessCockpit dimensions={snap.dimensions} />
+
+          {/* 3. Agent Operating Grid */}
+          <AgentOperatingGrid agents={snap.agents} />
+
+          {/* 4 + 5. Approvals + Work Orders */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+            <ApprovalQueuePanel approvals={snap.approvals} />
+            <WorkOrderBoard onChange={load} />
+          </div>
+
+          {/* 6. Company Brain */}
+          <CompanyBrainPanel />
+        </div>
+      ) : null}
+    </FounderShell>
+  );
+};
 
 export default FounderPortal;

@@ -13,7 +13,7 @@ import { aos } from '@/services/aos';
 
 const EMPTY: ApprovalQueueSnapshot = {
   items: [],
-  countsBySource: { product: 0, marketing: 0, admissions: 0, 'student-success': 0, placement: 0 },
+  countsBySource: { product: 0, marketing: 0, admissions: 0, 'student-success': 0, placement: 0, 'work-order': 0 },
   total: 0,
 };
 
@@ -49,6 +49,7 @@ const ApprovalsHub = () => {
     { key: 'admissions', label: 'Admissions', count: snap.countsBySource.admissions },
     { key: 'student-success', label: 'Success', count: snap.countsBySource['student-success'] },
     { key: 'placement', label: 'Placement', count: snap.countsBySource.placement },
+    { key: 'work-order', label: 'Work Orders', count: snap.countsBySource['work-order'] },
   ];
 
   return (
