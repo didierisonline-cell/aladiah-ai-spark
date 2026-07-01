@@ -28,6 +28,7 @@ health, or messaging.**
 | 9 | **Work Orders** | `aos_tasks` (payload.kind='work_order') | `services/aos/workOrders.ts` |
 | 10 | **Orchestration pipeline** | (moves work-order state) | `services/aos/orchestration.ts` |
 | 11 | **Company Brain** | `aos_agent_memory` (slug 'company-brain') | `services/aos/brain.ts` |
+| 12 | **Event Bus** | `aos_messages` (to_agent='broadcast', subject 'event:*') | `services/aos/events.ts` |
 
 Schema: `supabase/migrations/20260610130000_agent_operating_system.sql`.
 Types: `src/types/aos.ts`. Facade: `import { aos } from '@/services/aos'`.
@@ -146,6 +147,17 @@ each agent's own founder-gated surface.
 reserved slug `company-brain`: founder decisions, architecture decisions,
 curriculum/QA/security standards, translation dictionary, design decisions,
 and launch-readiness history. Long-term, high-importance, never expires.
+
+**Event Bus (12)** — the OS flight recorder. Every governance-relevant
+transition emits a typed event (`agent.run.*`, `work_order.*`,
+`brain.decision.recorded`, `readiness.snapshot`) as an `aos_messages` row to
+`broadcast` with subject `event:<type>` — RLS-inherited, append-only, zero new
+tables. Emission is fire-and-forget: tracing can never break the traced action.
+`listWorkOrderEvents(id)` returns one order's full audit trail.
+**Governance invariants (enforced in code, tested in `workOrders.test.ts`):**
+founder approval requires evidence (`EvidenceRequiredError`); read-only agents
+may only own `recommendation` work orders (`PermissionError`); gates review in
+QA → Security → Translation → UX order; a failed gate blocks until re-reviewed.
 
 The Founder cockpit (`/founder`, `services/aos/cockpit.ts`) reads all of this
 into one executive snapshot: gates, 13 launch-readiness dimensions
