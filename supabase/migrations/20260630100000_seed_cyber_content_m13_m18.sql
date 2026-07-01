@@ -11,8 +11,7 @@ DECLARE
   v_ch  UUID;
 BEGIN
   SELECT id INTO v_cid FROM public.courses
-    WHERE title = 'AI Cybersecurity, Governance & Enterprise Compliance'
-      AND curriculum_version = 'cyber-v1';
+    WHERE curriculum_version = 'cyber-v1';
   IF v_cid IS NULL THEN RAISE EXCEPTION 'Cyber course not found'; END IF;
 
 -- ─── MODULE 13: Identity Security & Privileged Access Management ──────────────
