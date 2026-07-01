@@ -1,6 +1,6 @@
 import {
   Award, BarChart3, BookOpen, Briefcase, ClipboardCheck, Cpu, DollarSign, FilePlus2, Footprints, GaugeCircle,
-  GraduationCap, Home, Inbox, Languages, LayoutGrid, Megaphone, Rocket, Search, Server, ServerCog,
+  GraduationCap, Home, Inbox, Languages, Layout, LayoutGrid, Megaphone, Rocket, Search, Server, ServerCog,
   Route, Shield, ShieldCheck, Sparkles, Target,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -50,6 +50,7 @@ export const FOUNDER_NAV_ITEMS: FounderNavItem[] = [
   { to: '/admin/placement-agent', label: 'Placement', icon: Briefcase },
   { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/admin/operations', label: 'Operations', icon: ServerCog },
+  { to: '/admin/interface-agent', label: 'Interface & UX', icon: Layout },
   { to: '/admin/approvals', label: 'Approval Queue', icon: Inbox },
   { to: '/admin', label: 'Admin', icon: ServerCog },
   { to: '/portal', label: 'Student Portal', icon: BookOpen },

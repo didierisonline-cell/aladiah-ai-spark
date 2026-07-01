@@ -11,6 +11,9 @@ import * as logs from './logs';
 import * as permissions from './permissions';
 import * as health from './health';
 import * as comms from './communication';
+import * as workOrders from './workOrders';
+import * as orchestration from './orchestration';
+import * as brain from './brain';
 import { ensureAOS } from './bootstrap';
 
 export const aos = {
@@ -23,6 +26,9 @@ export const aos = {
   permissions,    // 6. Permissions Framework
   health,         // 7. Health Monitoring
   comms,          // 8. Communication Layer
+  workOrders,     // 9. Work Order System (layered on tasks)
+  orchestration,  // 10. Inter-agent pipeline (gates → founder approval)
+  brain,          // 11. Company Brain (institutional memory)
 };
 
 export { ensureAOS };

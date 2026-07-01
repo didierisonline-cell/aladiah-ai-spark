@@ -25,6 +25,9 @@ health, or messaging.**
 | 6 | **Permissions** | `aos_agents.permissions` (jsonb) | `services/aos/permissions.ts` |
 | 7 | **Health Monitoring** | `aos_agents` health columns | `services/aos/health.ts` |
 | 8 | **Communication** | `aos_messages` | `services/aos/communication.ts` |
+| 9 | **Work Orders** | `aos_tasks` (payload.kind='work_order') | `services/aos/workOrders.ts` |
+| 10 | **Orchestration pipeline** | (moves work-order state) | `services/aos/orchestration.ts` |
+| 11 | **Company Brain** | `aos_agent_memory` (slug 'company-brain') | `services/aos/brain.ts` |
 
 Schema: `supabase/migrations/20260610130000_agent_operating_system.sql`.
 Types: `src/types/aos.ts`. Facade: `import { aos } from '@/services/aos'`.
@@ -120,6 +123,35 @@ await aos.permissions.guard(slug, 'write'); // permission/approval gate
 - Toolbar — **Run Orchestrator Tick** (runs all due agents) + Refresh.
 
 Components in `src/components/admin/aos/`.
+
+---
+
+## 4b. Layered coordination subsystems (no new tables)
+
+**Work Orders (9)** — the shared unit of cross-agent work, layered on
+`aos_tasks` (`payload.kind = 'work_order'`). Adds type, collaborating agents,
+acceptance criteria, four review gates (**QA / Security / Translation / UX**),
+founder-approval status, and evidence notes on top of the Task Manager's
+id/title/owner/priority/status/dependencies/timestamps.
+
+**Orchestration pipeline (10)** — `openWorkOrder → routeNextGate →
+recordGateOutcome → submitForFounderApproval → founderDecision`. Gate
+reviewers: QA → `qa-authority`, UX → `interface-experience`; Security and
+Translation are founder-reviewed on their surfaces (`/admin/security`,
+`/founder/localization`) and surfaced via CEO alerts. **Approving a work order
+records a decision — it never publishes or deploys**; execution stays behind
+each agent's own founder-gated surface.
+
+**Company Brain (11)** — institutional memory on `aos_agent_memory` under the
+reserved slug `company-brain`: founder decisions, architecture decisions,
+curriculum/QA/security standards, translation dictionary, design decisions,
+and launch-readiness history. Long-term, high-importance, never expires.
+
+The Founder cockpit (`/founder`, `services/aos/cockpit.ts`) reads all of this
+into one executive snapshot: gates, 13 launch-readiness dimensions
+(measured / posture / unmeasured — honest by design), the agent operating
+grid (11 AOS agents + 2 student-facing personas + the Interface & Experience
+Architect), the approval queue, work orders, and the brain.
 
 ---
 

@@ -38,6 +38,7 @@ import StudentSuccessAgent from "./pages/admin/StudentSuccessAgent";
 import PlacementAgent from "./pages/admin/PlacementAgent";
 import AnalyticsAgent from "./pages/admin/AnalyticsAgent";
 import OperationsAgent from "./pages/admin/OperationsAgent";
+import InterfaceAgent from "./pages/admin/InterfaceAgent";
 import CurriculumExcellence from "./pages/admin/CurriculumExcellence";
 import ContentStudio from "./pages/admin/ContentStudio";
 import Production from "./pages/admin/Production";
@@ -178,6 +179,7 @@ const AppContent = () => {
         <Route path="/admin/placement-agent" element={<FounderRoute><PlacementAgent /></FounderRoute>} />
         <Route path="/admin/analytics" element={<FounderRoute><AnalyticsAgent /></FounderRoute>} />
         <Route path="/admin/operations" element={<FounderRoute><OperationsAgent /></FounderRoute>} />
+        <Route path="/admin/interface-agent" element={<FounderRoute><InterfaceAgent /></FounderRoute>} />
         <Route path="/admin/curriculum-excellence" element={<FounderRoute><CurriculumExcellence /></FounderRoute>} />
         <Route path="/admin/content" element={<FounderRoute><ContentStudio /></FounderRoute>} />
         <Route path="/admin/production" element={<FounderRoute><Production /></FounderRoute>} />

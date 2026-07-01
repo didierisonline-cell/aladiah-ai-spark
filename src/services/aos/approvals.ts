@@ -12,7 +12,8 @@ export type ApprovalSource =
   | 'marketing'
   | 'admissions'
   | 'student-success'
-  | 'placement';
+  | 'placement'
+  | 'work-order';
 
 export interface ApprovalItem {
   id: string;
@@ -74,6 +75,17 @@ const SOURCES: SourceSpec[] = [
     detail: (r) => r.summary ?? r.rationale ?? null,
   },
   {
+    // Migration 20260610200000 names the table success_interventions; the
+    // spec above is kept for forward-compat. Both are defensive.
+    source: 'student-success',
+    sourceLabel: 'Student Success',
+    table: 'success_interventions',
+    statuses: ['pending'],
+    route: '/admin/student-success',
+    title: (r) => r.title ?? 'Success intervention',
+    detail: (r) => r.rationale ?? r.intervention_type ?? null,
+  },
+  {
     source: 'placement',
     sourceLabel: 'Placement',
     table: 'placement_recommendations',
@@ -81,6 +93,16 @@ const SOURCES: SourceSpec[] = [
     route: '/admin/placement-agent',
     title: (r) => r.title ?? r.recommendation ?? 'Placement action',
     detail: (r) => r.summary ?? r.rationale ?? null,
+  },
+  {
+    // Migration 20260610210000 names the table placement_actions.
+    source: 'placement',
+    sourceLabel: 'Placement',
+    table: 'placement_actions',
+    statuses: ['pending'],
+    route: '/admin/placement-agent',
+    title: (r) => r.title ?? 'Placement action',
+    detail: (r) => r.body ?? r.action_type ?? null,
   },
 ];
 
@@ -114,15 +136,44 @@ export interface ApprovalQueueSnapshot {
   total: number;
 }
 
+/** Work orders whose gates all cleared and now await the founder's decision. */
+async function fromWorkOrders(): Promise<ApprovalItem[]> {
+  try {
+    const { data, error } = await db
+      .from('aos_tasks')
+      .select('*')
+      .contains('payload', { kind: 'work_order', founder_approval: 'pending' })
+      .order('created_at', { ascending: false })
+      .limit(100);
+    if (error || !data) return [];
+    return (data as any[]).map((r) => ({
+      id: String(r.id),
+      source: 'work-order' as const,
+      sourceLabel: 'Work Order',
+      title: r.title ?? 'Work order',
+      detail: (r.payload?.type ? `${r.payload.type} · owner ${r.assigned_agent ?? '—'}` : null),
+      status: 'pending_approval',
+      createdAt: r.created_at ?? null,
+      route: '/founder',
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export async function getApprovalQueue(): Promise<ApprovalQueueSnapshot> {
-  const lists = await Promise.all(SOURCES.map(fromSource));
-  const items = lists
-    .flat()
+  const [lists, workOrders] = await Promise.all([
+    Promise.all(SOURCES.map(fromSource)),
+    fromWorkOrders(),
+  ]);
+  const items = [...lists.flat(), ...workOrders]
     .sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''));
-  const countsBySource = SOURCES.reduce((acc, s, i) => {
-    acc[s.source] = lists[i].length;
+  const countsBySource = items.reduce((acc, item) => {
+    acc[item.source] = (acc[item.source] ?? 0) + 1;
     return acc;
-  }, {} as Record<ApprovalSource, number>);
+  }, {
+    product: 0, marketing: 0, admissions: 0, 'student-success': 0, placement: 0, 'work-order': 0,
+  } as Record<ApprovalSource, number>);
   return { items, countsBySource, total: items.length };
 }
 
