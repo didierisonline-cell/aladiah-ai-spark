@@ -23,6 +23,13 @@ const SCHOOL_COLORS: Record<string, string> = {
 };
 
 const COURSE_ICONS: Record<string, string> = {
+  // Fully built programs — pinned to top
+  'AI Scrum Master Professional Certification v2': '🏆',
+  'AI Project Manager & Delivery Leader': '📋',
+  'AI Cybersecurity, Governance & Enterprise Compliance': '🔐',
+  'AI Data Analyst & Decision Intelligence Professional': '📉',
+  'AI Business Analyst & Product Discovery Specialist': '📊',
+  // All other programs
   'AI Cloud Engineer': '☁️',
   'AI Agent Engineer': '🤖',
   'AI Data Engineer': '🗄️',
@@ -32,12 +39,11 @@ const COURSE_ICONS: Record<string, string> = {
   'AI Platform Engineer': '🏗️',
   'AI Governance Professional': '⚖️',
   'AI Product Manager': '📱',
-  'AI Business Analyst': '📊',
   'AI Solutions Consultant': '💼',
   'AI Sales Engineer': '🎯',
   'AI Transformation Manager': '🔄',
   'AI Enterprise Architect': '🏛️',
-  'AI Program Manager': '📋',
+  'AI Program Manager': '📊',
   'AI Business Operations': '📈',
   'Responsible AI Specialist': '🌱',
   'AI Compliance Officer': '📜',
@@ -51,6 +57,15 @@ const COURSE_ICONS: Record<string, string> = {
   'AI Workflow Designer': '🔀',
   'AI Experience Architect': '✨',
 };
+
+// Fully built programs — appear first in this exact order
+const PINNED_VERSIONS = ['v3.0', 'pm-v1', 'cyber-v1', 'da-v1', 'ba-v1'];
+
+function pinnedRank(cv: string | null): number {
+  if (!cv) return PINNED_VERSIONS.length;
+  const i = PINNED_VERSIONS.indexOf(cv);
+  return i === -1 ? PINNED_VERSIONS.length : i;
+}
 
 export default function PortalCourses() {
   const { language, t } = useLanguage();
@@ -67,9 +82,8 @@ export default function PortalCourses() {
     // the Learn tab continues with the SAME program chosen at signup, not courses[0].
     supabase
       .from('courses')
-      .select('id, title, description, translations')
+      .select('id, title, description, translations, curriculum_version')
       .eq('is_published', true)
-      .order('title')
       .then(({ data }) => {
         if (data) setCourses(data);
         setLoading(false);
@@ -82,11 +96,15 @@ export default function PortalCourses() {
       .then(({ data }) => setSelectedId(data?.free_course_id ?? null));
   }, [user]);
 
-  // Selected program first, so both the phone "continue" card and the desktop grid
-  // lead with the program the student actually chose.
-  const orderedCourses = selectedId
-    ? [...courses].sort((a, b) => (a.id === selectedId ? -1 : b.id === selectedId ? 1 : 0))
-    : courses;
+  // Pinned production programs appear first (in build order), then everything else
+  // alphabetically. The student's selected program keeps its highlight badge but
+  // stays in its natural position unless it's already pinned.
+  const orderedCourses = [...courses].sort((a, b) => {
+    const ra = pinnedRank(a.curriculum_version);
+    const rb = pinnedRank(b.curriculum_version);
+    if (ra !== rb) return ra - rb;
+    return (a.title as string).localeCompare(b.title as string);
+  });
 
   if (isPhone) return <MobileLearn courses={orderedCourses} loading={loading} selectedId={selectedId} />;
 
