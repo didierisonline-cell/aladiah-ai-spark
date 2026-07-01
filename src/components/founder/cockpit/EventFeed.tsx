@@ -19,6 +19,10 @@ const TYPE_ACCENT: Record<AOSEventType, string> = {
   'work_order.completed': '#22c55e',
   'brain.decision.recorded': '#64748b',
   'readiness.snapshot': '#64748b',
+  'intelligence.cycle.completed': '#64748b',
+  'intelligence.recommendation': '#f59e0b',
+  'briefing.generated': '#64748b',
+  'impact.measured': '#22c55e',
 };
 
 const timeAgo = (iso: string) => {
