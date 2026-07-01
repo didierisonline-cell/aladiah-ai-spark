@@ -1,0 +1,210 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="680" viewBox="0 0 900 680" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <!-- Bar chart gradient: blue to red -->
+    <linearGradient id="barPhishing" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4A90F5"/>
+      <stop offset="100%" stop-color="#3A7AE0"/>
+    </linearGradient>
+    <linearGradient id="barMalware" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7B68EE"/>
+      <stop offset="100%" stop-color="#6558D0"/>
+    </linearGradient>
+    <linearGradient id="barInsider" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F0622A"/>
+      <stop offset="100%" stop-color="#D44E1E"/>
+    </linearGradient>
+    <linearGradient id="barCloud" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#EF4444"/>
+      <stop offset="100%" stop-color="#CC3030"/>
+    </linearGradient>
+    <!-- Gauge arc clip -->
+    <clipPath id="gaugeClip">
+      <rect x="0" y="0" width="260" height="130"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="680" fill="#0B111E"/>
+
+  <!-- Header bar -->
+  <rect x="0" y="0" width="900" height="88" fill="#111D30"/>
+  <rect x="0" y="87" width="900" height="1" fill="#1E2D47"/>
+
+  <!-- Title -->
+  <text x="32" y="38" font-size="22" font-weight="700" fill="#EDF2F7" letter-spacing="-0.3">CISO Executive Dashboard</text>
+  <text x="32" y="62" font-size="13" fill="#8596AD">Real-time Security Posture</text>
+
+  <!-- Timestamp -->
+  <rect x="752" y="26" width="116" height="28" rx="6" fill="#0B1A2E" stroke="#1E2D47" stroke-width="1"/>
+  <text x="810" y="44" text-anchor="middle" font-size="12" fill="#8596AD">As of Q2 2025</text>
+
+  <!-- Live indicator -->
+  <circle cx="742" cy="40" r="5" fill="#22C98A"/>
+  <circle cx="742" cy="40" r="5" fill="#22C98A" opacity="0.3">
+    <animate attributeName="r" values="5;9;5" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;0;0.3" dur="2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- ─── METRIC CARDS ROW 1 ─── -->
+  <!-- Card 1: Security Score -->
+  <rect x="32" y="106" width="260" height="164" rx="12" fill="#111D30" stroke="#1E2D47" stroke-width="1.5"/>
+  <text x="52" y="128" font-size="11" fill="#8596AD" font-weight="600" letter-spacing="0.8">SECURITY SCORE</text>
+
+  <!-- Semicircle gauge -->
+  <!-- Background arc track (grey) -->
+  <g transform="translate(162, 230)">
+    <!-- Track arc 180deg -->
+    <path d="M -80,0 A 80,80 0 0,1 80,0" fill="none" stroke="#1E2D47" stroke-width="12" stroke-linecap="round"/>
+    <!-- Filled arc: 87% of 180° = 156.6° -->
+    <!-- 87% of semicircle: start at -90deg (left), sweep 156.6deg = end at 66.6deg from left = -90+156.6=66.6 -->
+    <!-- Start point: cos(-90°)*80 = 0, sin(-90°)*80 = -80 → (-80, 0) in rotated coords -->
+    <!-- We draw from left (-80,0) sweeping 156.6° -->
+    <!-- End: x=80*cos(180-156.6)=80*cos(23.4)=73.4, y=-80*sin(23.4)= -31.7 ... -->
+    <!-- Simpler: large-arc-flag based on angle > 180. 156.6 < 180 so flag=0 -->
+    <!-- endpoint of 156.6° arc from (-80,0) at r=80: -->
+    <!-- angle from x-axis of endpoint: 180 - 156.6 = 23.4°  on right side -->
+    <!-- x = 80*cos(23.4°*π/180) ≈ 80*0.9178 = 73.4 -->
+    <!-- y = -80*sin(23.4°*π/180) ≈ -80*0.3971 = -31.8 → positive y in SVG = up, we want above centerline -->
+    <!-- In SVG y increases down. Point on upper semicircle: y = -80*sin(θ) where θ=23.4° from right -->
+    <path d="M -80,0 A 80,80 0 0,1 73.4,-31.8" fill="none" stroke="#22C98A" stroke-width="12" stroke-linecap="round"/>
+    <!-- Score number -->
+    <text x="0" y="-18" text-anchor="middle" font-size="36" font-weight="800" fill="#22C98A">87</text>
+    <text x="26" y="-18" text-anchor="start" font-size="18" font-weight="400" fill="#8596AD">/100</text>
+  </g>
+  <text x="162" y="256" text-anchor="middle" font-size="12" fill="#8596AD">Security Score</text>
+  <text x="162" y="272" text-anchor="middle" font-size="11" fill="#22C98A" font-weight="600">↑ +3 pts from Q1</text>
+
+  <!-- Card 2: SOC 2 Status -->
+  <rect x="308" y="106" width="260" height="164" rx="12" fill="#111D30" stroke="#1E2D47" stroke-width="1.5"/>
+  <text x="328" y="128" font-size="11" fill="#8596AD" font-weight="600" letter-spacing="0.8">COMPLIANCE STATUS</text>
+  <!-- Big checkmark -->
+  <circle cx="438" cy="192" r="42" fill="#0D1F14" stroke="#22C98A" stroke-width="2"/>
+  <path d="M 418,192 L 432,207 L 460,178" fill="none" stroke="#22C98A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="438" y="245" text-anchor="middle" font-size="16" font-weight="700" fill="#EDF2F7">SOC 2 Type II</text>
+  <rect x="390" y="252" width="96" height="20" rx="10" fill="#0D1F14" stroke="#22C98A" stroke-width="1"/>
+  <text x="438" y="266" text-anchor="middle" font-size="11" fill="#22C98A" font-weight="600">CERTIFIED</text>
+
+  <!-- Card 3: Active Incidents -->
+  <rect x="584" y="106" width="284" height="164" rx="12" fill="#111D30" stroke="#1E2D47" stroke-width="1.5"/>
+  <text x="604" y="128" font-size="11" fill="#8596AD" font-weight="600" letter-spacing="0.8">ACTIVE INCIDENTS</text>
+
+  <!-- Big number -->
+  <text x="650" y="222" text-anchor="middle" font-size="72" font-weight="800" fill="#F0622A" letter-spacing="-4">3</text>
+  <text x="718" y="200" font-size="13" fill="#8596AD">Active</text>
+  <text x="718" y="218" font-size="13" fill="#8596AD">Incidents</text>
+  <text x="718" y="244" font-size="12" fill="#EDF2F7" font-weight="600">Last 30 Days</text>
+  <!-- Small sparkline-style dots showing trend -->
+  <circle cx="718" cy="260" r="5" fill="#EF4444" opacity="0.9"/>
+  <circle cx="732" cy="256" r="5" fill="#EF4444" opacity="0.7"/>
+  <circle cx="746" cy="258" r="5" fill="#F0622A" opacity="0.6"/>
+  <line x1="718" y1="260" x2="732" y2="256" stroke="#EF4444" stroke-width="1.5" opacity="0.6"/>
+  <line x1="732" y1="256" x2="746" y2="258" stroke="#F0622A" stroke-width="1.5" opacity="0.5"/>
+  <text x="760" y="262" font-size="10" fill="#8596AD">↓ trend</text>
+
+  <!-- ─── METRIC CARDS ROW 2 ─── -->
+  <!-- Card 4: Mean Time to Detect -->
+  <rect x="32" y="286" width="260" height="164" rx="12" fill="#111D30" stroke="#1E2D47" stroke-width="1.5"/>
+  <text x="52" y="308" font-size="11" fill="#8596AD" font-weight="600" letter-spacing="0.8">MEAN TIME TO DETECT</text>
+
+  <text x="104" y="376" text-anchor="middle" font-size="52" font-weight="800" fill="#4A90F5" letter-spacing="-2">4.2</text>
+  <text x="182" y="370" font-size="22" font-weight="700" fill="#4A90F5">h</text>
+  <text x="52" y="406" font-size="12" fill="#8596AD">MTTD (hours)</text>
+
+  <!-- Comparison bar -->
+  <rect x="52" y="420" width="220" height="8" rx="4" fill="#1E2D47"/>
+  <!-- Our value: 4.2/24 = 17.5% of bar -->
+  <rect x="52" y="420" width="39" height="8" rx="4" fill="#4A90F5"/>
+  <!-- Industry marker at 100% -->
+  <line x1="272" y1="416" x2="272" y2="432" stroke="#EF4444" stroke-width="2"/>
+  <text x="52" y="442" font-size="10" fill="#22C98A" font-weight="600">You: 4.2h</text>
+  <text x="200" y="442" font-size="10" fill="#EF4444">Industry avg: 24h</text>
+
+  <!-- Card 5: AI Risk Score -->
+  <rect x="308" y="286" width="260" height="164" rx="12" fill="#111D30" stroke="#1E2D47" stroke-width="1.5"/>
+  <text x="328" y="308" font-size="11" fill="#8596AD" font-weight="600" letter-spacing="0.8">AI RISK SCORE</text>
+
+  <!-- Orange indicator dot -->
+  <circle cx="378" cy="362" r="22" fill="#1A110A" stroke="#F0622A" stroke-width="2.5"/>
+  <circle cx="378" cy="362" r="10" fill="#F0622A"/>
+
+  <text x="418" y="350" font-size="26" font-weight="800" fill="#F0622A">MEDIUM</text>
+  <text x="418" y="372" font-size="12" fill="#8596AD">AI Risk Score</text>
+
+  <!-- 3-segment risk bar -->
+  <text x="328" y="410" font-size="11" fill="#8596AD">LOW</text>
+  <rect x="355" y="400" width="52" height="16" rx="4" fill="#22C98A" opacity="0.35"/>
+  <text x="358" y="412" font-size="10" fill="#22C98A">LOW</text>
+
+  <rect x="411" y="400" width="58" height="16" rx="4" fill="#F0622A"/>
+  <text x="414" y="412" font-size="10" fill="#EDF2F7" font-weight="700">MEDIUM</text>
+
+  <rect x="473" y="400" width="48" height="16" rx="4" fill="#EF4444" opacity="0.35"/>
+  <text x="480" y="412" font-size="10" fill="#EF4444">HIGH</text>
+
+  <text x="554" y="412" font-size="11" fill="#8596AD">HIGH</text>
+
+  <!-- Card 6: Board Readiness -->
+  <rect x="584" y="286" width="284" height="164" rx="12" fill="#111D30" stroke="#1E2D47" stroke-width="1.5"/>
+  <text x="604" y="308" font-size="11" fill="#8596AD" font-weight="600" letter-spacing="0.8">BOARD READINESS</text>
+
+  <text x="726" y="385" text-anchor="middle" font-size="52" font-weight="800" fill="#22C98A" letter-spacing="-2">92%</text>
+  <text x="726" y="408" text-anchor="middle" font-size="12" fill="#8596AD">Board Readiness</text>
+
+  <!-- Horizontal progress bar -->
+  <rect x="604" y="424" width="244" height="10" rx="5" fill="#1E2D47"/>
+  <rect x="604" y="424" width="225" height="10" rx="5" fill="#22C98A"/>
+  <!-- 92% = 225px of 244px -->
+  <text x="726" y="448" text-anchor="middle" font-size="11" fill="#22C98A" font-weight="600">↑ 4% improvement QoQ</text>
+
+  <!-- ─── BOTTOM SECTION: BAR CHART ─── -->
+  <rect x="32" y="468" width="836" height="192" rx="12" fill="#111D30" stroke="#1E2D47" stroke-width="1.5"/>
+
+  <!-- Chart title -->
+  <text x="52" y="494" font-size="14" font-weight="700" fill="#EDF2F7">Incidents by Category</text>
+  <text x="52" y="512" font-size="11" fill="#8596AD">Last 30 Days · Total: 3 confirmed incidents tracked</text>
+
+  <!-- Chart grid lines -->
+  <line x1="120" y1="522" x2="820" y2="522" stroke="#1E2D47" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="120" y1="549" x2="820" y2="549" stroke="#1E2D47" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="120" y1="576" x2="820" y2="576" stroke="#1E2D47" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="120" y1="603" x2="820" y2="603" stroke="#1E2D47" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="120" y1="630" x2="820" y2="630" stroke="#1E2D47" stroke-width="1"/>
+
+  <!-- Y-axis labels -->
+  <text x="112" y="526" text-anchor="end" font-size="10" fill="#8596AD">50%</text>
+  <text x="112" y="553" text-anchor="end" font-size="10" fill="#8596AD">38%</text>
+  <text x="112" y="580" text-anchor="end" font-size="10" fill="#8596AD">25%</text>
+  <text x="112" y="607" text-anchor="end" font-size="10" fill="#8596AD">13%</text>
+  <text x="112" y="634" text-anchor="end" font-size="10" fill="#8596AD">0%</text>
+
+  <!-- Bar: Phishing 45% -->
+  <!-- Bar height = 45% of 108px (chart area from y=522 to y=630) = 48.6px -->
+  <!-- Bottom of bars at y=630, bars go up -->
+  <rect x="178" y="581" width="120" height="49" rx="6" fill="url(#barPhishing)"/>
+  <!-- Count label above bar -->
+  <text x="238" y="577" text-anchor="middle" font-size="13" font-weight="700" fill="#4A90F5">45%</text>
+  <!-- Category label below -->
+  <text x="238" y="648" text-anchor="middle" font-size="12" fill="#EDF2F7" font-weight="600">Phishing</text>
+  <text x="238" y="663" text-anchor="middle" font-size="10" fill="#8596AD">Social Engineering</text>
+
+  <!-- Bar: Malware 25% -->
+  <rect x="368" y="603" width="120" height="27" rx="6" fill="url(#barMalware)"/>
+  <text x="428" y="599" text-anchor="middle" font-size="13" font-weight="700" fill="#7B68EE">25%</text>
+  <text x="428" y="648" text-anchor="middle" font-size="12" fill="#EDF2F7" font-weight="600">Malware</text>
+  <text x="428" y="663" text-anchor="middle" font-size="10" fill="#8596AD">Endpoint Threats</text>
+
+  <!-- Bar: Insider 20% -->
+  <rect x="558" y="608" width="120" height="22" rx="6" fill="url(#barInsider)"/>
+  <text x="618" y="604" text-anchor="middle" font-size="13" font-weight="700" fill="#F0622A">20%</text>
+  <text x="618" y="648" text-anchor="middle" font-size="12" fill="#EDF2F7" font-weight="600">Insider</text>
+  <text x="618" y="663" text-anchor="middle" font-size="10" fill="#8596AD">Privilege Misuse</text>
+
+  <!-- Bar: Cloud Misconfig 10% -->
+  <rect x="748" y="619" width="120" height="11" rx="5" fill="url(#barCloud)"/>
+  <text x="808" y="615" text-anchor="middle" font-size="13" font-weight="700" fill="#EF4444">10%</text>
+  <text x="808" y="648" text-anchor="middle" font-size="12" fill="#EDF2F7" font-weight="600">Cloud Misconfig</text>
+  <text x="808" y="663" text-anchor="middle" font-size="10" fill="#8596AD">Infrastructure Drift</text>
+
+  <!-- Chart y-axis line -->
+  <line x1="120" y1="520" x2="120" y2="630" stroke="#1E2D47" stroke-width="1.5"/>
+</svg>

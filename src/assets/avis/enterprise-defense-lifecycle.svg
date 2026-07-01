@@ -1,0 +1,228 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="720" viewBox="0 0 900 720" style="font-family: system-ui, -apple-system, sans-serif;">
+
+  <defs>
+    <!-- Background -->
+    <radialGradient id="bgRadial" cx="50%" cy="50%" r="70%">
+      <stop offset="0%"   stop-color="#0F1826"/>
+      <stop offset="100%" stop-color="#0B111E"/>
+    </radialGradient>
+    <!-- Center circle gradient -->
+    <radialGradient id="centerGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#1A2D4A"/>
+      <stop offset="100%" stop-color="#111D30"/>
+    </radialGradient>
+    <!-- Green glow for arcs -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="720" fill="url(#bgRadial)"/>
+
+  <!-- Subtle grid lines (very faint) -->
+  <g opacity="0.04" stroke="#4A90F5" stroke-width="0.5">
+    <line x1="0" y1="120" x2="900" y2="120"/>
+    <line x1="0" y1="240" x2="900" y2="240"/>
+    <line x1="0" y1="360" x2="900" y2="360"/>
+    <line x1="0" y1="480" x2="900" y2="480"/>
+    <line x1="0" y1="600" x2="900" y2="600"/>
+    <line x1="180" y1="0" x2="180" y2="720"/>
+    <line x1="360" y1="0" x2="360" y2="720"/>
+    <line x1="540" y1="0" x2="540" y2="720"/>
+    <line x1="720" y1="0" x2="720" y2="720"/>
+  </g>
+
+  <!-- Title -->
+  <text x="450" y="44" text-anchor="middle" fill="#EDF2F7" font-size="22" font-weight="700" letter-spacing="0.5">Enterprise Defense Lifecycle</text>
+  <text x="450" y="66" text-anchor="middle" fill="#8596AD" font-size="12" letter-spacing="2">CONTINUOUS SECURITY OPERATIONS</text>
+  <line x1="100" y1="78" x2="800" y2="78" stroke="#1E2D47" stroke-width="1"/>
+
+  <!-- ─── OUTER RING (faint) ─── -->
+  <circle cx="450" cy="390" r="240" fill="none" stroke="#1E2D47" stroke-width="1" stroke-dasharray="6,6"/>
+  <circle cx="450" cy="390" r="195" fill="none" stroke="#1E2D47" stroke-width="0.5"/>
+
+  <!-- ─── CURVED ARROWS between stages (clockwise, green) ─── -->
+  <!-- Arrows are arcs along the ~220px radius circle, between stage positions -->
+  <!-- Stages at 60° increments starting top (270°): 270,330,30,90,150,210 -->
+  <!-- In SVG coords: top=270° => (450, 170); then clockwise -->
+  <!-- We'll draw arc segments between each pair of stages -->
+  <!-- Arc from stage 1 (top, 270°) → stage 2 (top-right, 330°) -->
+  <!-- Using a large circle radius 218 for arcs -->
+
+  <!-- Arrow 1→2: from top to top-right, clockwise arc -->
+  <path d="M 477 176 A 220 220 0 0 1 638 275" fill="none" stroke="#22C98A" stroke-width="2.5" stroke-linecap="round" filter="url(#glow)"/>
+  <polygon points="638,275 628,268 634,260" fill="#22C98A" transform="rotate(35,638,275)"/>
+
+  <!-- Arrow 2→3: top-right to bottom-right -->
+  <path d="M 662 308 A 220 220 0 0 1 664 478" fill="none" stroke="#22C98A" stroke-width="2.5" stroke-linecap="round" filter="url(#glow)"/>
+  <polygon points="664,478 654,470 660,462" fill="#22C98A" transform="rotate(10,664,478)"/>
+
+  <!-- Arrow 3→4: bottom-right to bottom -->
+  <path d="M 640 510 A 220 220 0 0 1 476 608" fill="none" stroke="#22C98A" stroke-width="2.5" stroke-linecap="round" filter="url(#glow)"/>
+  <polygon points="476,608 475,596 465,600" fill="#22C98A" transform="rotate(-35,476,608)"/>
+
+  <!-- Arrow 4→5: bottom to bottom-left -->
+  <path d="M 424 608 A 220 220 0 0 1 262 510" fill="none" stroke="#22C98A" stroke-width="2.5" stroke-linecap="round" filter="url(#glow)"/>
+  <polygon points="262,510 270,520 258,524" fill="#22C98A" transform="rotate(-145,262,510)"/>
+
+  <!-- Arrow 5→6: bottom-left to top-left -->
+  <path d="M 238 478 A 220 220 0 0 1 240 308" fill="none" stroke="#22C98A" stroke-width="2.5" stroke-linecap="round" filter="url(#glow)"/>
+  <polygon points="240,308 250,316 244,324" fill="#22C98A" transform="rotate(-175,240,308)"/>
+
+  <!-- Arrow 6→1: top-left back to top -->
+  <path d="M 264 275 A 220 220 0 0 1 423 176" fill="none" stroke="#22C98A" stroke-width="2.5" stroke-linecap="round" filter="url(#glow)"/>
+  <polygon points="423,176 432,187 422,188" fill="#22C98A" transform="rotate(-145,423,176)"/>
+
+  <!-- ─── CENTER CIRCLE ─── -->
+  <circle cx="450" cy="390" r="88" fill="url(#centerGrad)" stroke="#22C98A" stroke-width="2"/>
+  <circle cx="450" cy="390" r="80" fill="none" stroke="#22C98A" stroke-width="0.5" stroke-dasharray="3,4" opacity="0.4"/>
+  <!-- Shield icon in center -->
+  <path d="M450 346 L476 358 L476 386 Q476 408 450 420 Q424 408 424 386 L424 358 Z" fill="none" stroke="#22C98A" stroke-width="1.5" opacity="0.5"/>
+  <path d="M450 354 L470 364 L470 386 Q470 404 450 414 Q430 404 430 386 L430 364 Z" fill="#22C98A" fill-opacity="0.08"/>
+  <!-- Check inside shield -->
+  <polyline points="440,388 448,396 462,378" fill="none" stroke="#22C98A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Center text -->
+  <text x="450" y="436" text-anchor="middle" fill="#EDF2F7" font-size="13" font-weight="700">Defense</text>
+  <text x="450" y="452" text-anchor="middle" fill="#EDF2F7" font-size="13" font-weight="700">Cycle</text>
+  <text x="450" y="470" text-anchor="middle" fill="#22C98A" font-size="9" letter-spacing="1">CONTINUOUS</text>
+
+  <!-- ─── STAGE CARDS ─── -->
+  <!-- Stage positions (center of card), radius ~300 from center (450,390) -->
+  <!-- Stage 1: DETECT — top (450, 90) -->
+  <!-- Stage 2: CONTAIN — top-right (710, 240) -->
+  <!-- Stage 3: INVESTIGATE — bottom-right (710, 540) -->
+  <!-- Stage 4: COMMUNICATE — bottom (450, 690→ 610) -->
+  <!-- Stage 5: RECOVER — bottom-left (190, 540) -->
+  <!-- Stage 6: LEARN — top-left (190, 240) -->
+
+  <!-- ─── STAGE 1: DETECT (top) ─── -->
+  <rect x="340" y="88" width="220" height="90" rx="10" fill="#111D30" stroke="#22C98A" stroke-width="2"/>
+  <!-- Top accent bar -->
+  <rect x="340" y="88" width="220" height="4" rx="3" fill="#22C98A"/>
+  <!-- Icon: radar/pulse -->
+  <circle cx="370" cy="133" r="14" fill="none" stroke="#22C98A" stroke-width="1.5" opacity="0.3"/>
+  <circle cx="370" cy="133" r="8" fill="none" stroke="#22C98A" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="370" cy="133" r="3" fill="#22C98A"/>
+  <!-- Radar sweep -->
+  <line x1="370" y1="133" x2="370" y2="119" stroke="#22C98A" stroke-width="1.5" opacity="0.8"/>
+  <!-- Stage number badge -->
+  <rect x="348" y="95" width="22" height="22" rx="5" fill="#22C98A" fill-opacity="0.2" stroke="#22C98A" stroke-width="1"/>
+  <text x="359" y="111" text-anchor="middle" fill="#22C98A" font-size="10" font-weight="800">1</text>
+  <!-- Stage name -->
+  <text x="450" y="121" text-anchor="middle" fill="#EDF2F7" font-size="15" font-weight="700">Detect</text>
+  <text x="450" y="140" text-anchor="middle" fill="#8596AD" font-size="10">SIEM / EDR</text>
+  <!-- Tool detail -->
+  <text x="450" y="158" text-anchor="middle" fill="#8596AD" font-size="9">Anomaly Detection · Alert Triage · Log Correlation</text>
+  <!-- Connector dot to circle -->
+  <line x1="450" y1="178" x2="450" y2="168" stroke="#22C98A" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.4"/>
+
+  <!-- ─── STAGE 2: CONTAIN (top-right) ─── -->
+  <rect x="660" y="192" width="220" height="90" rx="10" fill="#111D30" stroke="#22C98A" stroke-width="1.5"/>
+  <rect x="660" y="192" width="220" height="4" rx="3" fill="#22C98A" fill-opacity="0.7"/>
+  <!-- Icon: firewall bars -->
+  <rect x="680" y="214" width="5" height="18" rx="2" fill="#22C98A" fill-opacity="0.8"/>
+  <rect x="688" y="210" width="5" height="22" rx="2" fill="#22C98A" fill-opacity="0.8"/>
+  <rect x="696" y="216" width="5" height="16" rx="2" fill="#22C98A" fill-opacity="0.8"/>
+  <!-- X mark on top -->
+  <line x1="690" y1="208" x2="698" y2="200" stroke="#EF4444" stroke-width="1.5"/>
+  <line x1="698" y1="208" x2="690" y2="200" stroke="#EF4444" stroke-width="1.5"/>
+  <rect x="666" y="198" width="22" height="22" rx="5" fill="#22C98A" fill-opacity="0.2" stroke="#22C98A" stroke-width="1"/>
+  <text x="677" y="214" text-anchor="middle" fill="#22C98A" font-size="10" font-weight="800">2</text>
+  <text x="780" y="224" text-anchor="middle" fill="#EDF2F7" font-size="15" font-weight="700">Contain</text>
+  <text x="780" y="243" text-anchor="middle" fill="#8596AD" font-size="10">Firewall Rules / Isolation</text>
+  <text x="780" y="262" text-anchor="middle" fill="#8596AD" font-size="9">Network Segment · Host Quarantine</text>
+
+  <!-- ─── STAGE 3: INVESTIGATE (bottom-right) ─── -->
+  <rect x="660" y="468" width="220" height="90" rx="10" fill="#111D30" stroke="#22C98A" stroke-width="1.5"/>
+  <rect x="660" y="468" width="220" height="4" rx="3" fill="#22C98A" fill-opacity="0.5"/>
+  <!-- Icon: magnifying glass -->
+  <circle cx="686" cy="506" r="11" fill="none" stroke="#22C98A" stroke-width="1.5"/>
+  <line x1="694" y1="514" x2="702" y2="522" stroke="#22C98A" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="686" cy="506" r="5" fill="#22C98A" fill-opacity="0.2"/>
+  <rect x="666" y="474" width="22" height="22" rx="5" fill="#22C98A" fill-opacity="0.2" stroke="#22C98A" stroke-width="1"/>
+  <text x="677" y="490" text-anchor="middle" fill="#22C98A" font-size="10" font-weight="800">3</text>
+  <text x="780" y="502" text-anchor="middle" fill="#EDF2F7" font-size="15" font-weight="700">Investigate</text>
+  <text x="780" y="521" text-anchor="middle" fill="#8596AD" font-size="10">DFIR Playbook</text>
+  <text x="780" y="540" text-anchor="middle" fill="#8596AD" font-size="9">Root Cause · Timeline · Scope</text>
+
+  <!-- ─── STAGE 4: COMMUNICATE (bottom) ─── -->
+  <rect x="340" y="578" width="220" height="90" rx="10" fill="#111D30" stroke="#22C98A" stroke-width="1.5"/>
+  <rect x="340" y="578" width="220" height="4" rx="3" fill="#22C98A" fill-opacity="0.35"/>
+  <!-- Icon: speech bubble -->
+  <rect x="356" y="600" width="24" height="18" rx="4" fill="none" stroke="#22C98A" stroke-width="1.5"/>
+  <polygon points="358,618 362,625 368,618" fill="#22C98A"/>
+  <line x1="360" y1="607" x2="376" y2="607" stroke="#22C98A" stroke-width="1" opacity="0.6"/>
+  <line x1="360" y1="612" x2="374" y2="612" stroke="#22C98A" stroke-width="1" opacity="0.6"/>
+  <rect x="348" y="584" width="22" height="22" rx="5" fill="#22C98A" fill-opacity="0.2" stroke="#22C98A" stroke-width="1"/>
+  <text x="359" y="600" text-anchor="middle" fill="#22C98A" font-size="10" font-weight="800">4</text>
+  <text x="450" y="614" text-anchor="middle" fill="#EDF2F7" font-size="15" font-weight="700">Communicate</text>
+  <text x="450" y="633" text-anchor="middle" fill="#8596AD" font-size="10">Incident Comms</text>
+  <text x="450" y="652" text-anchor="middle" fill="#8596AD" font-size="9">Exec Brief · Regulatory Notify</text>
+
+  <!-- ─── STAGE 5: RECOVER (bottom-left) ─── -->
+  <rect x="20" y="468" width="220" height="90" rx="10" fill="#111D30" stroke="#22C98A" stroke-width="1.5"/>
+  <rect x="20" y="468" width="220" height="4" rx="3" fill="#22C98A" fill-opacity="0.5"/>
+  <!-- Icon: circular restore arrow -->
+  <path d="M48 506 A12 12 0 1 1 54 494" fill="none" stroke="#22C98A" stroke-width="1.5"/>
+  <polygon points="54,494 54,487 60,494" fill="#22C98A"/>
+  <circle cx="48" cy="506" r="4" fill="#22C98A" fill-opacity="0.3"/>
+  <rect x="26" y="474" width="22" height="22" rx="5" fill="#22C98A" fill-opacity="0.2" stroke="#22C98A" stroke-width="1"/>
+  <text x="37" y="490" text-anchor="middle" fill="#22C98A" font-size="10" font-weight="800">5</text>
+  <text x="130" y="502" text-anchor="middle" fill="#EDF2F7" font-size="15" font-weight="700">Recover</text>
+  <text x="130" y="521" text-anchor="middle" fill="#8596AD" font-size="10">Backup / Restore</text>
+  <text x="130" y="540" text-anchor="middle" fill="#8596AD" font-size="9">RTO · RPO · Service Restoration</text>
+
+  <!-- ─── STAGE 6: LEARN (top-left) ─── -->
+  <rect x="20" y="192" width="220" height="90" rx="10" fill="#111D30" stroke="#22C98A" stroke-width="1.5"/>
+  <rect x="20" y="192" width="220" height="4" rx="3" fill="#22C98A" fill-opacity="0.7"/>
+  <!-- Icon: document with checkmark -->
+  <rect x="42" y="208" width="22" height="28" rx="3" fill="none" stroke="#22C98A" stroke-width="1.5"/>
+  <line x1="46" y1="216" x2="60" y2="216" stroke="#22C98A" stroke-width="1" opacity="0.6"/>
+  <line x1="46" y1="221" x2="60" y2="221" stroke="#22C98A" stroke-width="1" opacity="0.6"/>
+  <polyline points="46,228 51,233 60,224" fill="none" stroke="#22C98A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="26" y="198" width="22" height="22" rx="5" fill="#22C98A" fill-opacity="0.2" stroke="#22C98A" stroke-width="1"/>
+  <text x="37" y="214" text-anchor="middle" fill="#22C98A" font-size="10" font-weight="800">6</text>
+  <text x="130" y="224" text-anchor="middle" fill="#EDF2F7" font-size="15" font-weight="700">Learn</text>
+  <text x="130" y="243" text-anchor="middle" fill="#8596AD" font-size="10">Post-Mortem / Update</text>
+  <text x="130" y="262" text-anchor="middle" fill="#8596AD" font-size="9">Lessons · Runbook · Control Update</text>
+
+  <!-- ─── CONNECTOR LINES from cards to outer ring ─── -->
+  <!-- Stage 1 top → ring -->
+  <line x1="450" y1="178" x2="450" y2="168" stroke="#22C98A" stroke-width="1" stroke-dasharray="4,4" opacity="0.3"/>
+  <!-- Stage 2 right → ring -->
+  <line x1="660" y1="237" x2="647" y2="243" stroke="#22C98A" stroke-width="1" stroke-dasharray="4,4" opacity="0.3"/>
+  <!-- Stage 3 right → ring -->
+  <line x1="660" y1="513" x2="648" y2="505" stroke="#22C98A" stroke-width="1" stroke-dasharray="4,4" opacity="0.3"/>
+  <!-- Stage 4 bottom → ring -->
+  <line x1="450" y1="578" x2="450" y2="565" stroke="#22C98A" stroke-width="1" stroke-dasharray="4,4" opacity="0.3"/>
+  <!-- Stage 5 left → ring -->
+  <line x1="240" y1="513" x2="253" y2="505" stroke="#22C98A" stroke-width="1" stroke-dasharray="4,4" opacity="0.3"/>
+  <!-- Stage 6 left → ring -->
+  <line x1="240" y1="237" x2="253" y2="243" stroke="#22C98A" stroke-width="1" stroke-dasharray="4,4" opacity="0.3"/>
+
+  <!-- ─── LEGEND / KEY METRICS STRIP ─── -->
+  <rect x="60" y="688" width="780" height="20" rx="6" fill="#111D30" stroke="#1E2D47" stroke-width="1"/>
+  <!-- Metric chips -->
+  <text x="100" y="702" text-anchor="middle" fill="#8596AD" font-size="9" font-weight="700" letter-spacing="1">MTTD</text>
+  <text x="148" y="702" text-anchor="middle" fill="#22C98A" font-size="9">Mean Time to Detect</text>
+  <line x1="210" y1="692" x2="210" y2="706" stroke="#1E2D47" stroke-width="1"/>
+  <text x="252" y="702" text-anchor="middle" fill="#8596AD" font-size="9" font-weight="700" letter-spacing="1">MTTR</text>
+  <text x="306" y="702" text-anchor="middle" fill="#22C98A" font-size="9">Mean Time to Respond</text>
+  <line x1="380" y1="692" x2="380" y2="706" stroke="#1E2D47" stroke-width="1"/>
+  <text x="422" y="702" text-anchor="middle" fill="#8596AD" font-size="9" font-weight="700" letter-spacing="1">RTO</text>
+  <text x="466" y="702" text-anchor="middle" fill="#22C98A" font-size="9">Recovery Time Obj.</text>
+  <line x1="530" y1="692" x2="530" y2="706" stroke="#1E2D47" stroke-width="1"/>
+  <text x="574" y="702" text-anchor="middle" fill="#8596AD" font-size="9" font-weight="700" letter-spacing="1">RPO</text>
+  <text x="618" y="702" text-anchor="middle" fill="#22C98A" font-size="9">Recovery Point Obj.</text>
+  <line x1="680" y1="692" x2="680" y2="706" stroke="#1E2D47" stroke-width="1"/>
+  <text x="770" y="702" text-anchor="middle" fill="#8596AD" font-size="9">NIST SP 800-61 Aligned</text>
+
+  <!-- Footer -->
+  <text x="450" y="715" text-anchor="middle" fill="#8596AD" font-size="9" opacity="0.5">Aladiah Security Operations · Enterprise Defense Lifecycle · Continuous Improvement</text>
+
+</svg>

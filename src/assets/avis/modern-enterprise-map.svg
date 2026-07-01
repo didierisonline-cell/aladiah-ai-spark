@@ -1,0 +1,230 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="700" viewBox="0 0 900 700" style="font-family: system-ui, -apple-system, sans-serif;">
+
+  <!-- Background -->
+  <rect width="900" height="700" fill="#0B111E"/>
+
+  <!-- Title -->
+  <text x="450" y="42" text-anchor="middle" fill="#EDF2F7" font-size="22" font-weight="700" letter-spacing="0.5">Modern Enterprise Architecture</text>
+  <text x="450" y="62" text-anchor="middle" fill="#8596AD" font-size="12" letter-spacing="1">END-TO-END PLATFORM OVERVIEW</text>
+  <line x1="100" y1="74" x2="800" y2="74" stroke="#1E2D47" stroke-width="1"/>
+
+  <!-- ─── LAYER 1: NETWORK (blue) ─── -->
+  <!-- Layer label -->
+  <rect x="16" y="92" width="72" height="52" rx="6" fill="#111D30" stroke="#1E2D47" stroke-width="1"/>
+  <text x="52" y="113" text-anchor="middle" fill="#4A90F5" font-size="9" font-weight="700" letter-spacing="0.8">NETWORK</text>
+  <text x="52" y="128" text-anchor="middle" fill="#8596AD" font-size="8">Layer 1</text>
+
+  <!-- Internet box -->
+  <rect x="102" y="88" width="150" height="60" rx="8" fill="#111D30" stroke="#4A90F5" stroke-width="1.5"/>
+  <circle cx="177" cy="108" r="10" fill="none" stroke="#4A90F5" stroke-width="1.5"/>
+  <line x1="167" y1="108" x2="187" y2="108" stroke="#4A90F5" stroke-width="1"/>
+  <line x1="177" y1="98" x2="177" y2="118" stroke="#4A90F5" stroke-width="1"/>
+  <ellipse cx="177" cy="108" rx="5" ry="10" fill="none" stroke="#4A90F5" stroke-width="1"/>
+  <text x="177" y="132" text-anchor="middle" fill="#EDF2F7" font-size="12" font-weight="600">Internet</text>
+  <text x="177" y="146" text-anchor="middle" fill="#8596AD" font-size="9">External Traffic</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="252" y1="118" x2="290" y2="118" stroke="#4A90F5" stroke-width="2"/>
+  <polygon points="290,113 300,118 290,123" fill="#4A90F5"/>
+
+  <!-- WAF box -->
+  <rect x="300" y="88" width="150" height="60" rx="8" fill="#111D30" stroke="#4A90F5" stroke-width="1.5"/>
+  <rect x="325" y="100" width="20" height="16" rx="3" fill="none" stroke="#4A90F5" stroke-width="1.5"/>
+  <line x1="330" y1="108" x2="340" y2="108" stroke="#4A90F5" stroke-width="1.5"/>
+  <text x="375" y="121" text-anchor="middle" fill="#EDF2F7" font-size="12" font-weight="600">WAF</text>
+  <text x="375" y="136" text-anchor="middle" fill="#8596AD" font-size="9">Web Application Firewall</text>
+  <text x="375" y="148" text-anchor="middle" fill="#8596AD" font-size="9">DDoS · Rate Limit · Rules</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="450" y1="118" x2="488" y2="118" stroke="#4A90F5" stroke-width="2"/>
+  <polygon points="488,113 498,118 488,123" fill="#4A90F5"/>
+
+  <!-- Load Balancer box -->
+  <rect x="498" y="88" width="180" height="60" rx="8" fill="#111D30" stroke="#4A90F5" stroke-width="1.5"/>
+  <line x1="530" y1="108" x2="545" y2="102" stroke="#4A90F5" stroke-width="1.5"/>
+  <line x1="530" y1="108" x2="545" y2="108" stroke="#4A90F5" stroke-width="1.5"/>
+  <line x1="530" y1="108" x2="545" y2="114" stroke="#4A90F5" stroke-width="1.5"/>
+  <circle cx="527" cy="108" r="3" fill="#4A90F5"/>
+  <text x="610" y="121" text-anchor="middle" fill="#EDF2F7" font-size="12" font-weight="600">Load Balancer</text>
+  <text x="610" y="136" text-anchor="middle" fill="#8596AD" font-size="9">Traffic Distribution</text>
+  <text x="610" y="148" text-anchor="middle" fill="#8596AD" font-size="9">Health Checks · SSL Termination</text>
+
+  <!-- Down arrow layer 1 → 2 -->
+  <line x1="450" y1="152" x2="450" y2="172" stroke="#4A90F5" stroke-width="2" stroke-dasharray="4,3"/>
+  <polygon points="445,170 450,180 455,170" fill="#4A90F5"/>
+
+  <!-- ─── LAYER 2: APPLICATION (green) ─── -->
+  <rect x="16" y="186" width="72" height="52" rx="6" fill="#111D30" stroke="#1E2D47" stroke-width="1"/>
+  <text x="52" y="207" text-anchor="middle" fill="#22C98A" font-size="9" font-weight="700" letter-spacing="0.8">APPLICATION</text>
+  <text x="52" y="222" text-anchor="middle" fill="#8596AD" font-size="8">Layer 2</text>
+
+  <!-- Kubernetes wide box -->
+  <rect x="100" y="182" width="780" height="64" rx="10" fill="#111D30" stroke="#22C98A" stroke-width="2"/>
+  <rect x="100" y="182" width="780" height="64" rx="10" fill="url(#k8sGrad)"/>
+  <!-- K8s hex icon -->
+  <polygon points="155,200 163,196 171,200 171,210 163,214 155,210" fill="none" stroke="#22C98A" stroke-width="1.5"/>
+  <circle cx="163" cy="205" r="3" fill="#22C98A"/>
+  <text x="185" y="208" fill="#EDF2F7" font-size="13" font-weight="700">Kubernetes Platform</text>
+  <text x="185" y="224" fill="#8596AD" font-size="10">Orchestration · Auto-scaling · Service Mesh · Ingress Controllers · Health Management</text>
+  <!-- Pod indicators -->
+  <rect x="570" y="193" width="24" height="16" rx="3" fill="#22C98A" fill-opacity="0.15" stroke="#22C98A" stroke-width="1"/>
+  <text x="582" y="205" text-anchor="middle" fill="#22C98A" font-size="8">pod</text>
+  <rect x="598" y="193" width="24" height="16" rx="3" fill="#22C98A" fill-opacity="0.15" stroke="#22C98A" stroke-width="1"/>
+  <text x="610" y="205" text-anchor="middle" fill="#22C98A" font-size="8">pod</text>
+  <rect x="626" y="193" width="24" height="16" rx="3" fill="#22C98A" fill-opacity="0.15" stroke="#22C98A" stroke-width="1"/>
+  <text x="638" y="205" text-anchor="middle" fill="#22C98A" font-size="8">pod</text>
+  <rect x="654" y="193" width="24" height="16" rx="3" fill="#22C98A" fill-opacity="0.15" stroke="#22C98A" stroke-width="1"/>
+  <text x="666" y="205" text-anchor="middle" fill="#22C98A" font-size="8">pod</text>
+  <rect x="682" y="193" width="24" height="16" rx="3" fill="#22C98A" fill-opacity="0.15" stroke="#22C98A" stroke-width="1"/>
+  <text x="694" y="205" text-anchor="middle" fill="#22C98A" font-size="8">pod</text>
+  <text x="722" y="205" fill="#8596AD" font-size="10">· · ·</text>
+
+  <!-- Down arrows layer 2 → 3 -->
+  <line x1="280" y1="250" x2="280" y2="270" stroke="#22C98A" stroke-width="2" stroke-dasharray="4,3"/>
+  <polygon points="275,268 280,278 285,268" fill="#22C98A"/>
+  <line x1="620" y1="250" x2="620" y2="270" stroke="#22C98A" stroke-width="2" stroke-dasharray="4,3"/>
+  <polygon points="615,268 620,278 625,268" fill="#22C98A"/>
+
+  <!-- ─── LAYER 3: SERVICES (split) ─── -->
+  <rect x="16" y="284" width="72" height="52" rx="6" fill="#111D30" stroke="#1E2D47" stroke-width="1"/>
+  <text x="52" y="305" text-anchor="middle" fill="#4A90F5" font-size="9" font-weight="700" letter-spacing="0.8">SERVICES</text>
+  <text x="52" y="320" text-anchor="middle" fill="#8596AD" font-size="8">Layer 3</text>
+
+  <!-- Customer API -->
+  <rect x="100" y="280" width="370" height="66" rx="8" fill="#111D30" stroke="#4A90F5" stroke-width="1.5"/>
+  <rect x="120" y="295" width="28" height="20" rx="4" fill="none" stroke="#4A90F5" stroke-width="1.5"/>
+  <line x1="128" y1="300" x2="140" y2="300" stroke="#4A90F5" stroke-width="1"/>
+  <line x1="128" y1="305" x2="138" y2="305" stroke="#4A90F5" stroke-width="1"/>
+  <line x1="128" y1="310" x2="140" y2="310" stroke="#4A90F5" stroke-width="1"/>
+  <text x="165" y="302" fill="#EDF2F7" font-size="13" font-weight="700">Customer API</text>
+  <text x="165" y="319" fill="#8596AD" font-size="9">REST / GraphQL Endpoints</text>
+  <text x="165" y="333" fill="#8596AD" font-size="9">Auth · Rate Limiting · Versioning</text>
+  <!-- Status badge -->
+  <rect x="392" y="290" width="60" height="18" rx="9" fill="#22C98A" fill-opacity="0.15" stroke="#22C98A" stroke-width="1"/>
+  <circle cx="403" cy="299" r="3" fill="#22C98A"/>
+  <text x="435" y="303" text-anchor="middle" fill="#22C98A" font-size="9" font-weight="600">LIVE</text>
+
+  <!-- AI Services -->
+  <rect x="490" y="280" width="390" height="66" rx="8" fill="#111D30" stroke="#22C98A" stroke-width="1.5"/>
+  <rect x="510" y="295" width="28" height="20" rx="4" fill="none" stroke="#22C98A" stroke-width="1.5"/>
+  <line x1="518" y1="300" x2="522" y2="296" stroke="#22C98A" stroke-width="1"/>
+  <line x1="522" y1="296" x2="526" y2="300" stroke="#22C98A" stroke-width="1"/>
+  <line x1="526" y1="300" x2="530" y2="296" stroke="#22C98A" stroke-width="1"/>
+  <text x="552" y="302" fill="#EDF2F7" font-size="13" font-weight="700">AI Services</text>
+  <text x="552" y="319" fill="#8596AD" font-size="9">LLM Inference · RAG Pipeline · Embeddings</text>
+  <text x="552" y="333" fill="#8596AD" font-size="9">Model Gateway · Fine-tuning · Prompt Mgmt</text>
+  <!-- Status badge -->
+  <rect x="802" y="290" width="60" height="18" rx="9" fill="#22C98A" fill-opacity="0.15" stroke="#22C98A" stroke-width="1"/>
+  <circle cx="813" cy="299" r="3" fill="#22C98A"/>
+  <text x="845" y="303" text-anchor="middle" fill="#22C98A" font-size="9" font-weight="600">LIVE</text>
+
+  <!-- Down arrows layer 3 → 4 -->
+  <line x1="280" y1="350" x2="280" y2="370" stroke="#F0622A" stroke-width="2" stroke-dasharray="4,3"/>
+  <polygon points="275,368 280,378 285,368" fill="#F0622A"/>
+  <line x1="680" y1="350" x2="680" y2="370" stroke="#F0622A" stroke-width="2" stroke-dasharray="4,3"/>
+  <polygon points="675,368 680,378 685,368" fill="#F0622A"/>
+
+  <!-- ─── LAYER 4: DATA (orange) ─── -->
+  <rect x="16" y="384" width="72" height="52" rx="6" fill="#111D30" stroke="#1E2D47" stroke-width="1"/>
+  <text x="52" y="405" text-anchor="middle" fill="#F0622A" font-size="9" font-weight="700" letter-spacing="0.8">DATA</text>
+  <text x="52" y="420" text-anchor="middle" fill="#8596AD" font-size="8">Layer 4</text>
+
+  <!-- Database -->
+  <rect x="100" y="380" width="370" height="66" rx="8" fill="#111D30" stroke="#F0622A" stroke-width="1.5"/>
+  <ellipse cx="137" cy="399" rx="16" ry="6" fill="none" stroke="#F0622A" stroke-width="1.5"/>
+  <line x1="121" y1="399" x2="121" y2="411" stroke="#F0622A" stroke-width="1.5"/>
+  <line x1="153" y1="399" x2="153" y2="411" stroke="#F0622A" stroke-width="1.5"/>
+  <ellipse cx="137" cy="411" rx="16" ry="6" fill="none" stroke="#F0622A" stroke-width="1.5"/>
+  <text x="178" y="401" fill="#EDF2F7" font-size="13" font-weight="700">Database</text>
+  <text x="178" y="418" fill="#8596AD" font-size="9">PostgreSQL · Supabase</text>
+  <text x="178" y="432" fill="#8596AD" font-size="9">ACID · Row-Level Security · Replication</text>
+
+  <!-- Vector DB -->
+  <rect x="490" y="380" width="390" height="66" rx="8" fill="#111D30" stroke="#F0622A" stroke-width="1.5"/>
+  <rect x="510" y="394" width="32" height="24" rx="4" fill="none" stroke="#F0622A" stroke-width="1.5"/>
+  <line x1="514" y1="400" x2="538" y2="400" stroke="#F0622A" stroke-width="1" opacity="0.5"/>
+  <line x1="514" y1="406" x2="538" y2="406" stroke="#F0622A" stroke-width="1" opacity="0.5"/>
+  <line x1="520" y1="394" x2="520" y2="418" stroke="#F0622A" stroke-width="1" opacity="0.5"/>
+  <line x1="526" y1="394" x2="526" y2="418" stroke="#F0622A" stroke-width="1" opacity="0.5"/>
+  <text x="556" y="401" fill="#EDF2F7" font-size="13" font-weight="700">Vector DB</text>
+  <text x="556" y="418" fill="#8596AD" font-size="9">Pinecone / pgvector</text>
+  <text x="556" y="432" fill="#8596AD" font-size="9">Embeddings · Semantic Search · ANN Index</text>
+
+  <!-- Down arrows layer 4 → 5 -->
+  <line x1="280" y1="450" x2="280" y2="470" stroke="#8B5CF6" stroke-width="2" stroke-dasharray="4,3"/>
+  <polygon points="275,468 280,478 285,468" fill="#8B5CF6"/>
+  <line x1="680" y1="450" x2="680" y2="470" stroke="#8B5CF6" stroke-width="2" stroke-dasharray="4,3"/>
+  <polygon points="675,468 680,478 685,468" fill="#8B5CF6"/>
+
+  <!-- ─── LAYER 5: AI/ANALYTICS (purple) ─── -->
+  <rect x="16" y="484" width="72" height="52" rx="6" fill="#111D30" stroke="#1E2D47" stroke-width="1"/>
+  <text x="52" y="500" text-anchor="middle" fill="#8B5CF6" font-size="9" font-weight="700" letter-spacing="0.8">AI / DATA</text>
+  <text x="52" y="514" text-anchor="middle" fill="#8596AD" font-size="8">Layer 5</text>
+
+  <!-- Data Lake -->
+  <rect x="100" y="480" width="370" height="66" rx="8" fill="#111D30" stroke="#8B5CF6" stroke-width="1.5"/>
+  <!-- Lake icon -->
+  <path d="M118 506 Q126 498 134 506 Q142 514 150 506 Q158 498 166 506" fill="none" stroke="#8B5CF6" stroke-width="1.5"/>
+  <path d="M118 511 Q126 503 134 511 Q142 519 150 511 Q158 503 166 511" fill="none" stroke="#8B5CF6" stroke-width="1" opacity="0.5"/>
+  <text x="185" y="499" fill="#EDF2F7" font-size="13" font-weight="700">Data Lake</text>
+  <text x="185" y="516" fill="#8596AD" font-size="9">S3 / Delta Lake · Parquet</text>
+  <text x="185" y="530" fill="#8596AD" font-size="9">Batch Ingestion · Schema Registry · ETL</text>
+
+  <!-- AI Agents -->
+  <rect x="490" y="480" width="390" height="66" rx="8" fill="#111D30" stroke="#8B5CF6" stroke-width="1.5"/>
+  <!-- Brain-like icon -->
+  <circle cx="526" cy="508" r="12" fill="none" stroke="#8B5CF6" stroke-width="1.5"/>
+  <path d="M519 504 Q523 500 527 504 Q531 508 527 512 Q523 516 519 512 Z" fill="none" stroke="#8B5CF6" stroke-width="1"/>
+  <text x="556" y="499" fill="#EDF2F7" font-size="13" font-weight="700">AI Agents</text>
+  <text x="556" y="516" fill="#8596AD" font-size="9">Autonomous Pipelines · Tool Use · Planning</text>
+  <text x="556" y="530" fill="#8596AD" font-size="9">Eval Harness · Observability · Memory Store</text>
+
+  <!-- ─── LEGEND ─── -->
+  <rect x="100" y="566" width="780" height="44" rx="8" fill="#111D30" stroke="#1E2D47" stroke-width="1"/>
+  <text x="136" y="582" fill="#8596AD" font-size="9" font-weight="700" letter-spacing="1">LEGEND</text>
+  <!-- Network -->
+  <rect x="186" y="574" width="10" height="10" rx="2" fill="#4A90F5"/>
+  <text x="200" y="583" fill="#8596AD" font-size="9">Network</text>
+  <!-- Application -->
+  <rect x="270" y="574" width="10" height="10" rx="2" fill="#22C98A"/>
+  <text x="284" y="583" fill="#8596AD" font-size="9">Application</text>
+  <!-- Services -->
+  <rect x="366" y="574" width="10" height="10" rx="2" fill="#4A90F5"/>
+  <text x="380" y="583" fill="#8596AD" font-size="9">Services</text>
+  <!-- Data -->
+  <rect x="440" y="574" width="10" height="10" rx="2" fill="#F0622A"/>
+  <text x="454" y="583" fill="#8596AD" font-size="9">Data</text>
+  <!-- AI -->
+  <rect x="500" y="574" width="10" height="10" rx="2" fill="#8B5CF6"/>
+  <text x="514" y="583" fill="#8596AD" font-size="9">AI / Analytics</text>
+
+  <!-- Dashed arrow legend -->
+  <line x1="614" y1="578" x2="640" y2="578" stroke="#8596AD" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polygon points="640,575 646,578 640,581" fill="#8596AD"/>
+  <text x="650" y="583" fill="#8596AD" font-size="9">Data Flow</text>
+
+  <!-- Solid arrow legend -->
+  <line x1="710" y1="578" x2="736" y2="578" stroke="#4A90F5" stroke-width="2"/>
+  <polygon points="736,575 742,578 736,581" fill="#4A90F5"/>
+  <text x="746" y="583" fill="#8596AD" font-size="9">Traffic Flow</text>
+
+  <!-- Second legend row -->
+  <text x="136" y="600" fill="#8596AD" font-size="9" font-weight="700" letter-spacing="1">VERSION</text>
+  <text x="194" y="600" fill="#8596AD" font-size="9">v2.4 · Updated 2025</text>
+  <text x="336" y="600" fill="#8596AD" font-size="9" font-weight="700" letter-spacing="1">CLASSIFICATION</text>
+  <text x="424" y="600" fill="#8596AD" font-size="9">Internal · Architecture Review</text>
+  <rect x="696" y="590" width="62" height="16" rx="8" fill="#4A90F5" fill-opacity="0.15" stroke="#4A90F5" stroke-width="1"/>
+  <text x="727" y="602" text-anchor="middle" fill="#4A90F5" font-size="9" font-weight="700">APPROVED</text>
+
+  <!-- Footer -->
+  <text x="450" y="688" text-anchor="middle" fill="#8596AD" font-size="9" opacity="0.6">Aladiah Platform · Enterprise Architecture · Confidential</text>
+
+  <!-- Gradient definitions -->
+  <defs>
+    <linearGradient id="k8sGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#22C98A" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#22C98A" stop-opacity="0.02"/>
+    </linearGradient>
+  </defs>
+
+</svg>

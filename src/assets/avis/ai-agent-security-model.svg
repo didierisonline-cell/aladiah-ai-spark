@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="580" viewBox="0 0 900 580" font-family="system-ui, -apple-system, sans-serif">
+  <!-- Background -->
+  <rect width="900" height="580" fill="#0B111E"/>
+
+  <!-- Title -->
+  <text x="450" y="46" text-anchor="middle" font-size="22" font-weight="700" fill="#EDF2F7" letter-spacing="-0.3">AI Agent Attack Surface</text>
+  <text x="450" y="70" text-anchor="middle" font-size="13" fill="#8596AD">Attack vectors targeting each layer of the AI execution chain</text>
+
+  <!-- ─── MAIN FLOW NODES ─── -->
+  <!-- Node 1: User (x=42) -->
+  <rect x="42" y="240" width="104" height="52" rx="10" fill="#111D30" stroke="#4A90F5" stroke-width="1.8"/>
+  <text x="94" y="261" text-anchor="middle" font-size="11" fill="#8596AD" font-weight="500">USER</text>
+  <text x="94" y="279" text-anchor="middle" font-size="14" font-weight="700" fill="#EDF2F7">User</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="146" y1="266" x2="178" y2="266" stroke="#4A90F5" stroke-width="2"/>
+  <polygon points="178,261 188,266 178,271" fill="#4A90F5"/>
+
+  <!-- Node 2: Prompt (x=188) -->
+  <rect x="188" y="240" width="108" height="52" rx="10" fill="#111D30" stroke="#4A90F5" stroke-width="1.8"/>
+  <text x="242" y="261" text-anchor="middle" font-size="11" fill="#8596AD" font-weight="500">INPUT</text>
+  <text x="242" y="279" text-anchor="middle" font-size="14" font-weight="700" fill="#EDF2F7">Prompt</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="296" y1="266" x2="328" y2="266" stroke="#4A90F5" stroke-width="2"/>
+  <polygon points="328,261 338,266 328,271" fill="#4A90F5"/>
+
+  <!-- Node 3: LLM (x=338) -->
+  <rect x="338" y="240" width="100" height="52" rx="10" fill="#111D30" stroke="#4A90F5" stroke-width="1.8"/>
+  <text x="388" y="261" text-anchor="middle" font-size="11" fill="#8596AD" font-weight="500">MODEL</text>
+  <text x="388" y="279" text-anchor="middle" font-size="14" font-weight="700" fill="#EDF2F7">LLM</text>
+
+  <!-- Arrow 3→4 -->
+  <line x1="438" y1="266" x2="470" y2="266" stroke="#4A90F5" stroke-width="2"/>
+  <polygon points="470,261 480,266 470,271" fill="#4A90F5"/>
+
+  <!-- Node 4: Tool Call (x=480) -->
+  <rect x="480" y="240" width="112" height="52" rx="10" fill="#111D30" stroke="#4A90F5" stroke-width="1.8"/>
+  <text x="536" y="261" text-anchor="middle" font-size="11" fill="#8596AD" font-weight="500">EXECUTION</text>
+  <text x="536" y="279" text-anchor="middle" font-size="14" font-weight="700" fill="#EDF2F7">Tool Call</text>
+
+  <!-- Arrow 4→5 -->
+  <line x1="592" y1="266" x2="624" y2="266" stroke="#4A90F5" stroke-width="2"/>
+  <polygon points="624,261 634,266 624,271" fill="#4A90F5"/>
+
+  <!-- Node 5: MCP Server (x=634) -->
+  <rect x="634" y="240" width="116" height="52" rx="10" fill="#111D30" stroke="#4A90F5" stroke-width="1.8"/>
+  <text x="692" y="261" text-anchor="middle" font-size="11" fill="#8596AD" font-weight="500">MIDDLEWARE</text>
+  <text x="692" y="279" text-anchor="middle" font-size="14" font-weight="700" fill="#EDF2F7">MCP Server</text>
+
+  <!-- Arrow 5→6 -->
+  <line x1="750" y1="266" x2="782" y2="266" stroke="#4A90F5" stroke-width="2"/>
+  <polygon points="782,261 792,266 782,271" fill="#4A90F5"/>
+
+  <!-- Node 6: Enterprise Data (x=792) -->
+  <rect x="792" y="240" width="86" height="52" rx="10" fill="#111D30" stroke="#4A90F5" stroke-width="1.8"/>
+  <text x="835" y="260" text-anchor="middle" font-size="11" fill="#8596AD" font-weight="500">STORAGE</text>
+  <text x="835" y="276" text-anchor="middle" font-size="13" font-weight="700" fill="#EDF2F7">Enterprise</text>
+  <text x="835" y="290" text-anchor="middle" font-size="13" font-weight="700" fill="#EDF2F7">Data</text>
+
+  <!-- ─── ATTACK VECTORS ─── -->
+
+  <!-- Attack 1: Prompt Injection — above Prompt node -->
+  <!-- Dashed arrow from attack box DOWN to Prompt node top -->
+  <line x1="242" y1="148" x2="242" y2="238" stroke="#EF4444" stroke-width="1.8" stroke-dasharray="6,4"/>
+  <polygon points="237,238 242,248 247,238" fill="#EF4444"/>
+
+  <rect x="173" y="96" width="140" height="52" rx="10" fill="#1C1018" stroke="#EF4444" stroke-width="1.8"/>
+  <text x="243" y="117" text-anchor="middle" font-size="11" fill="#EF4444" font-weight="600" letter-spacing="0.5">ATTACK VECTOR</text>
+  <text x="243" y="136" text-anchor="middle" font-size="13" font-weight="700" fill="#EDF2F7">Prompt Injection</text>
+
+  <!-- Attack 2: Tool Poisoning — below Tool Call node -->
+  <!-- Dashed arrow from attack box UP to Tool Call node bottom -->
+  <line x1="536" y1="384" x2="536" y2="294" stroke="#EF4444" stroke-width="1.8" stroke-dasharray="6,4"/>
+  <polygon points="531,294 536,284 541,294" fill="#EF4444"/>
+
+  <rect x="468" y="384" width="138" height="52" rx="10" fill="#1C1018" stroke="#EF4444" stroke-width="1.8"/>
+  <text x="537" y="405" text-anchor="middle" font-size="11" fill="#EF4444" font-weight="600" letter-spacing="0.5">ATTACK VECTOR</text>
+  <text x="537" y="424" text-anchor="middle" font-size="13" font-weight="700" fill="#EDF2F7">Tool Poisoning</text>
+
+  <!-- Attack 3: RAG Manipulation — above MCP Server node -->
+  <line x1="692" y1="148" x2="692" y2="238" stroke="#EF4444" stroke-width="1.8" stroke-dasharray="6,4"/>
+  <polygon points="687,238 692,248 697,238" fill="#EF4444"/>
+
+  <rect x="622" y="96" width="142" height="52" rx="10" fill="#1C1018" stroke="#EF4444" stroke-width="1.8"/>
+  <text x="693" y="117" text-anchor="middle" font-size="11" fill="#EF4444" font-weight="600" letter-spacing="0.5">ATTACK VECTOR</text>
+  <text x="693" y="136" text-anchor="middle" font-size="13" font-weight="700" fill="#EDF2F7">RAG Manipulation</text>
+
+  <!-- Attack 4: Data Exfiltration — below Enterprise Data node -->
+  <line x1="835" y1="384" x2="835" y2="294" stroke="#EF4444" stroke-width="1.8" stroke-dasharray="6,4"/>
+  <polygon points="830,294 835,284 840,294" fill="#EF4444"/>
+
+  <rect x="772" y="384" width="126" height="52" rx="10" fill="#1C1018" stroke="#EF4444" stroke-width="1.8"/>
+  <text x="835" y="405" text-anchor="middle" font-size="11" fill="#EF4444" font-weight="600" letter-spacing="0.5">ATTACK VECTOR</text>
+  <text x="835" y="424" text-anchor="middle" font-size="13" font-weight="700" fill="#EDF2F7">Data Exfiltration</text>
+
+  <!-- ─── SECTION LABELS ─── -->
+  <text x="450" y="212" text-anchor="middle" font-size="11" fill="#4A90F5" letter-spacing="1.5" font-weight="600">NORMAL EXECUTION FLOW</text>
+
+  <!-- ─── THREAT DETAIL ANNOTATIONS ─── -->
+  <!-- Below Attack 1 -->
+  <text x="243" y="462" text-anchor="middle" font-size="10.5" fill="#8596AD">Hijacks model instructions</text>
+  <text x="243" y="476" text-anchor="middle" font-size="10.5" fill="#8596AD">via malicious input</text>
+
+  <!-- Below Attack 2 is already in the box area, put text further down -->
+  <text x="537" y="455" text-anchor="middle" font-size="10.5" fill="#8596AD">Injects malicious logic</text>
+  <text x="537" y="469" text-anchor="middle" font-size="10.5" fill="#8596AD">into tool definitions</text>
+
+  <!-- Below Attack 4 -->
+  <text x="835" y="455" text-anchor="middle" font-size="10.5" fill="#8596AD">Leaks sensitive data via</text>
+  <text x="835" y="469" text-anchor="middle" font-size="10.5" fill="#8596AD">model-controlled channels</text>
+
+  <!-- RAG annotation above -->
+  <text x="693" y="76" text-anchor="middle" font-size="10.5" fill="#8596AD">Poisons retrieval context</text>
+  <text x="693" y="64" text-anchor="middle" font-size="10.5" fill="#8596AD">to steer model outputs</text>
+
+  <!-- Prompt injection annotation above -->
+  <text x="243" y="76" text-anchor="middle" font-size="10.5" fill="#8596AD">Overrides system prompt</text>
+  <text x="243" y="64" text-anchor="middle" font-size="10.5" fill="#8596AD">with adversarial instructions</text>
+
+  <!-- ─── LEGEND ─── -->
+  <rect x="42" y="530" width="816" height="34" rx="8" fill="#111D30" stroke="#1E2D47" stroke-width="1"/>
+
+  <!-- Blue line legend -->
+  <line x1="70" y1="547" x2="110" y2="547" stroke="#4A90F5" stroke-width="2"/>
+  <polygon points="110,543 118,547 110,551" fill="#4A90F5"/>
+  <text x="124" y="551" font-size="12" fill="#8596AD">Normal Flow</text>
+
+  <!-- Red dashed legend -->
+  <line x1="250" y1="547" x2="290" y2="547" stroke="#EF4444" stroke-width="1.8" stroke-dasharray="6,4"/>
+  <polygon points="290,543 298,547 290,551" fill="#EF4444"/>
+  <text x="304" y="551" font-size="12" fill="#8596AD">Attack Vector</text>
+
+  <!-- Blue node legend -->
+  <rect x="450" y="538" width="30" height="18" rx="4" fill="#111D30" stroke="#4A90F5" stroke-width="1.5"/>
+  <text x="488" y="551" font-size="12" fill="#8596AD">Pipeline Node</text>
+
+  <!-- Red node legend -->
+  <rect x="620" y="538" width="30" height="18" rx="4" fill="#1C1018" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="658" y="551" font-size="12" fill="#8596AD">Threat Node</text>
+</svg>
