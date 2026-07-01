@@ -10,7 +10,8 @@ import WorkOrderBoard from '@/components/founder/cockpit/WorkOrderBoard';
 import CompanyBrainPanel from '@/components/founder/cockpit/CompanyBrainPanel';
 import EventFeed from '@/components/founder/cockpit/EventFeed';
 import { Button } from '@/components/ui/button';
-import { Crown, LayoutGrid, RefreshCw } from 'lucide-react';
+import { Crown, LayoutGrid, Play, RefreshCw } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import { aos } from '@/services/aos';
 import { getCockpitSnapshot, type CockpitSnapshot } from '@/services/aos/cockpit';
 
@@ -22,8 +23,10 @@ import { getCockpitSnapshot, type CockpitSnapshot } from '@/services/aos/cockpit
  * <FounderRoute>.
  */
 const FounderPortal = () => {
+  const { toast } = useToast();
   const [snap, setSnap] = useState<CockpitSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
+  const [ticking, setTicking] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -36,6 +39,25 @@ const FounderPortal = () => {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  /** One orchestrator tick: run every agent whose cadence is due. */
+  const runDue = useCallback(async () => {
+    setTicking(true);
+    try {
+      const outcomes = await aos.orchestrator.tick();
+      const failed = outcomes.filter((o) => !o.ok);
+      toast({
+        title: outcomes.length === 0 ? 'No agents due' : `Ran ${outcomes.length} due agent(s)`,
+        description: outcomes.length === 0
+          ? 'Every active agent is inside its cadence window.'
+          : failed.length ? `${failed.length} failed — see the Event Bus.` : 'All succeeded — trail is on the Event Bus.',
+        variant: failed.length ? 'destructive' : 'default',
+      });
+    } finally {
+      setTicking(false);
+      load();
+    }
+  }, [toast, load]);
 
   return (
     <FounderShell wide>
@@ -55,6 +77,10 @@ const FounderPortal = () => {
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={load} disabled={loading}>
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} /> Refresh
+          </Button>
+          <Button variant="outline" size="sm" onClick={runDue} disabled={ticking}>
+            <Play className={`w-4 h-4 mr-2 ${ticking ? 'animate-pulse' : ''}`} />
+            {ticking ? 'Running…' : 'Run due agents'}
           </Button>
           <Button asChild variant="outline" size="sm">
             <Link to="/admin/ai-workforce">
