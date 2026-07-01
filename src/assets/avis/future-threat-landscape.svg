@@ -1,0 +1,204 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="700" viewBox="0 0 900 700" style="font-family: system-ui, -apple-system, sans-serif;">
+  <!-- Background -->
+  <rect width="900" height="700" fill="#0B111E"/>
+
+  <!-- Title -->
+  <text x="450" y="42" text-anchor="middle" font-size="22" font-weight="700" fill="#EDF2F7" letter-spacing="0.5">Future Threat Landscape 2025–2030</text>
+  <text x="450" y="66" text-anchor="middle" font-size="13" fill="#8596AD" letter-spacing="1">LIKELIHOOD VS. IMPACT RISK MATRIX</text>
+
+  <line x1="60" y1="80" x2="840" y2="80" stroke="#1E2D47" stroke-width="1"/>
+
+  <!-- ============ MATRIX SETUP ============ -->
+  <!-- Matrix area: x=80→840, y=95→555 -->
+  <!-- Center: x=460, y=325 -->
+  <!-- Quadrants:
+    Bottom-left (Low Like / Low Impact): x=80-460, y=325-555
+    Top-left (High Like / Low Impact): x=80-460, y=95-325
+    Bottom-right (Low Like / High Impact): x=460-840, y=325-555
+    Top-right (High Like / High Impact): x=460-840, y=95-325
+  -->
+
+  <!-- Quadrant backgrounds -->
+  <!-- Bottom-left: MEDIUM/LOW — blue tint -->
+  <rect x="80" y="325" width="380" height="230" fill="#4A90F5" fill-opacity="0.07" stroke="none"/>
+  <!-- Top-left: HIGH — orange tint -->
+  <rect x="80" y="95" width="380" height="230" fill="#F0622A" fill-opacity="0.07" stroke="none"/>
+  <!-- Bottom-right: HIGH — orange tint -->
+  <rect x="460" y="325" width="380" height="230" fill="#F0622A" fill-opacity="0.07" stroke="none"/>
+  <!-- Top-right: CRITICAL — red tint -->
+  <rect x="460" y="95" width="380" height="230" fill="#EF4444" fill-opacity="0.12" stroke="none"/>
+
+  <!-- Matrix border -->
+  <rect x="80" y="95" width="760" height="460" rx="6" fill="none" stroke="#1E2D47" stroke-width="2"/>
+
+  <!-- Divider lines -->
+  <line x1="460" y1="95" x2="460" y2="555" stroke="#1E2D47" stroke-width="1.5"/>
+  <line x1="80" y1="325" x2="840" y2="325" stroke="#1E2D47" stroke-width="1.5"/>
+
+  <!-- Quadrant Labels -->
+  <text x="112" y="115" font-size="11" font-weight="700" fill="#F0622A" letter-spacing="0.5">HIGH</text>
+  <text x="496" y="115" font-size="11" font-weight="700" fill="#EF4444" letter-spacing="0.5">CRITICAL</text>
+  <text x="112" y="545" font-size="11" font-weight="700" fill="#4A90F5" letter-spacing="0.5">MEDIUM / LOW</text>
+  <text x="496" y="545" font-size="11" font-weight="700" fill="#F0622A" letter-spacing="0.5">HIGH</text>
+
+  <!-- Y-Axis Label -->
+  <text x="30" y="325" text-anchor="middle" font-size="12" font-weight="600" fill="#8596AD" transform="rotate(-90, 30, 325)">LIKELIHOOD →</text>
+  <!-- Y-axis ticks -->
+  <text x="66" y="100" text-anchor="end" font-size="9" fill="#8596AD">High</text>
+  <text x="66" y="328" text-anchor="end" font-size="9" fill="#8596AD">Low</text>
+
+  <!-- X-Axis Label -->
+  <text x="460" y="580" text-anchor="middle" font-size="12" font-weight="600" fill="#8596AD">IMPACT →</text>
+  <!-- X-axis ticks -->
+  <text x="85" y="574" font-size="9" fill="#8596AD">Low</text>
+  <text x="820" y="574" text-anchor="end" font-size="9" fill="#8596AD">High</text>
+
+  <!-- ============ DEFS ============ -->
+  <defs>
+    <marker id="arrowThreat" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <path d="M0,0 L0,7 L7,3.5 z" fill="#8596AD"/>
+    </marker>
+    <marker id="arrowThreatRed" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <path d="M0,0 L0,7 L7,3.5 z" fill="#EF4444"/>
+    </marker>
+    <marker id="arrowThreatOrange" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <path d="M0,0 L0,7 L7,3.5 z" fill="#F0622A"/>
+    </marker>
+    <marker id="arrowThreatBlue" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <path d="M0,0 L0,7 L7,3.5 z" fill="#4A90F5"/>
+    </marker>
+  </defs>
+
+  <!-- ============ THREATS ============ -->
+  <!-- Each threat: solid circle (2025), dashed arrow, transparent larger circle (2030), label -->
+
+  <!-- === CRITICAL QUADRANT (Top-Right) === -->
+
+  <!-- AI-Powered Attacks: 2025=(700, 140), 2030=(760, 108) -->
+  <!-- 2030 circle first (background) -->
+  <circle cx="760" cy="115" r="22" fill="#EF4444" fill-opacity="0.2" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <!-- Arrow -->
+  <line x1="700" y1="140" x2="748" y2="121" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowThreatRed)"/>
+  <!-- 2025 solid circle -->
+  <circle cx="700" cy="140" r="16" fill="#EF4444" fill-opacity="0.85"/>
+  <text x="700" y="144" text-anchor="middle" font-size="9" font-weight="700" fill="white">AI</text>
+  <!-- Label -->
+  <rect x="612" y="155" width="136" height="28" rx="4" fill="#111D30" stroke="#EF4444" stroke-width="1"/>
+  <text x="680" y="166" text-anchor="middle" font-size="9" font-weight="700" fill="#EF4444">AI-Powered Attacks</text>
+  <text x="680" y="178" text-anchor="middle" font-size="8" fill="#8596AD">LLMs as attack tools</text>
+
+  <!-- Ransomware: 2025=(590, 165), 2030=(660, 128) -->
+  <circle cx="660" cy="130" r="20" fill="#EF4444" fill-opacity="0.18" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="590" y1="165" x2="646" y2="137" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowThreatRed)"/>
+  <circle cx="590" cy="165" r="15" fill="#EF4444" fill-opacity="0.85"/>
+  <text x="590" y="169" text-anchor="middle" font-size="8" font-weight="700" fill="white">RAN</text>
+  <rect x="506" y="180" width="110" height="28" rx="4" fill="#111D30" stroke="#EF4444" stroke-width="1"/>
+  <text x="561" y="191" text-anchor="middle" font-size="9" font-weight="700" fill="#EF4444">Ransomware</text>
+  <text x="561" y="203" text-anchor="middle" font-size="8" fill="#8596AD">Evolving extortion</text>
+
+  <!-- Insider Threats: 2025=(510, 220), 2030=(580, 160) -->
+  <circle cx="580" cy="165" r="18" fill="#EF4444" fill-opacity="0.18" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="510" y1="220" x2="567" y2="171" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowThreatRed)"/>
+  <circle cx="510" cy="220" r="14" fill="#EF4444" fill-opacity="0.85"/>
+  <text x="510" y="224" text-anchor="middle" font-size="8" font-weight="700" fill="white">INS</text>
+  <rect x="468" y="233" width="116" height="28" rx="4" fill="#111D30" stroke="#EF4444" stroke-width="1"/>
+  <text x="526" y="244" text-anchor="middle" font-size="9" font-weight="700" fill="#EF4444">Insider Threats</text>
+  <text x="526" y="256" text-anchor="middle" font-size="8" fill="#8596AD">Trusted user abuse</text>
+
+  <!-- === TOP-LEFT HIGH QUADRANT (High Likelihood / Low Impact) === -->
+
+  <!-- Phishing: 2025=(200, 150), 2030=(310, 120) -->
+  <circle cx="310" cy="122" r="19" fill="#F0622A" fill-opacity="0.2" stroke="#F0622A" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="200" y1="150" x2="296" y2="127" stroke="#F0622A" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowThreatOrange)"/>
+  <circle cx="200" cy="150" r="16" fill="#F0622A" fill-opacity="0.85"/>
+  <text x="200" y="154" text-anchor="middle" font-size="9" font-weight="700" fill="white">PHI</text>
+  <rect x="140" y="168" width="100" height="28" rx="4" fill="#111D30" stroke="#F0622A" stroke-width="1"/>
+  <text x="190" y="179" text-anchor="middle" font-size="9" font-weight="700" fill="#F0622A">Phishing</text>
+  <text x="190" y="191" text-anchor="middle" font-size="8" fill="#8596AD">AI-enhanced lures</text>
+
+  <!-- DDoS: 2025=(340, 200), 2030=(420, 155) -->
+  <circle cx="420" cy="157" r="18" fill="#F0622A" fill-opacity="0.2" stroke="#F0622A" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="340" y1="200" x2="407" y2="163" stroke="#F0622A" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowThreatOrange)"/>
+  <circle cx="340" cy="200" r="14" fill="#F0622A" fill-opacity="0.85"/>
+  <text x="340" y="204" text-anchor="middle" font-size="8" font-weight="700" fill="white">DDoS</text>
+  <rect x="282" y="214" width="100" height="28" rx="4" fill="#111D30" stroke="#F0622A" stroke-width="1"/>
+  <text x="332" y="225" text-anchor="middle" font-size="9" font-weight="700" fill="#F0622A">DDoS</text>
+  <text x="332" y="237" text-anchor="middle" font-size="8" fill="#8596AD">Botnet amplification</text>
+
+  <!-- === BOTTOM-RIGHT HIGH QUADRANT (Low Likelihood / High Impact) === -->
+
+  <!-- Quantum Decryption: 2025=(530, 430), 2030=(610, 350) -->
+  <circle cx="610" cy="352" r="22" fill="#F0622A" fill-opacity="0.2" stroke="#F0622A" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="530" y1="430" x2="596" y2="362" stroke="#F0622A" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowThreatOrange)"/>
+  <circle cx="530" cy="430" r="17" fill="#F0622A" fill-opacity="0.85"/>
+  <text x="530" y="426" text-anchor="middle" font-size="8" font-weight="700" fill="white">QUA</text>
+  <text x="530" y="436" text-anchor="middle" font-size="7" font-weight="700" fill="white">NTM</text>
+  <rect x="464" y="444" width="134" height="28" rx="4" fill="#111D30" stroke="#F0622A" stroke-width="1"/>
+  <text x="531" y="455" text-anchor="middle" font-size="9" font-weight="700" fill="#F0622A">Quantum Decryption</text>
+  <text x="531" y="467" text-anchor="middle" font-size="8" fill="#8596AD">Post-quantum urgency</text>
+
+  <!-- Nation-State APT: 2025=(680, 390), 2030=(740, 310) -->
+  <circle cx="740" cy="312" r="20" fill="#F0622A" fill-opacity="0.2" stroke="#F0622A" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="680" y1="390" x2="727" y2="322" stroke="#F0622A" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowThreatOrange)"/>
+  <circle cx="680" cy="390" r="16" fill="#F0622A" fill-opacity="0.85"/>
+  <text x="680" y="386" text-anchor="middle" font-size="8" font-weight="700" fill="white">APT</text>
+  <text x="680" y="396" text-anchor="middle" font-size="7" font-weight="700" fill="white">NS</text>
+  <rect x="608" y="404" width="136" height="28" rx="4" fill="#111D30" stroke="#F0622A" stroke-width="1"/>
+  <text x="676" y="415" text-anchor="middle" font-size="9" font-weight="700" fill="#F0622A">Nation-State APT</text>
+  <text x="676" y="427" text-anchor="middle" font-size="8" fill="#8596AD">Critical infrastructure</text>
+
+  <!-- Infrastructure Attack: 2025=(800, 460), 2030=(820, 360) -->
+  <circle cx="820" cy="362" r="20" fill="#F0622A" fill-opacity="0.2" stroke="#F0622A" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="800" y1="460" x2="818" y2="376" stroke="#F0622A" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowThreatOrange)"/>
+  <circle cx="800" cy="460" r="15" fill="#F0622A" fill-opacity="0.85"/>
+  <text x="800" y="456" text-anchor="middle" font-size="8" font-weight="700" fill="white">ICS</text>
+  <text x="800" y="466" text-anchor="middle" font-size="7" font-weight="700" fill="white">OT</text>
+  <rect x="726" y="474" width="140" height="28" rx="4" fill="#111D30" stroke="#F0622A" stroke-width="1"/>
+  <text x="796" y="485" text-anchor="middle" font-size="9" font-weight="700" fill="#F0622A">Infrastructure Attack</text>
+  <text x="796" y="497" text-anchor="middle" font-size="8" fill="#8596AD">Grid, pipeline, water</text>
+
+  <!-- === BOTTOM-LEFT MEDIUM/LOW QUADRANT === -->
+
+  <!-- Script Kiddie: 2025=(200, 460), 2030=(280, 400) -->
+  <circle cx="280" cy="402" r="16" fill="#4A90F5" fill-opacity="0.2" stroke="#4A90F5" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <line x1="200" y1="460" x2="267" y2="410" stroke="#4A90F5" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowThreatBlue)"/>
+  <circle cx="200" cy="460" r="14" fill="#4A90F5" fill-opacity="0.85"/>
+  <text x="200" y="456" text-anchor="middle" font-size="8" font-weight="700" fill="white">SK</text>
+  <text x="200" y="466" text-anchor="middle" font-size="7" fill="white">ATK</text>
+  <rect x="130" y="475" width="120" height="28" rx="4" fill="#111D30" stroke="#4A90F5" stroke-width="1"/>
+  <text x="190" y="486" text-anchor="middle" font-size="9" font-weight="700" fill="#4A90F5">Script Kiddie</text>
+  <text x="190" y="498" text-anchor="middle" font-size="8" fill="#8596AD">Low-skill opportunist</text>
+
+  <!-- ============ LEGEND ============ -->
+  <rect x="30" y="585" width="840" height="96" rx="8" fill="#111D30" stroke="#1E2D47" stroke-width="1.5"/>
+  <text x="450" y="604" text-anchor="middle" font-size="11" font-weight="700" fill="#8596AD" letter-spacing="1">LEGEND</text>
+
+  <!-- Row 1 -->
+  <!-- 2025 position -->
+  <circle cx="80" cy="624" r="10" fill="#EF4444" fill-opacity="0.85"/>
+  <text x="96" y="628" font-size="11" fill="#EDF2F7">2025 Position</text>
+
+  <!-- 2030 position -->
+  <circle cx="230" cy="624" r="13" fill="#EF4444" fill-opacity="0.18" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="250" y="628" font-size="11" fill="#EDF2F7">2030 Forecast</text>
+
+  <!-- Arrow -->
+  <line x1="386" y1="624" x2="420" y2="624" stroke="#8596AD" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowThreat)"/>
+  <text x="428" y="628" font-size="11" fill="#EDF2F7">Shift by 2030</text>
+
+  <!-- Row 2 - color coding -->
+  <circle cx="80" cy="660" r="9" fill="#EF4444"/>
+  <text x="96" y="664" font-size="11" fill="#EDF2F7">Critical Risk</text>
+
+  <circle cx="230" cy="660" r="9" fill="#F0622A"/>
+  <text x="246" y="664" font-size="11" fill="#EDF2F7">High Risk</text>
+
+  <circle cx="360" cy="660" r="9" fill="#4A90F5"/>
+  <text x="376" y="664" font-size="11" fill="#EDF2F7">Medium / Low Risk</text>
+
+  <!-- Quadrant explanation -->
+  <rect x="560" y="612" width="280" height="60" rx="5" fill="#0B111E" stroke="#1E2D47" stroke-width="1"/>
+  <text x="700" y="630" text-anchor="middle" font-size="10" font-weight="600" fill="#8596AD">Matrix Quadrants</text>
+  <text x="700" y="646" text-anchor="middle" font-size="9" fill="#8596AD">Top-right: Most dangerous threats</text>
+  <text x="700" y="660" text-anchor="middle" font-size="9" fill="#8596AD">Arrows show projected shift by 2030</text>
+</svg>

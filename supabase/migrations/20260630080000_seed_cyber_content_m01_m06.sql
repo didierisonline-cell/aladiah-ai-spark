@@ -12,8 +12,7 @@ DECLARE
   v_ch  UUID;
 BEGIN
   SELECT id INTO v_cid FROM public.courses
-    WHERE title = 'AI Cybersecurity, Governance & Enterprise Compliance'
-      AND curriculum_version = 'cyber-v1';
+    WHERE curriculum_version = 'cyber-v1';
   IF v_cid IS NULL THEN RAISE EXCEPTION 'Cyber course not found — run structure migration first'; END IF;
 
 -- ─── MODULE 1: Cybersecurity Foundations — CIA Triad & Zero Trust ────────────

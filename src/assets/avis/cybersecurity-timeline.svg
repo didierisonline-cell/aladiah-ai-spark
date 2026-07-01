@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520" style="font-family: system-ui, -apple-system, sans-serif;">
+  <!-- Background -->
+  <rect width="900" height="520" fill="#0B111E"/>
+
+  <!-- Title -->
+  <text x="450" y="44" text-anchor="middle" font-size="22" font-weight="700" fill="#EDF2F7" letter-spacing="0.5">The Evolution of Cybersecurity</text>
+  <text x="450" y="68" text-anchor="middle" font-size="13" fill="#8596AD" letter-spacing="1">FROM PASSWORDS TO AI-POWERED DEFENSE</text>
+
+  <line x1="60" y1="82" x2="840" y2="82" stroke="#1E2D47" stroke-width="1"/>
+
+  <!-- ============ TIMELINE ============ -->
+  <!-- The main timeline sits at y=300 -->
+  <!-- x range: 60 (1960) to 840 (2045) -->
+  <!-- Total width: 780px for 85 years → ~9.18px per year -->
+  <!-- Scale: x = 60 + (year - 1960) * 780/85 -->
+  <!-- 1960=60, 1988=301, 1995=366, 2003=440, 2010=511, 2017=582, 2023=634, 2030=695, 2040=786, 2045=840 -->
+
+  <!-- PAST section: solid blue line 1960-2022 -->
+  <!-- 2022 x = 60 + (2022-1960)*780/85 = 60 + 62*9.176 = 60 + 568.9 = 629 -->
+  <line x1="60" y1="300" x2="629" y2="300" stroke="#4A90F5" stroke-width="3"/>
+
+  <!-- FUTURE section: dashed purple line 2023-2045 -->
+  <line x1="629" y1="300" x2="840" y2="300" stroke="#8B5CF6" stroke-width="3" stroke-dasharray="8,4"/>
+
+  <!-- "FORECAST" label -->
+  <rect x="710" y="282" width="90" height="22" rx="4" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="1"/>
+  <text x="755" y="297" text-anchor="middle" font-size="10" font-weight="700" fill="#8B5CF6">FORECAST →</text>
+
+  <!-- Year labels on the axis -->
+  <text x="60" y="318" text-anchor="middle" font-size="9" fill="#8596AD">1960</text>
+  <text x="629" y="318" text-anchor="middle" font-size="9" fill="#8596AD">2022</text>
+  <text x="840" y="318" text-anchor="middle" font-size="9" fill="#8596AD">2045</text>
+
+  <!-- ============ PAST EVENTS ============ -->
+
+  <!-- 1960: "First Passwords" — ABOVE (x=60) -->
+  <circle cx="60" cy="300" r="5" fill="#4A90F5"/>
+  <line x1="60" y1="295" x2="60" y2="196" stroke="#4A90F5" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <rect x="10" y="152" width="100" height="44" rx="6" fill="#111D30" stroke="#4A90F5" stroke-width="1.5"/>
+  <text x="60" y="169" text-anchor="middle" font-size="11" font-weight="700" fill="#4A90F5">1960</text>
+  <text x="60" y="183" text-anchor="middle" font-size="10" font-weight="600" fill="#EDF2F7">First Passwords</text>
+  <text x="60" y="193" text-anchor="middle" font-size="8.5" fill="#8596AD">MIT CTSS</text>
+
+  <!-- 1988: "Morris Worm" — BELOW (x = 60 + 28*9.176 = 317) -->
+  <circle cx="317" cy="300" r="5" fill="#4A90F5"/>
+  <line x1="317" y1="305" x2="317" y2="368" stroke="#4A90F5" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <rect x="265" y="368" width="104" height="44" rx="6" fill="#111D30" stroke="#4A90F5" stroke-width="1.5"/>
+  <text x="317" y="385" text-anchor="middle" font-size="11" font-weight="700" fill="#4A90F5">1988</text>
+  <text x="317" y="399" text-anchor="middle" font-size="10" font-weight="600" fill="#EDF2F7">Morris Worm</text>
+  <text x="317" y="409" text-anchor="middle" font-size="8.5" fill="#8596AD">First major worm</text>
+
+  <!-- 1995: "SSL & Firewalls" — ABOVE (x = 60 + 35*9.176 = 381) -->
+  <circle cx="381" cy="300" r="5" fill="#4A90F5"/>
+  <line x1="381" y1="295" x2="381" y2="220" stroke="#4A90F5" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <rect x="329" y="176" width="104" height="44" rx="6" fill="#111D30" stroke="#4A90F5" stroke-width="1.5"/>
+  <text x="381" y="193" text-anchor="middle" font-size="11" font-weight="700" fill="#4A90F5">1995</text>
+  <text x="381" y="207" text-anchor="middle" font-size="10" font-weight="600" fill="#EDF2F7">SSL &amp; Firewalls</text>
+  <text x="381" y="217" text-anchor="middle" font-size="8.5" fill="#8596AD">Web security born</text>
+
+  <!-- 2003: "Threat Intelligence" — BELOW (x = 60 + 43*9.176 = 455) -->
+  <circle cx="455" cy="300" r="5" fill="#4A90F5"/>
+  <line x1="455" y1="305" x2="455" y2="368" stroke="#4A90F5" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <rect x="399" y="368" width="112" height="44" rx="6" fill="#111D30" stroke="#4A90F5" stroke-width="1.5"/>
+  <text x="455" y="385" text-anchor="middle" font-size="11" font-weight="700" fill="#4A90F5">2003</text>
+  <text x="455" y="399" text-anchor="middle" font-size="10" font-weight="600" fill="#EDF2F7">Threat Intel</text>
+  <text x="455" y="409" text-anchor="middle" font-size="8.5" fill="#8596AD">ISAC sharing begins</text>
+
+  <!-- 2010: "Advanced Persistent Threats" — ABOVE (x = 60 + 50*9.176 = 519) -->
+  <circle cx="519" cy="300" r="5" fill="#4A90F5"/>
+  <line x1="519" y1="295" x2="519" y2="196" stroke="#4A90F5" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <rect x="459" y="152" width="120" height="44" rx="6" fill="#111D30" stroke="#4A90F5" stroke-width="1.5"/>
+  <text x="519" y="169" text-anchor="middle" font-size="11" font-weight="700" fill="#4A90F5">2010</text>
+  <text x="519" y="183" text-anchor="middle" font-size="10" font-weight="600" fill="#EDF2F7">Advanced APTs</text>
+  <text x="519" y="193" text-anchor="middle" font-size="8.5" fill="#8596AD">Stuxnet discovered</text>
+
+  <!-- 2017: "Ransomware Epidemic" — BELOW (x = 60 + 57*9.176 = 583) -->
+  <circle cx="583" cy="300" r="5" fill="#4A90F5"/>
+  <line x1="583" y1="305" x2="583" y2="368" stroke="#4A90F5" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <rect x="526" y="368" width="114" height="44" rx="6" fill="#111D30" stroke="#4A90F5" stroke-width="1.5"/>
+  <text x="583" y="385" text-anchor="middle" font-size="11" font-weight="700" fill="#4A90F5">2017</text>
+  <text x="583" y="399" text-anchor="middle" font-size="10" font-weight="600" fill="#EDF2F7">Ransomware Era</text>
+  <text x="583" y="409" text-anchor="middle" font-size="8.5" fill="#8596AD">WannaCry epidemic</text>
+
+  <!-- 2023: "AI-Powered Attacks" — ABOVE (x = 60 + 63*9.176 = 638) -->
+  <circle cx="638" cy="300" r="6" fill="#F0622A"/>
+  <line x1="638" y1="295" x2="638" y2="196" stroke="#F0622A" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <rect x="580" y="152" width="116" height="44" rx="6" fill="#111D30" stroke="#F0622A" stroke-width="1.5"/>
+  <text x="638" y="169" text-anchor="middle" font-size="11" font-weight="700" fill="#F0622A">2023</text>
+  <text x="638" y="183" text-anchor="middle" font-size="10" font-weight="600" fill="#EDF2F7">AI-Powered Attacks</text>
+  <text x="638" y="193" text-anchor="middle" font-size="8.5" fill="#8596AD">LLM weaponization</text>
+
+  <!-- ============ FUTURE EVENTS (Purple, dashed connectors) ============ -->
+
+  <!-- 2030: "Quantum Threats" — BELOW (x = 60 + 70*9.176 = 702) -->
+  <circle cx="702" cy="300" r="5" fill="#8B5CF6" stroke="#8B5CF6" stroke-width="1"/>
+  <line x1="702" y1="305" x2="702" y2="378" stroke="#8B5CF6" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <rect x="644" y="378" width="116" height="46" rx="6" fill="#111D30" stroke="#8B5CF6" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="702" y="396" text-anchor="middle" font-size="11" font-weight="700" fill="#8B5CF6">2030</text>
+  <text x="702" y="410" text-anchor="middle" font-size="10" font-weight="600" fill="#EDF2F7">Quantum Threats</text>
+  <text x="702" y="421" text-anchor="middle" font-size="8.5" fill="#8596AD">Post-quantum crypto urgent</text>
+
+  <!-- 2040: "Autonomous Security" — ABOVE (x = 60 + 80*9.176 = 794) -->
+  <circle cx="794" cy="300" r="5" fill="#8B5CF6"/>
+  <line x1="794" y1="295" x2="794" y2="220" stroke="#8B5CF6" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <rect x="732" y="176" width="124" height="44" rx="6" fill="#111D30" stroke="#8B5CF6" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="794" y="193" text-anchor="middle" font-size="11" font-weight="700" fill="#8B5CF6">2040</text>
+  <text x="794" y="207" text-anchor="middle" font-size="10" font-weight="600" fill="#EDF2F7">Autonomous Security</text>
+  <text x="794" y="217" text-anchor="middle" font-size="8.5" fill="#8596AD">AI-first SOC</text>
+
+  <!-- 2045: "AI Sovereignty" — BELOW (x = 840) -->
+  <circle cx="840" cy="300" r="5" fill="#8B5CF6"/>
+  <line x1="840" y1="305" x2="840" y2="378" stroke="#8B5CF6" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <rect x="780" y="378" width="110" height="46" rx="6" fill="#111D30" stroke="#8B5CF6" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="835" y="396" text-anchor="middle" font-size="11" font-weight="700" fill="#8B5CF6">2045</text>
+  <text x="835" y="410" text-anchor="middle" font-size="10" font-weight="600" fill="#EDF2F7">AI Sovereignty</text>
+  <text x="835" y="421" text-anchor="middle" font-size="8.5" fill="#8596AD">Governance frameworks</text>
+
+  <!-- ============ LEGEND ============ -->
+  <rect x="30" y="462" width="840" height="44" rx="8" fill="#111D30" stroke="#1E2D47" stroke-width="1.5"/>
+
+  <!-- Blue line legend -->
+  <line x1="70" y1="484" x2="104" y2="484" stroke="#4A90F5" stroke-width="2.5"/>
+  <circle cx="87" cy="484" r="4" fill="#4A90F5"/>
+  <text x="112" y="488" font-size="11" fill="#EDF2F7">Historical (1960–2022)</text>
+
+  <!-- Purple dashed legend -->
+  <line x1="298" y1="484" x2="332" y2="484" stroke="#8B5CF6" stroke-width="2.5" stroke-dasharray="6,3"/>
+  <circle cx="315" cy="484" r="4" fill="#8B5CF6"/>
+  <text x="340" y="488" font-size="11" fill="#EDF2F7">Forecasted (2023–2045)</text>
+
+  <!-- Pivotal event -->
+  <circle cx="536" cy="484" r="5" fill="#F0622A"/>
+  <text x="548" y="488" font-size="11" fill="#EDF2F7">Pivotal Event (AI era begins)</text>
+
+  <!-- Dot -->
+  <circle cx="718" cy="484" r="4" fill="#4A90F5"/>
+  <text x="730" y="488" font-size="11" fill="#EDF2F7">Timeline Event</text>
+</svg>
