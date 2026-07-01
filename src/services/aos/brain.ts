@@ -9,6 +9,7 @@
 import { AgentMemory } from '@/types/aos';
 import { db } from './_internal';
 import { remember } from './memory';
+import { emitEvent } from './events';
 
 export const BRAIN_SLUG = 'company-brain';
 
@@ -72,6 +73,14 @@ export async function recordDecision(input: {
     tags: [input.category, 'decision'],
     source: input.recordedBy ?? 'founder',
   });
+  if (m) {
+    await emitEvent(
+      input.category === 'readiness-history' ? 'readiness.snapshot' : 'brain.decision.recorded',
+      input.recordedBy ?? 'founder',
+      input.summary ?? input.content.slice(0, 120),
+      { brain_entry_id: m.id, category: input.category },
+    );
+  }
   return m ? toEntry(m) : null;
 }
 

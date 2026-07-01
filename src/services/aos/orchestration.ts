@@ -17,6 +17,9 @@
 // behind each agent's own founder-gated surface.
 // =============================================================================
 import { delegateTask, sendMessage, CEO_AGENT } from './communication';
+import { emitEvent } from './events';
+import { can, PermissionError } from './permissions';
+import { setTaskStatus } from './tasks';
 import {
   GateKey,
   WorkOrder,
@@ -48,8 +51,18 @@ export const GATE_REVIEWERS: Record<GateKey, { agent: string | null; label: stri
  * agent for executive recommendations and by any agent handing off a draft.
  */
 export async function openWorkOrder(input: CreateWorkOrderInput): Promise<WorkOrder | null> {
+  // Governance: an owner that will produce artifacts needs the write
+  // capability; read-only agents may only own 'recommendation' orders.
+  if (input.type !== 'recommendation' && !(await can(input.ownerAgent, 'write'))) {
+    throw new PermissionError(input.ownerAgent, 'write');
+  }
   const wo = await createWorkOrder(input);
   if (!wo) return null;
+  await emitEvent('work_order.opened', input.createdByAgent ?? CEO_AGENT, `Work order opened: ${wo.title}`, {
+    work_order_id: wo.id,
+    type: wo.type,
+    owner: wo.ownerAgent,
+  });
   await routeNextGate(wo, input.createdByAgent ?? CEO_AGENT);
   return wo;
 }
@@ -101,6 +114,13 @@ export async function recordGateOutcome(
   });
   if (!updated) return null;
 
+  await emitEvent(
+    passed ? 'work_order.gate.passed' : 'work_order.gate.failed',
+    reviewer,
+    `Gate [${gate}] ${passed ? 'passed' : 'FAILED'}: ${updated.title}`,
+    { work_order_id: updated.id, gate, note: note ?? null },
+  );
+
   if (!passed) {
     // Bounce back to the owner with the findings; the order stays open.
     if (updated.ownerAgent) {
@@ -125,6 +145,9 @@ export async function recordGateOutcome(
 /** All gates cleared → the order enters the Founder Approval Queue. */
 export async function submitForFounderApproval(wo: WorkOrder, fromAgent: string): Promise<WorkOrder | null> {
   const updated = await setFounderApproval(wo.id, 'pending', undefined);
+  await emitEvent('work_order.submitted', fromAgent, `Awaiting founder approval: ${wo.title}`, {
+    work_order_id: wo.id,
+  });
   await sendMessage({
     fromAgent,
     toAgent: CEO_AGENT,
@@ -136,16 +159,36 @@ export async function submitForFounderApproval(wo: WorkOrder, fromAgent: string)
   return updated;
 }
 
+export class EvidenceRequiredError extends Error {
+  constructor(public workOrderId: string) {
+    super(
+      'No decision without evidence (LAUNCH_DECISION_PRINCIPLE): attach at least one evidence note, or record the decision with a note stating your evidence.',
+    );
+    this.name = 'EvidenceRequiredError';
+  }
+}
+
 /**
  * The founder's decision (called from founder-only UI). Approval is a record —
  * execution still happens through the owning agent's own gated surface.
+ * Canon rule 1: no decision without evidence — approving requires either
+ * existing evidence notes on the order or a decision note stating the proof.
  */
 export async function founderDecision(
   wo: WorkOrder,
   approved: boolean,
   note?: string,
 ): Promise<WorkOrder | null> {
+  if (approved && wo.evidence.length === 0 && !note?.trim()) {
+    throw new EvidenceRequiredError(wo.id);
+  }
   const updated = await setFounderApproval(wo.id, approved ? 'approved' : 'rejected', note);
+  await emitEvent(
+    approved ? 'work_order.approved' : 'work_order.rejected',
+    'founder',
+    `Founder ${approved ? 'APPROVED' : 'REJECTED'}: ${wo.title}`,
+    { work_order_id: wo.id, note: note ?? null },
+  );
   if (updated?.ownerAgent) {
     await sendMessage({
       fromAgent: CEO_AGENT,
@@ -157,4 +200,20 @@ export async function founderDecision(
     });
   }
   return updated;
+}
+
+/**
+ * Close out an approved order once its work has actually shipped through the
+ * owner's gated surface. Completing resolves dependent tasks and leaves the
+ * full gate/evidence trail on the record.
+ */
+export async function markWorkOrderCompleted(wo: WorkOrder, byAgent: string): Promise<boolean> {
+  if (wo.founderApproval !== 'approved') return false;
+  const ok = await setTaskStatus(wo.id, 'completed', { completed_by: byAgent });
+  if (ok) {
+    await emitEvent('work_order.completed', byAgent, `Work order completed: ${wo.title}`, {
+      work_order_id: wo.id,
+    });
+  }
+  return ok;
 }

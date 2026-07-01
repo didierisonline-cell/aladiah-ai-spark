@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Inbox, RefreshCw } from 'lucide-react';
+import { ArrowRight, Inbox, RefreshCw, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import {
   getApprovalQueue,
   type ApprovalItem,
   type ApprovalQueueSnapshot,
 } from '@/services/aos/approvals';
+import { getWorkOrder } from '@/services/aos/workOrders';
+import { founderDecision } from '@/services/aos/orchestration';
 import { aos } from '@/services/aos';
 
 const EMPTY: ApprovalQueueSnapshot = {
@@ -23,9 +26,11 @@ const when = (iso: string | null) => {
 };
 
 const ApprovalsHub = () => {
+  const { toast } = useToast();
   const [snap, setSnap] = useState<ApprovalQueueSnapshot>(EMPTY);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -38,6 +43,37 @@ const ApprovalsHub = () => {
   }, []);
 
   useEffect(() => { refresh(); }, [refresh]);
+
+  /** Inline decision for work-order items. Canon: approval needs evidence —
+   *  orders without evidence notes are sent to the cockpit board to attach it. */
+  const decideWorkOrder = useCallback(async (item: ApprovalItem, approved: boolean) => {
+    setBusyId(item.id);
+    try {
+      const wo = await getWorkOrder(item.id);
+      if (!wo) {
+        toast({ title: 'Work order not found', variant: 'destructive' });
+        return;
+      }
+      await founderDecision(wo, approved);
+      toast({
+        title: `Work order ${approved ? 'approved' : 'rejected'}`,
+        description: approved
+          ? 'Decision recorded. Execution stays behind the owning agent’s gated surface.'
+          : wo.title,
+      });
+      refresh();
+    } catch (e) {
+      toast({
+        title: 'Evidence required',
+        description: e instanceof Error
+          ? `${e.message} Open the Founder cockpit work-order board to attach evidence.`
+          : 'Attach evidence before approving.',
+        variant: 'destructive',
+      });
+    } finally {
+      setBusyId(null);
+    }
+  }, [toast, refresh]);
 
   const items: ApprovalItem[] =
     filter === 'all' ? snap.items : snap.items.filter((i) => i.source === filter);
@@ -117,11 +153,23 @@ const ApprovalsHub = () => {
                   <p className="text-sm font-semibold text-foreground truncate">{it.title}</p>
                   {it.detail && <p className="text-[11px] text-muted-foreground truncate">{it.detail}</p>}
                 </div>
-                <Button asChild size="sm" variant="outline" className="shrink-0">
-                  <Link to={it.route}>
-                    Review <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-                  </Link>
-                </Button>
+                <div className="flex items-center gap-2 shrink-0">
+                  {it.source === 'work-order' && (
+                    <>
+                      <Button size="sm" onClick={() => decideWorkOrder(it, true)} disabled={busyId === it.id}>
+                        <ThumbsUp className="w-3.5 h-3.5 mr-1.5" /> Approve
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => decideWorkOrder(it, false)} disabled={busyId === it.id}>
+                        <ThumbsDown className="w-3.5 h-3.5 mr-1.5" /> Reject
+                      </Button>
+                    </>
+                  )}
+                  <Button asChild size="sm" variant="outline">
+                    <Link to={it.route}>
+                      Review <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                    </Link>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}

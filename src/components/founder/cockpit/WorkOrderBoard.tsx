@@ -4,16 +4,25 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CheckCircle2, ClipboardList, Plus, RefreshCw, ThumbsDown, ThumbsUp, XCircle } from 'lucide-react';
+import {
+  CheckCircle2, ClipboardList, FileCheck2, Paperclip, Plus, RefreshCw, ThumbsDown, ThumbsUp, XCircle,
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
   GateKey,
   WorkOrder,
   WorkOrderType,
+  addEvidence,
   listWorkOrders,
   nextPendingGate,
 } from '@/services/aos/workOrders';
-import { founderDecision, openWorkOrder, recordGateOutcome, GATE_REVIEWERS } from '@/services/aos/orchestration';
+import {
+  founderDecision,
+  markWorkOrderCompleted,
+  openWorkOrder,
+  recordGateOutcome,
+  GATE_REVIEWERS,
+} from '@/services/aos/orchestration';
 
 const GATE_LABEL: Record<GateKey, string> = { qa: 'QA', security: 'Security', translation: 'Translation', ux: 'UX' };
 
@@ -30,11 +39,15 @@ const OWNER_OPTIONS = [
   'interface-experience', 'ceo-chief-of-staff',
 ];
 
+const when = (iso: string) => {
+  try { return new Date(iso).toLocaleString(); } catch { return ''; }
+};
+
 /**
  * Work Order System — the shared unit of cross-agent work. Orders flow
- * draft → review gates (QA / Security / Translation / UX) → founder approval.
- * Approving here RECORDS the decision; execution stays behind each agent's
- * own founder-gated surface. Nothing publishes or deploys from this board.
+ * draft → review gates (QA / Security / Translation / UX) → founder approval
+ * → completion. Canon rule: no approval without evidence. Approving RECORDS
+ * the decision; execution stays behind each agent's own founder-gated surface.
  */
 const WorkOrderBoard = ({ onChange }: { onChange?: () => void }) => {
   const { toast } = useToast();
@@ -45,6 +58,8 @@ const WorkOrderBoard = ({ onChange }: { onChange?: () => void }) => {
   const [title, setTitle] = useState('');
   const [type, setType] = useState<WorkOrderType>('content');
   const [owner, setOwner] = useState(OWNER_OPTIONS[0]);
+  /** Per-order note drafts (evidence attachments and decision notes). */
+  const [notes, setNotes] = useState<Record<string, string>>({});
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -57,6 +72,13 @@ const WorkOrderBoard = ({ onChange }: { onChange?: () => void }) => {
 
   useEffect(() => { refresh(); }, [refresh]);
 
+  const done = useCallback((id?: string) => {
+    if (id) setNotes((n) => ({ ...n, [id]: '' }));
+    setBusy(null);
+    refresh();
+    onChange?.();
+  }, [refresh, onChange]);
+
   const create = useCallback(async () => {
     if (!title.trim()) return;
     setCreating(true);
@@ -64,10 +86,16 @@ const WorkOrderBoard = ({ onChange }: { onChange?: () => void }) => {
       const wo = await openWorkOrder({ title: title.trim(), type, ownerAgent: owner, createdByAgent: 'human' });
       toast({
         title: wo ? 'Work order opened' : 'Could not open work order',
-        description: wo ? `Routed to its first review gate.` : 'Check admin access / AOS migrations.',
+        description: wo ? 'Routed to its first review gate.' : 'Check admin access / AOS migrations.',
         variant: wo ? 'default' : 'destructive',
       });
-      setTitle('');
+      if (wo) setTitle('');
+    } catch (e) {
+      toast({
+        title: 'Not permitted',
+        description: e instanceof Error ? e.message : 'Permission check failed.',
+        variant: 'destructive',
+      });
     } finally {
       setCreating(false);
       refresh();
@@ -75,34 +103,56 @@ const WorkOrderBoard = ({ onChange }: { onChange?: () => void }) => {
     }
   }, [title, type, owner, toast, refresh, onChange]);
 
+  const attach = useCallback(async (wo: WorkOrder) => {
+    const note = notes[wo.id]?.trim();
+    if (!note) return;
+    setBusy(wo.id);
+    await addEvidence(wo.id, 'founder', note);
+    toast({ title: 'Evidence attached', description: wo.title });
+    done(wo.id);
+  }, [notes, toast, done]);
+
   const gate = useCallback(async (wo: WorkOrder, g: GateKey, passed: boolean) => {
     setBusy(wo.id);
     try {
-      await recordGateOutcome(wo, g, passed, 'founder');
+      await recordGateOutcome(wo, g, passed, 'founder', notes[wo.id]?.trim() || undefined);
       toast({ title: `${GATE_LABEL[g]} gate ${passed ? 'passed' : 'failed'}`, description: wo.title });
     } finally {
-      setBusy(null);
-      refresh();
-      onChange?.();
+      done(wo.id);
     }
-  }, [toast, refresh, onChange]);
+  }, [notes, toast, done]);
 
   const decide = useCallback(async (wo: WorkOrder, approved: boolean) => {
     setBusy(wo.id);
     try {
-      await founderDecision(wo, approved);
+      await founderDecision(wo, approved, notes[wo.id]?.trim() || undefined);
       toast({
         title: `Work order ${approved ? 'approved' : 'rejected'}`,
         description: approved
           ? 'Decision recorded. Execution stays behind the owning agent’s gated surface.'
           : wo.title,
       });
-    } finally {
+      done(wo.id);
+    } catch (e) {
       setBusy(null);
-      refresh();
-      onChange?.();
+      toast({
+        title: 'Evidence required',
+        description: e instanceof Error ? e.message : 'Attach evidence before approving.',
+        variant: 'destructive',
+      });
     }
-  }, [toast, refresh, onChange]);
+  }, [notes, toast, done]);
+
+  const complete = useCallback(async (wo: WorkOrder) => {
+    setBusy(wo.id);
+    const ok = await markWorkOrderCompleted(wo, 'founder');
+    toast({
+      title: ok ? 'Work order completed' : 'Could not complete',
+      description: wo.title,
+      variant: ok ? 'default' : 'destructive',
+    });
+    done(wo.id);
+  }, [toast, done]);
 
   const open = orders.filter((o) => !['completed', 'cancelled'].includes(o.status));
 
@@ -118,7 +168,7 @@ const WorkOrderBoard = ({ onChange }: { onChange?: () => void }) => {
           </Button>
         </CardTitle>
         <p className="text-[12px] text-muted-foreground">
-          Draft → QA → Security → Translation → UX → Founder approval. Approval records the decision — it never auto-publishes.
+          Draft → QA → Security → Translation → UX → Founder approval → Completed. No approval without evidence; nothing auto-publishes.
         </p>
       </CardHeader>
       <CardContent className="pt-0 space-y-4">
@@ -159,6 +209,8 @@ const WorkOrderBoard = ({ onChange }: { onChange?: () => void }) => {
           <div className="space-y-2">
             {open.map((o) => {
               const next = nextPendingGate(o);
+              const canDecide = o.founderApproval === 'pending';
+              const canComplete = o.founderApproval === 'approved' && o.status !== 'completed';
               return (
                 <div key={o.id} className="rounded-lg border border-border/60 p-3 space-y-2">
                   <div className="flex items-start justify-between gap-3">
@@ -172,6 +224,13 @@ const WorkOrderBoard = ({ onChange }: { onChange?: () => void }) => {
                     </div>
                     <Badge variant="secondary" className="text-[10px] capitalize shrink-0">{o.status.replace('_', ' ')}</Badge>
                   </div>
+
+                  {/* Acceptance criteria */}
+                  {o.acceptanceCriteria.length > 0 && (
+                    <ul className="text-[11px] text-muted-foreground list-disc pl-4 space-y-0.5">
+                      {o.acceptanceCriteria.map((c, i) => <li key={i}>{c}</li>)}
+                    </ul>
+                  )}
 
                   {/* Gate chips */}
                   <div className="flex items-center gap-1.5 flex-wrap">
@@ -191,16 +250,54 @@ const WorkOrderBoard = ({ onChange }: { onChange?: () => void }) => {
                     </Badge>
                   </div>
 
+                  {/* Evidence trail — canon: decisions require evidence */}
+                  {o.evidence.length > 0 && (
+                    <div className="rounded-lg bg-muted/30 px-3 py-2 space-y-1">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                        <FileCheck2 className="w-3 h-3" /> Evidence ({o.evidence.length})
+                      </p>
+                      {o.evidence.slice(-3).map((ev, i) => (
+                        <p key={i} className="text-[11px] text-foreground">
+                          <span className="text-muted-foreground">{when(ev.at)} · {ev.author}:</span> {ev.note}
+                        </p>
+                      ))}
+                      {o.evidence.length > 3 && (
+                        <p className="text-[10px] text-muted-foreground">…{o.evidence.length - 3} earlier note(s) on record</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Note / evidence input feeds attach, gate outcomes, and decisions */}
+                  <div className="flex gap-2">
+                    <Input
+                      value={notes[o.id] ?? ''}
+                      onChange={(e) => setNotes((n) => ({ ...n, [o.id]: e.target.value }))}
+                      placeholder="Evidence / decision note (screenshot ref, query result, log)…"
+                      aria-label="Evidence or decision note"
+                      className="flex-1 h-8 text-[12px]"
+                    />
+                    <Button size="sm" variant="outline" onClick={() => attach(o)} disabled={busy === o.id || !notes[o.id]?.trim()}>
+                      <Paperclip className="w-3.5 h-3.5 mr-1" /> Attach
+                    </Button>
+                  </div>
+
                   {/* Founder actions */}
-                  {o.founderApproval === 'pending' ? (
-                    <div className="flex gap-2">
+                  {canDecide ? (
+                    <div className="flex items-center gap-2 flex-wrap">
                       <Button size="sm" onClick={() => decide(o, true)} disabled={busy === o.id}>
                         <ThumbsUp className="w-3.5 h-3.5 mr-1.5" /> Approve
                       </Button>
                       <Button size="sm" variant="outline" onClick={() => decide(o, false)} disabled={busy === o.id}>
                         <ThumbsDown className="w-3.5 h-3.5 mr-1.5" /> Reject
                       </Button>
+                      {o.evidence.length === 0 && (
+                        <span className="text-[10.5px] text-amber-500">No evidence attached — approval requires a note stating your proof.</span>
+                      )}
                     </div>
+                  ) : canComplete ? (
+                    <Button size="sm" variant="outline" onClick={() => complete(o)} disabled={busy === o.id}>
+                      <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" /> Mark completed (work shipped)
+                    </Button>
                   ) : next ? (
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-[11px] text-muted-foreground">

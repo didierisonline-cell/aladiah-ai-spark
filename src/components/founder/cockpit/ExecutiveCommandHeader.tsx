@@ -26,14 +26,17 @@ const ExecutiveCommandHeader = ({ snap }: { snap: CockpitSnapshot }) => {
   return (
     <section aria-label="Executive command header" className="space-y-3">
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-        {/* Global launch readiness */}
+        {/* Global launch readiness (+ trend from the Company Brain) */}
         <Card className="col-span-2 md:col-span-1">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 text-[11px] text-muted-foreground mb-1">
               <Gauge className="w-3.5 h-3.5" /> Launch Readiness
             </div>
-            <div className="text-3xl font-bold leading-none" style={{ color: scoreColor(snap.launchReadiness) }}>
-              {snap.launchReadiness == null ? '—' : `${snap.launchReadiness}%`}
+            <div className="flex items-end justify-between gap-2">
+              <div className="text-3xl font-bold leading-none" style={{ color: scoreColor(snap.launchReadiness) }}>
+                {snap.launchReadiness == null ? '—' : `${snap.launchReadiness}%`}
+              </div>
+              <ReadinessTrend history={snap.readinessHistory} />
             </div>
             <p className="text-[10px] text-muted-foreground mt-1.5">
               {snap.scoredDimensions} scored · {snap.unmeasuredDimensions} not yet measured
@@ -96,6 +99,33 @@ const ExecutiveCommandHeader = ({ snap }: { snap: CockpitSnapshot }) => {
         <Vital icon={Activity} label="Open Work Orders" value={snap.workOrders.open} sub={`${snap.workOrders.gateBlocked} in review gates`} />
       </div>
     </section>
+  );
+};
+
+/** Mini daily-history bars (last 14 days from the Company Brain). */
+const ReadinessTrend = ({ history }: { history: { date: string; score: number }[] }) => {
+  const points = history.slice(-14);
+  if (points.length < 2) return null;
+  const delta = points[points.length - 1].score - points[points.length - 2].score;
+  return (
+    <div
+      className="flex flex-col items-end gap-0.5"
+      title={points.map((p) => `${p.date}: ${p.score}%`).join('\n')}
+      aria-label={`Readiness trend over ${points.length} days, latest change ${delta >= 0 ? '+' : ''}${delta} points`}
+    >
+      <div className="flex items-end gap-[2px] h-6">
+        {points.map((p) => (
+          <span
+            key={p.date}
+            className="w-[4px] rounded-sm"
+            style={{ height: `${Math.max(12, p.score)}%`, background: scoreColor(p.score) }}
+          />
+        ))}
+      </div>
+      <span className="text-[9px] font-medium" style={{ color: delta >= 0 ? '#22c55e' : '#ef4444' }}>
+        {delta >= 0 ? '▲' : '▼'} {Math.abs(delta)} vs prior day
+      </span>
+    </div>
   );
 };
 

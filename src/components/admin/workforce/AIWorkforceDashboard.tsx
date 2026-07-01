@@ -217,7 +217,7 @@ const AIWorkforceDashboard = () => {
         </TabsContent>
 
         <TabsContent value="comms">
-          <MessageFeed messages={messages} />
+          <MessageFeed messages={messages} onChange={refresh} />
         </TabsContent>
 
         <TabsContent value="reports">
