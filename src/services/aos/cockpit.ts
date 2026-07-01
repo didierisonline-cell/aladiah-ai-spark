@@ -12,6 +12,7 @@ import { getWorkforceSnapshot, type AgentSnapshot } from './workforce';
 import { getApprovalQueue, type ApprovalQueueSnapshot } from './approvals';
 import { getWorkOrderStats, type WorkOrderStats } from './workOrders';
 import { listAgents } from './registry';
+import { listBrain, recordReadinessSnapshot } from './brain';
 import { getSecurityPosture } from '@/services/security/securityPosture';
 import { getAcademyReadiness } from '@/services/curriculum/readiness';
 import { getStats as getOpsStats } from '@/services/agents/operationsAgent';
@@ -52,12 +53,16 @@ export interface AgentGridEntry {
   route: string;
 }
 
+export interface ReadinessHistoryPoint { date: string; score: number; }
+
 export interface CockpitSnapshot {
   generatedAt: string;
   /** Measured-only launch readiness; null if nothing is scored. */
   launchReadiness: number | null;
   scoredDimensions: number;
   unmeasuredDimensions: number;
+  /** Daily readiness history from the Company Brain, oldest → newest. */
+  readinessHistory: ReadinessHistoryPoint[];
   gates: CockpitGate[];
   dimensions: ReadinessDimension[];
   platformHealth: string;
@@ -131,9 +136,13 @@ export async function getCockpitSnapshot(): Promise<CockpitSnapshot> {
   const ux = getUXPosture();
 
   // ---- Live probes ----------------------------------------------------------
-  const [students, subsRisk] = await Promise.all([
+  const [students, subsRisk, mktContent, seoKeywords, admLeads, plcEmployers] = await Promise.all([
     count('profiles'),
     count('subscriptions', (q) => q.in('status', ['past_due', 'unpaid', 'canceled', 'cancelled'])),
+    count('marketing_content'),
+    count('seo_keywords'),
+    count('admissions_leads'),
+    count('placement_employers'),
   ]);
   const mrr = snap.globals.revenueImpact || 0;
 
@@ -208,11 +217,11 @@ export async function getCockpitSnapshot(): Promise<CockpitSnapshot> {
     dim('performance', 'Performance', null, 'unmeasured',
       'Needs Lighthouse / Core Web Vitals probe against production.', '/admin/operations'),
     dim('marketing', 'Marketing', null, 'unmeasured',
-      'No marketing-readiness probe yet (pipeline/SEO coverage).', '/admin/marketing-agent'),
+      `No readiness score yet — pipeline evidence: ${mktContent ?? '—'} content asset(s), ${seoKeywords ?? '—'} SEO keyword(s).`, '/admin/marketing-agent'),
     dim('admissions', 'Admissions', null, 'unmeasured',
-      'No admissions-readiness probe yet (funnel coverage).', '/admin/admissions-agent'),
+      `No readiness score yet — pipeline evidence: ${admLeads ?? '—'} lead(s) tracked.`, '/admin/admissions-agent'),
     dim('placement', 'Placement', null, 'unmeasured',
-      'No placement-readiness probe yet (employer pipeline).', '/admin/placement-agent'),
+      `No readiness score yet — pipeline evidence: ${plcEmployers ?? '—'} employer(s) tracked.`, '/admin/placement-agent'),
     dim('deployment', 'Deployment', security.gate.verdict === 'GO' ? 100 : 0, 'measured',
       `Deploy gate follows Security: ${security.gate.verdict}. Founder approval required for every release.`, '/admin/security'),
   ];
@@ -221,6 +230,23 @@ export async function getCockpitSnapshot(): Promise<CockpitSnapshot> {
   const launchReadiness = scored.length
     ? Math.round(scored.reduce((a, d) => a + (d.score ?? 0), 0) / scored.length)
     : null;
+
+  // ---- Readiness history (Company Brain) -------------------------------------
+  // Record today's score (idempotent per day; never blocks the snapshot),
+  // then read the trend back oldest → newest.
+  if (launchReadiness != null) {
+    void recordReadinessSnapshot(
+      launchReadiness,
+      `${scored.length} scored dimension(s); gates S:${security.gate.verdict} QA:${qaGate} T:${translationGate}.`,
+    ).catch(() => {});
+  }
+  const readinessHistory: ReadinessHistoryPoint[] = (await listBrain('readiness-history', 30))
+    .map((e) => {
+      const m = /readiness:(\d+)%:(\d{4}-\d{2}-\d{2})/.exec(e.summary ?? '');
+      return m ? { date: m[2], score: Number(m[1]) } : null;
+    })
+    .filter((p): p is ReadinessHistoryPoint => p !== null)
+    .reverse();
 
   // ---- Critical blockers ------------------------------------------------------
   const criticalBlockers =
@@ -292,6 +318,7 @@ export async function getCockpitSnapshot(): Promise<CockpitSnapshot> {
     launchReadiness,
     scoredDimensions: scored.length,
     unmeasuredDimensions: dimensions.length - scored.length,
+    readinessHistory,
     gates,
     dimensions,
     platformHealth: ops?.platformStatus ?? 'unknown',

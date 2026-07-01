@@ -10,6 +10,7 @@ import { finishRun, logAction, startRun } from './logs';
 import { recordRunOutcome } from './health';
 import { nextRunFor } from './_internal';
 import { emitEvent } from './events';
+import { consolidate } from './memory';
 
 // Runner registry — populated at bootstrap. Each agent's code registers here.
 const runners = new Map<string, AgentRunner>();
@@ -102,6 +103,8 @@ export async function runAgent(
     });
   }
   await recordRunOutcome(agent as AgentRecord, { ok, durationMs, error: lastError, nextRunAt });
+  // Memory hygiene: promote durable short-term memories, archive expired ones.
+  if (ok) void consolidate(slug).catch(() => {});
   await emitEvent(
     ok ? 'agent.run.completed' : 'agent.run.failed',
     slug,
