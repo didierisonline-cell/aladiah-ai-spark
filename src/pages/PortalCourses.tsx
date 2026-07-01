@@ -26,7 +26,7 @@ const COURSE_ICONS: Record<string, string> = {
   // Fully built programs — pinned to top
   'AI Scrum Master Professional Certification v2': '🏆',
   'AI Project Manager & Delivery Leader': '📋',
-  'AI Cybersecurity, Governance & Enterprise Compliance': '🔐',
+  'AI Enterprise Cybersecurity, Governance & Digital Trust': '🔐',
   'AI Data Analyst & Decision Intelligence Professional': '📉',
   'AI Business Analyst & Product Discovery Specialist': '📊',
   // All other programs

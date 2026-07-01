@@ -612,28 +612,28 @@ export const AI_PROJECT_MANAGER_SIMS = buildModuleSims('ai-project-manager', [
 ]);
 
 // ═══════════════════════════════════════════════════════════════
-//  SCHOOL OF AI CYBERSECURITY
+//  SCHOOL OF AI ENTERPRISE CYBERSECURITY
 // ═══════════════════════════════════════════════════════════════
 
 export const AI_CYBERSECURITY_SIMS = buildModuleSims('ai-cybersecurity-governance', [
-  {theme:'Cybersecurity Foundations & Zero Trust',     focus:'CIA triad, zero trust architecture, risk quantification', company:'CipherTrust Financial'},
-  {theme:'Enterprise SOC, SIEM & XDR',                focus:'SOC operations, detection engineering, threat response',  company:'VaultSentinel Corp'},
-  {theme:'Cloud Security & Container Defense',         focus:'AWS/Azure/GCP security, Kubernetes, CSPM',               company:'NimbusShield AI'},
-  {theme:'Network Security & Penetration Testing',     focus:'network segmentation, pen testing, vulnerability management', company:'RedFort Security'},
-  {theme:'Application Security & DevSecOps',           focus:'OWASP, SAST/DAST, supply chain security, IaC scanning',  company:'CodeGuard Systems'},
-  {theme:'Digital Forensics & Incident Response',      focus:'DFIR, memory forensics, incident command, reporting',     company:'Forensiq Labs'},
-  {theme:'GRC & Compliance Architecture',              focus:'GRC program design, risk registers, continuous compliance', company:'GovRisk Advisors'},
-  {theme:'SOC 2 & ISO 27001 Mastery',                 focus:'SOC 2 Type II, ISO 27001 ISMS, audit readiness',          company:'TrustFrame Compliance'},
-  {theme:'Privacy Engineering & Data Protection',      focus:'GDPR, HIPAA, CCPA, privacy-by-design, DPIAs',            company:'PrivacyCore Financial'},
-  {theme:'Third-Party & Vendor Risk Management',       focus:'TPRM, vendor tiering, continuous monitoring, N-party risk', company:'SupplyGuard Enterprise'},
-  {theme:'AI Security & AI Governance',                focus:'OWASP LLM Top 10, NIST AI RMF, EU AI Act, ISO 42001',    company:'IntelliSecure AI'},
-  {theme:'Identity Security & PAM',                    focus:'Zero Trust Identity, PAM, IGA, MFA fatigue, FIDO2',       company:'IdentityVault Systems'},
-  {theme:'Threat Intelligence & Threat Hunting',       focus:'CTI lifecycle, MITRE ATT&CK, hypothesis-driven hunting',  company:'HuntOps Intelligence'},
-  {theme:'Security Automation, SOAR & Compliance Tools', focus:'SOAR playbooks, CCM platforms, OPA, Python automation', company:'AutoDefend Tech'},
-  {theme:'Audit Readiness & Executive Communication',  focus:'audit prep, evidence mapping, board reporting, metrics',  company:'AuditPrime Consulting'},
-  {theme:'CISO Leadership & Security Strategy',        focus:'CISO role, team building, ROSI, roadmap, crisis comm',    company:'Apex Security Group'},
-  {theme:'Security Architecture & Program Design',     focus:'enterprise security architecture, maturity modeling',      company:'ArchSecure Partners'},
-  {theme:'Enterprise Capstone — Full Security Engagement', focus:'end-to-end security program for a regulated fintech', company:'TechNova Financial'},
+  {theme:'Foundations of Enterprise Cybersecurity',              focus:'CIA triad, zero trust architecture, risk quantification, enterprise threat landscape',          company:'CipherTrust Financial'},
+  {theme:'Enterprise Security Operations & Resilience',          focus:'SOC operations, detection engineering, threat response, resilience planning',                  company:'VaultSentinel Corp'},
+  {theme:'Cloud & Distributed Infrastructure Security',          focus:'AWS/Azure/GCP security, Kubernetes, CSPM, distributed systems defense',                       company:'NimbusShield AI'},
+  {theme:'Network Defense & Modern Connectivity',                focus:'network segmentation, pen testing, zero trust networking, modern connectivity',                 company:'RedFort Security'},
+  {theme:'Secure Software Engineering & DevSecOps',              focus:'OWASP, SAST/DAST, supply chain security, IaC scanning, shift-left security',                  company:'CodeGuard Systems'},
+  {theme:'Digital Forensics, Incident Response & Crisis Mgmt',   focus:'DFIR, memory forensics, incident command, crisis communication, reporting',                   company:'Forensiq Labs'},
+  {theme:'Enterprise Governance, Risk & Compliance',             focus:'GRC program design, risk registers, continuous compliance, regulatory frameworks',             company:'GovRisk Advisors'},
+  {theme:'Enterprise Trust Standards: SOC 2 & ISO 27001',        focus:'SOC 2 Type II, ISO 27001 ISMS, audit readiness, trust framework design',                      company:'TrustFrame Compliance'},
+  {theme:'Privacy, Data Protection & Digital Rights',            focus:'GDPR, HIPAA, CCPA, privacy-by-design, DPIAs, digital rights management',                     company:'PrivacyCore Financial'},
+  {theme:'Third-Party Risk, Vendor Trust & Supply Chain Security',focus:'TPRM, vendor tiering, continuous monitoring, N-party risk, supply chain defense',            company:'SupplyGuard Enterprise'},
+  {theme:'AI Security, Governance & Autonomous Systems',         focus:'OWASP LLM Top 10, NIST AI RMF, EU AI Act, ISO 42001, autonomous system risk',                company:'IntelliSecure AI'},
+  {theme:'Identity, Access & Digital Trust',                     focus:'Zero Trust Identity, PAM, IGA, MFA fatigue, FIDO2, digital trust architecture',              company:'IdentityVault Systems'},
+  {theme:'Cyber Threat Intelligence & Global Risk',              focus:'CTI lifecycle, MITRE ATT&CK, hypothesis-driven hunting, geopolitical risk',                   company:'HuntOps Intelligence'},
+  {theme:'Security Automation, SOAR & AI Operations',            focus:'SOAR playbooks, CCM platforms, OPA, Python automation, AI-driven operations',                company:'AutoDefend Tech'},
+  {theme:'Security Assurance, Audit & Executive Readiness',      focus:'audit prep, evidence mapping, board reporting, metrics, executive communication',             company:'AuditPrime Consulting'},
+  {theme:'Enterprise Cybersecurity Leadership & Strategy',       focus:'CISO role, team building, ROSI, roadmap, crisis comm, executive leadership',                  company:'Apex Security Group'},
+  {theme:'Enterprise Security Architecture & Digital Transform',  focus:'enterprise security architecture, maturity modeling, digital transformation leadership',      company:'ArchSecure Partners'},
+  {theme:'AI Enterprise Digital Twin Capstone',                  focus:'end-to-end AI-powered security program for a regulated fintech enterprise',                   company:'TechNova Financial'},
 ]);
 
 
@@ -721,7 +721,7 @@ export const PROGRAMS = [
   { key:'ai-ethics-specialist',        label:'AI Ethics Specialist',       school:'Governance & Risk', icon:'🌍',  color:'#22C98A' },
   { key:'ai-policy-designer',          label:'AI Policy Designer',         school:'Governance & Risk', icon:'📜',  color:'#10B981' },
   // AI Cybersecurity
-  { key:'ai-cybersecurity-governance', label:'AI Cybersecurity, Governance & Enterprise Compliance', school:'AI Cybersecurity', icon:'🔐', color:'#EF4444' },
+  { key:'ai-cybersecurity-governance', label:'AI Enterprise Cybersecurity, Governance & Digital Trust', school:'AI Enterprise Cybersecurity', icon:'🔐', color:'#EF4444' },
   // Human-AI Experience
   { key:'ai-ux-designer',               label:'AI UX Designer',               school:'Human-AI Experience', icon:'🎨', color:'#C084FC' },
   { key:'conversation-designer',        label:'Conversation Designer',         school:'Human-AI Experience', icon:'💬', color:'#E879F9' },
@@ -735,7 +735,7 @@ export const SCHOOLS = [
   { label:'AI Business',         color:'#F0622A', bg:'rgba(240,98,42,.12)',  count:11 },
   { label:'Governance & Risk',   color:'#22C98A', bg:'rgba(34,201,138,.12)', count:7  },
   { label:'Human-AI Experience', color:'#C084FC', bg:'rgba(192,132,252,.12)',count:5  },
-  { label:'AI Cybersecurity',    color:'#EF4444', bg:'rgba(239,68,68,.12)',   count:1  },
+  { label:'AI Enterprise Cybersecurity', color:'#EF4444', bg:'rgba(239,68,68,.12)', count:1  },
 ];
 
 export const getSimsForProgram = (programKey: string) =>
