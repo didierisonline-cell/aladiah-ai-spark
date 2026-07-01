@@ -37,6 +37,7 @@ export default function PortalSidebar({ hoursLeft, coursesCount }: PortalSidebar
     { icon: '🏅', lbl: T('certs'), path: '/portal/certifications' },
     { icon: '💼', lbl: T('career_tools'), path: '/portal/career' },
     { icon: '🗂️', lbl: T('portfolio'), path: '/portal/portfolio' },
+    { icon: '🎨', lbl: 'AVIS™ Studio', path: '/portal/avis' },
     { icon: '🤖', lbl: t('sidebar.ai_mentor'), path: '/portal/mentor' },
     { icon: '👥', lbl: T('community'), path: '/community' },
     { icon: '🏆', lbl: T('leaderboard'), path: '/portal/talent-score' },

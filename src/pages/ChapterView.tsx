@@ -15,10 +15,12 @@ import { isFounderEmail } from '@/lib/roles';
 import { DEPRECATED_COURSE_REDIRECTS } from '@/lib/courseRedirects';
 import { founderModeOn } from '@/hooks/useFounderMode';
 import MobileLessonPlayer from '@/components/portal/MobileLessonPlayer';
+import AvisHeroVisual from '@/components/avis/AvisHeroVisual';
+import { getAvisAsset } from '@/data/avisAssets';
 
 const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string;
 
-interface Course { id: string; title: string; translations: any; }
+interface Course { id: string; title: string; translations: any; curriculum_version?: string; }
 interface Chapter { id: string; title: string; description: string; order_index: number; course_id: string; translations: any; }
 interface Video { id: string; title: string; description: string; chapter_id: string; order_index: number; video_url: string; translations: any; }
 interface Quiz { id: string; chapter_id: string; quiz_type: string; }
@@ -345,7 +347,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       };
 
       const [{ data: courseData }, { data: chapterData }, { data: allChaptersData }, { data: videosData }, { data: quizzesData }, { data: progressData }] = await Promise.all([
-        fetchWithRetry(() => supabase.from('courses').select('id, title, translations').eq('id', courseId).single()),
+        fetchWithRetry(() => supabase.from('courses').select('id, title, translations, curriculum_version').eq('id', courseId).single()),
         fetchWithRetry(() => supabase.from('chapters').select('id, title, description, order_index, course_id, translations').eq('id', chapterId).single()),
         fetchWithRetry(() => supabase.from('chapters').select('id, title, order_index, translations').eq('course_id', courseId).order('order_index')),
         fetchWithRetry(() => supabase.from('videos').select('id, title, description, chapter_id, order_index, video_url, translations').eq('chapter_id', chapterId).order('order_index')),
@@ -622,6 +624,24 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
             {getDescription(currentLesson) && (
               <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.7, marginBottom: 24 }}>{getDescription(currentLesson)}</p>
             )}
+
+            {/* AVIS™ Hero Visual — shown before transcript when an asset is mapped */}
+            {(() => {
+              if (!course?.curriculum_version || !chapter) return null;
+              const avisAsset = getAvisAsset(
+                course.curriculum_version,
+                chapter.order_index,
+                currentLesson?.order_index
+              );
+              if (!avisAsset) return null;
+              return (
+                <AvisHeroVisual
+                  asset={avisAsset}
+                  lessonTitle={getTitle(currentLesson)}
+                  moduleTitle={getLocalizedField(chapter, language, 'title')}
+                />
+              );
+            })()}
 
             {/* ── CHAPTER CONTENT — textbook layout ── */}
             {getTranscript(currentLesson) && (() => {

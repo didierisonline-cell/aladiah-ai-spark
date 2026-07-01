@@ -1,0 +1,241 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" style="font-family: system-ui, -apple-system, sans-serif;">
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#8596AD"/>
+    </marker>
+    <clipPath id="era1-clip">
+      <rect x="20" y="120" width="270" height="190" rx="8"/>
+    </clipPath>
+    <clipPath id="era2-clip">
+      <rect x="315" y="120" width="270" height="190" rx="8"/>
+    </clipPath>
+    <clipPath id="era3-clip">
+      <rect x="610" y="120" width="270" height="190" rx="8"/>
+    </clipPath>
+    <clipPath id="skill1-clip">
+      <rect x="30" y="355" width="258" height="80" rx="8"/>
+    </clipPath>
+    <clipPath id="skill2-clip">
+      <rect x="321" y="355" width="258" height="80" rx="8"/>
+    </clipPath>
+    <clipPath id="skill3-clip">
+      <rect x="612" y="355" width="258" height="80" rx="8"/>
+    </clipPath>
+    <clipPath id="banner-clip">
+      <rect x="20" y="450" width="860" height="68" rx="8"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="600" fill="#0B111E"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TITLE AREA (y 0–70) -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <text x="450" y="38" text-anchor="middle" font-size="22" font-weight="700" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">Cybersecurity Career Roadmap 2030–2050</text>
+  <text x="450" y="58" text-anchor="middle" font-size="11" font-weight="600" fill="#4A90F5" letter-spacing="2" font-family="system-ui, -apple-system, sans-serif">MODULE 19 · AI ENTERPRISE CYBERSECURITY</text>
+  <line x1="20" y1="70" x2="880" y2="70" stroke="#1E2D47" stroke-width="1.5"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TIMELINE HEADER (y=80 to y=115) -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- Timeline track -->
+  <line x1="60" y1="100" x2="840" y2="100" stroke="#1E2D47" stroke-width="4"/>
+
+  <!-- Milestone dot x=60: 2025 (blue) -->
+  <circle cx="60" cy="100" r="6" fill="#4A90F5"/>
+  <text x="60" y="118" text-anchor="middle" font-size="10" font-weight="600" fill="#4A90F5" font-family="system-ui, -apple-system, sans-serif">2025</text>
+
+  <!-- Milestone dot x=340: 2030 (purple) -->
+  <circle cx="340" cy="100" r="6" fill="#9B59B6"/>
+  <text x="340" y="118" text-anchor="middle" font-size="10" font-weight="600" fill="#9B59B6" font-family="system-ui, -apple-system, sans-serif">2030</text>
+
+  <!-- Milestone dot x=620: 2040 (gold) -->
+  <circle cx="620" cy="100" r="6" fill="#F59E0B"/>
+  <text x="620" y="118" text-anchor="middle" font-size="10" font-weight="600" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif">2040</text>
+
+  <!-- Milestone dot x=840: 2050 (gold) -->
+  <circle cx="840" cy="100" r="6" fill="#F59E0B"/>
+  <text x="840" y="118" text-anchor="middle" font-size="10" font-weight="600" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif">2050</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ERA 1 — 2025–2030 (x=20, y=120, width=270, height=190) -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- Card background -->
+  <rect x="20" y="120" width="270" height="190" rx="8" fill="#0D1829" stroke="#4A90F5" stroke-width="1.5"/>
+  <!-- Blue tint overlay -->
+  <rect x="20" y="120" width="270" height="190" rx="8" fill="#4A90F5" fill-opacity="0.05" clip-path="url(#era1-clip)"/>
+  <!-- Header bar -->
+  <rect x="20" y="120" width="270" height="34" rx="8" fill="#1A2E4A" clip-path="url(#era1-clip)"/>
+  <rect x="20" y="142" width="270" height="12" fill="#1A2E4A"/>
+  <!-- Era label -->
+  <text x="155" y="135" text-anchor="middle" font-size="11" font-weight="700" fill="#4A90F5" font-family="system-ui, -apple-system, sans-serif">ERA 1: 2025–2030</text>
+  <!-- Era title -->
+  <text x="155" y="170" text-anchor="middle" font-size="13" font-weight="700" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">AI-Augmented Roles</text>
+
+  <!-- Role chip 1: AI Security Architect -->
+  <rect x="32" y="182" width="246" height="30" rx="12" fill="#1A2E4A" stroke="#4A90F5" stroke-width="1"/>
+  <circle cx="52" cy="197" r="4" fill="#4A90F5"/>
+  <text x="155" y="201" text-anchor="middle" font-size="12" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">AI Security Architect</text>
+
+  <!-- Role chip 2: AI Risk Manager -->
+  <rect x="32" y="220" width="246" height="30" rx="12" fill="#1A2E4A" stroke="#4A90F5" stroke-width="1"/>
+  <circle cx="52" cy="235" r="4" fill="#4A90F5"/>
+  <text x="155" y="239" text-anchor="middle" font-size="12" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">AI Risk Manager</text>
+
+  <!-- Role chip 3: AI Compliance Officer -->
+  <rect x="32" y="258" width="246" height="30" rx="12" fill="#1A2E4A" stroke="#4A90F5" stroke-width="1"/>
+  <circle cx="52" cy="273" r="4" fill="#4A90F5"/>
+  <text x="155" y="277" text-anchor="middle" font-size="12" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">AI Compliance Officer</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- CONNECTOR ARROW 1: x=290 y=215 to x=315 y=215 -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <line x1="290" y1="215" x2="313" y2="215" stroke="#8596AD" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ERA 2 — 2030–2040 (x=315, y=120, width=270, height=190) -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- Card background -->
+  <rect x="315" y="120" width="270" height="190" rx="8" fill="#0D0D1A" stroke="#9B59B6" stroke-width="1.5"/>
+  <!-- Purple tint overlay -->
+  <rect x="315" y="120" width="270" height="190" rx="8" fill="#9B59B6" fill-opacity="0.05" clip-path="url(#era2-clip)"/>
+  <!-- Header bar -->
+  <rect x="315" y="120" width="270" height="34" rx="8" fill="#1A1530" clip-path="url(#era2-clip)"/>
+  <rect x="315" y="142" width="270" height="12" fill="#1A1530"/>
+  <!-- Era label -->
+  <text x="450" y="135" text-anchor="middle" font-size="11" font-weight="700" fill="#9B59B6" font-family="system-ui, -apple-system, sans-serif">ERA 2: 2030–2040</text>
+  <!-- Era title -->
+  <text x="450" y="170" text-anchor="middle" font-size="13" font-weight="700" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">AI-Native Security</text>
+
+  <!-- Role chip 1: AI SOC Director -->
+  <rect x="327" y="182" width="246" height="30" rx="12" fill="#1A1530" stroke="#9B59B6" stroke-width="1"/>
+  <circle cx="347" cy="197" r="4" fill="#9B59B6"/>
+  <text x="450" y="201" text-anchor="middle" font-size="12" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">AI SOC Director</text>
+
+  <!-- Role chip 2: Post-Quantum Architect -->
+  <rect x="327" y="220" width="246" height="30" rx="12" fill="#1A1530" stroke="#9B59B6" stroke-width="1"/>
+  <circle cx="347" cy="235" r="4" fill="#9B59B6"/>
+  <text x="450" y="239" text-anchor="middle" font-size="12" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">Post-Quantum Architect</text>
+
+  <!-- Role chip 3: AI Identity Governance Lead -->
+  <rect x="327" y="258" width="246" height="30" rx="12" fill="#1A1530" stroke="#9B59B6" stroke-width="1"/>
+  <circle cx="347" cy="273" r="4" fill="#9B59B6"/>
+  <text x="450" y="277" text-anchor="middle" font-size="12" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">AI Identity Governance Lead</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- CONNECTOR ARROW 2: x=585 y=215 to x=610 y=215 -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <line x1="585" y1="215" x2="608" y2="215" stroke="#8596AD" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ERA 3 — 2040–2050 (x=610, y=120, width=270, height=190) -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- Card background -->
+  <rect x="610" y="120" width="270" height="190" rx="8" fill="#1A1408" stroke="#F59E0B" stroke-width="1.5"/>
+  <!-- Gold tint overlay -->
+  <rect x="610" y="120" width="270" height="190" rx="8" fill="#F59E0B" fill-opacity="0.05" clip-path="url(#era3-clip)"/>
+  <!-- Header bar -->
+  <rect x="610" y="120" width="270" height="34" rx="8" fill="#2A2010" clip-path="url(#era3-clip)"/>
+  <rect x="610" y="142" width="270" height="12" fill="#2A2010"/>
+  <!-- Era label -->
+  <text x="745" y="135" text-anchor="middle" font-size="11" font-weight="700" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif">ERA 3: 2040–2050</text>
+  <!-- Era title -->
+  <text x="745" y="170" text-anchor="middle" font-size="13" font-weight="700" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">AI Governance Era</text>
+
+  <!-- Role chip 1: Enterprise AI Trust Officer -->
+  <rect x="622" y="182" width="246" height="30" rx="12" fill="#2A2010" stroke="#F59E0B" stroke-width="1"/>
+  <circle cx="642" cy="197" r="4" fill="#F59E0B"/>
+  <text x="745" y="201" text-anchor="middle" font-size="12" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">Enterprise AI Trust Officer</text>
+
+  <!-- Role chip 2: Synthetic Identity Specialist -->
+  <rect x="622" y="220" width="246" height="30" rx="12" fill="#2A2010" stroke="#F59E0B" stroke-width="1"/>
+  <circle cx="642" cy="235" r="4" fill="#F59E0B"/>
+  <text x="745" y="239" text-anchor="middle" font-size="12" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">Synthetic Identity Specialist</text>
+
+  <!-- Role chip 3: AI Security Policy Designer -->
+  <rect x="622" y="258" width="246" height="30" rx="12" fill="#2A2010" stroke="#F59E0B" stroke-width="1"/>
+  <circle cx="642" cy="273" r="4" fill="#F59E0B"/>
+  <text x="745" y="277" text-anchor="middle" font-size="12" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">AI Security Policy Designer</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- SKILLS THAT COMPOUND SECTION (y=320 to y=440) -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <text x="450" y="342" text-anchor="middle" font-size="13" font-weight="700" fill="#22C98A" letter-spacing="1.5" font-family="system-ui, -apple-system, sans-serif">SKILLS THAT COMPOUND</text>
+  <rect x="350" y="347" width="200" height="2" fill="#22C98A"/>
+
+  <!-- Skill Card 1 (x=30, y=355, width=258, height=80) -->
+  <rect x="30" y="355" width="258" height="80" rx="8" fill="#081A10" stroke="#22C98A" stroke-width="1.5"/>
+  <!-- Green left accent bar -->
+  <rect x="30" y="355" width="3" height="80" fill="#22C98A" clip-path="url(#skill1-clip)"/>
+  <text x="165" y="385" text-anchor="middle" font-size="13" font-weight="700" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">Judgment (not just tools)</text>
+  <text x="165" y="405" text-anchor="middle" font-size="10" fill="#8596AD" font-family="system-ui, -apple-system, sans-serif">Human reasoning that AI cannot replace</text>
+  <!-- Green icon dot -->
+  <circle cx="46" cy="390" r="3" fill="#22C98A"/>
+
+  <!-- Skill Card 2 (x=321, y=355, width=258, height=80) -->
+  <rect x="321" y="355" width="258" height="80" rx="8" fill="#081A10" stroke="#22C98A" stroke-width="1.5"/>
+  <!-- Green left accent bar -->
+  <rect x="321" y="355" width="3" height="80" fill="#22C98A" clip-path="url(#skill2-clip)"/>
+  <text x="450" y="385" text-anchor="middle" font-size="13" font-weight="700" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">Domain depth at an intersection</text>
+  <text x="450" y="405" text-anchor="middle" font-size="10" fill="#8596AD" font-family="system-ui, -apple-system, sans-serif">AI × your specialty = rare expertise</text>
+  <!-- Green icon dot -->
+  <circle cx="337" cy="390" r="3" fill="#22C98A"/>
+
+  <!-- Skill Card 3 (x=612, y=355, width=258, height=80) -->
+  <rect x="612" y="355" width="258" height="80" rx="8" fill="#081A10" stroke="#22C98A" stroke-width="1.5"/>
+  <!-- Green left accent bar -->
+  <rect x="612" y="355" width="3" height="80" fill="#22C98A" clip-path="url(#skill3-clip)"/>
+  <text x="741" y="385" text-anchor="middle" font-size="13" font-weight="700" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">AI governance + technical literacy</text>
+  <text x="741" y="405" text-anchor="middle" font-size="10" fill="#8596AD" font-family="system-ui, -apple-system, sans-serif">Bridge the gap most professionals miss</text>
+  <!-- Green icon dot -->
+  <circle cx="628" cy="390" r="3" fill="#22C98A"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- BOTTOM BANNER (y=450 to y=520) -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="20" y="450" width="860" height="68" rx="8" fill="#1A1408" stroke="#F59E0B" stroke-width="1.5"/>
+  <!-- Gold tint overlay -->
+  <rect x="20" y="450" width="860" height="68" rx="8" fill="#F59E0B" fill-opacity="0.06" clip-path="url(#banner-clip)"/>
+
+  <!-- Left star polygon (5-pointed) centered at x=55, y=484 -->
+  <!-- 5-pointed star: outer r=14, inner r=6, starting from top -->
+  <polygon points="
+    55,470
+    58.27,479.45
+    68.27,479.45
+    60.47,485.27
+    63.39,494.72
+    55,489.19
+    46.61,494.72
+    49.53,485.27
+    41.73,479.45
+    51.73,479.45
+  " fill="#F59E0B"/>
+
+  <!-- Right star polygon centered at x=845, y=484 -->
+  <polygon points="
+    845,470
+    848.27,479.45
+    858.27,479.45
+    850.47,485.27
+    853.39,494.72
+    845,489.19
+    836.61,494.72
+    839.53,485.27
+    831.73,479.45
+    841.73,479.45
+  " fill="#F59E0B"/>
+
+  <!-- Main banner text -->
+  <text x="450" y="479" text-anchor="middle" font-size="16" font-weight="700" fill="#EDF2F7" font-family="system-ui, -apple-system, sans-serif">The most important career decision: choose your intersection now</text>
+  <!-- Banner sub-text -->
+  <text x="450" y="500" text-anchor="middle" font-size="11" fill="#F59E0B" font-family="system-ui, -apple-system, sans-serif">AI × Cybersecurity × Your Domain = Career-Defining Advantage</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ALADIAH BRANDING (y=535 to y=560) -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <line x1="300" y1="530" x2="600" y2="530" stroke="#1E2D47" stroke-width="1"/>
+  <text x="450" y="548" text-anchor="middle" font-size="10" fill="#8596AD" letter-spacing="2" font-family="system-ui, -apple-system, sans-serif">ALADIAH ACADEMY</text>
+
+</svg>

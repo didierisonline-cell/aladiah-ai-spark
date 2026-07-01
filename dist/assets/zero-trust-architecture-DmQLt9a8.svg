@@ -1,0 +1,182 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="680" viewBox="0 0 900 680" style="font-family: system-ui, -apple-system, sans-serif;">
+  <!-- Background -->
+  <rect width="900" height="680" fill="#0B111E"/>
+
+  <!-- Title Section -->
+  <text x="450" y="44" text-anchor="middle" font-size="22" font-weight="700" fill="#EDF2F7" letter-spacing="0.5">Zero Trust Architecture</text>
+  <text x="450" y="68" text-anchor="middle" font-size="13" fill="#8596AD" letter-spacing="1">NEVER TRUST, ALWAYS VERIFY</text>
+
+  <!-- Divider line between title and panels -->
+  <line x1="60" y1="82" x2="840" y2="82" stroke="#1E2D47" stroke-width="1"/>
+
+  <!-- ============ LEFT PANEL — OLD Perimeter Model ============ -->
+  <!-- Panel background: red-tinted -->
+  <rect x="30" y="96" width="390" height="390" rx="10" fill="#1A1020" stroke="#3D1A1A" stroke-width="1.5"/>
+  <!-- Red tint overlay -->
+  <rect x="30" y="96" width="390" height="390" rx="10" fill="#EF4444" fill-opacity="0.06"/>
+
+  <!-- Panel header -->
+  <rect x="30" y="96" width="390" height="40" rx="10" fill="#2A1515"/>
+  <rect x="30" y="116" width="390" height="20" fill="#2A1515"/>
+  <text x="225" y="121" text-anchor="middle" font-size="12" font-weight="700" fill="#EF4444" letter-spacing="0.8">OLD: PERIMETER MODEL</text>
+
+  <!-- "Implicit Trust" badge -->
+  <rect x="290" y="146" width="112" height="24" rx="12" fill="#EF4444" fill-opacity="0.2" stroke="#EF4444" stroke-width="1"/>
+  <text x="346" y="162" text-anchor="middle" font-size="11" font-weight="600" fill="#EF4444">⬤ Implicit Trust</text>
+
+  <!-- Internet box -->
+  <rect x="60" y="180" width="100" height="44" rx="7" fill="#1E2D47" stroke="#3D4F6B" stroke-width="1.5"/>
+  <text x="110" y="198" text-anchor="middle" font-size="10" fill="#8596AD">🌐</text>
+  <text x="110" y="213" text-anchor="middle" font-size="11" font-weight="600" fill="#8596AD">Internet</text>
+
+  <!-- Arrow Internet -> Firewall -->
+  <line x1="160" y1="202" x2="192" y2="202" stroke="#8596AD" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+
+  <!-- Firewall box -->
+  <rect x="192" y="180" width="80" height="44" rx="7" fill="#1E2D47" stroke="#3D4F6B" stroke-width="1.5"/>
+  <text x="232" y="198" text-anchor="middle" font-size="10" fill="#8596AD">🔥</text>
+  <text x="232" y="213" text-anchor="middle" font-size="11" font-weight="600" fill="#8596AD">Firewall</text>
+
+  <!-- Arrow Firewall -> Trusted Zone -->
+  <line x1="272" y1="202" x2="300" y2="202" stroke="#8596AD" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+
+  <!-- TRUSTED ZONE box -->
+  <rect x="55" y="248" width="320" height="170" rx="8" fill="#1A2535" stroke="#3D4F6B" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="215" y="272" text-anchor="middle" font-size="11" font-weight="600" fill="#8596AD">TRUSTED ZONE</text>
+
+  <!-- Resources inside trusted zone -->
+  <rect x="72" y="283" width="80" height="32" rx="5" fill="#1E2D47" stroke="#3D4F6B" stroke-width="1"/>
+  <text x="112" y="302" text-anchor="middle" font-size="10" fill="#8596AD">Database</text>
+
+  <rect x="170" y="283" width="80" height="32" rx="5" fill="#1E2D47" stroke="#3D4F6B" stroke-width="1"/>
+  <text x="210" y="302" text-anchor="middle" font-size="10" fill="#8596AD">App Server</text>
+
+  <rect x="268" y="283" width="80" height="32" rx="5" fill="#1E2D47" stroke="#3D4F6B" stroke-width="1"/>
+  <text x="308" y="302" text-anchor="middle" font-size="10" fill="#8596AD">File Store</text>
+
+  <rect x="72" y="328" width="80" height="32" rx="5" fill="#1E2D47" stroke="#3D4F6B" stroke-width="1"/>
+  <text x="112" y="347" text-anchor="middle" font-size="10" fill="#8596AD">Email</text>
+
+  <rect x="170" y="328" width="80" height="32" rx="5" fill="#1E2D47" stroke="#3D4F6B" stroke-width="1"/>
+  <text x="210" y="347" text-anchor="middle" font-size="10" fill="#8596AD">Internal API</text>
+
+  <rect x="268" y="328" width="80" height="32" rx="5" fill="#1E2D47" stroke="#3D4F6B" stroke-width="1"/>
+  <text x="308" y="347" text-anchor="middle" font-size="10" fill="#8596AD">Admin Panel</text>
+
+  <text x="215" y="393" text-anchor="middle" font-size="10" fill="#EF4444" font-style="italic">Trust everything inside the perimeter</text>
+
+  <!-- Big red X diagonal strikethrough -->
+  <line x1="40" y1="106" x2="410" y2="476" stroke="#EF4444" stroke-width="3" stroke-opacity="0.55"/>
+  <line x1="410" y1="106" x2="40" y2="476" stroke="#EF4444" stroke-width="3" stroke-opacity="0.55"/>
+
+  <!-- ============ CENTER DIVIDER ============ -->
+  <line x1="450" y1="96" x2="450" y2="486" stroke="#1E2D47" stroke-width="2"/>
+  <rect x="437" y="278" width="26" height="26" rx="4" fill="#111D30" stroke="#1E2D47" stroke-width="1.5"/>
+  <text x="450" y="295" text-anchor="middle" font-size="11" fill="#8596AD">VS</text>
+
+  <!-- ============ RIGHT PANEL — Zero Trust Model ============ -->
+  <!-- Panel background: green-tinted -->
+  <rect x="470" y="96" width="400" height="390" rx="10" fill="#0D1A10" stroke="#1A3D24" stroke-width="1.5"/>
+  <rect x="470" y="96" width="400" height="390" rx="10" fill="#22C98A" fill-opacity="0.05"/>
+
+  <!-- Panel header -->
+  <rect x="470" y="96" width="400" height="40" rx="10" fill="#0F2A1A"/>
+  <rect x="470" y="116" width="400" height="20" fill="#0F2A1A"/>
+  <text x="670" y="121" text-anchor="middle" font-size="12" font-weight="700" fill="#22C98A" letter-spacing="0.8">ZERO TRUST MODEL</text>
+
+  <!-- "Continuous Verification" badge -->
+  <rect x="530" y="146" width="164" height="24" rx="12" fill="#22C98A" fill-opacity="0.15" stroke="#22C98A" stroke-width="1"/>
+  <text x="612" y="162" text-anchor="middle" font-size="11" font-weight="600" fill="#22C98A">✓ Continuous Verification</text>
+
+  <!-- ZT Flow steps -->
+  <!-- Step 1: Any Device -->
+  <rect x="492" y="183" width="356" height="36" rx="6" fill="#111D30" stroke="#22C98A" stroke-width="1.5"/>
+  <text x="514" y="197" font-size="11" font-weight="700" fill="#22C98A">➤</text>
+  <text x="534" y="197" font-size="11" font-weight="600" fill="#EDF2F7">Any Device</text>
+  <text x="534" y="212" font-size="10" fill="#8596AD">User, endpoint, service — all untrusted by default</text>
+
+  <!-- Arrow down -->
+  <line x1="670" y1="219" x2="670" y2="234" stroke="#22C98A" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+
+  <!-- Step 2: Identity Verification -->
+  <rect x="492" y="234" width="356" height="36" rx="6" fill="#111D30" stroke="#22C98A" stroke-width="1.5"/>
+  <text x="514" y="248" font-size="11" font-weight="700" fill="#22C98A">✓</text>
+  <text x="534" y="248" font-size="11" font-weight="600" fill="#EDF2F7">Identity Verification</text>
+  <text x="534" y="263" font-size="10" fill="#8596AD">MFA, SSO, certificates — who are you?</text>
+
+  <!-- Arrow down -->
+  <line x1="670" y1="270" x2="670" y2="285" stroke="#22C98A" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+
+  <!-- Step 3: Device Trust -->
+  <rect x="492" y="285" width="356" height="36" rx="6" fill="#111D30" stroke="#22C98A" stroke-width="1.5"/>
+  <text x="514" y="299" font-size="11" font-weight="700" fill="#22C98A">✓</text>
+  <text x="534" y="299" font-size="11" font-weight="600" fill="#EDF2F7">Device Trust</text>
+  <text x="534" y="314" font-size="10" fill="#8596AD">Posture check, patch status, compliance</text>
+
+  <!-- Arrow down -->
+  <line x1="670" y1="321" x2="670" y2="336" stroke="#22C98A" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+
+  <!-- Step 4: Micro-segmentation -->
+  <rect x="492" y="336" width="356" height="36" rx="6" fill="#111D30" stroke="#22C98A" stroke-width="1.5"/>
+  <text x="514" y="350" font-size="11" font-weight="700" fill="#22C98A">✓</text>
+  <text x="534" y="350" font-size="11" font-weight="600" fill="#EDF2F7">Micro-segmentation</text>
+  <text x="534" y="365" font-size="10" fill="#8596AD">Network isolated by workload, no lateral movement</text>
+
+  <!-- Arrow down -->
+  <line x1="670" y1="372" x2="670" y2="387" stroke="#22C98A" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+
+  <!-- Step 5: Least Privilege -->
+  <rect x="492" y="387" width="356" height="36" rx="6" fill="#111D30" stroke="#22C98A" stroke-width="1.5"/>
+  <text x="514" y="401" font-size="11" font-weight="700" fill="#22C98A">✓</text>
+  <text x="534" y="401" font-size="11" font-weight="600" fill="#EDF2F7">Least Privilege Access</text>
+  <text x="534" y="416" font-size="10" fill="#8596AD">Only minimum permissions for this session</text>
+
+  <!-- Arrow down -->
+  <line x1="670" y1="423" x2="670" y2="438" stroke="#22C98A" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+
+  <!-- Step 6: Application / Data -->
+  <rect x="492" y="438" width="170" height="36" rx="6" fill="#111D30" stroke="#22C98A" stroke-width="1.5"/>
+  <text x="514" y="452" font-size="11" font-weight="700" fill="#22C98A">✓</text>
+  <text x="534" y="452" font-size="11" font-weight="600" fill="#EDF2F7">Application</text>
+  <text x="534" y="467" font-size="10" fill="#8596AD">Granular app access</text>
+
+  <rect x="678" y="438" width="170" height="36" rx="6" fill="#111D30" stroke="#22C98A" stroke-width="1.5"/>
+  <text x="698" y="452" font-size="11" font-weight="700" fill="#22C98A">✓</text>
+  <text x="718" y="452" font-size="11" font-weight="600" fill="#EDF2F7">Data</text>
+  <text x="718" y="467" font-size="10" fill="#8596AD">Encrypted, classified</text>
+
+  <!-- ============ BOTTOM PRINCIPLES BAR ============ -->
+  <rect x="30" y="502" width="840" height="12" rx="0" fill="none"/>
+  <text x="450" y="516" text-anchor="middle" font-size="11" fill="#8596AD" letter-spacing="0.5">KEY PRINCIPLES</text>
+
+  <!-- Card 1 -->
+  <rect x="30" y="526" width="265" height="80" rx="8" fill="#111D30" stroke="#1E2D47" stroke-width="1.5"/>
+  <rect x="30" y="526" width="265" height="4" rx="2" fill="#4A90F5"/>
+  <text x="162" y="556" text-anchor="middle" font-size="13" font-weight="700" fill="#4A90F5">Verify Explicitly</text>
+  <text x="162" y="574" text-anchor="middle" font-size="11" fill="#8596AD">Always authenticate and</text>
+  <text x="162" y="589" text-anchor="middle" font-size="11" fill="#8596AD">authorize every request</text>
+
+  <!-- Card 2 -->
+  <rect x="318" y="526" width="265" height="80" rx="8" fill="#111D30" stroke="#1E2D47" stroke-width="1.5"/>
+  <rect x="318" y="526" width="265" height="4" rx="2" fill="#22C98A"/>
+  <text x="450" y="556" text-anchor="middle" font-size="13" font-weight="700" fill="#22C98A">Use Least Privilege</text>
+  <text x="450" y="574" text-anchor="middle" font-size="11" fill="#8596AD">Limit access to only what</text>
+  <text x="450" y="589" text-anchor="middle" font-size="11" fill="#8596AD">is needed, nothing more</text>
+
+  <!-- Card 3 -->
+  <rect x="606" y="526" width="264" height="80" rx="8" fill="#111D30" stroke="#1E2D47" stroke-width="1.5"/>
+  <rect x="606" y="526" width="264" height="4" rx="2" fill="#EF4444"/>
+  <text x="738" y="556" text-anchor="middle" font-size="13" font-weight="700" fill="#EF4444">Assume Breach</text>
+  <text x="738" y="574" text-anchor="middle" font-size="11" fill="#8596AD">Design as if attackers</text>
+  <text x="738" y="589" text-anchor="middle" font-size="11" fill="#8596AD">are already inside</text>
+
+  <!-- Defs -->
+  <defs>
+    <marker id="arrowGray" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#8596AD"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#22C98A"/>
+    </marker>
+  </defs>
+</svg>

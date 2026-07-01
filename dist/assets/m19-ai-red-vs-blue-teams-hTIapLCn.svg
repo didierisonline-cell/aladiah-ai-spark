@@ -1,0 +1,293 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" width="900" height="600" style="font-family: system-ui, -apple-system, sans-serif;">
+
+  <!-- Background -->
+  <rect width="900" height="600" fill="#0B111E"/>
+
+  <!-- Subtle grid texture -->
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1E2D47" stroke-width="0.5" opacity="0.4"/>
+    </pattern>
+  </defs>
+  <rect width="900" height="600" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- TITLE AREA (y 0–70)                                -->
+  <!-- ═══════════════════════════════════════════════════ -->
+
+  <!-- Title -->
+  <text x="450" y="38" text-anchor="middle" fill="#EDF2F7" font-size="20" font-weight="700" letter-spacing="0.5">AI Red Team vs. AI Blue Team — Autonomous Security Operations</text>
+
+  <!-- Subtitle -->
+  <text x="450" y="58" text-anchor="middle" fill="#8596AD" font-size="11" font-weight="500" letter-spacing="2">MODULE 19 · AI ENTERPRISE CYBERSECURITY</text>
+
+  <!-- Divider line -->
+  <line x1="40" y1="70" x2="860" y2="70" stroke="#1E2D47" stroke-width="1.5"/>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- LEFT COLUMN — AI RED TEAM                          -->
+  <!-- x=20, y=80, width=375, height=360                  -->
+  <!-- ═══════════════════════════════════════════════════ -->
+
+  <!-- Outer rect -->
+  <rect x="20" y="80" width="375" height="360" fill="#1A0808" stroke="#5C1A1A" stroke-width="1.5" rx="10"/>
+  <!-- Red tint overlay -->
+  <rect x="20" y="80" width="375" height="360" fill="#EF4444" fill-opacity="0.06" rx="10"/>
+
+  <!-- Header bar -->
+  <rect x="20" y="80" width="375" height="44" fill="#2A1515" rx="10"/>
+  <rect x="20" y="104" width="375" height="20" fill="#2A1515"/>
+
+  <!-- Skull icon decoration in header -->
+  <circle cx="57" cy="102" r="10" fill="none" stroke="#EF4444" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="54" cy="100" r="1.5" fill="#EF4444" opacity="0.8"/>
+  <circle cx="60" cy="100" r="1.5" fill="#EF4444" opacity="0.8"/>
+  <path d="M 53 105 L 54 104 L 55 105 L 56 104 L 57 105 L 58 104 L 59 105 L 60 104 L 61 105" fill="none" stroke="#EF4444" stroke-width="1" opacity="0.7"/>
+
+  <!-- "AI RED TEAM" header text -->
+  <text x="207" y="100" text-anchor="middle" fill="#EF4444" font-size="16" font-weight="700" letter-spacing="1.5">AI RED TEAM</text>
+  <!-- Sub-label -->
+  <text x="207" y="117" text-anchor="middle" fill="#8596AD" font-size="10" letter-spacing="1.5">OFFENSIVE SECURITY AUTOMATION</text>
+
+  <!-- ─── Card 1: Continuous Reconnaissance ─── -->
+  <rect x="35" y="136" width="345" height="60" fill="#111D30" stroke="#3D1515" stroke-width="1" rx="6"/>
+  <!-- Left accent bar -->
+  <rect x="35" y="136" width="3" height="60" fill="#EF4444" rx="1.5"/>
+  <!-- Icon circle -->
+  <circle cx="60" cy="166" r="12" fill="#2A1515" stroke="#EF4444" stroke-width="1" opacity="0.8"/>
+  <circle cx="60" cy="162" r="3" fill="none" stroke="#EF4444" stroke-width="1.2"/>
+  <path d="M 55 168 Q 60 172 65 168" fill="none" stroke="#EF4444" stroke-width="1.2"/>
+  <line x1="60" y1="159" x2="60" y2="157" stroke="#EF4444" stroke-width="1.2"/>
+  <line x1="63.6" y1="160" x2="65" y2="158.7" stroke="#EF4444" stroke-width="1.2"/>
+  <line x1="56.4" y1="160" x2="55" y2="158.7" stroke="#EF4444" stroke-width="1.2"/>
+  <!-- Title -->
+  <text x="80" y="157" fill="#EDF2F7" font-size="12" font-weight="700">Continuous Reconnaissance</text>
+  <!-- Desc -->
+  <text x="80" y="173" fill="#8596AD" font-size="10">24/7 automated surface discovery and enumeration</text>
+
+  <!-- ─── Card 2: Autonomous Exploitation ─── -->
+  <rect x="35" y="204" width="345" height="60" fill="#111D30" stroke="#3D1515" stroke-width="1" rx="6"/>
+  <rect x="35" y="204" width="3" height="60" fill="#EF4444" rx="1.5"/>
+  <!-- Icon -->
+  <circle cx="60" cy="234" r="12" fill="#2A1515" stroke="#EF4444" stroke-width="1" opacity="0.8"/>
+  <path d="M 54 234 L 58 230 L 58 233 L 66 233 L 66 235 L 58 235 L 58 238 Z" fill="#EF4444"/>
+  <!-- Title -->
+  <text x="80" y="225" fill="#EDF2F7" font-size="12" font-weight="700">Autonomous Exploitation</text>
+  <!-- Desc -->
+  <text x="80" y="241" fill="#8596AD" font-size="10">Machine-speed vulnerability testing and chaining</text>
+
+  <!-- ─── Card 3: Adaptive Technique Selection ─── -->
+  <rect x="35" y="272" width="345" height="60" fill="#111D30" stroke="#3D1515" stroke-width="1" rx="6"/>
+  <rect x="35" y="272" width="3" height="60" fill="#EF4444" rx="1.5"/>
+  <!-- Icon -->
+  <circle cx="60" cy="302" r="12" fill="#2A1515" stroke="#EF4444" stroke-width="1" opacity="0.8"/>
+  <path d="M 54 299 L 57 302 L 54 305" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 60 296 L 60 308" fill="none" stroke="#EF4444" stroke-width="1.2" stroke-dasharray="2,2"/>
+  <path d="M 63 298 C 67 302 63 306 66 302" fill="none" stroke="#EF4444" stroke-width="1.2"/>
+  <!-- Title -->
+  <text x="80" y="293" fill="#EDF2F7" font-size="12" font-weight="700">Adaptive Technique Selection</text>
+  <!-- Desc -->
+  <text x="80" y="309" fill="#8596AD" font-size="10">AI selects optimal TTPs based on target response</text>
+
+  <!-- ─── Card 4: Machine-Speed Scale ─── -->
+  <rect x="35" y="340" width="345" height="60" fill="#111D30" stroke="#3D1515" stroke-width="1" rx="6"/>
+  <rect x="35" y="340" width="3" height="60" fill="#EF4444" rx="1.5"/>
+  <!-- Icon -->
+  <circle cx="60" cy="370" r="12" fill="#2A1515" stroke="#EF4444" stroke-width="1" opacity="0.8"/>
+  <line x1="54" y1="374" x2="56" y2="368" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="57" y1="374" x2="59" y2="365" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="60" y1="374" x2="62" y2="367" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="63" y1="374" x2="65" y2="363" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Title -->
+  <text x="80" y="361" fill="#EDF2F7" font-size="12" font-weight="700">Machine-Speed Scale</text>
+  <!-- Desc -->
+  <text x="80" y="377" fill="#8596AD" font-size="10">Thousands of simultaneous attack simulations</text>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- CENTER VS DIVIDER                                  -->
+  <!-- x=390, y=80, width=120, height=360                 -->
+  <!-- ═══════════════════════════════════════════════════ -->
+
+  <!-- Vertical center line (split into two halves with gap for VS) -->
+  <line x1="450" y1="80" x2="450" y2="205" stroke="#1E2D47" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="450" y1="285" x2="450" y2="440" stroke="#1E2D47" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+  <!-- Pulse / circuit line above VS -->
+  <polyline points="418,200 426,200 430,192 434,208 438,200 450,200 462,200 466,192 470,208 474,200 482,200" fill="none" stroke="#22C98A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+
+  <!-- VS circle backdrop -->
+  <circle cx="450" cy="240" r="34" fill="#111D30" stroke="#1E2D47" stroke-width="2"/>
+  <circle cx="450" cy="240" r="28" fill="#0B111E" stroke="#1E2D47" stroke-width="1" opacity="0.6"/>
+
+  <!-- VS text -->
+  <text x="450" y="248" text-anchor="middle" fill="#EDF2F7" font-size="28" font-weight="900" letter-spacing="1">VS</text>
+
+  <!-- Lightning bolt polygon centered ~x=450, y=290 -->
+  <polygon points="447,278 441,292 449,292 445,306 459,289 450,289 454,278" fill="#F59E0B"/>
+
+  <!-- Small decorative dots -->
+  <circle cx="430" cy="240" r="2" fill="#EF4444" opacity="0.5"/>
+  <circle cx="470" cy="240" r="2" fill="#4A90F5" opacity="0.5"/>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- RIGHT COLUMN — AI BLUE TEAM                        -->
+  <!-- x=510, y=80, width=375, height=360                 -->
+  <!-- ═══════════════════════════════════════════════════ -->
+
+  <!-- Outer rect -->
+  <rect x="510" y="80" width="375" height="360" fill="#08101A" stroke="#1A3A5C" stroke-width="1.5" rx="10"/>
+  <!-- Blue tint overlay -->
+  <rect x="510" y="80" width="375" height="360" fill="#4A90F5" fill-opacity="0.06" rx="10"/>
+
+  <!-- Header bar -->
+  <rect x="510" y="80" width="375" height="44" fill="#152236" rx="10"/>
+  <rect x="510" y="104" width="375" height="20" fill="#152236"/>
+
+  <!-- Shield icon decoration in header -->
+  <path d="M 543 92 L 543 108 C 543 112 547 114 550 115 C 553 114 557 112 557 108 L 557 92 L 543 92 Z" fill="none" stroke="#4A90F5" stroke-width="1.5" opacity="0.7"/>
+  <path d="M 547 101 L 549 103 L 553 99" fill="none" stroke="#4A90F5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+
+  <!-- "AI BLUE TEAM" header text -->
+  <text x="697" y="100" text-anchor="middle" fill="#4A90F5" font-size="16" font-weight="700" letter-spacing="1.5">AI BLUE TEAM</text>
+  <!-- Sub-label -->
+  <text x="697" y="117" text-anchor="middle" fill="#8596AD" font-size="10" letter-spacing="1.5">DEFENSIVE SECURITY AUTOMATION</text>
+
+  <!-- ─── Card 1: Breach & Attack Simulation ─── -->
+  <rect x="520" y="136" width="355" height="60" fill="#111D30" stroke="#152236" stroke-width="1" rx="6"/>
+  <rect x="520" y="136" width="3" height="60" fill="#4A90F5" rx="1.5"/>
+  <!-- Icon -->
+  <circle cx="545" cy="166" r="12" fill="#152236" stroke="#4A90F5" stroke-width="1" opacity="0.8"/>
+  <path d="M 539 163 L 539 169 C 539 171.2 541 172 545 173 C 549 172 551 171.2 551 169 L 551 163 L 545 163 Z" fill="none" stroke="#4A90F5" stroke-width="1.2"/>
+  <path d="M 542 166 L 544 168 L 548 164" fill="none" stroke="#4A90F5" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Title -->
+  <text x="565" y="157" fill="#EDF2F7" font-size="12" font-weight="700">Breach &amp; Attack Simulation</text>
+  <!-- Desc -->
+  <text x="565" y="173" fill="#8596AD" font-size="10">Continuous purple team testing against live defenses</text>
+
+  <!-- ─── Card 2: Continuous Posture Testing ─── -->
+  <rect x="520" y="204" width="355" height="60" fill="#111D30" stroke="#152236" stroke-width="1" rx="6"/>
+  <rect x="520" y="204" width="3" height="60" fill="#4A90F5" rx="1.5"/>
+  <!-- Icon -->
+  <circle cx="545" cy="234" r="12" fill="#152236" stroke="#4A90F5" stroke-width="1" opacity="0.8"/>
+  <circle cx="545" cy="234" r="6" fill="none" stroke="#4A90F5" stroke-width="1.2"/>
+  <circle cx="545" cy="234" r="2.5" fill="#4A90F5" opacity="0.7"/>
+  <line x1="545" y1="225" x2="545" y2="222" stroke="#4A90F5" stroke-width="1.2"/>
+  <line x1="554" y1="234" x2="557" y2="234" stroke="#4A90F5" stroke-width="1.2"/>
+  <!-- Title -->
+  <text x="565" y="225" fill="#EDF2F7" font-size="12" font-weight="700">Continuous Posture Testing</text>
+  <!-- Desc -->
+  <text x="565" y="241" fill="#8596AD" font-size="10">Real-time security gap identification and scoring</text>
+
+  <!-- ─── Card 3: Prioritized Remediation ─── -->
+  <rect x="520" y="272" width="355" height="60" fill="#111D30" stroke="#152236" stroke-width="1" rx="6"/>
+  <rect x="520" y="272" width="3" height="60" fill="#4A90F5" rx="1.5"/>
+  <!-- Icon -->
+  <circle cx="545" cy="302" r="12" fill="#152236" stroke="#4A90F5" stroke-width="1" opacity="0.8"/>
+  <line x1="540" y1="299" x2="550" y2="299" stroke="#22C98A" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="540" y1="302" x2="548" y2="302" stroke="#4A90F5" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="540" y1="305" x2="546" y2="305" stroke="#8596AD" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Priority indicator -->
+  <rect x="551" y="297" width="4" height="2" fill="#22C98A" rx="1"/>
+  <!-- Title -->
+  <text x="565" y="293" fill="#EDF2F7" font-size="12" font-weight="700">Prioritized Remediation</text>
+  <!-- Desc -->
+  <text x="565" y="309" fill="#8596AD" font-size="10">AI-ranked fix queue based on exploitability + impact</text>
+
+  <!-- ─── Card 4: Self-Updating Threat Model ─── -->
+  <rect x="520" y="340" width="355" height="60" fill="#111D30" stroke="#152236" stroke-width="1" rx="6"/>
+  <rect x="520" y="340" width="3" height="60" fill="#4A90F5" rx="1.5"/>
+  <!-- Icon: refresh arrows -->
+  <circle cx="545" cy="370" r="12" fill="#152236" stroke="#4A90F5" stroke-width="1" opacity="0.8"/>
+  <path d="M 539 367 A 6 6 0 0 1 551 367" fill="none" stroke="#4A90F5" stroke-width="1.5" stroke-linecap="round"/>
+  <polygon points="551,365 553,368 549,368" fill="#4A90F5"/>
+  <path d="M 551 373 A 6 6 0 0 1 539 373" fill="none" stroke="#4A90F5" stroke-width="1.5" stroke-linecap="round"/>
+  <polygon points="539,375 537,372 541,372" fill="#4A90F5"/>
+  <!-- Title -->
+  <text x="565" y="361" fill="#EDF2F7" font-size="12" font-weight="700">Self-Updating Threat Model</text>
+  <!-- Desc -->
+  <text x="565" y="377" fill="#8596AD" font-size="10">Adapts defenses as red team evolves its techniques</text>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- BATTLE FLOOR GLOW EFFECT                           -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <line x1="20" y1="440" x2="395" y2="440" stroke="#EF4444" stroke-width="0.5" opacity="0.3"/>
+  <line x1="505" y1="440" x2="885" y2="440" stroke="#4A90F5" stroke-width="0.5" opacity="0.3"/>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- BOTTOM GOVERNANCE BAR (y=450 to y=530)             -->
+  <!-- ═══════════════════════════════════════════════════ -->
+
+  <!-- Outer rect -->
+  <rect x="20" y="450" width="865" height="90" fill="#1A1408" stroke="#8B6914" stroke-width="1.5" rx="8"/>
+  <!-- Gold tint overlay -->
+  <rect x="20" y="450" width="865" height="90" fill="#F59E0B" fill-opacity="0.08" rx="8"/>
+
+  <!-- Corner accents -->
+  <rect x="20" y="450" width="40" height="3" fill="#F59E0B" opacity="0.6" rx="1.5"/>
+  <rect x="845" y="450" width="40" height="3" fill="#F59E0B" opacity="0.6" rx="1.5"/>
+  <rect x="20" y="537" width="40" height="3" fill="#F59E0B" opacity="0.6" rx="1.5"/>
+  <rect x="845" y="537" width="40" height="3" fill="#F59E0B" opacity="0.6" rx="1.5"/>
+
+  <!-- Governance header -->
+  <text x="452" y="468" text-anchor="middle" fill="#F59E0B" font-size="13" font-weight="700" letter-spacing="2">AI GOVERNANCE FRAMEWORK</text>
+
+  <!-- Divider under header -->
+  <line x1="120" y1="474" x2="780" y2="474" stroke="#8B6914" stroke-width="0.75" opacity="0.5"/>
+
+  <!-- ─── Item 1: Authorized scope definition ─── -->
+  <!-- Shield icon -->
+  <path d="M 100 484 L 100 498 C 100 502 104 504 107 505 C 110 504 114 502 114 498 L 114 484 L 100 484 Z" fill="#1A1408" stroke="#F59E0B" stroke-width="1.5"/>
+  <path d="M 104 491 L 106 494 L 110 488" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Text -->
+  <text x="120" y="491" fill="#EDF2F7" font-size="12" font-weight="600">Authorized scope definition</text>
+  <text x="120" y="506" fill="#8596AD" font-size="10">Clear boundaries for all AI operations</text>
+
+  <!-- Vertical separator 1 -->
+  <line x1="340" y1="478" x2="340" y2="530" stroke="#8B6914" stroke-width="0.75" opacity="0.4"/>
+
+  <!-- ─── Item 2: Human escalation triggers ─── -->
+  <!-- Bell icon -->
+  <path d="M 371 495 C 371 489 375 485 380 485 C 385 485 389 489 389 495 L 390 502 L 370 502 Z" fill="#1A1408" stroke="#F59E0B" stroke-width="1.5"/>
+  <rect x="378" y="502" width="4" height="3" fill="#F59E0B" rx="1"/>
+  <circle cx="380" cy="484" r="1.5" fill="#F59E0B"/>
+  <!-- Text -->
+  <text x="398" y="491" fill="#EDF2F7" font-size="12" font-weight="600">Human escalation triggers</text>
+  <text x="398" y="506" fill="#8596AD" font-size="10">Override points for critical decisions</text>
+
+  <!-- Vertical separator 2 -->
+  <line x1="620" y1="478" x2="620" y2="530" stroke="#8B6914" stroke-width="0.75" opacity="0.4"/>
+
+  <!-- ─── Item 3: Accountability for AI findings ─── -->
+  <!-- Document icon -->
+  <rect x="645" y="483" width="18" height="22" fill="#1A1408" stroke="#F59E0B" stroke-width="1.5" rx="2"/>
+  <path d="M 659 483 L 659 489 L 663 489" fill="#1A1408" stroke="#F59E0B" stroke-width="1.5" stroke-linejoin="round"/>
+  <line x1="649" y1="491" x2="659" y2="491" stroke="#F59E0B" stroke-width="1" opacity="0.7"/>
+  <line x1="649" y1="494" x2="661" y2="494" stroke="#F59E0B" stroke-width="1" opacity="0.7"/>
+  <line x1="649" y1="497" x2="661" y2="497" stroke="#F59E0B" stroke-width="1" opacity="0.7"/>
+  <line x1="649" y1="500" x2="657" y2="500" stroke="#F59E0B" stroke-width="1" opacity="0.5"/>
+  <!-- Text -->
+  <text x="671" y="491" fill="#EDF2F7" font-size="12" font-weight="600">Accountability for AI findings</text>
+  <text x="671" y="506" fill="#8596AD" font-size="10">Audit trails and human sign-off required</text>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- FOOTER LABEL (y=548–570)                           -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <text x="450" y="560" text-anchor="middle" fill="#8596AD" font-size="9" letter-spacing="1" opacity="0.6">ALADIAH · AI ENTERPRISE CYBERSECURITY · MODULE 19 · AUTONOMOUS SECURITY OPERATIONS</text>
+
+  <!-- Decorative side glows -->
+  <!-- Red glow left -->
+  <rect x="0" y="80" width="4" height="360" fill="url(#redGlow)" opacity="0.6"/>
+  <defs>
+    <linearGradient id="redGlow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#EF4444" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#EF4444" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="blueGlow" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0%" stop-color="#4A90F5" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#4A90F5" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Blue glow right -->
+  <rect x="896" y="80" width="4" height="360" fill="url(#blueGlow)" opacity="0.6"/>
+
+</svg>
