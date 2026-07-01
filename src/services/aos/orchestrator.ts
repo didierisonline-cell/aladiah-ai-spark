@@ -9,6 +9,7 @@ import { getAgent, listAgents } from './registry';
 import { finishRun, logAction, startRun } from './logs';
 import { recordRunOutcome } from './health';
 import { nextRunFor } from './_internal';
+import { emitEvent } from './events';
 
 // Runner registry — populated at bootstrap. Each agent's code registers here.
 const runners = new Map<string, AgentRunner>();
@@ -101,6 +102,12 @@ export async function runAgent(
     });
   }
   await recordRunOutcome(agent as AgentRecord, { ok, durationMs, error: lastError, nextRunAt });
+  await emitEvent(
+    ok ? 'agent.run.completed' : 'agent.run.failed',
+    slug,
+    ok ? `${agent.name} ran (${durationMs}ms, ${attempt} attempt(s))` : `${agent.name} FAILED: ${lastError}`,
+    { run_id: runId, trigger, duration_ms: durationMs, attempts: attempt, ...(ok ? {} : { error: lastError }) },
+  );
   await ctx.log(ok ? 'run.success' : 'run.error', {
     level: ok ? 'info' : 'error',
     result: ok ? 'success' : 'error',

@@ -17,6 +17,7 @@
 // behind each agent's own founder-gated surface.
 // =============================================================================
 import { delegateTask, sendMessage, CEO_AGENT } from './communication';
+import { emitEvent } from './events';
 import {
   GateKey,
   WorkOrder,
@@ -50,6 +51,11 @@ export const GATE_REVIEWERS: Record<GateKey, { agent: string | null; label: stri
 export async function openWorkOrder(input: CreateWorkOrderInput): Promise<WorkOrder | null> {
   const wo = await createWorkOrder(input);
   if (!wo) return null;
+  await emitEvent('work_order.opened', input.createdByAgent ?? CEO_AGENT, `Work order opened: ${wo.title}`, {
+    work_order_id: wo.id,
+    type: wo.type,
+    owner: wo.ownerAgent,
+  });
   await routeNextGate(wo, input.createdByAgent ?? CEO_AGENT);
   return wo;
 }
@@ -101,6 +107,13 @@ export async function recordGateOutcome(
   });
   if (!updated) return null;
 
+  await emitEvent(
+    passed ? 'work_order.gate.passed' : 'work_order.gate.failed',
+    reviewer,
+    `Gate [${gate}] ${passed ? 'passed' : 'FAILED'}: ${updated.title}`,
+    { work_order_id: updated.id, gate, note: note ?? null },
+  );
+
   if (!passed) {
     // Bounce back to the owner with the findings; the order stays open.
     if (updated.ownerAgent) {
@@ -125,6 +138,9 @@ export async function recordGateOutcome(
 /** All gates cleared → the order enters the Founder Approval Queue. */
 export async function submitForFounderApproval(wo: WorkOrder, fromAgent: string): Promise<WorkOrder | null> {
   const updated = await setFounderApproval(wo.id, 'pending', undefined);
+  await emitEvent('work_order.submitted', fromAgent, `Awaiting founder approval: ${wo.title}`, {
+    work_order_id: wo.id,
+  });
   await sendMessage({
     fromAgent,
     toAgent: CEO_AGENT,
@@ -146,6 +162,12 @@ export async function founderDecision(
   note?: string,
 ): Promise<WorkOrder | null> {
   const updated = await setFounderApproval(wo.id, approved ? 'approved' : 'rejected', note);
+  await emitEvent(
+    approved ? 'work_order.approved' : 'work_order.rejected',
+    'founder',
+    `Founder ${approved ? 'APPROVED' : 'REJECTED'}: ${wo.title}`,
+    { work_order_id: wo.id, note: note ?? null },
+  );
   if (updated?.ownerAgent) {
     await sendMessage({
       fromAgent: CEO_AGENT,

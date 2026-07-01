@@ -8,6 +8,7 @@ import AgentOperatingGrid from '@/components/founder/cockpit/AgentOperatingGrid'
 import ApprovalQueuePanel from '@/components/founder/cockpit/ApprovalQueuePanel';
 import WorkOrderBoard from '@/components/founder/cockpit/WorkOrderBoard';
 import CompanyBrainPanel from '@/components/founder/cockpit/CompanyBrainPanel';
+import EventFeed from '@/components/founder/cockpit/EventFeed';
 import { Button } from '@/components/ui/button';
 import { Crown, LayoutGrid, RefreshCw } from 'lucide-react';
 import { aos } from '@/services/aos';
@@ -92,8 +93,11 @@ const FounderPortal = () => {
             <WorkOrderBoard onChange={load} />
           </div>
 
-          {/* 6. Company Brain */}
-          <CompanyBrainPanel />
+          {/* 6 + 7. Company Brain + Event Bus */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+            <CompanyBrainPanel />
+            <EventFeed />
+          </div>
         </div>
       ) : null}
     </FounderShell>
