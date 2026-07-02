@@ -21,7 +21,9 @@ export type BrainCategory =
   | 'security-standard'
   | 'translation-dictionary'
   | 'design-decision'
-  | 'readiness-history';
+  | 'readiness-history'
+  | 'executive-report'
+  | 'impact-measurement';
 
 export const BRAIN_CATEGORIES: { key: BrainCategory; label: string }[] = [
   { key: 'founder-decision', label: 'Founder Decisions' },
@@ -32,6 +34,8 @@ export const BRAIN_CATEGORIES: { key: BrainCategory; label: string }[] = [
   { key: 'translation-dictionary', label: 'Translation Dictionary' },
   { key: 'design-decision', label: 'Design System Decisions' },
   { key: 'readiness-history', label: 'Launch Readiness History' },
+  { key: 'executive-report', label: 'Executive Reports' },
+  { key: 'impact-measurement', label: 'Impact Measurements' },
 ];
 
 export interface BrainEntry {
