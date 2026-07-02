@@ -9,6 +9,8 @@ import ApprovalQueuePanel from '@/components/founder/cockpit/ApprovalQueuePanel'
 import WorkOrderBoard from '@/components/founder/cockpit/WorkOrderBoard';
 import CompanyBrainPanel from '@/components/founder/cockpit/CompanyBrainPanel';
 import EventFeed from '@/components/founder/cockpit/EventFeed';
+import IntelligencePanel from '@/components/founder/cockpit/IntelligencePanel';
+import BriefingsPanel from '@/components/founder/cockpit/BriefingsPanel';
 import { Button } from '@/components/ui/button';
 import { Crown, LayoutGrid, Play, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -119,7 +121,13 @@ const FounderPortal = () => {
             <WorkOrderBoard onChange={load} />
           </div>
 
-          {/* 6 + 7. Company Brain + Event Bus */}
+          {/* 6 + 7. Continuous Intelligence + Executive Briefings */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+            <IntelligencePanel onChange={load} />
+            <BriefingsPanel />
+          </div>
+
+          {/* 8 + 9. Company Brain + Event Bus */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
             <CompanyBrainPanel />
             <EventFeed />
