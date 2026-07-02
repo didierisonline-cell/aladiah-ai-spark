@@ -1,9 +1,12 @@
-# Departments — the AI Workforce index
+# Department Charters — the AI Workforce
 
-Status: **Index.** Twelve AOS departments + two student-facing personas. Specs
-live under `/docs/agents/<slug>/AGENT_SPEC.md` (the AOS canon's structure);
-this index gives them their governance home. Registry slugs match
-`src/services/aos/bootstrap.ts`.
+Status: **Charter index** (registry key: `department-charters`). Twelve AOS
+departments + two student-facing personas. **A department's AGENT_SPEC is its
+charter**: identity, mission, ownership surface, engines, approval rules, and
+its place in orchestration. Charters live under
+`/docs/agents/<slug>/AGENT_SPEC.md` (the AOS canon's structure); this index is
+their governance home. Registry slugs match `src/services/aos/bootstrap.ts`;
+the drift check fails CI if any charter is missing.
 
 | # | Department | Slug | Spec |
 |---|---|---|---|

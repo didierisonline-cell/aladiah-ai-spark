@@ -19,11 +19,20 @@ docs/governance/
 │   ├── enterprise-architecture.md   ← the whole-system view (DRAFT)
 │   ├── intelligence-architecture.md ← the intelligence layer (migrated here)
 │   └── diagrams.md            ← dependency + authority diagrams
-├── standards/                 ← index of the canonical standards (see below)
-├── manuals/                   ← operational runbooks index
-├── departments/               ← the 12 departments + 2 personas index
+├── standards/                 ← canon index + founder-standards.md (reserved scaffold)
+├── manuals/                   ← validation manual + walks + Launch Command Center
+├── departments/               ← Department Charters (12 + 2 personas)
+├── academic/                  ← Academic Canon index
+├── design/                    ← AVIS Design Bible (scaffold)
+├── research/                  ← Research Institute Handbook (scaffold)
+├── brand/                     ← Brand & Media Bible (scaffold)
 └── playbooks/                 ← repeatable operating procedures index
 ```
+
+**Naming convention (decided in the framework build):** new governance-native
+documents use `kebab-case.md`; migrated canon-era documents keep their
+`SCREAMING_SNAKE` names to preserve history and references. Renames are
+founder decisions — flag, don't churn.
 
 ## Where the canon physically lives (and why it does not move)
 

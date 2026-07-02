@@ -1,43 +1,92 @@
 // =============================================================================
 // Institutional Knowledge — the machine-readable governance registry.
-// Governing documents stop being disconnected markdown: each carries name,
-// version, status, owner, authority level, parent/children, review dates,
-// and ratification record. The registry is CODE on purpose — every change to
-// institutional authority is a reviewed, git-versioned commit, and the
-// Founder Cockpit renders it. Human-readable map: docs/governance/README.md.
-// Lifecycle rules: docs/governance/constitution/ratification.md.
+// Governing documents are not markdown files that happen to exist; they are
+// registered institutional objects with authority, lineage, ownership, review
+// obligations, and history. The registry is CODE on purpose — every change to
+// institutional authority is a reviewed, git-versioned commit — and it is
+// ENFORCED by the drift check: a governance document that is not registered,
+// or a registered document that does not exist, fails CI.
+//
+// Designed for decades, not sprints: the registry survives AI-model changes,
+// technology changes, and leadership changes because it is plain data, plain
+// git, and mirrored into the Company Brain (syncGovernanceToBrain).
+//
+// Human-readable map: docs/governance/README.md
+// Lifecycle rules:    docs/governance/constitution/ratification.md
 // =============================================================================
-import { recordDecision, BrainEntry } from './brain';
+import { recordDecision, listBrain, BrainEntry } from './brain';
 import { emitEvent } from './events';
 
 export type DocumentStatus = 'draft' | 'review' | 'ratified' | 'deprecated';
 export type AuthorityLevel = 'constitutional' | 'canonical' | 'operational' | 'informational';
 
+/** One entry in a document's approval/change history. */
+export interface DocumentEvent {
+  on: string; // YYYY-MM-DD
+  kind: 'created' | 'amended' | 'migrated' | 'sent-to-review' | 'ratified' | 'deprecated';
+  by: string; // 'founder' or agent slug
+  note: string;
+}
+
 export interface GoverningDocument {
   key: string;
   name: string;
+  /** One sentence: why this document exists. */
+  purpose: string;
   path: string;
   version: string;
   status: DocumentStatus;
-  /** Who answers for this document (agent slug or 'founder'). */
+  /** Single-threaded owner (agent slug or 'founder'). */
   owner: string;
   authority: AuthorityLevel;
-  /** Registry key of the parent document; null = root. */
+  /** Registry key of the governing parent; null only for the constitution. */
   parent: string | null;
+  /** Registry keys this document depends on (beyond its parent). */
+  dependencies: string[];
+  /** Department slugs bound by or consuming this document. */
+  relatedDepartments: string[];
+  /** AI agent slugs that operationally implement it (often = departments). */
+  relatedAgents: string[];
+  /** Registry keys of standards that apply to this document. */
+  relatedStandards: string[];
+  /** Routes/dashboards that display this document's state. */
+  displayedOn: string[];
+  /** Days between mandatory reviews. */
+  reviewCadenceDays: number;
   lastReview: string; // YYYY-MM-DD
   nextReview: string; // YYYY-MM-DD
   ratified: { on: string; by: string } | null;
+  /** Approval + change history, oldest first. */
+  history: DocumentEvent[];
 }
 
-/**
- * The registry. Statuses are honest: 'ratified' only where the canon header
- * says Canonical and the founder has operated under it; new compositions
- * (constitution, enterprise architecture) start as drafts.
- */
+/** Concise entry definition: required core + sensible empty defaults. */
+type DocInput =
+  Pick<GoverningDocument, 'key' | 'name' | 'purpose' | 'path' | 'version' | 'status' | 'owner' | 'authority' | 'parent' | 'lastReview' | 'nextReview'> &
+  Partial<GoverningDocument>;
+
+function doc(d: DocInput): GoverningDocument {
+  return {
+    dependencies: [],
+    relatedDepartments: [],
+    relatedAgents: [],
+    relatedStandards: [],
+    displayedOn: ['/founder'],
+    reviewCadenceDays: d.status === 'ratified' ? 90 : 14,
+    ratified: null,
+    history: [],
+    ...d,
+  };
+}
+
+const CANON_RATIFIED: DocumentEvent = { on: '2026-06-21', kind: 'ratified', by: 'founder', note: 'Canon established (LAUNCH_DECISION_PRINCIPLE era).' };
+
 export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
-  {
+  // ---- L1: Constitution ------------------------------------------------------
+  doc({
     key: 'constitution',
     name: 'The Aladiah Constitution',
+    purpose: 'The founding document — single chain of authority for every department, agent, workflow, and feature.',
     path: 'docs/governance/constitution/constitution.md',
     version: '0.1',
     status: 'draft',
@@ -46,24 +95,45 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     parent: null,
     lastReview: '2026-07-01',
     nextReview: '2026-07-15',
-    ratified: null,
-  },
-  {
+    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'v0.1 composed from the ratified canon.' }],
+  }),
+  doc({
+    key: 'ratification-process',
+    name: 'Ratification Process',
+    purpose: 'How documents gain and lose authority: Draft → Review → Ratified → Deprecated.',
+    path: 'docs/governance/constitution/ratification.md',
+    version: '0.1',
+    status: 'draft',
+    owner: 'founder',
+    authority: 'constitutional',
+    parent: 'constitution',
+    lastReview: '2026-07-01',
+    nextReview: '2026-07-15',
+    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Lifecycle defined.' }],
+  }),
+
+  // ---- Ratified canon (the constitutional core) -------------------------------
+  doc({
     key: 'launch-decision-principle',
     name: 'Launch Decision Principle (root operating principle)',
+    purpose: 'Hypothesis ≠ fact: evidence creates truth, truth creates priorities, priorities create work.',
     path: 'docs/standards/LAUNCH_DECISION_PRINCIPLE.md',
     version: '1.0',
     status: 'ratified',
     owner: 'founder',
     authority: 'constitutional',
     parent: 'constitution',
+    relatedDepartments: ['qa-authority'],
+    relatedAgents: ['qa-authority'],
     lastReview: '2026-06-21',
     nextReview: '2026-09-21',
     ratified: { on: '2026-06-21', by: 'founder' },
-  },
-  {
+    history: [CANON_RATIFIED],
+  }),
+  doc({
     key: 'north-star',
     name: 'North Star',
+    purpose: 'Why Aladiah exists: career transformation, not course completion. Orders what to build now.',
     path: 'docs/standards/NORTH_STAR.md',
     version: '1.0',
     status: 'ratified',
@@ -73,10 +143,12 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     lastReview: '2026-06-21',
     nextReview: '2026-09-21',
     ratified: { on: '2026-06-21', by: 'founder' },
-  },
-  {
+    history: [CANON_RATIFIED],
+  }),
+  doc({
     key: 'architecture-principle',
     name: 'Architecture Principle',
+    purpose: 'What qualifies to be built: serve ≥1 Core System, block 0.',
     path: 'docs/standards/ARCHITECTURE_PRINCIPLE.md',
     version: '1.0',
     status: 'ratified',
@@ -86,101 +158,29 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     lastReview: '2026-06-21',
     nextReview: '2026-09-21',
     ratified: { on: '2026-06-21', by: 'founder' },
-  },
-  {
+    history: [CANON_RATIFIED],
+  }),
+  doc({
     key: 'competency-taxonomy',
     name: 'Competency Taxonomy',
+    purpose: 'The only approved source of competency slugs — append-only, never renamed.',
     path: 'docs/standards/COMPETENCY_TAXONOMY.md',
     version: '1.0',
     status: 'ratified',
     owner: 'curriculum-excellence',
     authority: 'constitutional',
     parent: 'constitution',
+    relatedDepartments: ['curriculum-excellence', 'product-builder', 'student-success'],
+    relatedAgents: ['curriculum-excellence', 'product-builder'],
     lastReview: '2026-06-21',
     nextReview: '2026-09-21',
     ratified: { on: '2026-06-21', by: 'founder' },
-  },
-  {
-    key: 'founder-standards',
-    name: 'Founder Standards (the /docs/standards canon set)',
-    path: 'docs/governance/standards/README.md',
-    version: '1.0',
-    status: 'ratified',
-    owner: 'founder',
-    authority: 'canonical',
-    parent: 'constitution',
-    lastReview: '2026-07-01',
-    nextReview: '2026-10-01',
-    ratified: { on: '2026-06-21', by: 'founder' },
-  },
-  {
-    key: 'agent-operating-system',
-    name: 'Agent Operating System (AOS canon)',
-    path: 'docs/agents/AGENT_OPERATING_SYSTEM.md',
-    version: '1.2',
-    status: 'ratified',
-    owner: 'operations-platform',
-    authority: 'canonical',
-    parent: 'constitution',
-    lastReview: '2026-07-01',
-    nextReview: '2026-10-01',
-    ratified: { on: '2026-06-10', by: 'founder' },
-  },
-  {
-    key: 'enterprise-architecture',
-    name: 'Enterprise Architecture',
-    path: 'docs/governance/architecture/enterprise-architecture.md',
-    version: '0.1',
-    status: 'draft',
-    owner: 'operations-platform',
-    authority: 'canonical',
-    parent: 'architecture-principle',
-    lastReview: '2026-07-01',
-    nextReview: '2026-07-15',
-    ratified: null,
-  },
-  {
-    key: 'intelligence-architecture',
-    name: 'Intelligence Architecture',
-    path: 'docs/governance/architecture/intelligence-architecture.md',
-    version: '1.0',
-    status: 'review',
-    owner: 'analytics-intelligence',
-    authority: 'canonical',
-    parent: 'agent-operating-system',
-    lastReview: '2026-07-01',
-    nextReview: '2026-07-15',
-    ratified: null,
-  },
-  {
-    key: 'continuous-improvement',
-    name: 'Continuous Improvement Doctrine',
-    path: 'docs/agents/CONTINUOUS_IMPROVEMENT.md',
-    version: '1.0',
-    status: 'review',
-    owner: 'analytics-intelligence',
-    authority: 'operational',
-    parent: 'agent-operating-system',
-    lastReview: '2026-07-01',
-    nextReview: '2026-07-15',
-    ratified: null,
-  },
-  {
-    key: 'qa-standard',
-    name: 'QA Standard',
-    path: 'docs/standards/QA_STANDARD.md',
-    version: '1.0',
-    status: 'ratified',
-    owner: 'qa-authority',
-    authority: 'canonical',
-    parent: 'launch-decision-principle',
-    lastReview: '2026-06-21',
-    nextReview: '2026-09-21',
-    ratified: { on: '2026-06-21', by: 'founder' },
-  },
-  {
+    history: [CANON_RATIFIED, { on: '2026-06-20', kind: 'amended', by: 'founder', note: 'V2 merged: PM/BA/DA registries (§6–§11), commit #55.' }],
+  }),
+  doc({
     key: 'competency-taxonomy-v2-rationale',
     name: 'Competency Taxonomy V2 (design rationale, merged into canon)',
+    purpose: 'Design rationale + Program Outcome Definitions retained after the V2 merge; canon §6–§11 prevails.',
     path: 'docs/standards/COMPETENCY_TAXONOMY_V2_FINAL.md',
     version: '2.0',
     status: 'ratified',
@@ -189,62 +189,265 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     parent: 'competency-taxonomy',
     lastReview: '2026-07-01',
     nextReview: '2026-10-01',
-    ratified: { on: '2026-06-20', by: 'founder' }, // commit: "docs(canon): ratify Competency Taxonomy V2" (#55)
-  },
-  {
-    key: 'founder-validation-manual',
-    name: 'Founder Validation Manual',
-    path: 'docs/governance/manuals/FOUNDER_VALIDATION_MANUAL.md',
-    version: '0.1',
-    status: 'draft',
-    owner: 'founder',
-    authority: 'operational',
-    parent: 'launch-decision-principle',
-    lastReview: '2026-07-01',
-    nextReview: '2026-07-15',
-    ratified: null,
-  },
-  {
-    key: 'launch-command-center',
-    name: 'Launch Command Center (blocker registry)',
-    path: 'docs/governance/manuals/LAUNCH_COMMAND_CENTER.md',
+    ratified: { on: '2026-06-20', by: 'founder' },
+    history: [{ on: '2026-06-20', kind: 'ratified', by: 'founder', note: 'Ratified-as-merged (commit #55).' }],
+  }),
+  doc({
+    key: 'qa-standard',
+    name: 'QA Standard',
+    purpose: 'DoR/DoD evidence gates feeding blocker classification.',
+    path: 'docs/standards/QA_STANDARD.md',
     version: '1.0',
     status: 'ratified',
     owner: 'qa-authority',
-    authority: 'operational',
+    authority: 'canonical',
     parent: 'launch-decision-principle',
+    relatedDepartments: ['qa-authority'],
+    relatedAgents: ['qa-authority'],
     lastReview: '2026-06-21',
     nextReview: '2026-09-21',
-    ratified: { on: '2026-06-21', by: 'founder' }, // named as operational registry by the ratified root principle
-  },
-  {
+    ratified: { on: '2026-06-21', by: 'founder' },
+    history: [CANON_RATIFIED],
+  }),
+  doc({
+    key: 'founder-standards',
+    name: 'Founder Standards',
+    purpose: 'The operational interpretation of the Constitution — how every decision is made. STRUCTURE ONLY until the founder authors it.',
+    path: 'docs/governance/standards/founder-standards.md',
+    version: '0.0',
+    status: 'draft',
+    owner: 'founder',
+    authority: 'constitutional',
+    parent: 'constitution',
+    dependencies: ['launch-decision-principle', 'ratification-process'],
+    lastReview: '2026-07-01',
+    nextReview: '2026-07-15',
+    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Structural scaffold reserved — content is founder-authored, never invented.' }],
+  }),
+
+  // ---- Architecture (L3–L5) ---------------------------------------------------
+  doc({
+    key: 'enterprise-architecture',
+    name: 'Enterprise Architecture',
+    purpose: 'The whole-system view: layers, constraints, departments, dependencies, declared debts.',
+    path: 'docs/governance/architecture/enterprise-architecture.md',
+    version: '0.1',
+    status: 'draft',
+    owner: 'operations-platform',
+    authority: 'canonical',
+    parent: 'architecture-principle',
+    relatedDepartments: ['operations-platform'],
+    relatedAgents: ['operations-platform'],
+    lastReview: '2026-07-01',
+    nextReview: '2026-07-15',
+    history: [{ on: '2026-07-01', kind: 'created', by: 'operations-platform', note: 'v0.1 from verified repo facts.' }],
+  }),
+  doc({
+    key: 'intelligence-architecture',
+    name: 'Intelligence Architecture',
+    purpose: 'The ten-component intelligence layer: sources, evidence gates, confidence, approval chains.',
+    path: 'docs/governance/architecture/intelligence-architecture.md',
+    version: '1.0',
+    status: 'review',
+    owner: 'analytics-intelligence',
+    authority: 'canonical',
+    parent: 'agent-operating-system',
+    dependencies: ['launch-decision-principle'],
+    relatedDepartments: ['analytics-intelligence'],
+    relatedAgents: ['analytics-intelligence', 'operations-platform', 'interface-experience'],
+    relatedStandards: ['qa-standard'],
+    lastReview: '2026-07-01',
+    nextReview: '2026-07-15',
+    history: [
+      { on: '2026-07-01', kind: 'created', by: 'analytics-intelligence', note: 'v1 implemented + tested.' },
+      { on: '2026-07-01', kind: 'migrated', by: 'founder', note: 'Moved into docs/governance/architecture/.' },
+    ],
+  }),
+  doc({
     key: 'aladiah-operating-system',
-    name: 'The Aladiah Operating System (v1.0 design)',
+    name: 'The Aladiah Operating System (AIOS v1.0 design)',
+    purpose: 'The seven-level operating system design: authority down, evidence up, 60-second cockpit.',
     path: 'docs/governance/architecture/ALADIAH_OPERATING_SYSTEM.md',
     version: '1.0',
     status: 'draft',
     owner: 'founder',
     authority: 'canonical',
     parent: 'constitution',
+    dependencies: ['enterprise-architecture', 'intelligence-architecture', 'agent-operating-system'],
+    displayedOn: ['/founder'],
     lastReview: '2026-07-01',
     nextReview: '2026-07-15',
-    ratified: null,
-  },
-  {
-    key: 'ratification-process',
-    name: 'Ratification Process',
-    path: 'docs/governance/constitution/ratification.md',
+    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Phase-5 design blueprint (no code).' }],
+  }),
+  doc({
+    key: 'agent-operating-system',
+    name: 'Agent Operating System (AI Workforce Manual)',
+    purpose: 'The infrastructure canon every agent plugs into — and the operating manual for the AI workforce.',
+    path: 'docs/agents/AGENT_OPERATING_SYSTEM.md',
+    version: '1.2',
+    status: 'ratified',
+    owner: 'operations-platform',
+    authority: 'canonical',
+    parent: 'constitution',
+    relatedDepartments: ['operations-platform'],
+    relatedAgents: [
+      'ceo-chief-of-staff', 'marketing-content', 'seo-strategy', 'product-builder', 'qa-authority',
+      'admissions-authority', 'student-success', 'placement-authority', 'analytics-intelligence',
+      'operations-platform', 'curriculum-excellence', 'interface-experience',
+    ],
+    displayedOn: ['/founder', '/admin/agent-os', '/admin/ai-workforce'],
+    lastReview: '2026-07-01',
+    nextReview: '2026-10-01',
+    ratified: { on: '2026-06-10', by: 'founder' },
+    history: [
+      { on: '2026-06-10', kind: 'ratified', by: 'founder', note: 'AOS canon established with migration 20260610130000.' },
+      { on: '2026-07-01', kind: 'amended', by: 'founder', note: 'Subsystems 9–12 documented (work orders, orchestration, brain, event bus).' },
+    ],
+  }),
+  doc({
+    key: 'continuous-improvement',
+    name: 'Continuous Improvement Doctrine',
+    purpose: 'Every department as an always-observing intelligence unit; the operating loop.',
+    path: 'docs/agents/CONTINUOUS_IMPROVEMENT.md',
+    version: '1.0',
+    status: 'review',
+    owner: 'analytics-intelligence',
+    authority: 'operational',
+    parent: 'agent-operating-system',
+    dependencies: ['intelligence-architecture'],
+    relatedAgents: ['analytics-intelligence'],
+    lastReview: '2026-07-01',
+    nextReview: '2026-07-15',
+    history: [{ on: '2026-07-01', kind: 'created', by: 'analytics-intelligence', note: 'Doctrine + honesty constraints.' }],
+  }),
+
+  // ---- L6 charters & manuals ---------------------------------------------------
+  doc({
+    key: 'department-charters',
+    name: 'Department Charters (index)',
+    purpose: 'The 12 department charters (AGENT_SPECs) + 2 personas — who does what, under whose authority.',
+    path: 'docs/governance/departments/README.md',
+    version: '1.0',
+    status: 'review',
+    owner: 'founder',
+    authority: 'operational',
+    parent: 'agent-operating-system',
+    relatedAgents: [
+      'ceo-chief-of-staff', 'marketing-content', 'seo-strategy', 'product-builder', 'qa-authority',
+      'admissions-authority', 'student-success', 'placement-authority', 'analytics-intelligence',
+      'operations-platform', 'curriculum-excellence', 'interface-experience',
+    ],
+    lastReview: '2026-07-01',
+    nextReview: '2026-10-01',
+    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: '12/12 specs verified by drift check.' }],
+  }),
+  doc({
+    key: 'founder-validation-manual',
+    name: 'Founder Validation Manual',
+    purpose: 'The consolidated doctrine for founder walks: verify-after-write, BLK logging, explicit Go/No-Go.',
+    path: 'docs/governance/manuals/FOUNDER_VALIDATION_MANUAL.md',
     version: '0.1',
     status: 'draft',
     owner: 'founder',
-    authority: 'constitutional',
-    parent: 'constitution',
+    authority: 'operational',
+    parent: 'launch-decision-principle',
+    relatedStandards: ['qa-standard'],
     lastReview: '2026-07-01',
     nextReview: '2026-07-15',
-    ratified: null,
-  },
+    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Consolidates runbook + playbook; walks migrated intact.' }],
+  }),
+  doc({
+    key: 'launch-command-center',
+    name: 'Launch Command Center (blocker registry)',
+    purpose: 'The permanent, evidence-closed registry of what blocks launch.',
+    path: 'docs/governance/manuals/LAUNCH_COMMAND_CENTER.md',
+    version: '1.0',
+    status: 'ratified',
+    owner: 'qa-authority',
+    authority: 'operational',
+    parent: 'launch-decision-principle',
+    relatedDepartments: ['qa-authority'],
+    relatedAgents: ['qa-authority'],
+    lastReview: '2026-06-21',
+    nextReview: '2026-09-21',
+    ratified: { on: '2026-06-21', by: 'founder' },
+    history: [
+      { on: '2026-06-21', kind: 'ratified', by: 'founder', note: 'Named operational registry by the root principle.' },
+      { on: '2026-07-01', kind: 'migrated', by: 'founder', note: 'Moved from repo root into governance/manuals/.' },
+    ],
+  }),
+
+  // ---- Framework slots scaffolded, never invented -------------------------------
+  doc({
+    key: 'academic-canon',
+    name: 'Academic Canon (index)',
+    purpose: 'The academic governance set: curriculum framework, program standards, validation gates.',
+    path: 'docs/governance/academic/README.md',
+    version: '0.1',
+    status: 'draft',
+    owner: 'curriculum-excellence',
+    authority: 'canonical',
+    parent: 'north-star',
+    dependencies: ['competency-taxonomy'],
+    relatedDepartments: ['curriculum-excellence', 'product-builder', 'qa-authority'],
+    relatedAgents: ['curriculum-excellence'],
+    lastReview: '2026-07-01',
+    nextReview: '2026-07-15',
+    history: [{ on: '2026-07-01', kind: 'created', by: 'curriculum-excellence', note: 'Index of existing academic governance; no content invented.' }],
+  }),
+  doc({
+    key: 'avis-design-bible',
+    name: 'AVIS Design Bible (scaffold)',
+    purpose: 'The visual-experience authority: tokens, hierarchy, accessibility, premium consistency.',
+    path: 'docs/governance/design/avis-design-bible.md',
+    version: '0.1',
+    status: 'draft',
+    owner: 'interface-experience',
+    authority: 'canonical',
+    parent: 'constitution',
+    relatedDepartments: ['interface-experience'],
+    relatedAgents: ['interface-experience'],
+    displayedOn: ['/founder', '/admin/interface-agent'],
+    lastReview: '2026-07-01',
+    nextReview: '2026-07-15',
+    history: [{ on: '2026-07-01', kind: 'created', by: 'interface-experience', note: 'Scaffold indexing the live token system + UX posture; content pending.' }],
+  }),
+  doc({
+    key: 'research-institute-handbook',
+    name: 'Research Institute Handbook (scaffold)',
+    purpose: 'Governance for external research and market intelligence — sources, approval, attribution.',
+    path: 'docs/governance/research/README.md',
+    version: '0.1',
+    status: 'draft',
+    owner: 'analytics-intelligence',
+    authority: 'operational',
+    parent: 'intelligence-architecture',
+    relatedAgents: ['analytics-intelligence'],
+    lastReview: '2026-07-01',
+    nextReview: '2026-07-15',
+    history: [{ on: '2026-07-01', kind: 'created', by: 'analytics-intelligence', note: 'Scaffold — external ingestion is NOT CONNECTED; handbook precedes the integration.' }],
+  }),
+  doc({
+    key: 'brand-media-bible',
+    name: 'Brand & Media Bible (scaffold)',
+    purpose: 'Brand authority: story canon, asset inventory, voice, media standards.',
+    path: 'docs/governance/brand/README.md',
+    version: '0.1',
+    status: 'draft',
+    owner: 'marketing-content',
+    authority: 'operational',
+    parent: 'north-star',
+    relatedDepartments: ['marketing-content'],
+    relatedAgents: ['marketing-content'],
+    lastReview: '2026-07-01',
+    nextReview: '2026-07-15',
+    history: [{ on: '2026-07-01', kind: 'created', by: 'marketing-content', note: 'Scaffold indexing FOUNDER_STORY_CANON + brand assets; content pending.' }],
+  }),
 ];
 
+// =============================================================================
+// Lookup + graph
+// =============================================================================
 export function getDocument(key: string): GoverningDocument | undefined {
   return GOVERNING_DOCUMENTS.find((d) => d.key === key);
 }
@@ -254,11 +457,107 @@ export function childrenOf(key: string): GoverningDocument[] {
   return GOVERNING_DOCUMENTS.filter((d) => d.parent === key);
 }
 
-/** A ratified document past nextReview is due — silence is not compliance. */
-export function isReviewDue(doc: GoverningDocument, today = new Date()): boolean {
-  return new Date(doc.nextReview).getTime() <= today.getTime();
+/** The six questions every governing document must answer. */
+export interface GovernanceNode {
+  doc: GoverningDocument;
+  governedBy: GoverningDocument | null;        // who governs me?
+  governs: GoverningDocument[];                // what do I govern?
+  dependents: GoverningDocument[];             // who depends on me?
+  standardsApplying: GoverningDocument[];      // what standards apply?
+  departmentsConsuming: string[];              // who consumes me?
+  dashboardsDisplaying: string[];              // where am I visible?
 }
 
+export function getGovernanceNode(key: string): GovernanceNode | null {
+  const d = getDocument(key);
+  if (!d) return null;
+  return {
+    doc: d,
+    governedBy: d.parent ? getDocument(d.parent) ?? null : null,
+    governs: childrenOf(key),
+    dependents: GOVERNING_DOCUMENTS.filter((x) => x.dependencies.includes(key)),
+    standardsApplying: d.relatedStandards.map((k) => getDocument(k)).filter((x): x is GoverningDocument => !!x),
+    departmentsConsuming: d.relatedDepartments,
+    dashboardsDisplaying: d.displayedOn,
+  };
+}
+
+// =============================================================================
+// Health
+// =============================================================================
+/** A ratified document past nextReview is due — silence is not compliance. */
+export function isReviewDue(docu: GoverningDocument, today = new Date()): boolean {
+  return new Date(docu.nextReview).getTime() <= today.getTime();
+}
+
+export interface DocumentHealth {
+  key: string;
+  healthy: boolean;
+  issues: string[];
+}
+
+/** Pure per-document health: lineage intact, schedule current, history coherent. */
+export function getDocumentHealth(d: GoverningDocument, today = new Date()): DocumentHealth {
+  const issues: string[] = [];
+  if (d.parent && !getDocument(d.parent)) issues.push(`parent '${d.parent}' is not registered`);
+  for (const dep of d.dependencies) if (!getDocument(dep)) issues.push(`dependency '${dep}' is not registered`);
+  for (const std of d.relatedStandards) if (!getDocument(std)) issues.push(`standard '${std}' is not registered`);
+  if (isReviewDue(d, today)) issues.push(`review overdue (next: ${d.nextReview})`);
+  if (d.status === 'ratified' && !d.ratified) issues.push('ratified without a ratification record');
+  if (d.status === 'ratified' && !d.history.some((h) => h.kind === 'ratified')) issues.push('ratified without a ratification history event');
+  if (!d.purpose.trim()) issues.push('missing purpose');
+  return { key: d.key, healthy: issues.length === 0, issues };
+}
+
+/** The framework slots every future standard plugs into. */
+export const FRAMEWORK_SLOTS: { slot: string; registryKey: string }[] = [
+  { slot: 'Constitution', registryKey: 'constitution' },
+  { slot: 'Founder Standards', registryKey: 'founder-standards' },
+  { slot: 'Enterprise Architecture', registryKey: 'enterprise-architecture' },
+  { slot: 'Intelligence Architecture', registryKey: 'intelligence-architecture' },
+  { slot: 'AIOS', registryKey: 'aladiah-operating-system' },
+  { slot: 'Department Charters', registryKey: 'department-charters' },
+  { slot: 'AI Workforce Manual', registryKey: 'agent-operating-system' },
+  { slot: 'Academic Canon', registryKey: 'academic-canon' },
+  { slot: 'AVIS Design Bible', registryKey: 'avis-design-bible' },
+  { slot: 'Research Institute Handbook', registryKey: 'research-institute-handbook' },
+  { slot: 'Brand & Media Bible', registryKey: 'brand-media-bible' },
+];
+
+export interface GovernanceHealth {
+  /** 0–100: authority coverage × document health × review currency. */
+  score: number;
+  documents: DocumentHealth[];
+  slots: { slot: string; registryKey: string; present: boolean; status: DocumentStatus | null }[];
+  missingSlots: string[];
+  reviewsDue: number;
+  unhealthy: number;
+}
+
+/** The Governance Center data model: one call answers 'how governed are we?'. */
+export function getGovernanceHealth(today = new Date()): GovernanceHealth {
+  const documents = GOVERNING_DOCUMENTS.map((d) => getDocumentHealth(d, today));
+  const slots = FRAMEWORK_SLOTS.map((s) => {
+    const d = getDocument(s.registryKey);
+    return { ...s, present: !!d, status: d?.status ?? null };
+  });
+  const missingSlots = slots.filter((s) => !s.present).map((s) => s.slot);
+  const unhealthy = documents.filter((d) => !d.healthy).length;
+  const reviewsDue = GOVERNING_DOCUMENTS.filter((d) => isReviewDue(d, today)).length;
+
+  const slotCoverage = slots.filter((s) => s.present).length / slots.length;
+  const docHealth = documents.length ? (documents.length - unhealthy) / documents.length : 1;
+  const ratifiedShare =
+    GOVERNING_DOCUMENTS.filter((d) => d.status === 'ratified').length / GOVERNING_DOCUMENTS.length;
+  // Weighted: structure exists (40) · documents healthy (40) · authority ratified (20).
+  const score = Math.round(slotCoverage * 40 + docHealth * 40 + ratifiedShare * 20);
+
+  return { score, documents, slots, missingSlots, reviewsDue, unhealthy };
+}
+
+// =============================================================================
+// Summary (cockpit) + Brain integration + records
+// =============================================================================
 export interface GovernanceSummary {
   total: number;
   byStatus: Record<DocumentStatus, number>;
@@ -282,6 +581,35 @@ export function getGovernanceSummary(today = new Date()): GovernanceSummary {
 }
 
 /**
+ * Mirror the registry into the Company Brain so institutional knowledge is
+ * discoverable through recall() and survives model/technology/leadership
+ * changes. Idempotent per document version — re-running never duplicates.
+ */
+export async function syncGovernanceToBrain(): Promise<{ synced: number; skipped: number }> {
+  const existing = await listBrain('governance-record', 500);
+  let synced = 0;
+  let skipped = 0;
+  for (const d of GOVERNING_DOCUMENTS) {
+    const marker = `governance:doc:${d.key}:v${d.version}`;
+    if (existing.some((e) => e.summary === marker)) {
+      skipped += 1;
+      continue;
+    }
+    const entry = await recordDecision({
+      category: 'governance-record',
+      content:
+        `${d.name} (${d.key}) v${d.version} — ${d.status.toUpperCase()}, authority ${d.authority}, owner ${d.owner}. ` +
+        `Purpose: ${d.purpose} Path: ${d.path}. Governed by: ${d.parent ?? 'root'}.` +
+        (d.ratified ? ` Ratified ${d.ratified.on} by ${d.ratified.by}.` : ''),
+      summary: marker,
+      recordedBy: d.owner,
+    });
+    if (entry) synced += 1;
+  }
+  return { synced, skipped };
+}
+
+/**
  * Record a ratification decision in the Company Brain + Event Bus. The
  * registry itself changes via a reviewed commit (ratification.md rule 2) —
  * this records the founder's decision durably alongside it.
@@ -292,11 +620,11 @@ export async function recordRatification(input: {
   evidence: string;
   decidedBy?: string;
 }): Promise<BrainEntry | null> {
-  const doc = getDocument(input.documentKey);
+  const d = getDocument(input.documentKey);
   const by = input.decidedBy ?? 'founder';
   const entry = await recordDecision({
     category: 'governance-record',
-    content: `Governance: "${doc?.name ?? input.documentKey}" ${input.decision} by ${by}. Evidence: ${input.evidence}`,
+    content: `Governance: "${d?.name ?? input.documentKey}" ${input.decision} by ${by}. Evidence: ${input.evidence}`,
     summary: `governance:${input.decision}:${input.documentKey}`,
     recordedBy: by,
   });

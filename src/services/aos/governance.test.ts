@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import {
+  FRAMEWORK_SLOTS,
   GOVERNING_DOCUMENTS,
   childrenOf,
   getDocument,
+  getDocumentHealth,
+  getGovernanceHealth,
+  getGovernanceNode,
   getGovernanceSummary,
   isReviewDue,
 } from './governance';
@@ -130,6 +134,118 @@ describe('Governance drift check — registry vs repository', () => {
     ];
     for (const slug of DEPARTMENTS) {
       expect(existsSync(resolve(repoRoot, `docs/agents/${slug}/AGENT_SPEC.md`)), slug).toBe(true);
+    }
+  });
+
+  // ---- Automatic registration: a governance doc that exists unregistered
+  // ---- fails CI — this is how markdown "registers itself".
+  const walkMd = (dir: string): string[] => {
+    const out: string[] = [];
+    for (const entry of readdirSync(dir)) {
+      const p = join(dir, entry);
+      if (statSync(p).isDirectory()) out.push(...walkMd(p));
+      else if (p.endsWith('.md')) out.push(p);
+    }
+    return out;
+  };
+
+  /** Index/history files that support registered documents rather than govern. */
+  const EXEMPT = new Set([
+    'docs/governance/README.md',            // the map itself
+    'docs/governance/standards/README.md',  // index of canon kept in place
+    'docs/governance/manuals/README.md',    // manuals index
+    'docs/governance/playbooks/README.md',  // playbooks index
+    'docs/governance/constitution/changelog.md', // history of a registered doc
+    'docs/governance/architecture/diagrams.md',  // visual aid to registered docs
+    'docs/governance/manuals/validation-walks/ba-flagship-walk.md',      // chapter of the registered manual
+    'docs/governance/manuals/validation-walks/founder-portal-walk.md',   // chapter of the registered manual
+  ]);
+
+  it('every governance document is registered (or an explicit index/chapter)', () => {
+    const registered = new Set(GOVERNING_DOCUMENTS.map((d) => d.path));
+    const files = walkMd(resolve(repoRoot, 'docs/governance'))
+      .map((p) => p.slice(repoRoot.length + 1).split('\\').join('/'));
+    for (const f of files) {
+      expect(registered.has(f) || EXEMPT.has(f), `unregistered governance document: ${f}`).toBe(true);
+    }
+  });
+
+  it('no broken relative links inside the governance tree', () => {
+    const files = walkMd(resolve(repoRoot, 'docs/governance'));
+    for (const f of files) {
+      const content = readFileSync(f, 'utf8');
+      for (const m of content.matchAll(/\]\((?!https?:|#|mailto:)([^)\s]+?\.md)[)#]/g)) {
+        const target = m[1].startsWith('/')
+          ? resolve(repoRoot, m[1].slice(1))
+          : resolve(dirname(f), m[1]);
+        expect(existsSync(target), `${f.slice(repoRoot.length + 1)} → broken link ${m[1]}`).toBe(true);
+      }
+    }
+  });
+});
+
+// =============================================================================
+// Governance graph — the six questions every document must answer.
+// =============================================================================
+describe('Governance graph', () => {
+  it('answers who governs me / what do I govern / who depends on me', () => {
+    const node = getGovernanceNode('intelligence-architecture')!;
+    expect(node.governedBy?.key).toBe('agent-operating-system');
+    expect(node.dependents.map((d) => d.key)).toContain('continuous-improvement');
+    const constitution = getGovernanceNode('constitution')!;
+    expect(constitution.governedBy).toBeNull();
+    expect(constitution.governs.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it('resolves applying standards and consuming departments', () => {
+    const node = getGovernanceNode('intelligence-architecture')!;
+    expect(node.standardsApplying.map((s) => s.key)).toContain('qa-standard');
+    const taxonomy = getGovernanceNode('competency-taxonomy')!;
+    expect(taxonomy.departmentsConsuming).toContain('curriculum-excellence');
+  });
+
+  it('returns null for unknown keys', () => {
+    expect(getGovernanceNode('does-not-exist')).toBeNull();
+  });
+});
+
+// =============================================================================
+// Governance health — the Governance Center data model.
+// =============================================================================
+describe('Governance health', () => {
+  const AS_OF = new Date('2026-07-02');
+
+  it('every framework slot is present in the registry', () => {
+    const h = getGovernanceHealth(AS_OF);
+    expect(h.missingSlots).toEqual([]);
+    expect(h.slots.length).toBe(FRAMEWORK_SLOTS.length);
+  });
+
+  it('every registered document is individually healthy as of 2026-07-02', () => {
+    const h = getGovernanceHealth(AS_OF);
+    const sick = h.documents.filter((d) => !d.healthy);
+    expect(sick.map((s) => `${s.key}: ${s.issues.join('; ')}`)).toEqual([]);
+  });
+
+  it('detects broken dependencies and overdue reviews', () => {
+    const bad = getDocumentHealth(
+      { ...GOVERNING_DOCUMENTS[0], dependencies: ['ghost-doc'], nextReview: '2020-01-01' },
+      AS_OF,
+    );
+    expect(bad.healthy).toBe(false);
+    expect(bad.issues.join(' ')).toMatch(/ghost-doc/);
+    expect(bad.issues.join(' ')).toMatch(/overdue/);
+  });
+
+  it('scores structure, health, and ratification into 0–100', () => {
+    const h = getGovernanceHealth(AS_OF);
+    expect(h.score).toBeGreaterThan(0);
+    expect(h.score).toBeLessThanOrEqual(100);
+  });
+
+  it('history is coherent: every ratified doc has a ratification event', () => {
+    for (const d of GOVERNING_DOCUMENTS.filter((x) => x.status === 'ratified')) {
+      expect(d.history.some((h) => h.kind === 'ratified'), d.key).toBe(true);
     }
   });
 });
