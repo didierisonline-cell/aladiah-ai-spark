@@ -193,4 +193,44 @@ describe('Institutional Registry — the constitutional catalog', () => {
     expect(self.kpis).not.toBe('missing');
     expect(self.referenceModel).toBe('docs/engineering/registry/01-reference-model.md');
   });
+
+  // ---- FD-2026-006 P1: first-generation migration coverage ----------------------
+  it('scanner parity (dashboard class): every page on disk has a genome and vice versa', () => {
+    const dashboards = CAPABILITY_GENOMES.filter((g) => g.type === 'dashboard');
+    for (const g of dashboards) {
+      expect(existsSync(resolve(repoRoot, g.referenceModel as string)), g.id).toBe(true);
+    }
+    const pageFiles = ['', 'admin/', 'founder/', 'portal/', 'legal/'].flatMap((d) => {
+      const dir = resolve(repoRoot, `src/pages/${d}`);
+      return existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.tsx')).map((f) => `src/pages/${d}${f}`) : [];
+    });
+    expect(dashboards.length).toBe(pageFiles.length);
+  });
+
+  it('every chartered department + persona has an ai-role genome; identities resolve (P4)', () => {
+    const DEPARTMENTS = [
+      'ceo-chief-of-staff', 'marketing-content', 'seo-strategy', 'product-builder',
+      'qa-authority', 'admissions-authority', 'student-success', 'placement-authority',
+      'analytics-intelligence', 'operations-platform', 'curriculum-excellence', 'interface-experience',
+    ];
+    for (const slug of DEPARTMENTS) {
+      const g = getGenome(`ai-role:${slug}`);
+      expect(g, slug).toBeTruthy();
+      expect(g!.workforceSpec).toBe(`docs/agents/${slug}/AGENT_SPEC.md`);
+    }
+    expect(getGenome('ai-role:prof-didier')).toBeTruthy();
+    expect(getGenome('ai-role:career-simulation-engine')).toBeTruthy();
+  });
+
+  it('every governing document is bridged into the catalog (policy class)', () => {
+    const policies = CAPABILITY_GENOMES.filter((g) => g.type === 'policy');
+    expect(policies.length).toBeGreaterThanOrEqual(26);
+    expect(getGenome('policy:covenant')).toBeTruthy();
+    expect(getGenome('policy:capability-genome-standard')?.lifecycle).toBe('institutionalized'); // ratified
+  });
+
+  it('founder directives of the epoch are accessioned', () => {
+    expect(getGenome('founder-directive:fd-2026-004-genome-ratification')).toBeTruthy();
+    expect(getGenome('founder-directive:fd-2026-006-institutional-construction')).toBeTruthy();
+  });
 });

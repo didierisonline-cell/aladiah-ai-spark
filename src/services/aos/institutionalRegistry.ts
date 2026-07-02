@@ -20,6 +20,8 @@ import {
   MISSING,
 } from './genome';
 import { SHADOW_SEEDERS, OPERATIONAL_EDGE_FUNCTIONS } from './edgeFunctionManifest';
+import { DASHBOARD_PAGES } from './pageManifest';
+import { GOVERNING_DOCUMENTS, GoverningDocument } from './governance';
 import { recordDecision, listBrain, BrainEntry } from './brain';
 
 const D = '2026-07-02';
@@ -252,11 +254,190 @@ const registrySelf = baseGenome({
   lifecycle: 'implemented',
 });
 
+// ---- P1 migration factories (FD-2026-006) --------------------------------------
+/** Governance documents ARE capabilities — bridged from the governance registry
+ *  (one fact, one home: governance.ts stays the source; this adapts, never copies edits). */
+function governanceDocGenome(d: GoverningDocument): CapabilityGenome {
+  const lifecycle: GenomeLifecycle =
+    d.status === 'ratified' ? 'institutionalized' : d.status === 'deprecated' ? 'deprecated' : 'governed';
+  return baseGenome({
+    id: `policy:${d.key}`,
+    mission: 'Govern the Institution (constitutional framework).',
+    purpose: d.purpose,
+    type: 'policy',
+    classification: d.authority === 'foundational' || d.authority === 'constitutional' ? 'constitutional' : 'strategic',
+    owner: d.owner,
+    department: d.owner === 'founder' ? 'founder' : d.owner,
+    authority: d.authority,
+    constitutionalAuthority: d.parent ?? 'covenant',
+    referenceModel: d.path,
+    lifecycle,
+    ratifiedOn: d.ratified?.on ?? null,
+    lastReview: d.lastReview,
+    nextReview: d.nextReview,
+    evolution: [
+      { on: d.history[0]?.on ?? '2026-07-01', kind: 'created', by: d.history[0]?.by ?? d.owner, evidence: d.history[0]?.note ?? 'Governance registry record.' },
+      ...(d.ratified ? [{ on: d.ratified.on, kind: 'ratified' as const, by: d.ratified.by, evidence: 'Governance registry ratification record.' }] : []),
+    ],
+  });
+}
+
+/** The 12 AI departments + 2 personas — the workforce as governed capabilities. */
+const AI_ROLES: { slug: string; persona?: boolean }[] = [
+  { slug: 'ceo-chief-of-staff' }, { slug: 'marketing-content' }, { slug: 'seo-strategy' },
+  { slug: 'product-builder' }, { slug: 'qa-authority' }, { slug: 'admissions-authority' },
+  { slug: 'student-success' }, { slug: 'placement-authority' }, { slug: 'analytics-intelligence' },
+  { slug: 'operations-platform' }, { slug: 'curriculum-excellence' }, { slug: 'interface-experience' },
+  { slug: 'prof-didier', persona: true }, { slug: 'career-simulation-engine', persona: true },
+];
+
+function aiRoleGenome(r: (typeof AI_ROLES)[number]): CapabilityGenome {
+  return baseGenome({
+    id: `ai-role:${r.slug}`,
+    mission: 'Operate the Institution as a chartered department of the AI Workforce (Covenant Art. VI).',
+    purpose: r.persona
+      ? `Student-facing persona '${r.slug}' — product surface, not an AOS agent (by design).`
+      : `Chartered AOS department '${r.slug}' per its AGENT_SPEC.`,
+    type: 'ai-role',
+    classification: 'operational',
+    owner: r.persona ? 'founder' : r.slug,
+    department: r.persona ? 'founder' : r.slug,
+    authority: 'operational',
+    constitutionalAuthority: 'department-charters',
+    referenceModel: 'docs/agents/AGENT_OPERATING_SYSTEM.md',
+    playbook: 'docs/agents/CONTINUOUS_IMPROVEMENT.md',
+    workforceSpec: r.persona ? MISSING : `docs/agents/${r.slug}/AGENT_SPEC.md`,
+    standards: ['capability-genome-standard', 'qa-standard'],
+    security: { level: r.persona ? 'student' : 'founder', posture: r.persona ? 'RLS + ai-proxy' : 'admin session; publish:false; human_approval_required', gateChain: 'work-order gates → founder approval' },
+    workforce: r.persona ? [] : [{ agent: r.slug, role: 'operates' }],
+    lifecycle: 'implemented',
+  });
+}
+
+/** Founder dashboards + product surfaces (dashboard class, from the page manifest). */
+function dashboardGenome(p: (typeof DASHBOARD_PAGES)[number]): CapabilityGenome {
+  return baseGenome({
+    id: `dashboard:${p.slug}`,
+    mission: p.audience === 'founder' ? 'Founder observability and governance surfaces.' : 'Serve learners through the product experience (Covenant Art. I, V).',
+    purpose: `Surface '${p.slug}' (${p.audience}).`,
+    type: 'dashboard',
+    classification: 'operational',
+    owner: 'interface-experience',
+    department: 'interface-experience',
+    authority: 'operational',
+    constitutionalAuthority: 'aladiah-operating-system',
+    referenceModel: p.path,
+    standards: ['capability-genome-standard'],
+    security: { level: p.audience, posture: p.audience === 'founder' ? 'FounderRoute + RLS backstop' : p.audience === 'student' ? 'ProtectedRoute + RLS' : 'public route', gateChain: 'UI changes via UX gate → founder approval' },
+    accessibility: 'posture',
+    workforce: [{ agent: 'interface-experience', role: 'stewards' }],
+    lifecycle: 'implemented',
+  });
+}
+
+/** The documented programs beyond the flagship. */
+const baProgram = baseGenome({
+  id: 'program:ai-business-analyst-v1',
+  mission: 'Transform learners into employable AI-era Business Analysts (Covenant Art. V, XIII).',
+  purpose: 'The second flagship: 15 modules, 295 tagged questions, capstone-gated certification.',
+  type: 'program', classification: 'strategic', owner: 'curriculum-excellence', department: 'curriculum-excellence',
+  authority: 'canonical', constitutionalAuthority: 'academic-canon',
+  constitutionVolumes: ['02', '10'],
+  referenceModel: 'docs/curriculum/business-analyst-v1/00_ARCHITECTURE.md',
+  playbook: 'docs/governance/manuals/validation-walks/ba-flagship-walk.md',
+  standards: ['capability-genome-standard', 'competency-taxonomy', 'qa-standard'],
+  dependencies: ['standard:competency-taxonomy'],
+  outputs: [{ name: 'published BA course + capstone + certificates', kind: 'artifact', writesProduction: true, approvalGate: 'QA → founder-applied SQL → founder walk (BLK registry)' }],
+  security: { level: 'student', posture: 'RLS; founder-gated publish', gateChain: 'QA→Security→Founder' },
+  translation: 'partial', qaStatus: 'passing', accessibility: 'posture',
+  workforce: [{ agent: 'curriculum-excellence', role: 'stewards' }, { agent: 'qa-authority', role: 'reviews' }],
+  lifecycle: 'measured', lastReview: '2026-06-21', nextReview: '2026-09-21',
+  parentCapability: 'department:curriculum-excellence',
+  evolution: [
+    { on: '2026-06-21', kind: 'created', by: 'founder', evidence: 'BA publish migrations 2026062*.' },
+    { on: '2026-06-24', kind: 'measured', by: 'qa-authority', evidence: 'BA_FLAGSHIP_AUDIT_v1.md' },
+  ],
+});
+
+const cyberProgram = baseGenome({
+  id: 'program:ai-cybersecurity-v1',
+  mission: 'Transform learners into employable AI-era cybersecurity professionals.',
+  purpose: 'Third flagship: 18 modules, 270 questions, published to production.',
+  type: 'program', classification: 'strategic', owner: 'curriculum-excellence', department: 'curriculum-excellence',
+  authority: 'canonical', constitutionalAuthority: 'academic-canon',
+  constitutionVolumes: ['02', '10'],
+  referenceModel: 'docs/programs/CYBERSECURITY_FLAGSHIP_ARCHITECTURE.md',
+  standards: ['capability-genome-standard', 'competency-taxonomy', 'qa-standard'],
+  dependencies: ['standard:competency-taxonomy'],
+  outputs: [{ name: 'published Cyber course', kind: 'artifact', writesProduction: true, approvalGate: 'QA → founder-applied publish' }],
+  security: { level: 'student', posture: 'RLS; founder-gated publish', gateChain: 'QA→Security→Founder' },
+  qaStatus: 'passing',
+  workforce: [{ agent: 'curriculum-excellence', role: 'stewards' }],
+  lifecycle: 'implemented', lastReview: '2026-06-30', nextReview: '2026-09-30',
+  parentCapability: 'department:curriculum-excellence',
+  evolution: [{ on: '2026-06-30', kind: 'created', by: 'founder', evidence: 'cyber-v1 published (main history: 55ecd6c, e4d14bb).' }],
+});
+
+/** The 16 AOS facade subsystems — the operating system as governed services. */
+const AOS_SUBSYSTEMS = [
+  'registry', 'memory', 'tasks', 'orchestrator', 'logs', 'permissions', 'health', 'communication',
+  'work-orders', 'orchestration', 'brain', 'events', 'intelligence', 'governance', 'genome', 'institutional-registry',
+];
+function aosSubsystemGenome(name: string): CapabilityGenome {
+  if (name === 'institutional-registry') return registrySelf; // already self-cataloged
+  return baseGenome({
+    id: `service:aos-${name}`,
+    mission: 'Run the Institution (the AOS is how the workforce is operated and observed).',
+    purpose: `AOS subsystem '${name}' per the infrastructure canon.`,
+    type: 'service', classification: 'operational', owner: 'operations-platform', department: 'operations-platform',
+    authority: 'operational', constitutionalAuthority: 'agent-operating-system',
+    referenceModel: 'docs/agents/AGENT_OPERATING_SYSTEM.md',
+    standards: ['capability-genome-standard'],
+    security: { level: 'founder', posture: 'admin-session; aos_* RLS; no DELETE', gateChain: 'reviewed commits' },
+    qaStatus: ['work-orders', 'intelligence', 'governance', 'genome'].includes(name) ? 'passing' : 'untested',
+    workforce: [{ agent: 'operations-platform', role: 'stewards' }],
+    lifecycle: 'implemented',
+  });
+}
+
+/** Founder directives of this epoch — accessioned as capabilities of record. */
+const FOUNDER_DIRECTIVES = [
+  { slug: 'fd-2026-001-institutional-engineering', note: 'Enter Institutional Engineering Mode; 8 mandatory artifacts; quality gate.' },
+  { slug: 'fd-002-institutional-registry', note: 'Build the Institutional Registry; the master inventory record schema.' },
+  { slug: 'fd-2026-003-inventory-first', note: 'Audit the codebase; inventory before engineering; Founder Engineering Report.' },
+  { slug: 'fd-2026-004-genome-ratification', note: 'Six constitutional amendments; Capability Genome Standard v2.0 ratified.' },
+  { slug: 'fd-2026-006-institutional-construction', note: 'Constitutional era complete; five priorities; implement rather than invent.' },
+];
+function directiveGenome(d: (typeof FOUNDER_DIRECTIVES)[number]): CapabilityGenome {
+  return baseGenome({
+    id: `founder-directive:${d.slug}`,
+    mission: 'Direct the Institution (founder authority of record).',
+    purpose: d.note,
+    type: 'founder-directive', classification: 'constitutional', owner: 'founder', department: 'founder',
+    authority: 'constitutional', constitutionalAuthority: 'covenant',
+    referenceModel: 'docs/audits/FOUNDER_ENGINEERING_REPORT_FD2026.md',
+    standards: ['capability-genome-standard'],
+    lifecycle: 'institutionalized',
+    ratifiedOn: D,
+    evolution: [
+      { on: D, kind: 'created', by: 'founder', evidence: 'Issued in the founder session of record (git history of this epoch).' },
+      { on: D, kind: 'ratified', by: 'founder', evidence: 'Founder-issued directives carry authority on issuance.' },
+    ],
+  });
+}
+
 // ---- The catalog --------------------------------------------------------------
 export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   ...SHADOW_SEEDERS.map(seederGenome),
   ...OPERATIONAL_EDGE_FUNCTIONS.map(operationalFnGenome),
+  ...GOVERNING_DOCUMENTS.map(governanceDocGenome),
+  ...AI_ROLES.map(aiRoleGenome),
+  ...DASHBOARD_PAGES.map(dashboardGenome),
+  ...AOS_SUBSYSTEMS.filter((s) => s !== 'institutional-registry').map(aosSubsystemGenome),
+  ...FOUNDER_DIRECTIVES.map(directiveGenome),
   flagshipProgram,
+  baProgram,
+  cyberProgram,
   curriculumDepartment,
   taxonomyStandard,
   registrySelf,
@@ -305,6 +486,39 @@ export function getRegistrySummary(today = new Date()): RegistrySummary {
       .sort((a, b) => (b.risk.includes('DESTRUCTIVE') ? 1 : 0) - (a.risk.includes('DESTRUCTIVE') ? 1 : 0)),
     reviewsDue: active.filter((g) => new Date(g.nextReview).getTime() <= today.getTime()).length,
     parityEnforcedClasses: ['edge-function'],
+  };
+}
+
+// ---- P4: workforce identity (FD-2026-006) ---------------------------------------
+/**
+ * What every AI specialist must understand about itself (Priority 4):
+ * authority, responsibilities, department, institute, standards, playbooks,
+ * KPIs, and its capability genome. Consumed by the orchestrator at run start
+ * and available to any runner via aos.institution.getWorkforceIdentity().
+ */
+export interface WorkforceIdentity {
+  genomeId: string;
+  authority: string;
+  responsibilities: string; // the genome's purpose
+  department: string;
+  institute: string | null;
+  standards: string[];
+  playbook: string;
+  kpis: string; // 'own dictionary' | 'missing — department KPIs pending'
+}
+
+export function getWorkforceIdentity(agentSlug: string): WorkforceIdentity | null {
+  const g = getGenome(`ai-role:${agentSlug}`);
+  if (!g) return null;
+  return {
+    genomeId: g.id,
+    authority: g.authority,
+    responsibilities: g.purpose,
+    department: g.department,
+    institute: g.institute,
+    standards: g.standards,
+    playbook: typeof g.playbook === 'string' ? g.playbook : 'missing',
+    kpis: g.kpis === 'missing' ? 'missing — department KPI dictionary pending' : `${(g.kpis as unknown[]).length} KPI(s) defined`,
   };
 }
 

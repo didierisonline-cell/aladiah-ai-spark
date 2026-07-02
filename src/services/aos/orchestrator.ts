@@ -11,6 +11,7 @@ import { recordRunOutcome } from './health';
 import { nextRunFor } from './_internal';
 import { emitEvent } from './events';
 import { consolidate } from './memory';
+import { getWorkforceIdentity } from './institutionalRegistry';
 
 // Runner registry — populated at bootstrap. Each agent's code registers here.
 const runners = new Map<string, AgentRunner>();
@@ -66,6 +67,15 @@ export async function runAgent(
     trigger,
     log: (action, opts) => logAction(slug, action, { runId, ...opts }),
   };
+
+  // FD-2026-006 P4: every AI runs knowing its constitutional identity.
+  const identity = getWorkforceIdentity(slug);
+  if (identity) {
+    await ctx.log('run.identity', {
+      message: `Operating as ${identity.genomeId} · authority ${identity.authority} · dept ${identity.department}`,
+      detail: { standards: identity.standards, playbook: identity.playbook, kpis: identity.kpis },
+    });
+  }
 
   let attempt = 0;
   let lastError: string | undefined;

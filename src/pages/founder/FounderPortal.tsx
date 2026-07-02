@@ -13,6 +13,7 @@ import IntelligencePanel from '@/components/founder/cockpit/IntelligencePanel';
 import BriefingsPanel from '@/components/founder/cockpit/BriefingsPanel';
 import GovernancePanel from '@/components/founder/cockpit/GovernancePanel';
 import InstitutionalRegistryPanel from '@/components/founder/cockpit/InstitutionalRegistryPanel';
+import InstitutionStrip from '@/components/founder/cockpit/InstitutionStrip';
 import { Button } from '@/components/ui/button';
 import { Crown, LayoutGrid, Play, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -105,6 +106,9 @@ const FounderPortal = () => {
         <div className="py-24 text-center text-sm text-muted-foreground">Reading the live operating picture…</div>
       ) : snap ? (
         <div className="space-y-8">
+          {/* 0. The Institution in one line (Founder Command Center v1) */}
+          <InstitutionStrip />
+
           {/* 1. Executive Command Header */}
           <ExecutiveCommandHeader snap={snap} />
 
