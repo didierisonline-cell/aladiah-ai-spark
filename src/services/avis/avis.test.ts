@@ -261,3 +261,55 @@ describe('Enterprise Diagram Library — the Institution drawn from its own docu
     expect(ENTERPRISE_DIAGRAMS.every((d) => d.spec.altTextIntent.length > 20)).toBe(true);
   });
 });
+
+// =============================================================================
+// WO-0013 (Phase IV step 2, FEO-2026-001) — The Brand Canon
+// =============================================================================
+import { BRAND_STANDARD_PATH, OFFICIAL_BRAND_ASSETS, brandAssetGenome, validateBrandCanon } from './brandCanon';
+import { getGenome } from '../aos/institutionalRegistry';
+
+describe('Brand Canon — the official identity registered (Phase IV step 2)', () => {
+  const repoRoot = resolve(__dirname, '../../..');
+
+  it('every canonical asset exists on disk, in the one approved home — including the Brand Standard itself', () => {
+    expect(existsSync(resolve(repoRoot, BRAND_STANDARD_PATH)), BRAND_STANDARD_PATH).toBe(true);
+    for (const a of OFFICIAL_BRAND_ASSETS) {
+      expect(existsSync(resolve(repoRoot, a.path)), `${a.key} → ${a.path}`).toBe(true);
+    }
+  });
+
+  it('the canon is valid and FEO-2026-001-complete: exactly one official logo and one institutional seal', () => {
+    expect(validateBrandCanon()).toEqual([]);
+    expect(OFFICIAL_BRAND_ASSETS.find((a) => a.role === 'logo')!.key).toBe('official-logo');
+    expect(OFFICIAL_BRAND_ASSETS.find((a) => a.role === 'seal')!.key).toBe('official-seal');
+  });
+
+  it('the truthful entrance: founder-provided provenance, never a render; twin and license mandatory', () => {
+    for (const a of OFFICIAL_BRAND_ASSETS) expect(a.provenance).toBe('founder-provided');
+    const forged = [{ ...OFFICIAL_BRAND_ASSETS[0], altText: ' ' }];
+    expect(validateBrandCanon(forged).join(' ')).toMatch(/textual twin/);
+    const strayHome = [{ ...OFFICIAL_BRAND_ASSETS[0], path: 'src/assets/some-logo.svg' }];
+    expect(validateBrandCanon(strayHome).join(' ')).toMatch(/one home/);
+  });
+
+  it('every brand genome validates under the ratified rules and is accessioned in the Institutional Registry', () => {
+    for (const a of OFFICIAL_BRAND_ASSETS) {
+      const g = brandAssetGenome(a);
+      expect(validateGenome(g, (id) => genomeExists(id)), g.id).toEqual([]);
+      expect(getGenome(g.id), g.id).toBeTruthy(); // accessioned, not just constructible
+      expect(g.accessibility).toBe('posture'); // honest: twin mandated, no audit verdict claimed
+    }
+  });
+
+  it('Brain markers are brand:<key>:v1, unique across the canon', () => {
+    const markers = OFFICIAL_BRAND_ASSETS.map((a) => a.brainMarker);
+    expect(new Set(markers).size).toBe(markers.length);
+    for (const m of markers) expect(m).toMatch(/^brand:[a-z-]+:v1$/);
+  });
+
+  it('FEO-2026-001 itself is accessioned as the directive of record', () => {
+    const g = getGenome('founder-directive:feo-2026-001-launch-product-era');
+    expect(g).toBeTruthy();
+    expect(g!.purpose).toContain('greatest AI learning experience in the world');
+  });
+});

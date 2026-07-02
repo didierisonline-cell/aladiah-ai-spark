@@ -22,6 +22,7 @@ import {
 import { SHADOW_SEEDERS, OPERATIONAL_EDGE_FUNCTIONS } from './edgeFunctionManifest';
 import { DASHBOARD_PAGES } from './pageManifest';
 import { GOVERNING_DOCUMENTS, GoverningDocument } from './governance';
+import { OFFICIAL_BRAND_ASSETS, brandAssetGenome } from '../avis/brandCanon';
 import { recordDecision, listBrain, BrainEntry } from './brain';
 import { db, safe } from './_internal';
 
@@ -465,6 +466,7 @@ const FOUNDER_DIRECTIVES = [
   { slug: 'master-operating-order-phase-ii', note: 'M06 ratified. Phase II Execution Campaign: Priorities A (resolve founder blockers incl. MERGE constitutional PRs, walk Unknowns, Brain sync, CI) · B (remaining manuals through the lifecycle) · C (AVIS — visual intelligence as constitutional capability; Visual First Principle) · D (Founder Command Center, computed-only) · E (complete workforce onboarding) · F (scale: nothing exists in isolation). Constitution/AMS/BoK/Genome/Brain declared STABLE — controlled amendments only.' },
   { slug: 'fd-2026-017-flagship-production-doctrine', note: 'The Flagship Production Doctrine (verbatim: docs/governance/standards/flagship-production-doctrine.md). One flagship program at a time, in the fixed production order — 1 AI Enterprise Scrum Master & Agile Transformation Leader · 2 AI Enterprise Business Analyst & Business Transformation Specialist · 3 AI Enterprise Project Manager & Strategic Delivery Leader · 4 AI Data Analyst & Analytics Engineer · 5 AI Enterprise Cybersecurity & Digital Trust Engineer. Each completed flagship becomes the institutional benchmark; no program exceeds its predecessor by lowering standards; each inherits every capability built before it and adds discipline-specific ones. The Platform evolves through flagships; every completed flagship improves the entire Institution.', ref: 'docs/governance/standards/flagship-production-doctrine.md' },
   { slug: 'fd-2026-018-product-era', note: 'THE PRODUCT ERA. The constitutional architecture is mature. No additional constitutional books, doctrines, or permanent governance documents shall be introduced unless required by the Founder (this directive is accordingly recorded as a registry entry only — no new document). Engineering effort prioritizes student experience, employer experience, operational excellence, and measurable educational outcomes. Architecture exists to serve products.' },
+  { slug: 'feo-2026-001-launch-product-era', note: 'FOUNDER EXECUTION ORDER 001 — LAUNCH THE PRODUCT ERA. PR #107 (AVIS completion) and PR #108 (FD-2026-017 + FD-2026-018) merged with founder approval; both directives RATIFIED. Product Mission: build the greatest AI learning experience in the world — every work order creates measurable value for students, employers, executive leadership, or institutional operations. Phase IV order: Brand Canon → Visual Render Platform (OpenAI/Open-Gen-AI as FIRST adapter only, no vendor lock-in, no browser API keys) → Professor Didier v1 → Student OS v1 → Scrum Master Flagship Showcase (the benchmark; no subsequent flagship until founder-approved). Engineering rules: scoped WOs, tests, evidence, PR, founder gate — no auto-merges, no unapproved production deploys.' },
 ];
 function directiveGenome(d: (typeof FOUNDER_DIRECTIVES)[number] & { ref?: string }): CapabilityGenome {
   return baseGenome({
@@ -865,6 +867,7 @@ export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   ...DASHBOARD_PAGES.map(dashboardGenome),
   ...AOS_SUBSYSTEMS.filter((s) => s !== 'institutional-registry').map(aosSubsystemGenome),
   ...FOUNDER_DIRECTIVES.map(directiveGenome),
+  ...OFFICIAL_BRAND_ASSETS.map(brandAssetGenome),
   flagshipProgram,
   baProgram,
   cyberProgram,
