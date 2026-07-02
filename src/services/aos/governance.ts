@@ -23,7 +23,7 @@ export type AuthorityLevel = 'constitutional' | 'canonical' | 'operational' | 'i
 /** One entry in a document's approval/change history. */
 export interface DocumentEvent {
   on: string; // YYYY-MM-DD
-  kind: 'created' | 'amended' | 'migrated' | 'sent-to-review' | 'ratified' | 'deprecated';
+  kind: 'created' | 'amended' | 'migrated' | 'sent-to-review' | 'approved' | 'ratified' | 'deprecated';
   by: string; // 'founder' or agent slug
   note: string;
 }
@@ -470,7 +470,10 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     parent: 'constitution',
     lastReview: '2026-07-01',
     nextReview: '2026-07-15',
-    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Established by Founder Executive Directive 003.' }],
+    history: [
+      { on: '2026-07-01', kind: 'created', by: 'founder', note: 'Established by Founder Executive Directive 003.' },
+      { on: '2026-07-01', kind: 'approved', by: 'founder', note: 'Architecture APPROVED and FROZEN. Tagged constitutional-baseline-v1.0. Structural changes are henceforth constitutional acts. Authoring begins: Volume 0 (Covenant), founder-authored only.' },
+    ],
   }),
   doc({
     key: 'covenant',

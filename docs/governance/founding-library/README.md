@@ -1,6 +1,8 @@
 # The Aladiah Founding Library
 
-**Status: Permanent institutional archive.** Established by Founder Executive
+**Status: Permanent institutional archive — ARCHITECTURE FROZEN by founder
+approval, 2026-07-01 (tag: `constitutional-baseline-v1.0`). Structural changes
+to this library are constitutional acts.** Established by Founder Executive
 Directive 003. This library is the permanent constitutional record of Aladiah
 — the shelf every department, AI faculty, workflow, dashboard, curriculum,
 policy, and future decision ultimately inherits from.
@@ -49,3 +51,18 @@ policy, and future decision ultimately inherits from.
 
 Ratification order and merge gate: see the Constitutional Ratification
 Checklist (delivered 2026-07-01) and `../constitution/ratification.md`.
+
+## Authoring protocol (founder decree, 2026-07-01)
+
+1. **Only the Founder authors constitutional doctrine.** No AI invents,
+   drafts, or ghost-writes doctrine — ever.
+2. **AI assists with**: editing, formatting, indexing, cross-referencing,
+   validation, dependency analysis, versioning, and governance integration —
+   of text the founder provides.
+3. **Intake per volume**: the founder provides the text → AI places it in the
+   shelf's Document Body verbatim (editorial suggestions offered separately,
+   never applied silently) → metadata, TOC, cross-references, and registry
+   version are updated → the drift check validates → the founder reviews the
+   diff and ratifies per `../constitution/ratification.md`.
+4. **Authoring order** begins with **Volume 0 — The Aladiah Covenant**
+   (shelf 00), and proceeds one volume at a time as the founder directs.
