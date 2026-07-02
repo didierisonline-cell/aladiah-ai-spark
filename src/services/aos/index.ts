@@ -19,6 +19,9 @@ import * as intelligence from './intelligence';
 import * as governance from './governance';
 import * as genome from './genome';
 import * as institution from './institutionalRegistry';
+import * as avisRenderer from '../avis/renderer';
+import * as avisCompiler from '../avis/promptCompiler';
+import * as avisQuarantine from '../avis/quarantine';
 import { ensureAOS } from './bootstrap';
 
 export const aos = {
@@ -39,6 +42,11 @@ export const aos = {
   governance,     // 14. Institutional Knowledge (registry · graph · health)
   genome,         // 15. Capability Genome (ratified standard, validation V1–V12)
   institution,    // 16. Institutional Registry (the constitutional catalog)
+  avis: {         // 17. AVIS — the Institutional Visual Intelligence Platform (v1.0)
+    renderer: avisRenderer,     //   the permanent adapter seam (step 1)
+    compiler: avisCompiler,     //   governed prompt compilation (step 2)
+    quarantine: avisQuarantine, //   draft quarantine state machine (step 3)
+  },
 };
 
 export { ensureAOS };

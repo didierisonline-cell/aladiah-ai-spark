@@ -746,7 +746,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     purpose: 'The constitutional foundation for Visual Intelligence: architecture, engine, visual Brain, asset registry, standards (quality/prompt/accessibility/brand/signature), taxonomies, frameworks, and the design-only integration/security/cost models.',
     path: 'docs/engineering/avis/BLUEPRINT.md',
     version: '1.0',
-    status: 'review', // WO-0008 delivered; implementation begins only after Founder approval
+    status: 'ratified', // Founder Approved: adopted as AVIS v1.0; renderer abstraction is permanent institutional architecture
     owner: 'interface-experience',
     authority: 'canonical',
     parent: 'avis-design-bible',
@@ -755,9 +755,12 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     relatedAgents: ['interface-experience'],
     lastReview: '2026-07-02',
     nextReview: '2026-07-16',
+    reviewCadenceDays: 90,
+    ratified: { on: '2026-07-02', by: 'founder' },
     history: [
       { on: '2026-07-02', kind: 'created', by: 'interface-experience', note: 'WO-0008: all 20 blueprint sections; design only.' },
-      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'FD-2026-016: AVIS becomes the Institutional Visual Intelligence Platform (all visual assets); Open-Gen-AI adopted as primary renderer behind ai-proxy — the renderer executes standards, never defines them. Integration Architecture added for Founder review.' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'FD-2026-016: the Institutional Visual Intelligence Platform; Open-Gen-AI primary renderer — executes standards, never defines them.' },
+      { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'Adopted as AVIS v1.0; the renderer abstraction is PERMANENT institutional architecture — the Institution shall never depend upon a single rendering provider. Five-step implementation approved.' },
     ],
   }),
 
@@ -767,7 +770,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     purpose: 'The fifteen-section integration design (FD-2026-016): server-side rendering behind ai-proxy patterns, prompt compilation from governed specs, storage, metadata, gates, budgets, rate limits, and the renderer adapter seam — the renderer executes standards, never defines them.',
     path: 'docs/engineering/avis/INTEGRATION_ARCHITECTURE.md',
     version: '1.0',
-    status: 'review', // returned for Founder review before implementation
+    status: 'ratified', // Founder Approved: adopted as AVIS v1.0; renderer abstraction is permanent institutional architecture
     owner: 'interface-experience',
     authority: 'canonical',
     parent: 'avis-blueprint',
@@ -776,7 +779,12 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     relatedAgents: ['interface-experience'],
     lastReview: '2026-07-02',
     nextReview: '2026-07-16',
-    history: [{ on: '2026-07-02', kind: 'created', by: 'interface-experience', note: 'FD-2026-016: all fifteen sections; design only — not one API call until Founder approval.' }],
+    reviewCadenceDays: 90,
+    ratified: { on: '2026-07-02', by: 'founder' },
+    history: [
+      { on: '2026-07-02', kind: 'created', by: 'interface-experience', note: 'FD-2026-016: all fifteen sections; design only.' },
+      { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'Approved; OpenAI is the first approved renderer; future renderers implement the same interface; implementation proceeds through work orders in the approved five-step order.' },
+    ],
   }),
 
   // ---- The Founding Library (Directive 003) -----------------------------------
