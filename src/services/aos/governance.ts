@@ -58,6 +58,8 @@ export interface GoverningDocument {
   ratified: { on: string; by: string } | null;
   /** Approval + change history, oldest first. */
   history: DocumentEvent[];
+  /** Founding Library shelf number ('00'–'14') when this document has a shelf. */
+  shelf: string | null;
 }
 
 /** Concise entry definition: required core + sensible empty defaults. */
@@ -75,6 +77,7 @@ function doc(d: DocInput): GoverningDocument {
     reviewCadenceDays: d.status === 'ratified' ? 90 : 14,
     ratified: null,
     history: [],
+    shelf: null,
     ...d,
   };
 }
@@ -85,6 +88,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
   // ---- L1: Constitution ------------------------------------------------------
   doc({
     key: 'constitution',
+    shelf: '02',
     name: 'The Aladiah Constitution',
     purpose: 'The founding document — single chain of authority for every department, agent, workflow, and feature.',
     path: 'docs/governance/constitution/constitution.md',
@@ -211,6 +215,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
   }),
   doc({
     key: 'founder-standards',
+    shelf: '03',
     name: 'Founder Standards',
     purpose: 'The operational interpretation of the Constitution — how every decision is made. STRUCTURE ONLY until the founder authors it.',
     path: 'docs/governance/standards/founder-standards.md',
@@ -228,6 +233,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
   // ---- Architecture (L3–L5) ---------------------------------------------------
   doc({
     key: 'enterprise-architecture',
+    shelf: '05',
     name: 'Enterprise Architecture',
     purpose: 'The whole-system view: layers, constraints, departments, dependencies, declared debts.',
     path: 'docs/governance/architecture/enterprise-architecture.md',
@@ -244,6 +250,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
   }),
   doc({
     key: 'intelligence-architecture',
+    shelf: '06',
     name: 'Intelligence Architecture',
     purpose: 'The ten-component intelligence layer: sources, evidence gates, confidence, approval chains.',
     path: 'docs/governance/architecture/intelligence-architecture.md',
@@ -265,6 +272,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
   }),
   doc({
     key: 'aladiah-operating-system',
+    shelf: '07',
     name: 'The Aladiah Operating System (AIOS v1.0 design)',
     purpose: 'The seven-level operating system design: authority down, evidence up, 60-second cockpit.',
     path: 'docs/governance/architecture/ALADIAH_OPERATING_SYSTEM.md',
@@ -324,6 +332,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
   // ---- L6 charters & manuals ---------------------------------------------------
   doc({
     key: 'department-charters',
+    shelf: '08',
     name: 'Department Charters (index)',
     purpose: 'The 12 department charters (AGENT_SPECs) + 2 personas — who does what, under whose authority.',
     path: 'docs/governance/departments/README.md',
@@ -380,6 +389,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
   // ---- Framework slots scaffolded, never invented -------------------------------
   doc({
     key: 'academic-canon',
+    shelf: '10',
     name: 'Academic Canon (index)',
     purpose: 'The academic governance set: curriculum framework, program standards, validation gates.',
     path: 'docs/governance/academic/README.md',
@@ -397,6 +407,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
   }),
   doc({
     key: 'avis-design-bible',
+    shelf: '11',
     name: 'AVIS Design Bible (scaffold)',
     purpose: 'The visual-experience authority: tokens, hierarchy, accessibility, premium consistency.',
     path: 'docs/governance/design/avis-design-bible.md',
@@ -414,6 +425,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
   }),
   doc({
     key: 'research-institute-handbook',
+    shelf: '12',
     name: 'Research Institute Handbook (scaffold)',
     purpose: 'Governance for external research and market intelligence — sources, approval, attribution.',
     path: 'docs/governance/research/README.md',
@@ -429,6 +441,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
   }),
   doc({
     key: 'brand-media-bible',
+    shelf: '13',
     name: 'Brand & Media Bible (scaffold)',
     purpose: 'Brand authority: story canon, asset inventory, voice, media standards.',
     path: 'docs/governance/brand/README.md',
@@ -443,7 +456,173 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     nextReview: '2026-07-15',
     history: [{ on: '2026-07-01', kind: 'created', by: 'marketing-content', note: 'Scaffold indexing FOUNDER_STORY_CANON + brand assets; content pending.' }],
   }),
+
+  // ---- The Founding Library (Directive 003) -----------------------------------
+  doc({
+    key: 'founding-library',
+    name: 'The Aladiah Founding Library (catalog)',
+    purpose: 'The permanent institutional archive: fifteen numbered shelves holding ratified text or pointing to working drafts; the accession policy.',
+    path: 'docs/governance/founding-library/README.md',
+    version: '1.0',
+    status: 'review',
+    owner: 'founder',
+    authority: 'constitutional',
+    parent: 'constitution',
+    lastReview: '2026-07-01',
+    nextReview: '2026-07-15',
+    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Established by Founder Executive Directive 003.' }],
+  }),
+  doc({
+    key: 'covenant',
+    shelf: '00',
+    name: 'The Covenant (reserved)',
+    purpose: "Reserved for the founding covenant — the founder's permanent commitment statement. Founder-authored only.",
+    path: 'docs/governance/founding-library/00-covenant.md',
+    version: '0.0',
+    status: 'draft',
+    owner: 'founder',
+    authority: 'constitutional',
+    parent: 'constitution',
+    lastReview: '2026-07-01',
+    nextReview: '2026-07-15',
+    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Shelf 00 established; content reserved (Directive 003).' }],
+  }),
+  doc({
+    key: 'declaration',
+    shelf: '01',
+    name: 'The Declaration (reserved)',
+    purpose: 'Reserved for the declaration of founding — why Aladiah exists as an institution. Founder-authored only.',
+    path: 'docs/governance/founding-library/01-declaration.md',
+    version: '0.0',
+    status: 'draft',
+    owner: 'founder',
+    authority: 'constitutional',
+    parent: 'constitution',
+    dependencies: ['covenant'],
+    lastReview: '2026-07-01',
+    nextReview: '2026-07-15',
+    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Shelf 01 established; content reserved (Directive 003).' }],
+  }),
+  doc({
+    key: 'organizational-charter',
+    shelf: '04',
+    name: 'Organizational Charter (reserved)',
+    purpose: 'Reserved for the legal/organizational structure: entities, roles, succession, signatory authority. Founder-authored only.',
+    path: 'docs/governance/founding-library/04-organizational-charter.md',
+    version: '0.0',
+    status: 'draft',
+    owner: 'founder',
+    authority: 'constitutional',
+    parent: 'constitution',
+    lastReview: '2026-07-01',
+    nextReview: '2026-07-15',
+    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Shelf 04 established; content reserved (Directive 003).' }],
+  }),
+  doc({
+    key: 'faculty-handbook',
+    shelf: '09',
+    name: 'Faculty Handbook (reserved)',
+    purpose: 'Reserved for how AI faculty and human staff operate together: conduct, duties, escalation, review. Distinct from the AI Workforce Manual (infrastructure).',
+    path: 'docs/governance/founding-library/09-faculty-handbook.md',
+    version: '0.0',
+    status: 'draft',
+    owner: 'founder',
+    authority: 'operational',
+    parent: 'agent-operating-system',
+    dependencies: ['department-charters'],
+    lastReview: '2026-07-01',
+    nextReview: '2026-07-15',
+    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Shelf 09 established; content reserved (Directive 003).' }],
+  }),
+  doc({
+    key: 'founder-operating-manual',
+    shelf: '14',
+    name: 'Founder Operating Manual (reserved)',
+    purpose: 'Reserved for how the founder personally operates the institution: cadences, walks, decision sessions, delegation boundaries. Founder-authored only.',
+    path: 'docs/governance/founding-library/14-founder-operating-manual.md',
+    version: '0.0',
+    status: 'draft',
+    owner: 'founder',
+    authority: 'operational',
+    parent: 'founder-standards',
+    lastReview: '2026-07-01',
+    nextReview: '2026-07-15',
+    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Shelf 14 established; content reserved (Directive 003).' }],
+  }),
 ];
+
+// =============================================================================
+// The Founding Library — the permanent shelf catalog (Directive 003).
+// Shelf files carry institutional metadata + placeholders; working drafts
+// prevail until ratification enshrines their text into the shelf.
+// =============================================================================
+export interface LibraryShelf {
+  shelf: string; // '00'–'14'
+  file: string;  // the shelf document in founding-library/
+  registryKey: string;
+}
+
+export const FOUNDING_LIBRARY: LibraryShelf[] = [
+  { shelf: '00', file: 'docs/governance/founding-library/00-covenant.md', registryKey: 'covenant' },
+  { shelf: '01', file: 'docs/governance/founding-library/01-declaration.md', registryKey: 'declaration' },
+  { shelf: '02', file: 'docs/governance/founding-library/02-constitution.md', registryKey: 'constitution' },
+  { shelf: '03', file: 'docs/governance/founding-library/03-founder-standards.md', registryKey: 'founder-standards' },
+  { shelf: '04', file: 'docs/governance/founding-library/04-organizational-charter.md', registryKey: 'organizational-charter' },
+  { shelf: '05', file: 'docs/governance/founding-library/05-enterprise-architecture.md', registryKey: 'enterprise-architecture' },
+  { shelf: '06', file: 'docs/governance/founding-library/06-intelligence-architecture.md', registryKey: 'intelligence-architecture' },
+  { shelf: '07', file: 'docs/governance/founding-library/07-aios.md', registryKey: 'aladiah-operating-system' },
+  { shelf: '08', file: 'docs/governance/founding-library/08-department-charters.md', registryKey: 'department-charters' },
+  { shelf: '09', file: 'docs/governance/founding-library/09-faculty-handbook.md', registryKey: 'faculty-handbook' },
+  { shelf: '10', file: 'docs/governance/founding-library/10-academic-canon.md', registryKey: 'academic-canon' },
+  { shelf: '11', file: 'docs/governance/founding-library/11-avis-design-bible.md', registryKey: 'avis-design-bible' },
+  { shelf: '12', file: 'docs/governance/founding-library/12-research-institute-handbook.md', registryKey: 'research-institute-handbook' },
+  { shelf: '13', file: 'docs/governance/founding-library/13-brand-media-bible.md', registryKey: 'brand-media-bible' },
+  { shelf: '14', file: 'docs/governance/founding-library/14-founder-operating-manual.md', registryKey: 'founder-operating-manual' },
+];
+
+/** One shelf's dashboard row: catalog + registry state joined. */
+export interface LibraryStatus {
+  shelf: string;
+  file: string;
+  doc: GoverningDocument;
+  reviewDue: boolean;
+}
+
+/** The Founding Library data model for the (future) Governance Center. */
+export function getFoundingLibrary(today = new Date()): LibraryStatus[] {
+  return FOUNDING_LIBRARY.map((s) => {
+    const d = getDocument(s.registryKey)!;
+    return { shelf: s.shelf, file: s.file, doc: d, reviewDue: isReviewDue(d, today) };
+  });
+}
+
+/** Everything currently waiting on the founder, across the library. */
+export interface PendingFounderAction {
+  kind: 'ratify' | 'review-due' | 'author' | 'affirm-amendment';
+  documentKey: string;
+  shelf: string | null;
+  detail: string;
+}
+
+export function getPendingFounderActions(today = new Date()): PendingFounderAction[] {
+  const actions: PendingFounderAction[] = [];
+  for (const d of GOVERNING_DOCUMENTS) {
+    if (d.version === '0.0') {
+      actions.push({ kind: 'author', documentKey: d.key, shelf: d.shelf, detail: `${d.name} is reserved and awaits founder authorship.` });
+    } else if (d.status === 'draft' || d.status === 'review') {
+      actions.push({ kind: 'ratify', documentKey: d.key, shelf: d.shelf, detail: `${d.name} (v${d.version}, ${d.status}) awaits founder ratification.` });
+    }
+    if (isReviewDue(d, today)) {
+      actions.push({ kind: 'review-due', documentKey: d.key, shelf: d.shelf, detail: `${d.name} review is due (next: ${d.nextReview}).` });
+    }
+    const lastRatified = [...d.history].reverse().find((h) => h.kind === 'ratified');
+    const amendedAfter = lastRatified && d.history.some((h) => h.kind === 'amended' && h.on > lastRatified.on);
+    if (d.status === 'ratified' && amendedAfter) {
+      actions.push({ kind: 'affirm-amendment', documentKey: d.key, shelf: d.shelf, detail: `${d.name} was amended after ratification — founder affirmation pending.` });
+    }
+  }
+  return actions;
+}
 
 // =============================================================================
 // Lookup + graph

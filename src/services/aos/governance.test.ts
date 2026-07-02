@@ -2,14 +2,17 @@ import { describe, expect, it } from 'vitest';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import {
+  FOUNDING_LIBRARY,
   FRAMEWORK_SLOTS,
   GOVERNING_DOCUMENTS,
   childrenOf,
   getDocument,
   getDocumentHealth,
+  getFoundingLibrary,
   getGovernanceHealth,
   getGovernanceNode,
   getGovernanceSummary,
+  getPendingFounderActions,
   isReviewDue,
 } from './governance';
 
@@ -161,12 +164,17 @@ describe('Governance drift check — registry vs repository', () => {
     'docs/governance/manuals/validation-walks/founder-portal-walk.md',   // chapter of the registered manual
   ]);
 
-  it('every governance document is registered (or an explicit index/chapter)', () => {
+  it('every governance document is registered (or an explicit index/chapter/shelf)', () => {
     const registered = new Set(GOVERNING_DOCUMENTS.map((d) => d.path));
+    const shelfFiles = new Set(FOUNDING_LIBRARY.map((s) => s.file));
+    shelfFiles.add('docs/governance/founding-library/README.md');
     const files = walkMd(resolve(repoRoot, 'docs/governance'))
       .map((p) => p.slice(repoRoot.length + 1).split('\\').join('/'));
     for (const f of files) {
-      expect(registered.has(f) || EXEMPT.has(f), `unregistered governance document: ${f}`).toBe(true);
+      expect(
+        registered.has(f) || EXEMPT.has(f) || shelfFiles.has(f),
+        `unregistered governance document: ${f}`,
+      ).toBe(true);
     }
   });
 
@@ -247,5 +255,65 @@ describe('Governance health', () => {
     for (const d of GOVERNING_DOCUMENTS.filter((x) => x.status === 'ratified')) {
       expect(d.history.some((h) => h.kind === 'ratified'), d.key).toBe(true);
     }
+  });
+});
+
+// =============================================================================
+// The Founding Library — shelf ↔ file ↔ registry consistency (Directive 003).
+// =============================================================================
+describe('Founding Library', () => {
+  it('holds exactly fifteen shelves, 00 through 14, in order', () => {
+    expect(FOUNDING_LIBRARY.map((s) => s.shelf)).toEqual(
+      Array.from({ length: 15 }, (_, i) => String(i).padStart(2, '0')),
+    );
+  });
+
+  it('every shelf file exists on disk', () => {
+    for (const s of FOUNDING_LIBRARY) {
+      expect(existsSync(resolve(repoRoot, s.file)), `shelf ${s.shelf} → ${s.file}`).toBe(true);
+    }
+  });
+
+  it('every shelf resolves to a registered document with the matching shelf number', () => {
+    for (const s of FOUNDING_LIBRARY) {
+      const d = getDocument(s.registryKey);
+      expect(d, `shelf ${s.shelf} → registry '${s.registryKey}'`).toBeTruthy();
+      expect(d!.shelf, `${s.registryKey} shelf field`).toBe(s.shelf);
+    }
+  });
+
+  it('no registry document claims a shelf outside the catalog', () => {
+    const cataloged = new Map(FOUNDING_LIBRARY.map((s) => [s.registryKey, s.shelf]));
+    for (const d of GOVERNING_DOCUMENTS.filter((x) => x.shelf !== null)) {
+      expect(cataloged.get(d.key), `${d.key} claims shelf ${d.shelf}`).toBe(d.shelf);
+    }
+  });
+
+  it('reserved shelves contain no invented content; pointer shelves name their working draft', () => {
+    const RESERVED = new Set(['00', '01', '04', '09', '14']);
+    for (const s of FOUNDING_LIBRARY) {
+      const text = readFileSync(resolve(repoRoot, s.file), 'utf8');
+      if (RESERVED.has(s.shelf)) {
+        expect(text, `${s.file} must declare itself reserved`).toMatch(/Reserved/);
+        expect(text, `${s.file} must state the no-invention rule`).toMatch(/no content is invented/i);
+      } else {
+        expect(text, `${s.file} must point to its working draft until enshrinement`).toMatch(/pending enshrinement|Working draft/i);
+      }
+    }
+  });
+
+  it('getFoundingLibrary joins catalog + registry for the dashboard', () => {
+    const lib = getFoundingLibrary(new Date('2026-07-02'));
+    expect(lib.length).toBe(15);
+    expect(lib.every((r) => r.doc && typeof r.reviewDue === 'boolean')).toBe(true);
+  });
+
+  it('getPendingFounderActions surfaces authorship, ratification, and amendment work', () => {
+    const actions = getPendingFounderActions(new Date('2026-07-02'));
+    const kinds = new Set(actions.map((a) => a.kind));
+    expect(kinds.has('author')).toBe(true);      // reserved shelves (v0.0)
+    expect(kinds.has('ratify')).toBe(true);      // drafts/reviews
+    expect(kinds.has('affirm-amendment')).toBe(true); // AOS canon amended post-ratification
+    expect(actions.every((a) => a.detail.length > 0)).toBe(true);
   });
 });
