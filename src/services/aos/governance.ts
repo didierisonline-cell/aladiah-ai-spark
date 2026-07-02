@@ -717,6 +717,24 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     ],
   }),
 
+  doc({
+    key: 'm07-work-order-execution',
+    name: 'M07 — Work Order & Execution Management Manual',
+    purpose: 'The one governed road for institutional change: opened with purpose, gated by evidence, decided by authority, measured by outcome, remembered forever.',
+    path: 'docs/governance/management-system/manuals/M07-work-order-execution.md',
+    version: '1.0',
+    status: 'draft', // Permanent Rule step 5: Founder Review; M08 does not begin until approved
+    owner: 'ceo-chief-of-staff',
+    authority: 'operational',
+    parent: 'ams-framework',
+    dependencies: ['m06-institutional-intelligence', 'm01-executive-office'],
+    relatedDepartments: ['ceo-chief-of-staff', 'qa-authority', 'interface-experience'],
+    relatedAgents: ['ceo-chief-of-staff'],
+    lastReview: '2026-07-02',
+    nextReview: '2026-07-16',
+    history: [{ on: '2026-07-02', kind: 'created', by: 'ceo-chief-of-staff', note: 'Authored under WO-0007 (Master Operating Order, Priority B); self-referential: the manual governs the instrument that produced it; steps 1–4 recorded.' }],
+  }),
+
   // ---- The Founding Library (Directive 003) -----------------------------------
   doc({
     key: 'founder-reserved-powers',
