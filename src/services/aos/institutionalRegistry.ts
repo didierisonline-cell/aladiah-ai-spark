@@ -842,12 +842,14 @@ const avisCapability = baseGenome({
     { agent: 'curriculum-excellence', role: 'stewards' },
     { agent: 'qa-authority', role: 'reviews' },
   ],
-  lifecycle: 'proposed', // → 'governed' upon Founder approval of the blueprint
+  lifecycle: 'governed', // Founder approved AVIS v1.0; implementation WOs 0009+ in the approved five-step order
+  ratifiedOn: D,
   parentCapability: 'ai-role:interface-experience',
-  founderDirectives: ['WO-0008', 'Master Operating Order (Priority C)', 'Founder decision: AVIS is foundational, effective immediately'],
+  founderDirectives: ['WO-0008', 'Master Operating Order (Priority C)', 'FD-2026-016', 'Founder approval: AVIS v1.0 + five-step roadmap'],
   evolution: [
     { on: D, kind: 'created', by: 'interface-experience', evidence: 'WO-0008 blueprint: 20 sections, design-only; gate chain declared at conception.' },
-    { on: D, kind: 'amended', by: 'founder', evidence: 'FD-2026-016: scope expanded to ALL institutional visuals; Open-Gen-AI adopted as primary renderer (behind ai-proxy, subordinate to standards); integration architecture ordered for review.' },
+    { on: D, kind: 'amended', by: 'founder', evidence: 'FD-2026-016: scope expanded to ALL institutional visuals; Open-Gen-AI adopted as primary renderer (behind ai-proxy, subordinate to standards).' },
+    { on: D, kind: 'ratified', by: 'founder', evidence: 'AVIS v1.0 adopted; renderer abstraction permanent; five-step implementation approved (interface → compiler → quarantine → registry/Brain → diagram library).' },
   ],
 });
 
