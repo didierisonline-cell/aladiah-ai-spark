@@ -289,11 +289,15 @@ describe('Founding Library', () => {
     }
   });
 
-  it('reserved shelves contain no invented content; pointer shelves name their working draft', () => {
-    const RESERVED = new Set(['00', '01', '04', '09', '14']);
+  it('reserved shelves contain no invented content; pointer shelves name their working draft; authored shelves declare founder authorship', () => {
+    const RESERVED = new Set(['01', '04', '09', '14']);
+    const AUTHORED = new Set(['00']); // Volume 0 — The Aladiah Covenant (Directive 004)
     for (const s of FOUNDING_LIBRARY) {
       const text = readFileSync(resolve(repoRoot, s.file), 'utf8');
-      if (RESERVED.has(s.shelf)) {
+      if (AUTHORED.has(s.shelf)) {
+        expect(text, `${s.file} must declare founder authorship`).toMatch(/FOUNDER-AUTHORED/);
+        expect(text, `${s.file} must not carry the reserved marker`).not.toMatch(/no content is invented/i);
+      } else if (RESERVED.has(s.shelf)) {
         expect(text, `${s.file} must declare itself reserved`).toMatch(/Reserved/);
         expect(text, `${s.file} must state the no-invention rule`).toMatch(/no content is invented/i);
       } else {

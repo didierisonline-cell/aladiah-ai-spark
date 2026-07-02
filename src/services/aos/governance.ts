@@ -18,7 +18,7 @@ import { recordDecision, listBrain, BrainEntry } from './brain';
 import { emitEvent } from './events';
 
 export type DocumentStatus = 'draft' | 'review' | 'ratified' | 'deprecated';
-export type AuthorityLevel = 'constitutional' | 'canonical' | 'operational' | 'informational';
+export type AuthorityLevel = 'foundational' | 'constitutional' | 'canonical' | 'operational' | 'informational';
 
 /** One entry in a document's approval/change history. */
 export interface DocumentEvent {
@@ -97,6 +97,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     owner: 'founder',
     authority: 'constitutional',
     parent: null,
+    dependencies: ['covenant'], // the Covenant defines purpose; the Constitution defines governance (Covenant Preamble)
     lastReview: '2026-07-01',
     nextReview: '2026-07-15',
     history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'v0.1 composed from the ratified canon.' }],
@@ -224,7 +225,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     owner: 'founder',
     authority: 'constitutional',
     parent: 'constitution',
-    dependencies: ['launch-decision-principle', 'ratification-process'],
+    dependencies: ['covenant', 'launch-decision-principle', 'ratification-process'],
     lastReview: '2026-07-01',
     nextReview: '2026-07-15',
     history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Structural scaffold reserved — content is founder-authored, never invented.' }],
@@ -478,17 +479,20 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
   doc({
     key: 'covenant',
     shelf: '00',
-    name: 'The Covenant (reserved)',
-    purpose: "Reserved for the founding covenant — the founder's permanent commitment statement. Founder-authored only.",
+    name: 'The Aladiah Covenant',
+    purpose: 'Defines the spirit and purpose of Aladiah — the principles every decision shall honor, beyond any individual, technology, or generation.',
     path: 'docs/governance/founding-library/00-covenant.md',
-    version: '0.0',
-    status: 'draft',
+    version: '1.0',
+    status: 'review', // Founder Approved Draft v1.0 — pending Founder Signature
     owner: 'founder',
-    authority: 'constitutional',
-    parent: 'constitution',
-    lastReview: '2026-07-01',
-    nextReview: '2026-07-15',
-    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Shelf 00 established; content reserved (Directive 003).' }],
+    authority: 'foundational',
+    parent: 'constitution', // pending founder decision on re-rooting (Covenant defines purpose; Constitution defines governance)
+    lastReview: '2026-07-02',
+    nextReview: '2026-07-16',
+    history: [
+      { on: '2026-07-01', kind: 'created', by: 'founder', note: 'Shelf 00 established; content reserved (Directive 003).' },
+      { on: '2026-07-02', kind: 'approved', by: 'founder', note: 'Founder-authored Covenant v1.0 placed verbatim; approved as Founder Approved Draft (Directive 004). Ratification: pending Founder Signature.' },
+    ],
   }),
   doc({
     key: 'declaration',
@@ -517,6 +521,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     owner: 'founder',
     authority: 'constitutional',
     parent: 'constitution',
+    dependencies: ['covenant'], // the Covenant defines purpose; the Charter defines structure (Covenant Preamble)
     lastReview: '2026-07-01',
     nextReview: '2026-07-15',
     history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Shelf 04 established; content reserved (Directive 003).' }],

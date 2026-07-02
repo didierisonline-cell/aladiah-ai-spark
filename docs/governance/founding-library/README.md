@@ -33,7 +33,7 @@ policy, and future decision ultimately inherits from.
 
 | Shelf | Document | Registry key | Working draft / content state |
 |---|---|---|---|
-| 00 | Covenant | `covenant` | Reserved — founder-authored |
+| 00 | Covenant | `covenant` | **Founder Approved Draft v1.0 — pending Founder Signature** (authored 2026-07-02) |
 | 01 | Declaration | `declaration` | Reserved — founder-authored |
 | 02 | Constitution | `constitution` | Working draft: `../constitution/constitution.md` (v0.1) |
 | 03 | Founder Standards | `founder-standards` | Reserved structure: `../standards/founder-standards.md` |
