@@ -549,6 +549,24 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     history: [{ on: '2026-07-02', kind: 'created', by: 'founder', note: 'Catalog designed per FD-2026-009.' }],
   }),
 
+  doc({
+    key: 'm01-executive-office',
+    name: 'M01 — Executive Office Manual',
+    purpose: 'The operational blueprint for the Executive Office and the Gold Standard structure every Management Manual inherits: directives, decisions, ratifications, briefings, escalations, walks, continuity.',
+    path: 'docs/governance/management-system/manuals/M01-executive-office.md',
+    version: '1.0',
+    status: 'draft', // WO-0001: presented for Founder Review; M02 does not begin until approved
+    owner: 'founder',
+    authority: 'operational',
+    parent: 'ams-framework',
+    dependencies: ['permanent-engineering-mission', 'capability-genome-standard', 'ratification-process'],
+    relatedDepartments: ['ceo-chief-of-staff', 'qa-authority'],
+    relatedAgents: ['ceo-chief-of-staff'],
+    lastReview: '2026-07-02',
+    nextReview: '2026-07-16',
+    history: [{ on: '2026-07-02', kind: 'created', by: 'founder', note: 'Authored under WO-0001 per the AMS Framework Universal Template; QA structural conformance complete; Founder Review pending.' }],
+  }),
+
   // ---- The Founding Library (Directive 003) -----------------------------------
   doc({
     key: 'founding-library',

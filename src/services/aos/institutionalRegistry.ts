@@ -474,6 +474,50 @@ function directiveGenome(d: (typeof FOUNDER_DIRECTIVES)[number]): CapabilityGeno
   });
 }
 
+/** M01 — the first Management Manual (WO-0001), genome-first per the ratified standard. */
+const m01Manual = baseGenome({
+  id: 'playbook:m01-executive-office',
+  mission: 'Every institutional decision honors the Covenant — recorded, evidenced, and remembered (Art. II, IV, IX, XIII).',
+  purpose: 'The Executive Office operational blueprint and the Gold Standard structure for all Management Manuals (M01–M20).',
+  type: 'playbook',
+  classification: 'operational',
+  owner: 'founder',
+  department: 'founder',
+  authority: 'operational',
+  constitutionalAuthority: 'ams-framework',
+  constitutionVolumes: ['02'],
+  referenceModel: 'docs/governance/management-system/FRAMEWORK.md',
+  playbook: 'docs/governance/management-system/manuals/M01-executive-office.md',
+  standards: ['capability-genome-standard', 'permanent-engineering-mission', 'ratification-process'],
+  dashboardSpec: 'src/pages/founder/FounderPortal.tsx',
+  workforceSpec: 'docs/agents/ceo-chief-of-staff/AGENT_SPEC.md',
+  kpis: [
+    { key: 'decision-latency', formula: 'median age of Founder Approval Queue items at decision time', target: 'founder-set pending', owner: 'founder', cadence: 'daily brief', source: 'approvals queue timestamps' },
+    { key: 'escalation-latency', formula: 'escalation event → founder decision recorded', target: 'founder-set pending', owner: 'founder', cadence: 'per incident', source: 'event bus' },
+    { key: 'briefing-currency', formula: 'cadences current ÷ 5', target: '100%', owner: 'ceo-chief-of-staff', cadence: 'daily', source: 'briefing staleness engine' },
+    { key: 'evidence-integrity', formula: 'approvals carrying evidence ÷ all approvals', target: '100% (by construction)', owner: 'qa-authority', cadence: 'continuous', source: 'EvidenceRequiredError telemetry' },
+  ],
+  inputs: [
+    { name: 'founder directives (verbatim)', kind: 'human-action' },
+    { name: 'approval queue + escalations + briefings', kind: 'data' },
+  ],
+  outputs: [
+    { name: 'founder decisions + ratifications (records)', kind: 'decision', writesProduction: false, approvalGate: null },
+    { name: 'executive briefings (Brain-stored)', kind: 'artifact', writesProduction: false, approvalGate: null },
+  ],
+  security: { level: 'founder', posture: 'FounderRoute surfaces; evidence-gated decisions; registry as record', gateChain: 'AMS approval workflow (QA → Founder)' },
+  workforce: [
+    { agent: 'ceo-chief-of-staff', role: 'operates' },
+    { agent: 'qa-authority', role: 'reviews' },
+  ],
+  lifecycle: 'governed', // artifacts complete; in force upon Founder ratification
+  parentCapability: 'ai-role:ceo-chief-of-staff',
+  founderDirectives: ['WO-0001', 'FD-2026-009 (AMS)', 'FD-2026-007'],
+  evolution: [
+    { on: D, kind: 'created', by: 'founder', evidence: 'WO-0001 — first Management Manual, authored per the AMS Framework Universal Template.' },
+  ],
+});
+
 // ---- The catalog --------------------------------------------------------------
 export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   ...SHADOW_SEEDERS.map(seederGenome),
@@ -489,6 +533,7 @@ export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   curriculumDepartment,
   taxonomyStandard,
   registrySelf,
+  m01Manual,
 ];
 
 export function getGenome(id: string): CapabilityGenome | undefined {
