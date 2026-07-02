@@ -15,6 +15,7 @@ import { isFounderEmail } from '@/lib/roles';
 import { DEPRECATED_COURSE_REDIRECTS } from '@/lib/courseRedirects';
 import { founderModeOn } from '@/hooks/useFounderMode';
 import MobileLessonPlayer from '@/components/portal/MobileLessonPlayer';
+import ProfessorDidierTutor from '@/components/course/ProfessorDidierTutor';
 
 const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string;
 
@@ -826,6 +827,24 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
 
           </div>
 
+          {/* ── Professor Didier™ text tutor (WO-0015) — the written twin of the
+              voice session: grounded in the FULL current lesson, works without a
+              microphone, never navigates, never reveals upcoming quiz answers. */}
+          {currentLesson && (
+            <ProfessorDidierTutor
+              context={{
+                courseTitle: getTitle(course),
+                moduleTitle: getTitle(chapter),
+                lessonTitle: getTitle(currentLesson),
+                lessonTranscript: getTranscript(currentLesson) || getDescription(currentLesson),
+                lessonNumber: (steps.findIndex(s => s.type === 'lesson' && s.video.id === currentLesson.id)) + 1,
+                lessonCount: videos.length,
+                nextStep: nextStep ? nextStep.type : 'none',
+                language,
+              }}
+            />
+          )}
+
           {/* Course Study Guide — sits between the AI mentor and the Continue button */}
           {course && videos.length > 0 && (
             <div style={{ marginBottom: 32 }}>
@@ -1020,7 +1039,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#f59e0b' }}>{t('chapter.quiz.title')}</h2>
               <button onClick={() => setActiveQuizId(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 24, lineHeight: 1 }}>×</button>
             </div>
-            <Quiz quizId={activeQuizId} quizType="chapter_end" onComplete={async (passed) => {
+            <Quiz quizId={activeQuizId} quizType="chapter_end" coachContext={{ courseTitle: getTitle(course), moduleTitle: getTitle(chapter) }} onComplete={async (passed) => {
               setActiveQuizId(null);
               if (!passed) return;
               // Check tier and decide what happens after passing
