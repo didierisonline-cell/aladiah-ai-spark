@@ -461,6 +461,7 @@ const FOUNDER_DIRECTIVES = [
   { slug: 'fd-2026-012-constitutional-clarification', note: 'M03 ratified. Constitutional clarification: the spine is NOT amended; the Covenant remains supreme governing doctrine; permanent definitions — Covenant WHY · Constitution WHAT · Book of Knowledge WHAT IS KNOWN · Management System HOW · Company Brain HOW TO IMPROVE; the four shall never be merged. WO-0004 issued.' },
   { slug: 'fd-2026-013-phase-i-complete', note: 'M04 ratified; PHASE I DECLARED COMPLETE (Covenant, Constitution, Book of Knowledge, Management System, Registry, Brain). Founder Doctrine: implementation over expansion — improve, amend, strengthen; never parallel, duplicate, replace; simplicity is a constitutional value. Engineering Law: the Five Questions every work order must answer. WO-0005 issued. (Number assigned by sequence; directive arrived unnumbered.)' },
   { slug: 'fd-2026-014-employee-equality-autonomy', note: 'M05 ratified (v1.1 with doctrine verbatim). The Employee Principle (same framework for human and AI; capability never changes accountability). The Institutional Equality Principle (evaluate work, not origin). The Founder Reserved Powers (nine, never delegated to AI, never inferred, never assumed). The Autonomy Doctrine (a privilege earned by evidence; safety prevails over automation). PHASE II opened: execution. WO-0006 issued.' },
+  { slug: 'fd-2026-016-avis-platform', note: 'AVIS expanded: the Institutional Visual Intelligence Platform — governs ALL visual assets (educational, portal, marketing, executive, dashboards, social, podcast, web, brand, presentations, publications). Open-Gen-AI adopted as primary rendering engine behind ai-proxy; THE RENDERER NEVER DEFINES STANDARDS — AVIS, the Design Bible, Brand Standards, and the Brain define; the renderer executes. Integration architecture ordered for Founder review before implementation.' },
   { slug: 'master-operating-order-phase-ii', note: 'M06 ratified. Phase II Execution Campaign: Priorities A (resolve founder blockers incl. MERGE constitutional PRs, walk Unknowns, Brain sync, CI) · B (remaining manuals through the lifecycle) · C (AVIS — visual intelligence as constitutional capability; Visual First Principle) · D (Founder Command Center, computed-only) · E (complete workforce onboarding) · F (scale: nothing exists in isolation). Constitution/AMS/BoK/Genome/Brain declared STABLE — controlled amendments only.' },
 ];
 function directiveGenome(d: (typeof FOUNDER_DIRECTIVES)[number]): CapabilityGenome {
@@ -815,7 +816,7 @@ const m07Manual = baseGenome({
 const avisCapability = baseGenome({
   id: 'service:avis',
   mission: 'To strengthen understanding through visual intelligence (Covenant, Closing Affirmation; Art. I — teaching is transformation).',
-  purpose: 'The Aladiah Visual Intelligence System: governed visual learning as a foundational institutional capability — engine, asset registry, standards, and (future, gated) generation.',
+  purpose: 'The Institutional Visual Intelligence Platform (FD-2026-016): governs ALL visual assets across the Institution — educational, portal, marketing, executive, brand, social, publications — with Open-Gen-AI adopted as primary rendering engine, subordinate to institutional standards.',
   type: 'service',
   classification: 'strategic',
   owner: 'interface-experience',
@@ -846,6 +847,7 @@ const avisCapability = baseGenome({
   founderDirectives: ['WO-0008', 'Master Operating Order (Priority C)', 'Founder decision: AVIS is foundational, effective immediately'],
   evolution: [
     { on: D, kind: 'created', by: 'interface-experience', evidence: 'WO-0008 blueprint: 20 sections, design-only; gate chain declared at conception.' },
+    { on: D, kind: 'amended', by: 'founder', evidence: 'FD-2026-016: scope expanded to ALL institutional visuals; Open-Gen-AI adopted as primary renderer (behind ai-proxy, subordinate to standards); integration architecture ordered for review.' },
   ],
 });
 

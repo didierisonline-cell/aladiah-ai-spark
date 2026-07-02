@@ -742,7 +742,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
 
   doc({
     key: 'avis-blueprint',
-    name: 'AVIS — Complete Engineering Blueprint',
+    name: 'AVIS — Complete Engineering Blueprint (Institutional Visual Intelligence Platform)',
     purpose: 'The constitutional foundation for Visual Intelligence: architecture, engine, visual Brain, asset registry, standards (quality/prompt/accessibility/brand/signature), taxonomies, frameworks, and the design-only integration/security/cost models.',
     path: 'docs/engineering/avis/BLUEPRINT.md',
     version: '1.0',
@@ -755,7 +755,28 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     relatedAgents: ['interface-experience'],
     lastReview: '2026-07-02',
     nextReview: '2026-07-16',
-    history: [{ on: '2026-07-02', kind: 'created', by: 'interface-experience', note: 'WO-0008: all 20 blueprint sections; design only — no implementation, no APIs, no vendors. AVIS elevated to foundational capability by founder decision.' }],
+    history: [
+      { on: '2026-07-02', kind: 'created', by: 'interface-experience', note: 'WO-0008: all 20 blueprint sections; design only.' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'FD-2026-016: AVIS becomes the Institutional Visual Intelligence Platform (all visual assets); Open-Gen-AI adopted as primary renderer behind ai-proxy — the renderer executes standards, never defines them. Integration Architecture added for Founder review.' },
+    ],
+  }),
+
+  doc({
+    key: 'avis-integration-architecture',
+    name: 'AVIS — Open-Gen-AI Integration Architecture',
+    purpose: 'The fifteen-section integration design (FD-2026-016): server-side rendering behind ai-proxy patterns, prompt compilation from governed specs, storage, metadata, gates, budgets, rate limits, and the renderer adapter seam — the renderer executes standards, never defines them.',
+    path: 'docs/engineering/avis/INTEGRATION_ARCHITECTURE.md',
+    version: '1.0',
+    status: 'review', // returned for Founder review before implementation
+    owner: 'interface-experience',
+    authority: 'canonical',
+    parent: 'avis-blueprint',
+    dependencies: ['avis-blueprint', 'capability-genome-standard'],
+    relatedDepartments: ['interface-experience', 'marketing-content', 'curriculum-excellence', 'operations-platform'],
+    relatedAgents: ['interface-experience'],
+    lastReview: '2026-07-02',
+    nextReview: '2026-07-16',
+    history: [{ on: '2026-07-02', kind: 'created', by: 'interface-experience', note: 'FD-2026-016: all fifteen sections; design only — not one API call until Founder approval.' }],
   }),
 
   // ---- The Founding Library (Directive 003) -----------------------------------
