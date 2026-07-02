@@ -232,5 +232,26 @@ describe('Institutional Registry — the constitutional catalog', () => {
   it('founder directives of the epoch are accessioned', () => {
     expect(getGenome('founder-directive:fd-2026-004-genome-ratification')).toBeTruthy();
     expect(getGenome('founder-directive:fd-2026-006-institutional-construction')).toBeTruthy();
+    expect(getGenome('founder-directive:fd-2026-007-operational-excellence')).toBeTruthy();
+  });
+
+  // ---- FD-2026-007: every AI is a governed employee ------------------------------
+  it('canon-stated KPI dictionaries attach to their departments; none are invented', () => {
+    const withKpis = ['analytics-intelligence', 'placement-authority', 'student-success', 'product-builder', 'admissions-authority', 'marketing-content', 'qa-authority', 'operations-platform', 'interface-experience'];
+    for (const slug of withKpis) {
+      const g = getGenome(`ai-role:${slug}`)!;
+      expect(g.kpis, slug).not.toBe('missing');
+      const kpis = g.kpis as { formula: string }[];
+      expect(kpis[0].formula.length, slug).toBeGreaterThan(20); // formula cites the charter
+    }
+    // Departments whose charters state no primary KPI stay honestly missing:
+    expect(getGenome('ai-role:ceo-chief-of-staff')!.kpis).toBe('missing');
+    expect(getGenome('ai-role:seo-strategy')!.kpis).toBe('missing');
+  });
+
+  it('KPI-bearing departments gain maturity from measurement, computed not asserted', () => {
+    const g = getGenome('ai-role:analytics-intelligence')!;
+    expect(g.maturity).toBeGreaterThanOrEqual(3); // model+playbook+standards+spec+kpis
+    expect(validateGenome(g, genomeExists)).toEqual([]); // V3 confirms it is computed
   });
 });

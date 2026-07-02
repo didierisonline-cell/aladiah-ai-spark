@@ -23,6 +23,7 @@ import { SHADOW_SEEDERS, OPERATIONAL_EDGE_FUNCTIONS } from './edgeFunctionManife
 import { DASHBOARD_PAGES } from './pageManifest';
 import { GOVERNING_DOCUMENTS, GoverningDocument } from './governance';
 import { recordDecision, listBrain, BrainEntry } from './brain';
+import { db, safe } from './_internal';
 
 const D = '2026-07-02';
 
@@ -291,6 +292,51 @@ const AI_ROLES: { slug: string; persona?: boolean }[] = [
   { slug: 'prof-didier', persona: true }, { slug: 'career-simulation-engine', persona: true },
 ];
 
+/**
+ * Departmental KPI dictionaries — drawn STRICTLY from canon-stated primary
+ * KPIs in each department's charter/system prompt (evidence cited). Where a
+ * charter names no primary KPI, the dictionary stays honestly 'missing'.
+ * Targets marked founder-set-pending are not invented.
+ */
+const CANON_KPIS: Record<string, { key: string; formula: string; target: string; owner: string; cadence: string; source: string }[]> = {
+  'analytics-intelligence': [{
+    key: 'ctis', formula: 'Career Transformation Impact Score — composite of student success, placement success, salary growth, certification success, competency growth, employer satisfaction (charter: PRIMARY KPI, master company KPI)',
+    target: 'founder-set pending', owner: 'analytics-intelligence', cadence: 'daily CEO brief', source: 'analytics_reports.ctis',
+  }],
+  'placement-authority': [{
+    key: 'student-placement-rate', formula: 'placed students ÷ placement-ready students (charter: PRIMARY KPI)',
+    target: 'founder-set pending', owner: 'placement-authority', cadence: 'weekly', source: 'placements + placement_candidates',
+  }],
+  'student-success': [{
+    key: 'career-transformation-score', formula: 'per-student CTS across competency mastery, readiness, employability (charter: PRIMARY KPI)',
+    target: 'founder-set pending', owner: 'student-success', cadence: 'weekly', source: 'success_students + quiz_attempts',
+  }],
+  'product-builder': [{
+    key: 'outcome-optimization', formula: 'six outcomes: employment, promotion, salary growth, leadership readiness, AI readiness, competency mastery — never course completion (charter)',
+    target: 'founder-set pending', owner: 'product-builder', cadence: 'per artifact cycle', source: 'product_artifacts + QA verdicts',
+  }],
+  'admissions-authority': [{
+    key: 'enrollment-quality', formula: 'program fit × completion probability × certification success × employment outcome — NOT volume (charter)',
+    target: 'founder-set pending', owner: 'admissions-authority', cadence: 'weekly', source: 'admissions_prospects + enrollments',
+  }],
+  'marketing-content': [{
+    key: 'qualified-enrollment-pipeline', formula: 'awareness → authority → leads → student enrollments (charter goal chain)',
+    target: 'founder-set pending', owner: 'marketing-content', cadence: 'weekly', source: 'marketing_content.performance + admissions_leads',
+  }],
+  'qa-authority': [{
+    key: 'gate-integrity', formula: 'artifacts passing QA ÷ reviewed; zero artifacts reaching founder queue un-reviewed (charter: final gate)',
+    target: '100% gate coverage', owner: 'qa-authority', cadence: 'per review cycle', source: 'qa_reviews',
+  }],
+  'operations-platform': [{
+    key: 'platform-integrity', formula: 'operational components ÷ monitored; open criticals (charter: guardian of reliability)',
+    target: '0 criticals', owner: 'operations-platform', cadence: 'daily audit', source: 'ops_status + ops_findings',
+  }],
+  'interface-experience': [{
+    key: 'ux-posture', formula: 'weighted structural posture: consistency, navigation, responsive, accessibility, hierarchy (charter)',
+    target: '≥90 with live audits replacing posture', owner: 'interface-experience', cadence: 'weekly audit', source: 'uxPosture',
+  }],
+};
+
 function aiRoleGenome(r: (typeof AI_ROLES)[number]): CapabilityGenome {
   return baseGenome({
     id: `ai-role:${r.slug}`,
@@ -310,6 +356,7 @@ function aiRoleGenome(r: (typeof AI_ROLES)[number]): CapabilityGenome {
     standards: ['capability-genome-standard', 'qa-standard'],
     security: { level: r.persona ? 'student' : 'founder', posture: r.persona ? 'RLS + ai-proxy' : 'admin session; publish:false; human_approval_required', gateChain: 'work-order gates → founder approval' },
     workforce: r.persona ? [] : [{ agent: r.slug, role: 'operates' }],
+    kpis: CANON_KPIS[r.slug] ?? MISSING,
     lifecycle: 'implemented',
   });
 }
@@ -407,6 +454,7 @@ const FOUNDER_DIRECTIVES = [
   { slug: 'fd-2026-003-inventory-first', note: 'Audit the codebase; inventory before engineering; Founder Engineering Report.' },
   { slug: 'fd-2026-004-genome-ratification', note: 'Six constitutional amendments; Capability Genome Standard v2.0 ratified.' },
   { slug: 'fd-2026-006-institutional-construction', note: 'Constitutional era complete; five priorities; implement rather than invent.' },
+  { slug: 'fd-2026-007-operational-excellence', note: 'The Institution is the product. Five permanent loops; every AI a governed employee; every human a leader; knowledge compounds and is never lost.' },
 ];
 function directiveGenome(d: (typeof FOUNDER_DIRECTIVES)[number]): CapabilityGenome {
   return baseGenome({
@@ -520,6 +568,107 @@ export function getWorkforceIdentity(agentSlug: string): WorkforceIdentity | nul
     playbook: typeof g.playbook === 'string' ? g.playbook : 'missing',
     kpis: g.kpis === 'missing' ? 'missing — department KPI dictionary pending' : `${(g.kpis as unknown[]).length} KPI(s) defined`,
   };
+}
+
+// ---- FD-2026-007: every AI is a governed employee ---------------------------------
+/**
+ * The complete employee record (FD-2026-007): identity + performance history
+ * + learning history. No anonymous intelligence — every field traces to the
+ * genome, the AOS health rollups, or the agent's own memory. All reads
+ * defensive; unmeasured is null, never fabricated.
+ */
+export interface EmployeeRecord {
+  identity: WorkforceIdentity;
+  performance: {
+    runCount: number | null;
+    successRatePct: number | null;
+    performanceScore: number | null;
+    lastRunAt: string | null;
+    consecutiveFailures: number | null;
+  };
+  learning: {
+    memoryCount: number | null;
+    longTermCount: number | null;
+    recentLessons: { at: string; summary: string }[];
+  };
+}
+
+export async function getEmployeeRecord(agentSlug: string): Promise<EmployeeRecord | null> {
+  const identity = getWorkforceIdentity(agentSlug);
+  if (!identity) return null;
+
+  const reg = await safe(async () => {
+    const { data } = await db
+      .from('aos_agents')
+      .select('run_count,error_count,performance_score,last_run_at,consecutive_failures')
+      .eq('slug', agentSlug)
+      .maybeSingle();
+    return data as { run_count: number; error_count: number; performance_score: number; last_run_at: string | null; consecutive_failures: number } | null;
+  }, null);
+
+  const [memoryCount, longTermCount, lessons] = await Promise.all([
+    safe(async () => (await db.from('aos_agent_memory').select('id', { count: 'exact', head: true }).eq('agent_slug', agentSlug)).count ?? null, null as number | null),
+    safe(async () => (await db.from('aos_agent_memory').select('id', { count: 'exact', head: true }).eq('agent_slug', agentSlug).eq('memory_type', 'long_term')).count ?? null, null as number | null),
+    safe(async () => {
+      const { data } = await db
+        .from('aos_agent_memory')
+        .select('created_at,summary')
+        .eq('agent_slug', agentSlug)
+        .contains('tags', ['lesson-learned'])
+        .order('created_at', { ascending: false })
+        .limit(5);
+      return ((data ?? []) as { created_at: string; summary: string | null }[]).map((m) => ({ at: m.created_at, summary: m.summary ?? '' }));
+    }, [] as { at: string; summary: string }[]),
+  ]);
+
+  return {
+    identity,
+    performance: reg
+      ? {
+          runCount: reg.run_count,
+          successRatePct: reg.run_count > 0 ? Math.round(((reg.run_count - reg.error_count) / reg.run_count) * 100) : null,
+          performanceScore: Number(reg.performance_score),
+          lastRunAt: reg.last_run_at,
+          consecutiveFailures: reg.consecutive_failures,
+        }
+      : { runCount: null, successRatePct: null, performanceScore: null, lastRunAt: null, consecutiveFailures: null },
+    learning: { memoryCount, longTermCount, recentLessons: lessons },
+  };
+}
+
+/**
+ * The Learning seam of the Five Permanent Loops (FD-2026-007): an agent (or
+ * the founder) records a lesson; it lands in the agent's memory (tagged,
+ * recallable), the Company Brain (institutional, compounding), and the Event
+ * Bus (traceable). Knowledge is never lost.
+ */
+export async function recordLessonLearned(input: {
+  agentSlug: string;
+  lesson: string;
+  evidence: string;
+  capabilityId?: string;
+}): Promise<boolean> {
+  const { remember } = await import('./memory');
+  const { emitEvent } = await import('./events');
+  const m = await remember({
+    agentSlug: input.agentSlug,
+    content: `LESSON: ${input.lesson} Evidence: ${input.evidence}`,
+    summary: `lesson:${input.capabilityId ?? input.agentSlug}`,
+    type: 'long_term',
+    importance: 0.85,
+    tags: ['lesson-learned', ...(input.capabilityId ? [input.capabilityId] : [])],
+  });
+  await recordDecision({
+    category: 'impact-measurement',
+    content: `Lesson learned (${input.agentSlug}${input.capabilityId ? ` · ${input.capabilityId}` : ''}): ${input.lesson} Evidence: ${input.evidence}`,
+    summary: `lesson:${input.capabilityId ?? input.agentSlug}:${new Date().toISOString().slice(0, 10)}`,
+    recordedBy: input.agentSlug,
+  });
+  await emitEvent('impact.measured', input.agentSlug, `Lesson learned: ${input.lesson.slice(0, 100)}`, {
+    capability: input.capabilityId ?? null,
+    kind: 'lesson-learned',
+  });
+  return m !== null;
 }
 
 // ---- Company Brain mirror (idempotent per version) ------------------------------
