@@ -313,3 +313,83 @@ describe('Brand Canon — the official identity registered (Phase IV step 2)', (
     expect(g!.purpose).toContain('greatest AI learning experience in the world');
   });
 });
+
+// =============================================================================
+// WO-0014 (Phase IV step 3, FEO-2026-001) — the Visual Render Platform
+// =============================================================================
+import {
+  AVIS_BUCKET, approvedStoragePath, decideBudget, decideRateLimit,
+  draftStoragePath, fingerprintBytes, ledgerEntry, renderCacheKey, sumLedgerUsd,
+} from './renderPlatform';
+
+describe('Visual Render Platform — the pure core (step 3)', () => {
+  const spec = () => ({
+    specId: 'spec:render-test', visualClass: 'process-flow' as const,
+    purpose: 'test', audience: 'student' as const, subject: 'a flow',
+    requiredElements: [], prohibitedElements: [], brandTokens: [],
+    altTextIntent: 'a sequential description of the flow for screen readers',
+  });
+
+  it('fingerprints are content hashes: same bytes → same id, different bytes → different id', async () => {
+    const a = await fingerprintBytes(new Uint8Array([1, 2, 3]));
+    const b = await fingerprintBytes(new Uint8Array([1, 2, 3]));
+    const c = await fingerprintBytes(new Uint8Array([1, 2, 4]));
+    expect(a).toBe(b);
+    expect(a).not.toBe(c);
+    expect(a).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it('the cache key is deterministic from governed inputs — reuse-before-regenerate', () => {
+    const prompt = compilePrompt(spec());
+    const again = compilePrompt(spec());
+    const opts = { size: '1024x1024', format: 'png' };
+    expect(renderCacheKey(prompt, 'open-gen-ai', opts)).toBe(renderCacheKey(again, 'open-gen-ai', opts));
+    expect(renderCacheKey(prompt, 'open-gen-ai', opts)).not.toBe(renderCacheKey(prompt, 'other-adapter', opts));
+  });
+
+  it('rate limiting fails CLOSED: unconfigured means generation is disabled, never a silent default', () => {
+    expect(decideRateLimit(0, null).allowed).toBe(false);
+    expect(decideRateLimit(0, null).reason).toMatch(/unconfigured/);
+    expect(decideRateLimit(0, 0).allowed).toBe(false);
+    expect(decideRateLimit(9, 10).allowed).toBe(true);
+    expect(decideRateLimit(10, 10).allowed).toBe(false);
+  });
+
+  it('budgets fail CLOSED and are the hard limiter: no founder-set budget, no render', () => {
+    expect(decideBudget(null).allowed).toBe(false);
+    expect(decideBudget(null).reason).toMatch(/founder-set/);
+    expect(decideBudget({ capUsd: 10, spentUsd: 10 }).allowed).toBe(false);
+    const ok = decideBudget({ capUsd: 10, spentUsd: 2.5 });
+    expect(ok.allowed).toBe(true);
+    expect(ok.remainingUsd).toBe(7.5);
+  });
+
+  it('the ledger is honest: unconfigured unit price records null (never estimated); cache hits spend 0', () => {
+    const base = {
+      caller: 'u1', budgetKey: 'department:curriculum-excellence', visualClass: 'process-flow',
+      rendererId: 'open-gen-ai', rendererVersion: 'gpt-image-1', promptVersion: 'v1.x',
+      size: '1024x1024', candidates: 2, renderedAt: '2026-07-02T00:00:00Z',
+    };
+    expect(ledgerEntry({ ...base, unitCostUsd: null, cacheHit: false }).totalUsd).toBeNull();
+    expect(ledgerEntry({ ...base, unitCostUsd: 0.04, cacheHit: false }).totalUsd).toBeCloseTo(0.08);
+    expect(ledgerEntry({ ...base, unitCostUsd: 0.04, cacheHit: true }).totalUsd).toBe(0);
+    const rollup = sumLedgerUsd([{ totalUsd: 0.08 }, { totalUsd: null }, { totalUsd: 0 }]);
+    expect(rollup.knownUsd).toBeCloseTo(0.08);
+    expect(rollup.unpricedCalls).toBe(1); // unpriced spend is visible, never invisible
+  });
+
+  it('storage strategy: drafts quarantined under drafts/, approved assets class-scoped and content-addressed', () => {
+    expect(AVIS_BUCKET).toBe('avis-assets');
+    expect(draftStoragePath('abc123', 'png')).toBe('drafts/abc123.png');
+    expect(approvedStoragePath('process-flow', 'abc123', 'png')).toBe('approved/process-flow/abc123.png');
+  });
+
+  it('the platform is registered: avis-render genome accessioned with the function on disk; the vendor still absent from the client bundle', () => {
+    expect(getGenome('edge-function:avis-render')).toBeTruthy();
+    expect(existsSync(resolve(repoRootPlatform, 'supabase/functions/avis-render/index.ts'))).toBe(true);
+    expect(existsSync(resolve(repoRootPlatform, 'supabase/migrations/20260702_avis_render_platform.sql'))).toBe(true);
+    // The permanent rule holds after implementation: no adapter in the browser.
+    expect(listRenderers().some((r) => r.id === FIRST_APPROVED_RENDERER)).toBe(false);
+  });
+});
+const repoRootPlatform = resolve(__dirname, '../../..');
