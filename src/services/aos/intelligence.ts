@@ -17,7 +17,7 @@ import { EvidenceNote, WorkOrder, WorkOrderType, listWorkOrders } from './workOr
 import { openWorkOrder } from './orchestration';
 import { emitEvent } from './events';
 import { remember } from './memory';
-import { nowISO } from './_internal';
+import { db, nowISO } from './_internal';
 
 // ---- Contract ---------------------------------------------------------------
 /** Confidence is always a value AND the basis that justifies it. */
@@ -70,6 +70,25 @@ export function validateRecommendation(rec: Recommendation): string[] {
   return v;
 }
 
+/** Title normalization for duplicate detection — case/whitespace tolerant. */
+export function normalizeTitle(t: string): string {
+  return t.toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Pure duplicate check: an order counts as a duplicate while it is still in
+ * flight (not completed/cancelled/failed and not founder-rejected).
+ */
+export function findDuplicate(orders: WorkOrder[], title: string): WorkOrder | undefined {
+  const wanted = normalizeTitle(title);
+  return orders.find(
+    (w) =>
+      normalizeTitle(w.title) === wanted &&
+      !['completed', 'cancelled', 'failed'].includes(w.status) &&
+      w.founderApproval !== 'rejected',
+  );
+}
+
 /**
  * Open a validated recommendation as a work order in the governance pipeline.
  * Skips (returns null) if an open work order with the same title already
@@ -80,10 +99,7 @@ export async function openRecommendation(rec: Recommendation): Promise<WorkOrder
   if (violations.length) throw new InvalidRecommendationError(violations);
 
   const existing = await listWorkOrders(300);
-  const duplicate = existing.find(
-    (w) => w.title === rec.title && !['completed', 'cancelled', 'failed'].includes(w.status) && w.founderApproval !== 'rejected',
-  );
-  if (duplicate) return null;
+  if (findDuplicate(existing, rec.title)) return null;
 
   const wo = await openWorkOrder({
     title: rec.title,
@@ -147,12 +163,39 @@ export function listObservers(): DepartmentObserver[] {
   return [...observers];
 }
 
+/**
+ * Pure validation for FINDINGS — the gate at the mouth of the pipeline.
+ * A finding with no evidence, no confidence basis, or no department is
+ * discarded at cycle time (and counted), never rendered or recommended.
+ */
+export function validateFinding(f: IntelligenceFinding): string[] {
+  const v: string[] = [];
+  if (!f.department?.trim()) v.push('department is required');
+  if (!f.title?.trim()) v.push('title is required');
+  if (!f.evidence || f.evidence.length === 0) v.push('at least one evidence note is required');
+  if (f.evidence?.some((e) => !e.note?.trim())) v.push('evidence notes cannot be empty');
+  if (f.confidence == null || f.confidence.value < 0 || f.confidence.value > 1) v.push('confidence.value must be 0–1');
+  if (!f.confidence?.basis?.trim()) v.push('confidence.basis is required');
+  return v;
+}
+
 /** Findings below this confidence never auto-open work orders. */
 export const RECOMMEND_CONFIDENCE_THRESHOLD = 0.6;
+
+/** Pure recommendation decision: valid finding + attached rec + confidence ≥ threshold. */
+export function shouldRecommend(f: IntelligenceFinding): boolean {
+  return (
+    validateFinding(f).length === 0 &&
+    f.recommendation != null &&
+    f.confidence.value >= RECOMMEND_CONFIDENCE_THRESHOLD
+  );
+}
 
 export interface CycleResult {
   department: string;
   findings: IntelligenceFinding[];
+  /** Findings an observer emitted that failed validation — dropped, never shown. */
+  invalidFindings: number;
   recommendationsOpened: number;
   ranAt: string;
 }
@@ -160,18 +203,26 @@ export interface CycleResult {
 /** Run one department's observers: findings → memory → events → work orders. */
 export async function runDepartmentCycle(department: string): Promise<CycleResult> {
   const own = observers.filter((o) => o.department === department);
-  const findings: IntelligenceFinding[] = [];
+  const raw: IntelligenceFinding[] = [];
   for (const obs of own) {
     try {
-      findings.push(...(await obs.observe()));
+      raw.push(...(await obs.observe()));
     } catch (e) {
       console.error(`[AOS:intelligence] observer failed (${department}/${obs.source}):`, e);
     }
   }
 
+  // Evidence gate: invalid findings are dropped and counted, never rendered.
+  const findings = raw.filter((f) => {
+    const violations = validateFinding(f);
+    if (violations.length) console.error(`[AOS:intelligence] finding dropped (${department}): ${violations.join('; ')}`);
+    return violations.length === 0;
+  });
+  const invalidFindings = raw.length - findings.length;
+
   let opened = 0;
   for (const f of findings) {
-    if (!f.recommendation || f.confidence.value < RECOMMEND_CONFIDENCE_THRESHOLD) continue;
+    if (!shouldRecommend(f) || !f.recommendation) continue;
     try {
       const wo = await openRecommendation({
         department: f.department,
@@ -195,11 +246,13 @@ export async function runDepartmentCycle(department: string): Promise<CycleResul
   }
 
   const critical = findings.filter((f) => f.severity === 'critical').length;
-  const summary = `Intelligence cycle: ${findings.length} finding(s) (${critical} critical), ${opened} recommendation(s) opened.`;
+  const summary =
+    `Intelligence cycle: ${findings.length} finding(s) (${critical} critical), ${opened} recommendation(s) opened.` +
+    (invalidFindings > 0 ? ` ${invalidFindings} invalid finding(s) dropped at the evidence gate.` : '');
   await remember({
     agentSlug: department,
     content: `${summary} ${findings.map((f) => f.title).join(' · ')}`,
-    summary: `intel:${findings.length}f:${opened}r`,
+    summary: `intel:${findings.length}f:${opened}r:${critical}c`,
     type: 'short_term',
     tags: ['intelligence-cycle', critical > 0 ? 'critical' : 'routine'],
   });
@@ -207,10 +260,11 @@ export async function runDepartmentCycle(department: string): Promise<CycleResul
     department,
     findings: findings.length,
     critical,
+    invalid: invalidFindings,
     recommendations_opened: opened,
   });
 
-  return { department, findings, recommendationsOpened: opened, ranAt: nowISO() };
+  return { department, findings, invalidFindings, recommendationsOpened: opened, ranAt: nowISO() };
 }
 
 /** Run every registered department's cycle. */
@@ -219,4 +273,90 @@ export async function runIntelligenceSweep(): Promise<CycleResult[]> {
   const results: CycleResult[] = [];
   for (const d of departments) results.push(await runDepartmentCycle(d));
   return results;
+}
+
+// ---- At-rest intelligence status (dashboard visibility) ----------------------
+/**
+ * Structural fact: no server-side ingestion path for external research exists.
+ * Flip ONLY when a founder-approved ingestion integration actually ships.
+ */
+export const EXTERNAL_INTELLIGENCE_CONNECTED = false;
+
+/** A department's cycle is stale after this many hours without observation. */
+export const CYCLE_STALE_HOURS = 24;
+
+export interface DepartmentIntelligenceStatus {
+  department: string;
+  observers: number;
+  sources: string[];
+  lastCycleAt: string | null;
+  lastSummary: string | null;
+  /** True when never observed or last cycle older than CYCLE_STALE_HOURS. */
+  stale: boolean;
+  lastHadCritical: boolean;
+  openRecommendations: number;
+}
+
+export interface IntelligenceStatus {
+  departments: DepartmentIntelligenceStatus[];
+  externalConnected: boolean;
+  totalOpenRecommendations: number;
+}
+
+/**
+ * What the founder sees BEFORE running anything: which departments are
+ * observed, how fresh their last cycle is, and what recommendations wait.
+ * Reads the durable record (agent memory + work orders) — survives reload.
+ */
+export async function getIntelligenceStatus(): Promise<IntelligenceStatus> {
+  const departments = [...new Set(observers.map((o) => o.department))];
+
+  // Latest cycle memory per department (tag 'intelligence-cycle').
+  const lastBySlug = new Map<string, { at: string; content: string; critical: boolean }>();
+  try {
+    const { data } = await db
+      .from('aos_agent_memory')
+      .select('agent_slug,content,tags,created_at')
+      .contains('tags', ['intelligence-cycle'])
+      .order('created_at', { ascending: false })
+      .limit(200);
+    for (const row of (data ?? []) as { agent_slug: string; content: string; tags: string[]; created_at: string }[]) {
+      if (!lastBySlug.has(row.agent_slug)) {
+        lastBySlug.set(row.agent_slug, {
+          at: row.created_at,
+          content: row.content,
+          critical: (row.tags ?? []).includes('critical'),
+        });
+      }
+    }
+  } catch {
+    /* defensive — status renders as never-observed */
+  }
+
+  const orders = await listWorkOrders(300);
+  const openRecs = orders.filter(
+    (o) => o.type === 'recommendation' && !['completed', 'cancelled', 'failed'].includes(o.status) && o.founderApproval !== 'rejected',
+  );
+
+  const statuses: DepartmentIntelligenceStatus[] = departments.map((d) => {
+    const own = observers.filter((o) => o.department === d);
+    const last = lastBySlug.get(d) ?? null;
+    const ageH = last ? (Date.now() - new Date(last.at).getTime()) / 36e5 : Infinity;
+    return {
+      department: d,
+      observers: own.length,
+      sources: own.map((o) => o.source),
+      lastCycleAt: last?.at ?? null,
+      lastSummary: last?.content ?? null,
+      stale: ageH > CYCLE_STALE_HOURS,
+      lastHadCritical: last?.critical ?? false,
+      openRecommendations: openRecs.filter((o) => o.ownerAgent === d).length,
+    };
+  });
+
+  return {
+    departments: statuses,
+    externalConnected: EXTERNAL_INTELLIGENCE_CONNECTED,
+    totalOpenRecommendations: openRecs.length,
+  };
 }

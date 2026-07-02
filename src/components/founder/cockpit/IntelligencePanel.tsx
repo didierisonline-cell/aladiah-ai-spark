@@ -7,6 +7,8 @@ import { Binoculars, Play, TrendingUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
   CycleResult,
+  IntelligenceStatus,
+  getIntelligenceStatus,
   listObservers,
   runIntelligenceSweep,
 } from '@/services/aos/intelligence';
@@ -25,14 +27,16 @@ const IntelligencePanel = ({ onChange }: { onChange?: () => void }) => {
   const { toast } = useToast();
   const [results, setResults] = useState<CycleResult[]>([]);
   const [running, setRunning] = useState(false);
+  const [status, setStatus] = useState<IntelligenceStatus | null>(null);
   const [unmeasured, setUnmeasured] = useState<WorkOrder[]>([]);
   const [impactNote, setImpactNote] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null);
 
   const departments = [...new Set(listObservers().map((o) => o.department))];
 
-  const loadUnmeasured = useCallback(async () => {
-    const orders = await listWorkOrders(200);
+  const loadStatus = useCallback(async () => {
+    const [st, orders] = await Promise.all([getIntelligenceStatus(), listWorkOrders(200)]);
+    setStatus(st);
     setUnmeasured(
       orders.filter(
         (o) => o.status === 'completed' && !o.evidence.some((e) => e.note.startsWith('IMPACT (')),
@@ -40,7 +44,7 @@ const IntelligencePanel = ({ onChange }: { onChange?: () => void }) => {
     );
   }, []);
 
-  useEffect(() => { loadUnmeasured(); }, [loadUnmeasured]);
+  useEffect(() => { loadStatus(); }, [loadStatus]);
 
   const sweep = useCallback(async () => {
     setRunning(true);
@@ -55,10 +59,10 @@ const IntelligencePanel = ({ onChange }: { onChange?: () => void }) => {
       });
     } finally {
       setRunning(false);
-      loadUnmeasured();
+      loadStatus();
       onChange?.();
     }
-  }, [toast, loadUnmeasured, onChange]);
+  }, [toast, loadStatus, onChange]);
 
   const measure = useCallback(async (wo: WorkOrder, outcome: ImpactOutcome) => {
     const note = impactNote[wo.id]?.trim();
@@ -73,10 +77,10 @@ const IntelligencePanel = ({ onChange }: { onChange?: () => void }) => {
       setImpactNote((n) => ({ ...n, [wo.id]: '' }));
     } finally {
       setBusy(null);
-      loadUnmeasured();
+      loadStatus();
       onChange?.();
     }
-  }, [impactNote, toast, loadUnmeasured, onChange]);
+  }, [impactNote, toast, loadStatus, onChange]);
 
   const allFindings = results.flatMap((r) => r.findings);
 
@@ -97,6 +101,33 @@ const IntelligencePanel = ({ onChange }: { onChange?: () => void }) => {
         </p>
       </CardHeader>
       <CardContent className="pt-0 space-y-4">
+        {/* At-rest status: freshness per department + external-source marker */}
+        {status && (
+          <div className="space-y-1">
+            <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-3 py-1.5 text-[11px] text-amber-500">
+              External research & market intelligence: {status.externalConnected ? 'connected' : 'NOT CONNECTED — internal telemetry only until a founder-approved ingestion source ships.'}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+              {status.departments.map((d) => (
+                <div key={d.department} className="flex items-center justify-between gap-2 rounded-lg bg-muted/30 px-2.5 py-1.5" title={`Sources: ${d.sources.join(' · ')}${d.lastSummary ? `\nLast: ${d.lastSummary}` : ''}`}>
+                  <span className="text-[11px] text-foreground truncate">{d.department}</span>
+                  <span className="flex items-center gap-1.5 shrink-0">
+                    {d.openRecommendations > 0 && (
+                      <Badge variant="outline" className="text-[9px]" style={{ color: '#f59e0b', borderColor: '#f59e0b55' }}>
+                        {d.openRecommendations} rec
+                      </Badge>
+                    )}
+                    {d.lastHadCritical && <span className="w-1.5 h-1.5 rounded-full bg-red-500" title="Last cycle found criticals" />}
+                    <Badge variant="outline" className="text-[9px]" style={{ color: d.stale ? '#f59e0b' : '#22c55e', borderColor: d.stale ? '#f59e0b55' : '#22c55e55' }}>
+                      {d.stale ? 'stale' : 'fresh'}
+                    </Badge>
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Findings from the latest sweep */}
         {allFindings.length === 0 ? (
           <p className="text-[12px] text-muted-foreground text-center py-4">
