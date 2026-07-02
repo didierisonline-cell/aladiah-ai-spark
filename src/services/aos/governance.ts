@@ -500,9 +500,9 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
   doc({
     key: 'permanent-engineering-mission',
     name: 'Permanent Engineering Mission (v1.0)',
-    purpose: 'Founder-issued standing doctrine governing all engineering activity: the engineering cycle, quality/knowledge/measurement principles, founder authority, self-improvement duty.',
+    purpose: 'Founder-issued standing doctrine governing all engineering activity: the engineering cycle, quality/knowledge/measurement principles, founder authority, self-improvement duty; v1.1 adds the Phase-I doctrine and the Five Questions.',
     path: 'docs/governance/manuals/PERMANENT_ENGINEERING_MISSION.md',
-    version: '1.0',
+    version: '1.1',
     status: 'ratified', // founder-issued in force ("until amended by the Founder")
     owner: 'founder',
     authority: 'canonical',
@@ -516,6 +516,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     history: [
       { on: '2026-07-02', kind: 'created', by: 'founder', note: 'Issued verbatim; supersedes individual engineering prompts.' },
       { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'In force on issuance until amended by the Founder.' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'v1.1 on Phase I completion: Founder Doctrine (implementation over expansion; simplicity is a constitutional value) + the Engineering Law (the Five Questions every work order must answer).' },
     ],
   }),
 
@@ -652,16 +653,39 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     purpose: 'How the Institution remembers, validates, retrieves, and learns: the Remember Invariant, knowledge/learning lifecycles, AI learning rules, evidence management, Brain governance.',
     path: 'docs/governance/management-system/manuals/M04-company-brain.md',
     version: '1.0',
-    status: 'draft', // Permanent Rule step 5: Founder Review; M05 does not begin until approved
+    status: 'ratified', // Founder decision: adopted; Phase I constitutional foundation complete
     owner: 'analytics-intelligence',
     authority: 'operational',
     parent: 'ams-framework',
     dependencies: ['m03-registry-genome-operations', 'launch-decision-principle'],
     relatedDepartments: ['analytics-intelligence', 'operations-platform'],
     relatedAgents: ['analytics-intelligence'],
+    reviewCadenceDays: 90,
+    lastReview: '2026-07-02',
+    nextReview: '2026-10-02',
+    ratified: { on: '2026-07-02', by: 'founder' },
+    history: [
+      { on: '2026-07-02', kind: 'created', by: 'analytics-intelligence', note: 'Authored under WO-0004; the Brain reviewed its own manual (step 4).' },
+      { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'Adopted into the AMS. With M04, the Founder declares PHASE I COMPLETE: Covenant, Constitution, Book of Knowledge, Management System, Registry, Company Brain — the permanent constitutional foundation. Future work extends; it does not redesign.' },
+    ],
+  }),
+
+  doc({
+    key: 'm05-ai-workforce-management',
+    name: 'M05 — AI Workforce Management Manual',
+    purpose: 'The governance of every AI employee, specialist, department, executive function, and future autonomous workforce: hiring, charter, operation, performance, learning, discipline, retirement.',
+    path: 'docs/governance/management-system/manuals/M05-ai-workforce-management.md',
+    version: '1.0',
+    status: 'draft', // Permanent Rule step 5: Founder Review; M06 does not begin until approved
+    owner: 'operations-platform',
+    authority: 'operational',
+    parent: 'ams-framework',
+    dependencies: ['m04-company-brain', 'agent-operating-system'],
+    relatedDepartments: ['operations-platform', 'ceo-chief-of-staff', 'qa-authority'],
+    relatedAgents: ['operations-platform', 'ceo-chief-of-staff'],
     lastReview: '2026-07-02',
     nextReview: '2026-07-16',
-    history: [{ on: '2026-07-02', kind: 'created', by: 'analytics-intelligence', note: 'Authored under WO-0004; Permanent Rule steps 1–4 recorded incl. the Brain reviewing its own manual; step 5 presented.' }],
+    history: [{ on: '2026-07-02', kind: 'created', by: 'operations-platform', note: 'Authored under WO-0005 — the first work order to answer the Five Questions (Engineering Law); Permanent Rule steps 1–4 recorded; step 5 presented.' }],
   }),
 
   // ---- The Founding Library (Directive 003) -----------------------------------

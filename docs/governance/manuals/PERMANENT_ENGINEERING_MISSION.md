@@ -1,4 +1,4 @@
-# Permanent Engineering Mission — v1.0
+# Permanent Engineering Mission — v1.1
 
 <!-- FOUNDER-AUTHORED standing doctrine, placed verbatim. Registry key:
      permanent-engineering-mission. In force until amended by the Founder.
@@ -9,7 +9,7 @@
 | Field | Value |
 |---|---|
 | **Title** | Permanent Engineering Mission |
-| **Version** | 1.0 |
+| **Version** | 1.1 (Founder amendment, 2026-07-02 — Phase I doctrine + the Five Questions) |
 | **Status** | In force (founder-issued) |
 | **Authority Level** | canonical |
 | **Owner** | founder |
@@ -161,3 +161,33 @@ Success is measured by the Institution becoming stronger.
 Every engineering session should leave Aladiah more intelligent than it was before.
 
 This Mission remains in force until amended by the Founder.
+
+---
+
+## FOUNDER AMENDMENT — v1.1 (verbatim, on Phase I completion, 2026-07-02)
+
+### FOUNDER DOCTRINE
+
+From this point forward:
+
+The Institution shall favor implementation over expansion.
+
+When a capability already exists, improve it. Do not create a parallel capability.
+
+When a document already exists, amend it. Do not duplicate it.
+
+When a process already exists, strengthen it. Do not replace it.
+
+Institutional simplicity is a constitutional value.
+
+### ENGINEERING LAW — THE FIVE QUESTIONS
+
+Every Work Order shall answer five questions before work begins:
+
+1. Why does this capability exist?
+2. Which constitutional authority governs it?
+3. Which existing capability does it extend?
+4. What evidence will prove it works?
+5. How will the Company Brain learn from it?
+
+If any answer is missing, the Work Order is incomplete.

@@ -459,6 +459,7 @@ const FOUNDER_DIRECTIVES = [
   { slug: 'fd-2026-010-m01-ratification', note: 'M01 adopted as AMS v1.0; the Permanent Management Rule (8-step manual lifecycle); WO-0002 issued.' },
   { slug: 'fd-2026-011-book-of-knowledge', note: 'M02 ratified. The Aladiah Book of Knowledge established: Books → Manuals → Standards → Procedures → Work Orders → Evidence → Brain → improved Standards — the permanent institutional learning loop. WO-0003 issued.' },
   { slug: 'fd-2026-012-constitutional-clarification', note: 'M03 ratified. Constitutional clarification: the spine is NOT amended; the Covenant remains supreme governing doctrine; permanent definitions — Covenant WHY · Constitution WHAT · Book of Knowledge WHAT IS KNOWN · Management System HOW · Company Brain HOW TO IMPROVE; the four shall never be merged. WO-0004 issued.' },
+  { slug: 'fd-2026-013-phase-i-complete', note: 'M04 ratified; PHASE I DECLARED COMPLETE (Covenant, Constitution, Book of Knowledge, Management System, Registry, Brain). Founder Doctrine: implementation over expansion — improve, amend, strengthen; never parallel, duplicate, replace; simplicity is a constitutional value. Engineering Law: the Five Questions every work order must answer. WO-0005 issued. (Number assigned by sequence; directive arrived unnumbered.)' },
 ];
 function directiveGenome(d: (typeof FOUNDER_DIRECTIVES)[number]): CapabilityGenome {
   return baseGenome({
@@ -656,11 +657,58 @@ const m04Manual = baseGenome({
     { agent: 'operations-platform', role: 'stewards' },
     { agent: 'qa-authority', role: 'reviews' },
   ],
-  lifecycle: 'governed', // step 5 (Founder Review) of the Permanent Rule
+  lifecycle: 'implemented', // ratified; Phase I complete
   parentCapability: 'playbook:m03-registry-genome-operations',
-  founderDirectives: ['WO-0004', 'FD-2026-012'],
+  founderDirectives: ['WO-0004', 'FD-2026-012', 'FD-2026-013 (ratification; Phase I complete)'],
+  ratifiedOn: D,
   evolution: [
     { on: D, kind: 'created', by: 'analytics-intelligence', evidence: 'WO-0004 — the Brain reviewed its own manual (step 4); retention finding carried forward, not hidden.' },
+    { on: D, kind: 'ratified', by: 'founder', evidence: 'Adopted; Phase I constitutional foundation declared complete.' },
+  ],
+});
+
+/** M05 — AI Workforce Management (WO-0005), genome-first; Five Questions answered in §0. */
+const m05Manual = baseGenome({
+  id: 'playbook:m05-ai-workforce-management',
+  mission: 'AI strengthens human judgment; humans remain responsible — no anonymous intelligence, no ungoverned authority (Covenant Art. VI).',
+  purpose: 'Employment law for the AI workforce: hire, charter, operate, review, develop, discipline, retire — and the earned preconditions for any future autonomy.',
+  type: 'playbook',
+  classification: 'operational',
+  owner: 'operations-platform',
+  department: 'operations-platform',
+  authority: 'operational',
+  constitutionalAuthority: 'ams-framework',
+  constitutionVolumes: ['02'],
+  referenceModel: 'docs/agents/AGENT_OPERATING_SYSTEM.md',
+  playbook: 'docs/governance/management-system/manuals/M05-ai-workforce-management.md',
+  standards: ['capability-genome-standard', 'permanent-engineering-mission'],
+  dashboardSpec: 'src/components/founder/cockpit/AgentOperatingGrid.tsx',
+  workforceSpec: 'docs/agents/operations-platform/AGENT_SPEC.md',
+  kpis: [
+    { key: 'identity-coverage', formula: 'employees with charter+genome+registry ÷ employees', target: '100% (CI)', owner: 'operations-platform', cadence: 'every CI run', source: 'drift check' },
+    { key: 'fleet-health', formula: 'mean performance score across active agents', target: '≥85', owner: 'operations-platform', cadence: 'daily', source: 'health rollups' },
+    { key: 'charter-compliance', formula: 'charter breaches (P7 entries)', target: '0', owner: 'founder', cadence: 'per incident', source: 'brain + events' },
+    { key: 'learning-activity', formula: 'departments with ≥1 lesson per review cycle ÷ 12', target: '100%', owner: 'analytics-intelligence', cadence: 'quarterly', source: 'lesson records' },
+  ],
+  inputs: [
+    { name: 'founder work orders (hire/amend/discipline/retire)', kind: 'human-action' },
+    { name: 'health rollups + run logs + learning records', kind: 'data' },
+  ],
+  outputs: [
+    { name: 'employment records (hires, reviews, discipline, retirements)', kind: 'decision', writesProduction: false, approvalGate: null },
+    { name: 'quarterly workforce review (compiled)', kind: 'artifact', writesProduction: false, approvalGate: null },
+  ],
+  security: { level: 'founder', posture: 'publish:false fleet-wide; identity logged per run; pause/disable controls; no self-investigation', gateChain: 'Permanent Management Rule (8-step)' },
+  workforce: [
+    { agent: 'operations-platform', role: 'operates' },
+    { agent: 'ceo-chief-of-staff', role: 'stewards' },
+    { agent: 'qa-authority', role: 'reviews' },
+  ],
+  lifecycle: 'governed', // step 5 (Founder Review)
+  parentCapability: 'playbook:m04-company-brain',
+  founderDirectives: ['WO-0005', 'FD-2026-013'],
+  evolution: [
+    { on: D, kind: 'created', by: 'operations-platform', evidence: 'WO-0005 — first work order under the Five Questions law; autonomy preconditions (P9) founder-gated and evidence-earned.' },
   ],
 });
 
@@ -683,6 +731,7 @@ export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   m02Manual,
   m03Manual,
   m04Manual,
+  m05Manual,
 ];
 
 export function getGenome(id: string): CapabilityGenome | undefined {
