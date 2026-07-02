@@ -510,11 +510,59 @@ const m01Manual = baseGenome({
     { agent: 'ceo-chief-of-staff', role: 'operates' },
     { agent: 'qa-authority', role: 'reviews' },
   ],
-  lifecycle: 'governed', // artifacts complete; in force upon Founder ratification
+  lifecycle: 'implemented', // FD-2026-010: ratified and in force
   parentCapability: 'ai-role:ceo-chief-of-staff',
-  founderDirectives: ['WO-0001', 'FD-2026-009 (AMS)', 'FD-2026-007'],
+  founderDirectives: ['WO-0001', 'FD-2026-009 (AMS)', 'FD-2026-007', 'FD-2026-010 (ratification)'],
+  ratifiedOn: D,
   evolution: [
     { on: D, kind: 'created', by: 'founder', evidence: 'WO-0001 — first Management Manual, authored per the AMS Framework Universal Template.' },
+    { on: D, kind: 'ratified', by: 'founder', evidence: 'FD-2026-010: adopted as AMS v1.0; structure is the standard template for M02–M20.' },
+  ],
+});
+
+/** M02 — Governance Operations Manual (WO-0002), genome-first. */
+const m02Manual = baseGenome({
+  id: 'playbook:m02-governance-operations',
+  mission: 'Governance executed the same way everywhere, forever — truth pursued, decisions recorded, authority never silent (Covenant Art. II, IV, IX).',
+  purpose: 'How governance is executed throughout the Institution: document/policy/standard lifecycles, directives, work orders, engineering decisions, amendments, audits.',
+  type: 'playbook',
+  classification: 'operational',
+  owner: 'founder',
+  department: 'founder',
+  authority: 'operational',
+  constitutionalAuthority: 'ams-framework',
+  constitutionVolumes: ['02'],
+  referenceModel: 'docs/governance/management-system/FRAMEWORK.md',
+  playbook: 'docs/governance/management-system/manuals/M02-governance-operations.md',
+  standards: ['capability-genome-standard', 'permanent-engineering-mission', 'ratification-process'],
+  dashboardSpec: 'src/components/founder/cockpit/GovernancePanel.tsx',
+  workforceSpec: 'docs/agents/operations-platform/AGENT_SPEC.md',
+  kpis: [
+    { key: 'governance-health', formula: 'slot coverage (40) × document health (40) × ratified share (20) — getGovernanceHealth()', target: '≥90 steady-state', owner: 'operations-platform', cadence: 'continuous (computed)', source: 'governance registry' },
+    { key: 'review-currency', formula: 'governance reviews on time ÷ due', target: '≥95%', owner: 'founder', cadence: 'weekly', source: 'registry review dates' },
+    { key: 'drift-mttr', formula: 'drift-check red → green', target: '≤2 days', owner: 'operations-platform', cadence: 'per incident', source: 'CI + event bus' },
+    { key: 'ratification-latency', formula: 'review-entry → founder decision', target: 'founder-set pending', owner: 'founder', cadence: 'weekly', source: 'registry history events' },
+    { key: 'directive-accession', formula: 'directives accessioned as genomes ÷ issued', target: '100%', owner: 'ceo-chief-of-staff', cadence: 'per directive', source: 'founder-directive genomes' },
+  ],
+  inputs: [
+    { name: 'founder directives + decisions', kind: 'human-action' },
+    { name: 'registry state + drift-check results + brain precedent', kind: 'data' },
+  ],
+  outputs: [
+    { name: 'lifecycle transitions (registry commits)', kind: 'decision', writesProduction: false, approvalGate: null },
+    { name: 'governance audits + findings', kind: 'artifact', writesProduction: false, approvalGate: null },
+  ],
+  security: { level: 'founder', posture: 'registry-as-record; reviewed commits; founder-only ratification', gateChain: 'Permanent Management Rule (8-step)' },
+  workforce: [
+    { agent: 'operations-platform', role: 'operates' },
+    { agent: 'analytics-intelligence', role: 'stewards' },
+    { agent: 'qa-authority', role: 'reviews' },
+  ],
+  lifecycle: 'governed', // full package complete; at step 5 (Founder Review) of the Permanent Rule
+  parentCapability: 'playbook:m01-executive-office',
+  founderDirectives: ['WO-0002', 'FD-2026-010'],
+  evolution: [
+    { on: D, kind: 'created', by: 'founder', evidence: 'WO-0002 — authored to the M01 gold-standard template; steps 1–4 of the Permanent Rule recorded in §1.' },
   ],
 });
 
@@ -534,6 +582,7 @@ export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   taxonomyStandard,
   registrySelf,
   m01Manual,
+  m02Manual,
 ];
 
 export function getGenome(id: string): CapabilityGenome | undefined {

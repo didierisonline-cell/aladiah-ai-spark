@@ -100,17 +100,29 @@ first). Draft/review: **14 days**. Reviews are due-dated in the registry and
 surface on the cockpit exactly like every governance review — silence is not
 compliance.
 
-## 8. Approval workflow
+## 8. Approval workflow — THE PERMANENT MANAGEMENT RULE (FD-2026-010)
+
+Every Management Manual (M01–M20) passes through the same institutional
+lifecycle. **No manual may bypass it.**
 
 ```
-Owner drafts (genome exists first)
-  → QA gate (structure vs. template; procedures testable; KPIs well-formed)
-  → Security gate (when the manual touches secrets, PII, payments, or access)
-  → Founder approval (ratification per the constitutional lifecycle)
-  → Registered ratified · mirrored to Brain · in force
+1. Draft                (owner authors; genome exists first)
+2. Engineering Review   (Chief Institutional Engineer: conformance to the
+                         M01 template, canon, and the Genome Standard)
+3. QA Review            (qa-authority: procedures testable, KPIs well-formed,
+                         gates coherent; Security gate joins when the manual
+                         touches secrets, PII, payments, or access)
+4. Company Brain Review (precedent check: prior decisions and lessons in
+                         scope cited, never contradicted silently)
+5. Founder Review       (presented with the full engineering package)
+6. Founder Ratification (per the constitutional lifecycle; recorded)
+7. Publication          (registered ratified · mirrored to Brain · in force)
+8. Continuous Improvement (90-day reviews ingest lessons + KPI trends)
 ```
+
 All transitions ride existing machinery: work orders, evidence-gated
 approvals, `recordRatification()`. No parallel approval system.
+*(v1.1 amendment per FD-2026-010, superseding the original 4-step workflow.)*
 
 ## 9. Quality requirements
 

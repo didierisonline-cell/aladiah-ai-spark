@@ -524,15 +524,21 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     name: 'Aladiah Management System — Framework',
     purpose: 'The operating system by which the Institution is managed for decades: the universal manual template, governance/versioning/ownership/review/approval rules, and the bindings to genomes, Brain, KPIs, dashboards, and the AI workforce.',
     path: 'docs/governance/management-system/FRAMEWORK.md',
-    version: '1.0',
-    status: 'review', // FD-2026-009 design delivered; awaiting Founder review before Manual 1
+    version: '1.1',
+    status: 'ratified', // FD-2026-010: AMS v1.0 adopted; the Permanent Management Rule (8-step lifecycle) is canon
     owner: 'founder',
     authority: 'canonical',
     parent: 'department-charters', // the Operational Policies tier of the spine
     dependencies: ['capability-genome-standard', 'ratification-process', 'permanent-engineering-mission'],
+    reviewCadenceDays: 90,
     lastReview: '2026-07-02',
-    nextReview: '2026-07-16',
-    history: [{ on: '2026-07-02', kind: 'created', by: 'founder', note: 'Framework designed per FD-2026-009; manuals await founder review of the framework.' }],
+    nextReview: '2026-10-02',
+    ratified: { on: '2026-07-02', by: 'founder' },
+    history: [
+      { on: '2026-07-02', kind: 'created', by: 'founder', note: 'Framework designed per FD-2026-009.' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'FD-2026-010 Permanent Management Rule: the 8-step manual lifecycle (Draft → Engineering Review → QA Review → Company Brain Review → Founder Review → Ratification → Publication → Continuous Improvement) supersedes §8; no manual may bypass it.' },
+      { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'FD-2026-010: M01 adopted as AMS v1.0 — the framework it demonstrates carries founder authority.' },
+    ],
   }),
   doc({
     key: 'ams-manual-catalog',
@@ -555,16 +561,39 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     purpose: 'The operational blueprint for the Executive Office and the Gold Standard structure every Management Manual inherits: directives, decisions, ratifications, briefings, escalations, walks, continuity.',
     path: 'docs/governance/management-system/manuals/M01-executive-office.md',
     version: '1.0',
-    status: 'draft', // WO-0001: presented for Founder Review; M02 does not begin until approved
+    status: 'ratified', // FD-2026-010: adopted as Version 1.0 of the Aladiah Management System
     owner: 'founder',
     authority: 'operational',
     parent: 'ams-framework',
     dependencies: ['permanent-engineering-mission', 'capability-genome-standard', 'ratification-process'],
     relatedDepartments: ['ceo-chief-of-staff', 'qa-authority'],
     relatedAgents: ['ceo-chief-of-staff'],
+    reviewCadenceDays: 90,
+    lastReview: '2026-07-02',
+    nextReview: '2026-10-02',
+    ratified: { on: '2026-07-02', by: 'founder' },
+    history: [
+      { on: '2026-07-02', kind: 'created', by: 'founder', note: 'Authored under WO-0001 per the AMS Framework Universal Template; QA structural conformance complete.' },
+      { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'FD-2026-010: adopted as AMS v1.0; its structure is the standard template for every future Management Manual unless amended by Founder Directive.' },
+    ],
+  }),
+
+  doc({
+    key: 'm02-governance-operations',
+    name: 'M02 — Governance Operations Manual',
+    purpose: 'How governance is executed throughout the Institution: document/policy/standard lifecycles, directives, work orders, engineering decisions, amendments, escalations, audits.',
+    path: 'docs/governance/management-system/manuals/M02-governance-operations.md',
+    version: '1.0',
+    status: 'draft', // Permanent Rule step 5: Founder Review in progress; M03 does not begin until approved
+    owner: 'founder',
+    authority: 'operational',
+    parent: 'ams-framework',
+    dependencies: ['m01-executive-office', 'ratification-process', 'capability-genome-standard'],
+    relatedDepartments: ['operations-platform', 'analytics-intelligence', 'qa-authority'],
+    relatedAgents: ['operations-platform'],
     lastReview: '2026-07-02',
     nextReview: '2026-07-16',
-    history: [{ on: '2026-07-02', kind: 'created', by: 'founder', note: 'Authored under WO-0001 per the AMS Framework Universal Template; QA structural conformance complete; Founder Review pending.' }],
+    history: [{ on: '2026-07-02', kind: 'created', by: 'founder', note: 'Authored under WO-0002 to the M01 gold-standard template; Permanent Rule steps 1–4 recorded in the manual; step 5 (Founder Review) presented.' }],
   }),
 
   // ---- The Founding Library (Directive 003) -----------------------------------
