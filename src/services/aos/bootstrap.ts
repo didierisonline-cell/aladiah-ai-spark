@@ -6,6 +6,7 @@
 // =============================================================================
 import { registerRunner } from './orchestrator';
 import { registerAgent } from './registry';
+import { registerBuiltinObservers } from './observers';
 import { remember } from './memory';
 import { AgentRunOutput, RunContext } from '@/types/aos';
 import { runCeoChiefOfStaffAgent } from '@/services/agents/ceoChiefOfStaffAgent';
@@ -75,6 +76,9 @@ let booted = false;
 export async function ensureAOS(): Promise<void> {
   if (booted) return;
   booted = true;
+
+  // Continuous Intelligence: every department's observers watch live telemetry.
+  registerBuiltinObservers();
 
   registerRunner('ceo-chief-of-staff', ceoRunner);
   registerRunner('marketing-content', marketingRunner);
