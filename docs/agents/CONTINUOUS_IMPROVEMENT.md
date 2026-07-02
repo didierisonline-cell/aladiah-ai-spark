@@ -4,7 +4,7 @@ Status: **Operating doctrine for the AI Workforce.** Subordinate to the platform
 canon (`/docs/standards`, especially `LAUNCH_DECISION_PRINCIPLE.md`) and the
 AOS infrastructure canon (`AGENT_OPERATING_SYSTEM.md`). The component-level
 architecture (ten components, safety invariants, test map) is
-`INTELLIGENCE_ARCHITECTURE.md`.
+`docs/governance/architecture/intelligence-architecture.md`.
 
 ## The doctrine
 
