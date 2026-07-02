@@ -764,6 +764,51 @@ const m06Manual = baseGenome({
   ],
 });
 
+/** M07 — Work Order & Execution Management (WO-0007), genome-first. */
+const m07Manual = baseGenome({
+  id: 'playbook:m07-work-order-execution',
+  mission: 'No change without purpose, no approval without evidence, no completion without measurement (Covenant Art. III, IV; Constitution Art. V).',
+  purpose: 'The one governed road for institutional change — work orders end to end, runtime and executive series.',
+  type: 'playbook',
+  classification: 'operational',
+  owner: 'ceo-chief-of-staff',
+  department: 'ceo-chief-of-staff',
+  authority: 'operational',
+  constitutionalAuthority: 'ams-framework',
+  constitutionVolumes: ['02'],
+  referenceModel: 'docs/governance/management-system/FRAMEWORK.md',
+  playbook: 'docs/governance/management-system/manuals/M07-work-order-execution.md',
+  standards: ['capability-genome-standard', 'launch-decision-principle', 'permanent-engineering-mission'],
+  dashboardSpec: 'src/components/founder/cockpit/WorkOrderBoard.tsx',
+  workforceSpec: 'docs/agents/ceo-chief-of-staff/AGENT_SPEC.md',
+  kpis: [
+    { key: 'evidence-integrity', formula: 'approvals with evidence ÷ all approvals', target: '100% (by construction)', owner: 'qa-authority', cadence: 'continuous', source: 'engine telemetry' },
+    { key: 'directive-traceability', formula: 'orders citing authorizing directive ÷ new orders', target: '100%', owner: 'ceo-chief-of-staff', cadence: 'weekly', source: 'order payloads' },
+    { key: 'impact-measurement-completion', formula: 'completed orders with impact recorded ÷ completed', target: '100%', owner: 'ceo-chief-of-staff', cadence: 'monthly', source: 'brain records' },
+    { key: 'stuck-order-rate', formula: 'orders past cadence ÷ open', target: '≤5%', owner: 'ceo-chief-of-staff', cadence: 'weekly', source: 'board ages' },
+  ],
+  inputs: [
+    { name: 'Five-Questions-complete openings + authorizing directives', kind: 'human-action' },
+    { name: 'gate outcomes + evidence + founder decisions', kind: 'event' },
+  ],
+  outputs: [
+    { name: 'governed change (through owners’ gated surfaces only)', kind: 'decision', writesProduction: false, approvalGate: null },
+    { name: 'execution memory (decisions, impacts, lessons)', kind: 'data', writesProduction: false, approvalGate: null },
+  ],
+  security: { level: 'founder', posture: 'evidence-gated approvals; one road, no parallel change paths; full event-bus audit trail', gateChain: 'Permanent Management Rule (8-step)' },
+  workforce: [
+    { agent: 'ceo-chief-of-staff', role: 'operates' },
+    { agent: 'qa-authority', role: 'reviews' },
+    { agent: 'interface-experience', role: 'reviews' },
+  ],
+  lifecycle: 'governed', // step 5 (Founder Review)
+  parentCapability: 'playbook:m06-institutional-intelligence',
+  founderDirectives: ['WO-0007', 'Master Operating Order (Priority B)'],
+  evolution: [
+    { on: D, kind: 'created', by: 'ceo-chief-of-staff', evidence: 'WO-0007 — six ratified manuals already produced through this machinery; the manual codifies its own road.' },
+  ],
+});
+
 // ---- The catalog --------------------------------------------------------------
 export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   ...SHADOW_SEEDERS.map(seederGenome),
@@ -785,6 +830,7 @@ export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   m04Manual,
   m05Manual,
   m06Manual,
+  m07Manual,
 ];
 
 export function getGenome(id: string): CapabilityGenome | undefined {
