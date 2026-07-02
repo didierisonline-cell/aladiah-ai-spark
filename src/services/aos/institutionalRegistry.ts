@@ -842,7 +842,7 @@ const avisCapability = baseGenome({
     { agent: 'curriculum-excellence', role: 'stewards' },
     { agent: 'qa-authority', role: 'reviews' },
   ],
-  lifecycle: 'governed', // Founder approved AVIS v1.0; implementation WOs 0009+ in the approved five-step order
+  lifecycle: 'measured', // five-step roadmap complete and tested; rendering awaits the founder-deployed edge function
   ratifiedOn: D,
   parentCapability: 'ai-role:interface-experience',
   founderDirectives: ['WO-0008', 'Master Operating Order (Priority C)', 'FD-2026-016', 'Founder approval: AVIS v1.0 + five-step roadmap'],
@@ -850,6 +850,7 @@ const avisCapability = baseGenome({
     { on: D, kind: 'created', by: 'interface-experience', evidence: 'WO-0008 blueprint: 20 sections, design-only; gate chain declared at conception.' },
     { on: D, kind: 'amended', by: 'founder', evidence: 'FD-2026-016: scope expanded to ALL institutional visuals; Open-Gen-AI adopted as primary renderer (behind ai-proxy, subordinate to standards).' },
     { on: D, kind: 'ratified', by: 'founder', evidence: 'AVIS v1.0 adopted; renderer abstraction permanent; five-step implementation approved (interface → compiler → quarantine → registry/Brain → diagram library).' },
+    { on: D, kind: 'measured', by: 'interface-experience', evidence: 'Five-step roadmap COMPLETE (WO-0009/0010/0011): seam, compiler, quarantine, asset registry + Brain mirror, and the 7-diagram Enterprise Library — 23 AVIS tests green. Rendering awaits the founder-deployed edge function.' },
   ],
 });
 

@@ -22,6 +22,8 @@ import * as institution from './institutionalRegistry';
 import * as avisRenderer from '../avis/renderer';
 import * as avisCompiler from '../avis/promptCompiler';
 import * as avisQuarantine from '../avis/quarantine';
+import * as avisAssets from '../avis/assetRegistry';
+import * as avisDiagrams from '../avis/enterpriseDiagrams';
 import { ensureAOS } from './bootstrap';
 
 export const aos = {
@@ -46,6 +48,8 @@ export const aos = {
     renderer: avisRenderer,     //   the permanent adapter seam (step 1)
     compiler: avisCompiler,     //   governed prompt compilation (step 2)
     quarantine: avisQuarantine, //   draft quarantine state machine (step 3)
+    assets: avisAssets,         //   asset registry + Brain mirror (step 4)
+    diagrams: avisDiagrams,     //   the Enterprise Diagram Library (step 5)
   },
 };
 

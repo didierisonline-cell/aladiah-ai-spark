@@ -164,3 +164,100 @@ describe('Visual Renderer Interface — the permanent adapter seam (step 1)', ()
     expect(listRenderers().some((r) => r.id === FIRST_APPROVED_RENDERER)).toBe(false);
   });
 });
+
+// =============================================================================
+// WO-0010 (step 4) — Asset Registry & Brain integration
+// =============================================================================
+import { AssetRegistrationError, assetGenome, recordUsage, registerApprovedAsset, supersede, validateRegistration } from './assetRegistry';
+import { computeMaturity, validateGenome } from '../aos/genome';
+import { genomeExists } from '../aos/institutionalRegistry';
+
+describe('Visual Asset Registry — quarantine is the sole entrance (step 4)', () => {
+  const approvedDraft = () => {
+    let d = newDraft({ candidateId: 'sha256abc', visualClass: 'process-flow', specId: 'spec:test-1', promptVersion: 'v1.x', createdAt: '2026-07-02T00:00:00Z' });
+    for (const g of ['qa', 'accessibility', 'brand'] as const) {
+      d = recordVerdict(d, { gate: g, passed: true, reviewer: 'steward-1', on: '2026-07-02', note: 'ok' });
+    }
+    return approve(d);
+  };
+  const registration = () => ({
+    draft: approvedDraft(),
+    prompt: { version: 'v1.x', specId: 'spec:test-1', visualClass: 'process-flow' as const, text: 't', prohibitions: [], brandTokens: [], compiledAt: 'now' },
+    renderer: { id: 'open-gen-ai', version: '2026-07' },
+    requestedBy: 'curriculum-excellence', approvedBy: 'steward-1', approvedOn: '2026-07-02',
+    altText: 'Sequential description of the flow.', license: 'institution-owned (generated under contract terms)',
+  });
+
+  it('registers only APPROVED drafts; provenance chain must be intact', () => {
+    const a = registerApprovedAsset(registration());
+    expect(a.brainMarker).toBe('visual:sha256abc:v1');
+    const unapproved = { ...registration(), draft: newDraft({ candidateId: 'x', visualClass: 'process-flow', specId: 'spec:test-1', promptVersion: 'v1.x', createdAt: 'now' }) };
+    expect(() => registerApprovedAsset(unapproved)).toThrowError(/sole entrance/);
+    const mismatched = { ...registration(), prompt: { ...registration().prompt, version: 'v2.other' } };
+    expect(validateRegistration(mismatched).join(' ')).toMatch(/provenance chain broken/);
+  });
+
+  it('the textual twin, license, and identities are mandatory', () => {
+    expect(validateRegistration({ ...registration(), altText: ' ' }).join(' ')).toMatch(/textual twin/);
+    expect(validateRegistration({ ...registration(), license: '' }).join(' ')).toMatch(/unlicensed/);
+    expect(validateRegistration({ ...registration(), approvedBy: '' }).join(' ')).toMatch(/accountability/);
+  });
+
+  it('every asset genome validates under the ratified rules, computed loci intact', () => {
+    const g = assetGenome(registerApprovedAsset(registration()));
+    // maturity is computed (V3): recompute before validating, as the registry does
+    g.maturity = computeMaturity(g);
+    expect(validateGenome(g, (id) => genomeExists(id) || id.startsWith('visual-asset:')), g.id).toEqual([]);
+    expect(g.accessibility).toBe('audited'); // computed: impossible without the passed verdict
+  });
+
+  it('supersession never overwrites: both assets persist, cross-linked', () => {
+    const oldAsset = registerApprovedAsset(registration());
+    const successorDraft = { ...registration(), draft: { ...approvedDraft(), candidateId: 'sha256new' }, supersedes: oldAsset.assetId };
+    const successor = registerApprovedAsset(successorDraft);
+    const { old, successor: next } = supersede(oldAsset, successor);
+    expect(old.replacedBy).toBe('sha256new');
+    expect(next.supersedes).toBe('sha256abc');
+    expect(() => supersede(oldAsset, { ...successor, supersedes: 'wrong' })).toThrowError(AssetRegistrationError);
+  });
+
+  it('usage sites append idempotently — the Brain knows where every visual teaches', () => {
+    let a = registerApprovedAsset(registration());
+    a = recordUsage(a, 'lesson:ba-v1:module-03');
+    a = recordUsage(a, 'lesson:ba-v1:module-03');
+    expect(a.usageSites).toEqual(['lesson:ba-v1:module-03']);
+  });
+});
+
+// =============================================================================
+// WO-0011 (step 5) — the Enterprise Diagram Library
+// =============================================================================
+import { ENTERPRISE_DIAGRAMS } from './enterpriseDiagrams';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+describe('Enterprise Diagram Library — the Institution drawn from its own documents (step 5)', () => {
+  it('every spec compiles deterministically through the governed compiler', () => {
+    for (const d of ENTERPRISE_DIAGRAMS) {
+      const a = compilePrompt(d.spec);
+      const b = compilePrompt(d.spec);
+      expect(a.version, d.spec.specId).toBe(b.version);
+      expect(a.prohibitions).toContain('no elements absent from the governing document');
+    }
+  });
+
+  it('every diagram cites a governing document that exists — amendments stale their diagrams', () => {
+    const repoRoot = resolve(__dirname, '../../..');
+    for (const d of ENTERPRISE_DIAGRAMS) {
+      expect(existsSync(resolve(repoRoot, d.governedBy)), `${d.spec.specId} → ${d.governedBy}`).toBe(true);
+    }
+  });
+
+  it('the library covers the core institutional systems', () => {
+    const ids = ENTERPRISE_DIAGRAMS.map((d) => d.spec.specId);
+    for (const core of ['constitutional-spine', 'operating-hierarchy', 'work-order-road', 'intelligence-loop', 'aos-architecture', 'learning-loop', 'genome-pipeline']) {
+      expect(ids.some((i) => i.includes(core)), core).toBe(true);
+    }
+    expect(ENTERPRISE_DIAGRAMS.every((d) => d.spec.altTextIntent.length > 20)).toBe(true);
+  });
+});
