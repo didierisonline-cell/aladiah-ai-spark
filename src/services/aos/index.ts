@@ -16,6 +16,9 @@ import * as orchestration from './orchestration';
 import * as brain from './brain';
 import * as events from './events';
 import * as intelligence from './intelligence';
+import * as governance from './governance';
+import * as genome from './genome';
+import * as institution from './institutionalRegistry';
 import { ensureAOS } from './bootstrap';
 
 export const aos = {
@@ -33,6 +36,9 @@ export const aos = {
   brain,          // 11. Company Brain (institutional memory)
   events,         // 12. Event Bus (typed broadcast over aos_messages)
   intelligence,   // 13. Continuous Intelligence (observe → recommend → govern)
+  governance,     // 14. Institutional Knowledge (registry · graph · health)
+  genome,         // 15. Capability Genome (ratified standard, validation V1–V12)
+  institution,    // 16. Institutional Registry (the constitutional catalog)
 };
 
 export { ensureAOS };

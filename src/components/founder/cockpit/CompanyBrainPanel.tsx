@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Brain, Plus } from 'lucide-react';
+import { Brain, DatabaseZap, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
   BRAIN_CATEGORIES,
@@ -14,6 +14,8 @@ import {
   listBrain,
   recordDecision,
 } from '@/services/aos/brain';
+import { syncGovernanceToBrain } from '@/services/aos/governance';
+import { syncGenomesToBrain } from '@/services/aos/institutionalRegistry';
 
 const when = (iso: string) => {
   try { return new Date(iso).toLocaleDateString(); } catch { return ''; }
@@ -32,6 +34,7 @@ const CompanyBrainPanel = () => {
   const [content, setContent] = useState('');
   const [category, setCategory] = useState<BrainCategory>('founder-decision');
   const [saving, setSaving] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   const refresh = useCallback(async () => {
     const [list, c] = await Promise.all([
@@ -70,6 +73,26 @@ const CompanyBrainPanel = () => {
         <p className="text-[12px] text-muted-foreground">
           Institutional memory — decisions and standards every agent consults before acting.
         </p>
+        <Button
+          variant="outline" size="sm" className="w-fit"
+          disabled={syncing}
+          onClick={async () => {
+            setSyncing(true);
+            try {
+              const [gov, gen] = await Promise.all([syncGovernanceToBrain(), syncGenomesToBrain()]);
+              toast({
+                title: 'Institution → Brain sync complete',
+                description: `${gov.synced + gen.synced} object(s) mirrored, ${gov.skipped + gen.skipped} already current (governance ${gov.synced}/${gov.synced + gov.skipped}, genomes ${gen.synced}/${gen.synced + gen.skipped}).`,
+              });
+              refresh();
+            } finally {
+              setSyncing(false);
+            }
+          }}
+        >
+          <DatabaseZap className={`w-3.5 h-3.5 mr-1.5 ${syncing ? 'animate-pulse' : ''}`} />
+          {syncing ? 'Mirroring the Institution…' : 'Sync Institution → Brain'}
+        </Button>
       </CardHeader>
       <CardContent className="pt-0 space-y-4">
         {/* Record */}
