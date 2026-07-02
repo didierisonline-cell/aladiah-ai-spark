@@ -1,95 +1,147 @@
-# The Aladiah Capability Genome Standard
+# The Aladiah Capability Genome Standard — v2.0
 
-**Status: DRAFT v1.0 — designed on founder commission (2026-07-02); no
-authority until founder ratification. No implementation authorized.**
-Registry key: `capability-genome-standard`. The canonical specification for
-every capability within the Institution: **no capability shall exist without a
-genome.**
+**Status: DRAFT v2.0 — revised per Founder Directive FD-2026-004 (six
+constitutional amendments incorporated); awaiting founder ratification. No
+implementation authorized.** Registry key: `capability-genome-standard`.
+
+**The constitutional principle (FD-2026-004):** *The Institution shall
+preserve not only what it builds, but why it exists, how it evolved, under
+whose authority it changed, and what future generations may learn from it.
+The Institution is not software. The Institution is a living system of
+governed knowledge.*
+
+Supporting engineering artifacts: `docs/engineering/genome/` (schema ·
+validation rules · reference model · worked example · ratification package).
 
 ---
 
-## 1. Definition
+## Part A — Constitutional principles
 
-A **Capability Genome** is the complete, standardized, machine-readable
-description of one institutional capability — what it is for, who answers for
-it, what governs it, what it consumes and produces, how it is measured, and
-how it has learned. The genome is to a capability what the Institutional
-Metadata block is to a Founding Library volume: identity that survives
-technology, personnel, and model changes.
+**A1 · Institutional Identity (Amendment V).** The Genome is the permanent
+identity of a capability. Implementation, technology, ownership, and process
+may all change; the constitutional identity persists through the Genome.
 
-The Institutional Registry (design: `docs/engineering/registry/`) is the
-**collection of genomes plus enforcement**. Upon ratification of this
-standard, the Registry Reference Model's record schema is conformed to the
-genome — the genome is the master specification; the registry stores,
-validates, and surfaces it.
+**A2 · Computed Institutional Truth (Amendment III).** Institutional claims
+are earned through evidence, never asserted manually. Engineering Maturity,
+Readiness, Institution Health, Quality, Security, Compliance, Operational
+Status, and Institutional Status are **computed from measurable evidence**.
+Manual assertion of any computed locus is prohibited by validation. Unknown
+is an acceptable state; false certainty is not.
 
-## 2. The genome — 22 loci
+**A3 · Permanent Lineage (Amendment I).** Nothing within the Institution
+loses its historical lineage. Institutional evolution remains permanently
+auditable: every genome records how its capability came to exist, under whose
+authority, and what it became.
 
-| # | Locus | Type | Required | Definition & validation |
-|---|---|---|---|---|
-| 1 | **Mission** | text | ✅ | Which institutional mission this capability serves — stated as an outcome for a served group (Covenant Art. XIII), not a feature description |
-| 2 | **Purpose** | text | ✅ | One sentence: why this capability exists. Empty or circular purposes fail validation |
-| 3 | **Capability Type** | enum | ✅ | program · course · lesson · simulation · assessment · dashboard · policy · standard · playbook · reference-model · ai-role · institute · department · team · work-order · founder-directive · research-report · translation · visual-asset · knowledge-article · edge-function · service. Type creation is an institutional act (founder directive) |
-| 4 | **Classification** | enum | ✅ | constitutional · strategic · operational · experimental · legacy · archived · unknown (Phase-0 categories). Precedes registration, always |
-| 5 | **Owner** | slug | ✅ | Exactly one — an agent slug or `founder`. "Shared" is not an owner |
-| 6 | **Authority** | enum | ✅ | foundational · constitutional · canonical · operational · informational — which tier of the spine governs it |
-| 7 | **Institute** | slug∣null | ✅ (nullable) | Future organizational unit; null until the Organizational Charter (Volume III) defines institutes — never invented before it |
-| 8 | **Department** | slug | ✅ | One of the 12 chartered departments, or `founder` |
-| 9 | **Reference Model** | path∣missing∣n/a | ✅ | The model that governs its design. `missing` is honest and visible; `n/a` requires justification in Evidence |
-| 10 | **Playbook** | path∣missing∣n/a | ✅ | The procedure that operates it |
-| 11 | **Standards** | keys[] | ✅ | Registry keys of the standards it must satisfy (always includes this one) |
-| 12 | **Dependencies** | genome ids[] | ✅ (may be empty) | Upstream capabilities. References must resolve; graph must stay acyclic |
-| 13 | **Inputs** | typed list | ✅ (may be empty) | What it consumes: data (tables/events), documents, human actions — named, not implied |
-| 14 | **Outputs** | typed list | ✅ (may be empty) | What it produces: data, artifacts, decisions, side effects. **Production-writing outputs must name their approval gate** |
-| 15 | **Security** | enum + notes | ✅ | Classification (public · student · founder · secret) + authN/authZ posture. Capabilities that can write production content require the gate chain stated here |
-| 16 | **Accessibility** | enum | ✅ | unmeasured · posture · audited · n/a — honesty scale, never asserted without evidence |
-| 17 | **AI Workforce** | slugs[] + roles | ✅ (may be empty) | Which agents operate/steward/review it, in which role |
-| 18 | **KPIs** | dictionary ref | ✅ | Reference to its KPI dictionary (formula · target · owner · cadence · source per KPI). `missing` is honest and visible |
-| 19 | **Engineering Maturity** | 0–5 computed | ✅ | Derived from artifact presence (loci 9, 10, 11, 18 + dashboard spec + quality gates + brain link + measured KPIs). **Never hand-set** |
-| 20 | **Institutional Status** | enum | ✅ | Class-specific lifecycle state (e.g. draft · review · live · retired), plus review dates (last/next) |
-| 21 | **Company Brain Link** | marker | ✅ | The Brain mirror marker (`genome:<id>:v<n>`); freshness is a registry KPI |
-| 22 | **Continuous Improvement History** | events[] | ✅ (grows) | Typed events: created · amended · reviewed · impact-measured · lesson-learned — each with date, actor, evidence. The genome remembers how it got better |
+**A4 · Constitutional Attachment (Amendment II).** No capability exists
+independently of the Institution's constitutional framework — every genome
+explicitly references the documents that govern it.
 
-## 3. Genome invariants (CI-enforced upon implementation)
+**A5 · The Registry is the constitutional catalog (Amendment VI).** No
+capability enters the Institutional Registry without a complete genome. The
+Registry is not an inventory; it is the constitutional catalog of governed
+Capability Genomes.
 
-1. **Completeness**: all 22 loci present; `missing`/`unmeasured`/`unknown`
-   are valid values — absence of the locus itself is not.
-2. **Honesty**: unknown classification blocks maturity > 0 and readiness
-   claims; unmeasured is never rendered as zero; computed loci (19) cannot be
-   asserted.
-3. **Identity**: genome ids are immutable and append-only (`<type>:<slug>`).
-4. **Lineage**: dependencies resolve and stay acyclic; authority tier must be
-   ≥ consistent with the governing parent's tier.
-5. **Gate declaration**: any capability whose Outputs write production content
-   must declare its approval chain at locus 15 — a genome claiming direct
-   production writes with no gate is invalid *by construction* (this rule
-   alone would have flagged all 42 publish-direct seeders).
-6. **Evidence**: classification, status transitions, and improvement events
-   carry evidence per the Launch Decision Principle.
-7. **One fact, one home**: loci reference existing registries (governance
-   docs, charters, KPI dictionaries) by key — never duplicate their content.
+---
 
-## 4. Lifecycle
+## Part B — The genome
 
-Genome created at capability conception (before implementation — per FD-001,
-artifacts precede code) → validated in CI → mirrored to the Company Brain →
-surfaced on the Registry dashboard → amended through reviewed commits →
-enriched by improvement events after every measured change → survives the
-capability's retirement (archived genomes are the institution's memory of
-what it once operated).
+Seven sections, 35 loci. Field types and validation: see the Schema and
+Validation Rules artifacts.
 
-## 5. Conformance
+### Section 1 · Identity (loci 1–8)
+1 **Mission** — the institutional outcome served (Covenant Art. XIII framing)
+2 **Purpose** — one sentence: why this capability exists
+3 **Capability Type** — closed enum; type creation is an institutional act
+4 **Classification** — constitutional · strategic · operational ·
+  experimental · legacy · archived · unknown
+5 **Owner** — exactly one (agent slug or `founder`)
+6 **Authority** — foundational · constitutional · canonical · operational · informational
+7 **Institute** — null until the Organizational Charter defines institutes
+8 **Department** — one of the 12 chartered departments, or `founder`
 
-- **Genome-complete**: all loci present and valid → may enter the Registry.
-- **Genome-mature**: maturity ≥ 3 → may be depended upon by strategic
-  capabilities.
-- **Genome-exemplary**: maturity 5 with measured KPIs and ≥ 1 lesson-learned
-  event → the standard other capabilities are held to.
+### Section 2 · Canonical References (Amendment II — loci 9–16)
+Explicit references (registry keys / genome ids / Brain markers), each
+`reference | missing | n/a-with-justification`:
+9 **Constitution Volumes** — the Founding Library shelves that govern it
+10 **Founder Standards** — applicable sections (reference reserved until Volume II is authored)
+11 **Reference Model** · 12 **Operational Playbook** · 13 **Standards** (always includes this one)
+14 **Dashboard Specification** · 15 **AI Workforce Specification** · 16 **KPI Dictionary**
+Plus, within locus 13's list where applicable: Quality Gates, Security
+Standards, Accessibility Standards, Translation Standards. Founder
+Directives and Engineering/Architecture Decisions are referenced in Section 6
+(Lineage); Company Brain knowledge objects in Section 7 (Memory).
 
-## 6. Ratification
+### Section 3 · Interfaces (loci 17–19)
+17 **Dependencies** — genome ids; resolving, acyclic
+18 **Inputs** — named data/documents/human actions consumed
+19 **Outputs** — named products; **production-writing outputs must name their
+   approval gate** (the F-1 rule: a gateless production writer is invalid by construction)
 
-This standard takes effect upon founder ratification, recorded per
-`../constitution/ratification.md`. Upon ratification: (a) the Institutional
-Registry Reference Model is conformed to the genome, (b) implementation of
-the Registry may begin per the approved six artifacts, (c) every existing
-capability's Phase-0 classification becomes locus 4 of its future genome.
+### Section 4 · Assurance (loci 20–23)
+20 **Security** — classification (public·student·founder·secret) + posture + gate chain
+21 **Accessibility** — unmeasured · posture · audited · n/a (computed from audit evidence)
+22 **Translation** — n/a · none · partial · full (computed from coverage probes)
+23 **Quality (QA status)** — untested · planned · passing · failing · n/a (computed from test/QA evidence)
+
+### Section 5 · Operation (loci 24–27)
+24 **AI Workforce** — agents + roles (operates / stewards / reviews)
+25 **KPIs** — the capability's KPI dictionary (formula·target·owner·cadence·source each)
+26 **Engineering Maturity** — 0–5, computed from artifact presence + measurement; never hand-set
+27 **Lifecycle State (Amendment IV)** —
+   `Proposed → Draft → Governed → Implemented → Measured → Institutionalized → Deprecated → Retired`
+   with last/next review dates. Retired genomes remain permanently
+   discoverable; institutional history is never deleted.
+
+### Section 6 · Lineage (Amendment I — loci 28–33)
+28 **Ancestry** — Parent Capability · Child Capabilities (derived)
+29 **Descent** — Derived From · Supersedes · Replaced By (genome ids; `none` is explicit)
+30 **Authority trail** — Constitutional Authority (spine position) · Founder Directive(s)
+31 **Decision trail** — Engineering Decision(s) · Architecture Decision Record(s)
+32 **Dates** — Creation · Ratification · Retirement (if applicable)
+33 **Evolution History** — append-only typed events (created · amended ·
+   superseded · migrated · measured · deprecated · retired), each with date,
+   actor, and evidence
+
+### Section 7 · Memory (loci 34–35)
+34 **Company Brain Link** — mirror marker (`genome:<id>:v<n>`); freshness is a registry KPI
+35 **Continuous Improvement History** — impact measurements + lessons learned,
+   evidence-carrying; the genome remembers how it got better
+
+---
+
+## Part C — Invariants (CI-enforced upon implementation)
+
+1. **Completeness** — all 35 loci present; `missing`/`unmeasured`/`unknown`/`n/a`
+   are valid values; an absent locus is not (Amendment VI: incomplete genome
+   → no Registry entry).
+2. **Computed truth** — loci 21, 22, 23, 26, and readiness derive from
+   evidence; validation rejects manual assertion (Amendment III).
+3. **Identity permanence** — ids immutable; genomes never deleted; `Retired`
+   is a state, not an absence (Amendments IV, V).
+4. **Lineage integrity** — descent references resolve; every genome carries
+   at least its creation event with authority (Amendment I).
+5. **Constitutional attachment** — locus 13 non-empty for every non-archived
+   genome; every genome references at least one Constitution Volume or its
+   governing canon (Amendment II).
+6. **Gate declaration** — production-writing outputs without a named approval
+   chain are invalid by construction.
+7. **Honesty** — `unknown` classification blocks maturity > 0 and readiness;
+   unmeasured never renders as zero.
+8. **One fact, one home** — references by key, never duplicated content.
+
+## Part D — Ratification
+
+Effective upon founder ratification per `../constitution/ratification.md`.
+Upon ratification: the Institutional Registry Reference Model conforms to
+this genome; Registry implementation proceeds per the six approved
+artifacts; Phase-0 classifications become locus 4 of first-generation
+genomes; the Founder Ratification Package
+(`docs/engineering/genome/06-ratification-package.md`) records the act.
+
+## Revision history
+
+| Date | Version | Change | Authority |
+|---|---|---|---|
+| 2026-07-02 | 1.0 | Initial 22-locus design on founder commission | founder commission |
+| 2026-07-02 | 2.0 | Amendments I–VI incorporated: Lineage, Canonical References, Computed Truth, Lifecycle, Identity, Registry Conformance | FD-2026-004 |

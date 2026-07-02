@@ -476,10 +476,10 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
   doc({
     key: 'capability-genome-standard',
     name: 'Capability Genome Standard',
-    purpose: 'The canonical 22-locus specification every institutional capability must carry — no capability exists without a genome.',
+    purpose: 'The canonical 35-locus permanent identity of every institutional capability — lineage, canonical references, computed truth, lifecycle; no capability exists without a genome.',
     path: 'docs/governance/standards/capability-genome-standard.md',
-    version: '1.0',
-    status: 'draft',
+    version: '2.0',
+    status: 'review', // FD-2026-004 amendments incorporated; ratification package delivered
     owner: 'founder',
     authority: 'constitutional',
     parent: 'founder-standards',
@@ -488,7 +488,10 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     relatedAgents: ['operations-platform'],
     lastReview: '2026-07-02',
     nextReview: '2026-07-16',
-    history: [{ on: '2026-07-02', kind: 'created', by: 'founder', note: 'Designed on founder commission as the foundation of the Institutional Registry; awaiting ratification before engineering proceeds.' }],
+    history: [
+      { on: '2026-07-02', kind: 'created', by: 'founder', note: 'v1.0 designed on founder commission as the foundation of the Institutional Registry.' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'v2.0 per FD-2026-004: Amendments I–VI (Lineage, Canonical References, Computed Truth, Lifecycle, Identity, Registry Conformance). Ratification package delivered; sent to review.' },
+    ],
   }),
 
   // ---- The Founding Library (Directive 003) -----------------------------------
