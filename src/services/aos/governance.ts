@@ -779,6 +779,24 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     history: [{ on: '2026-07-02', kind: 'created', by: 'interface-experience', note: 'FD-2026-016: all fifteen sections; design only — not one API call until Founder approval.' }],
   }),
 
+  doc({
+    key: 'aie-blueprint',
+    name: 'AIE — The Aladiah Intelligence Engine (Architectural Blueprint)',
+    purpose: 'The cognitive layer of the Institution: twenty components from Knowledge Engine to the AI plug-in seam — learns only from governed evidence, explains every recommendation, never decides, never depends on a vendor.',
+    path: 'docs/engineering/aie/BLUEPRINT.md',
+    version: '1.0',
+    status: 'review', // WO-0012 delivered; awaiting Founder review before implementation
+    owner: 'analytics-intelligence',
+    authority: 'canonical',
+    parent: 'intelligence-architecture',
+    dependencies: ['m04-company-brain', 'm06-institutional-intelligence', 'avis-integration-architecture', 'founder-reserved-powers', 'launch-decision-principle'],
+    relatedDepartments: ['analytics-intelligence', 'interface-experience', 'operations-platform'],
+    relatedAgents: ['analytics-intelligence'],
+    lastReview: '2026-07-02',
+    nextReview: '2026-07-16',
+    history: [{ on: '2026-07-02', kind: 'created', by: 'analytics-intelligence', note: 'WO-0012: twenty components, blueprint only — no implementation, no external services, no vendor lock-in. The CognitiveBackend seam generalizes the AVIS renderer pattern.' }],
+  }),
+
   // ---- The Founding Library (Directive 003) -----------------------------------
   doc({
     key: 'founder-reserved-powers',
