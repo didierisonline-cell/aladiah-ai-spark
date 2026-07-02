@@ -30,9 +30,26 @@ describe('Institutional Knowledge registry — integrity', () => {
     }
   });
 
-  it('exactly one root (the constitution) anchors the hierarchy', () => {
+  it('exactly one root — the Covenant — anchors the hierarchy (Founder Constitutional Decision, 2026-07-02)', () => {
     const roots = GOVERNING_DOCUMENTS.filter((d) => d.parent === null);
-    expect(roots.map((r) => r.key)).toEqual(['constitution']);
+    expect(roots.map((r) => r.key)).toEqual(['covenant']);
+  });
+
+  it('the constitutional spine holds: Covenant → Constitution → Founder Standards → Organizational Charter → Enterprise Architecture → Intelligence Architecture → AIOS → Department Charters → Operational Policies', () => {
+    const SPINE: [string, string | null][] = [
+      ['covenant', null],
+      ['constitution', 'covenant'],
+      ['founder-standards', 'constitution'],
+      ['organizational-charter', 'founder-standards'],
+      ['enterprise-architecture', 'organizational-charter'],
+      ['intelligence-architecture', 'enterprise-architecture'],
+      ['aladiah-operating-system', 'intelligence-architecture'],
+      ['department-charters', 'aladiah-operating-system'],
+      ['faculty-handbook', 'department-charters'], // operational-policy tier
+    ];
+    for (const [key, parent] of SPINE) {
+      expect(getDocument(key)?.parent, `${key} must derive from ${parent ?? 'nothing (root)'}`).toBe(parent);
+    }
   });
 
   it('no document is its own ancestor (acyclic authority chain)', () => {
@@ -198,10 +215,12 @@ describe('Governance drift check — registry vs repository', () => {
 describe('Governance graph', () => {
   it('answers who governs me / what do I govern / who depends on me', () => {
     const node = getGovernanceNode('intelligence-architecture')!;
-    expect(node.governedBy?.key).toBe('agent-operating-system');
+    expect(node.governedBy?.key).toBe('enterprise-architecture'); // constitutional spine
     expect(node.dependents.map((d) => d.key)).toContain('continuous-improvement');
+    const covenant = getGovernanceNode('covenant')!;
+    expect(covenant.governedBy).toBeNull(); // the root of the Aladiah Canon
     const constitution = getGovernanceNode('constitution')!;
-    expect(constitution.governedBy).toBeNull();
+    expect(constitution.governedBy?.key).toBe('covenant');
     expect(constitution.governs.length).toBeGreaterThanOrEqual(5);
   });
 

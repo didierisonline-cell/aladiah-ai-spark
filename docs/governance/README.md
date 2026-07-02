@@ -64,8 +64,35 @@ git-versioned, reviewable, and founder-approved.
 
 ## Authority hierarchy (dependency map)
 
+**The constitutional spine (Founder Constitutional Decision, 2026-07-02 —
+CI-enforced in `governance.test.ts`):**
+
 ```
-CONSTITUTION (draft — composes, does not replace, the ratified canon)
+THE COVENANT (root of the Aladiah Canon — Foundational)
+    ↓
+THE CONSTITUTION
+    ↓
+FOUNDER STANDARDS
+    ↓
+ORGANIZATIONAL CHARTER
+    ↓
+ENTERPRISE ARCHITECTURE
+    ↓
+INTELLIGENCE ARCHITECTURE
+    ↓
+AIOS
+    ↓
+DEPARTMENT CHARTERS
+    ↓
+OPERATIONAL POLICIES
+    ↓
+IMPLEMENTATION
+```
+
+The ratified canon and supporting documents attach to the spine:
+
+```
+CONSTITUTION (derives from THE COVENANT)
 │
 ├── LAUNCH_DECISION_PRINCIPLE (ratified)     ← the root decision law
 │      └── QA_STANDARD · LAUNCH_COMMAND_CENTER (root) · validation runbooks

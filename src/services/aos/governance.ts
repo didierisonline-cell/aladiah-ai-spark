@@ -39,7 +39,8 @@ export interface GoverningDocument {
   /** Single-threaded owner (agent slug or 'founder'). */
   owner: string;
   authority: AuthorityLevel;
-  /** Registry key of the governing parent; null only for the constitution. */
+  /** Registry key of the governing parent; null only for the Covenant (the
+   *  root of the Aladiah Canon — Founder Constitutional Decision, 2026-07-02). */
   parent: string | null;
   /** Registry keys this document depends on (beyond its parent). */
   dependencies: string[];
@@ -96,11 +97,13 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     status: 'draft',
     owner: 'founder',
     authority: 'constitutional',
-    parent: null,
-    dependencies: ['covenant'], // the Covenant defines purpose; the Constitution defines governance (Covenant Preamble)
-    lastReview: '2026-07-01',
+    parent: 'covenant', // the Constitution derives its authority from the Covenant (Founder Constitutional Decision, 2026-07-02)
+    lastReview: '2026-07-02',
     nextReview: '2026-07-15',
-    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'v0.1 composed from the ratified canon.' }],
+    history: [
+      { on: '2026-07-01', kind: 'created', by: 'founder', note: 'v0.1 composed from the ratified canon.' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'Re-rooted under the Covenant per Founder Constitutional Decision.' },
+    ],
   }),
   doc({
     key: 'ratification-process',
@@ -242,12 +245,16 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     status: 'draft',
     owner: 'operations-platform',
     authority: 'canonical',
-    parent: 'architecture-principle',
+    parent: 'organizational-charter', // spine: Organizational Charter → Enterprise Architecture
+    dependencies: ['architecture-principle'],
     relatedDepartments: ['operations-platform'],
     relatedAgents: ['operations-platform'],
-    lastReview: '2026-07-01',
+    lastReview: '2026-07-02',
     nextReview: '2026-07-15',
-    history: [{ on: '2026-07-01', kind: 'created', by: 'operations-platform', note: 'v0.1 from verified repo facts.' }],
+    history: [
+      { on: '2026-07-01', kind: 'created', by: 'operations-platform', note: 'v0.1 from verified repo facts.' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'Re-parented into the constitutional spine; Architecture Principle retained as dependency.' },
+    ],
   }),
   doc({
     key: 'intelligence-architecture',
@@ -259,16 +266,17 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     status: 'review',
     owner: 'analytics-intelligence',
     authority: 'canonical',
-    parent: 'agent-operating-system',
-    dependencies: ['launch-decision-principle'],
+    parent: 'enterprise-architecture', // spine: Enterprise Architecture → Intelligence Architecture
+    dependencies: ['launch-decision-principle', 'agent-operating-system'],
     relatedDepartments: ['analytics-intelligence'],
     relatedAgents: ['analytics-intelligence', 'operations-platform', 'interface-experience'],
     relatedStandards: ['qa-standard'],
-    lastReview: '2026-07-01',
+    lastReview: '2026-07-02',
     nextReview: '2026-07-15',
     history: [
       { on: '2026-07-01', kind: 'created', by: 'analytics-intelligence', note: 'v1 implemented + tested.' },
       { on: '2026-07-01', kind: 'migrated', by: 'founder', note: 'Moved into docs/governance/architecture/.' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'Re-parented into the constitutional spine; AOS canon retained as dependency.' },
     ],
   }),
   doc({
@@ -281,12 +289,15 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     status: 'draft',
     owner: 'founder',
     authority: 'canonical',
-    parent: 'constitution',
-    dependencies: ['enterprise-architecture', 'intelligence-architecture', 'agent-operating-system'],
+    parent: 'intelligence-architecture', // spine: Intelligence Architecture → AIOS
+    dependencies: ['enterprise-architecture', 'agent-operating-system'],
     displayedOn: ['/founder'],
-    lastReview: '2026-07-01',
+    lastReview: '2026-07-02',
     nextReview: '2026-07-15',
-    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Phase-5 design blueprint (no code).' }],
+    history: [
+      { on: '2026-07-01', kind: 'created', by: 'founder', note: 'Phase-5 design blueprint (no code).' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'Re-parented into the constitutional spine.' },
+    ],
   }),
   doc({
     key: 'agent-operating-system',
@@ -341,15 +352,19 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     status: 'review',
     owner: 'founder',
     authority: 'operational',
-    parent: 'agent-operating-system',
+    parent: 'aladiah-operating-system', // spine: AIOS → Department Charters
+    dependencies: ['agent-operating-system'],
     relatedAgents: [
       'ceo-chief-of-staff', 'marketing-content', 'seo-strategy', 'product-builder', 'qa-authority',
       'admissions-authority', 'student-success', 'placement-authority', 'analytics-intelligence',
       'operations-platform', 'curriculum-excellence', 'interface-experience',
     ],
-    lastReview: '2026-07-01',
+    lastReview: '2026-07-02',
     nextReview: '2026-10-01',
-    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: '12/12 specs verified by drift check.' }],
+    history: [
+      { on: '2026-07-01', kind: 'created', by: 'founder', note: '12/12 specs verified by drift check.' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'Re-parented into the constitutional spine.' },
+    ],
   }),
   doc({
     key: 'founder-validation-manual',
@@ -486,12 +501,13 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     status: 'review', // Founder Approved Draft v1.0 — pending Founder Signature
     owner: 'founder',
     authority: 'foundational',
-    parent: 'constitution', // pending founder decision on re-rooting (Covenant defines purpose; Constitution defines governance)
+    parent: null, // THE ROOT of the Aladiah Canon (Founder Constitutional Decision, 2026-07-02)
     lastReview: '2026-07-02',
     nextReview: '2026-07-16',
     history: [
       { on: '2026-07-01', kind: 'created', by: 'founder', note: 'Shelf 00 established; content reserved (Directive 003).' },
       { on: '2026-07-02', kind: 'approved', by: 'founder', note: 'Founder-authored Covenant v1.0 placed verbatim; approved as Founder Approved Draft (Directive 004). Ratification: pending Founder Signature.' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'Founder Constitutional Decision: the Covenant is the ROOT of the Aladiah Canon; the Constitution derives its authority from it.' },
     ],
   }),
   doc({
@@ -504,11 +520,13 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     status: 'draft',
     owner: 'founder',
     authority: 'constitutional',
-    parent: 'constitution',
-    dependencies: ['covenant'],
-    lastReview: '2026-07-01',
+    parent: 'covenant', // the Declaration stands directly under the root of purpose
+    lastReview: '2026-07-02',
     nextReview: '2026-07-15',
-    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Shelf 01 established; content reserved (Directive 003).' }],
+    history: [
+      { on: '2026-07-01', kind: 'created', by: 'founder', note: 'Shelf 01 established; content reserved (Directive 003).' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'Re-parented under the Covenant (root).' },
+    ],
   }),
   doc({
     key: 'organizational-charter',
@@ -520,11 +538,13 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     status: 'draft',
     owner: 'founder',
     authority: 'constitutional',
-    parent: 'constitution',
-    dependencies: ['covenant'], // the Covenant defines purpose; the Charter defines structure (Covenant Preamble)
-    lastReview: '2026-07-01',
+    parent: 'founder-standards', // spine: Founder Standards → Organizational Charter (Founder Constitutional Decision)
+    lastReview: '2026-07-02',
     nextReview: '2026-07-15',
-    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Shelf 04 established; content reserved (Directive 003).' }],
+    history: [
+      { on: '2026-07-01', kind: 'created', by: 'founder', note: 'Shelf 04 established; content reserved (Directive 003).' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'Re-parented under Founder Standards per the constitutional spine.' },
+    ],
   }),
   doc({
     key: 'faculty-handbook',
@@ -536,11 +556,14 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     status: 'draft',
     owner: 'founder',
     authority: 'operational',
-    parent: 'agent-operating-system',
-    dependencies: ['department-charters'],
-    lastReview: '2026-07-01',
+    parent: 'department-charters', // spine: Department Charters → Operational Policies
+    dependencies: ['agent-operating-system'],
+    lastReview: '2026-07-02',
     nextReview: '2026-07-15',
-    history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Shelf 09 established; content reserved (Directive 003).' }],
+    history: [
+      { on: '2026-07-01', kind: 'created', by: 'founder', note: 'Shelf 09 established; content reserved (Directive 003).' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'Re-parented into the constitutional spine (operational-policy tier).' },
+    ],
   }),
   doc({
     key: 'founder-operating-manual',

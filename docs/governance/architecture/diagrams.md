@@ -5,7 +5,16 @@ like everything else.
 
 ## 1. Authority chain
 
+**The spine (Founder Constitutional Decision, 2026-07-02):**
+Covenant → Constitution → Founder Standards → Organizational Charter →
+Enterprise Architecture → Intelligence Architecture → AIOS →
+Department Charters → Operational Policies → Implementation.
+
 ```
+                    ┌─────────────────────────┐
+                    │  THE COVENANT (root)     │
+                    └────────────┬────────────┘
+                                 ▼
                     ┌─────────────────────────┐
                     │  CONSTITUTION (draft)    │
                     └────────────┬────────────┘

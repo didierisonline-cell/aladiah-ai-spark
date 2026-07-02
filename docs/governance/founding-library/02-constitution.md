@@ -12,7 +12,7 @@
 | **Status** | Draft (working) |
 | **Authority Level** | constitutional |
 | **Owner** | founder |
-| **Dependencies** | ratification-process |
+| **Dependencies** | covenant (parent — the Constitution derives its authority from the Covenant, per Founder Constitutional Decision 2026-07-02), ratification-process |
 | **Related Documents** | Every shelf in this library |
 | **Review Cadence** | 90 days (ratified) / 14 days (draft) |
 | **Ratification Status** | Awaiting founder ratification (window: 2026-07-15) |
