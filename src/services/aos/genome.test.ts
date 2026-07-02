@@ -1,0 +1,196 @@
+import { describe, expect, it } from 'vitest';
+import { existsSync, readdirSync } from 'node:fs';
+import { resolve } from 'node:path';
+import {
+  CapabilityGenome,
+  computeMaturity,
+  renderScore,
+  validateGenome,
+  MISSING,
+} from './genome';
+import {
+  CAPABILITY_GENOMES,
+  genomeExists,
+  getGenome,
+  getRegistrySummary,
+} from './institutionalRegistry';
+import { SHADOW_SEEDERS } from './edgeFunctionManifest';
+
+const repoRoot = resolve(__dirname, '../../..');
+
+// ---- Fixture ------------------------------------------------------------------
+const valid = (): CapabilityGenome => ({
+  id: 'service:test-capability',
+  mission: 'Serve learners (Covenant Art. XIII).',
+  purpose: 'A test capability.',
+  type: 'service',
+  classification: 'operational',
+  owner: 'operations-platform',
+  authority: 'operational',
+  institute: null,
+  department: 'operations-platform',
+  constitutionVolumes: ['02'],
+  founderStandards: { na: 'Volume II reserved' },
+  referenceModel: MISSING,
+  playbook: MISSING,
+  standards: ['capability-genome-standard'],
+  dashboardSpec: MISSING,
+  workforceSpec: MISSING,
+  kpiDictionary: MISSING,
+  dependencies: [],
+  inputs: [],
+  outputs: [],
+  security: { level: 'founder', posture: 'test', gateChain: null },
+  accessibility: 'n/a',
+  translation: 'n/a',
+  qaStatus: 'untested',
+  workforce: [],
+  kpis: MISSING,
+  maturity: 0,
+  lifecycle: 'draft',
+  lastReview: '2026-07-02',
+  nextReview: '2026-07-16',
+  parentCapability: null,
+  childCapabilities: [],
+  derivedFrom: 'none',
+  supersedes: 'none',
+  replacedBy: null,
+  constitutionalAuthority: 'agent-operating-system',
+  founderDirectives: [],
+  engineeringDecisions: [],
+  architectureDecisions: [],
+  createdOn: '2026-07-02',
+  ratifiedOn: null,
+  retiredOn: null,
+  evolution: [{ on: '2026-07-02', kind: 'created', by: 'founder', evidence: 'test fixture' }],
+  brainLink: 'genome:service:test-capability:v1',
+  improvementHistory: [],
+});
+
+const noResolve = () => false;
+const allResolve = () => true;
+
+describe('Genome validation — the ratified rules V1–V12', () => {
+  it('accepts a complete honest genome', () => {
+    expect(validateGenome(valid(), allResolve)).toEqual([]);
+  });
+
+  it('V2: rejects malformed or type-mismatched ids', () => {
+    expect(validateGenome({ ...valid(), id: 'Bad_ID' }, allResolve).join(' ')).toMatch(/V2/);
+    expect(validateGenome({ ...valid(), id: 'program:test-capability' }, allResolve).join(' ')).toMatch(/V2/);
+  });
+
+  it('V3: manual maturity assertion is prohibited (computed truth)', () => {
+    const g = { ...valid(), maturity: 5 as const };
+    expect(validateGenome(g, allResolve).join(' ')).toMatch(/V3.*manual assertion prohibited/);
+  });
+
+  it('V4: unknown classification locks maturity and lifecycle', () => {
+    const g = { ...valid(), classification: 'unknown' as const, lifecycle: 'implemented' as const };
+    const issues = validateGenome(g, allResolve).join(' ');
+    expect(issues).toMatch(/V4/);
+  });
+
+  it('V5: a production write without a named gate is invalid by construction', () => {
+    const g = {
+      ...valid(),
+      outputs: [{ name: 'course content', kind: 'artifact' as const, writesProduction: true, approvalGate: null }],
+    };
+    expect(validateGenome(g, allResolve).join(' ')).toMatch(/V5.*invalid by construction/);
+  });
+
+  it('V6: descent and dependency references must resolve', () => {
+    const g = { ...valid(), derivedFrom: ['edge-function:ghost'] as string[] };
+    expect(validateGenome(g, noResolve).join(' ')).toMatch(/V6.*ghost/);
+  });
+
+  it('V7: lineage requires a creation event with evidence', () => {
+    expect(validateGenome({ ...valid(), evolution: [] }, allResolve).join(' ')).toMatch(/V7/);
+    const g = { ...valid(), evolution: [{ on: '2026-07-02', kind: 'created' as const, by: 'x', evidence: '' }] };
+    expect(validateGenome(g, allResolve).join(' ')).toMatch(/V7.*authority evidence/);
+  });
+
+  it('V8: constitutional attachment is mandatory', () => {
+    expect(validateGenome({ ...valid(), standards: [] }, allResolve).join(' ')).toMatch(/V8/);
+    expect(validateGenome({ ...valid(), constitutionVolumes: [] }, allResolve).join(' ')).toMatch(/V8/);
+  });
+
+  it('V9/V10: retirement and ratification coherence', () => {
+    expect(validateGenome({ ...valid(), lifecycle: 'retired' as const }, allResolve).join(' ')).toMatch(/V9.*retiredOn/);
+    expect(validateGenome({ ...valid(), ratifiedOn: '2026-07-02' }, allResolve).join(' ')).toMatch(/V10/);
+  });
+
+  it('V12: unmeasured renders as —, never a number', () => {
+    expect(renderScore(null)).toBe('—');
+    expect(renderScore(undefined)).toBe('—');
+    expect(renderScore(74)).toBe('74');
+  });
+
+  it('computeMaturity: unknown locks to 0; artifacts raise it', () => {
+    expect(computeMaturity({ ...valid(), classification: 'unknown' })).toBe(0);
+    const rich = {
+      ...valid(),
+      referenceModel: 'x.md', playbook: 'y.md', dashboardSpec: 'z.md',
+      workforceSpec: 'w.md', standards: ['capability-genome-standard', 'qa-standard'],
+      kpis: [{ key: 'k', formula: 'f', target: 't', owner: 'o', cadence: 'c', source: 's' }],
+    };
+    expect(computeMaturity(rich)).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe('Institutional Registry — the constitutional catalog', () => {
+  it('every first-generation genome validates with ZERO violations', () => {
+    for (const g of CAPABILITY_GENOMES) {
+      expect(validateGenome(g, genomeExists), g.id).toEqual([]);
+    }
+  });
+
+  it('genome ids are unique', () => {
+    const ids = CAPABILITY_GENOMES.map((g) => g.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('scanner parity (edge-function class): every deployed function has a genome, and vice versa', () => {
+    const onDisk = readdirSync(resolve(repoRoot, 'supabase/functions')).filter((d) => d !== '_shared');
+    const inRegistry = CAPABILITY_GENOMES.filter((g) => g.type === 'edge-function').map((g) => g.id.split(':')[1]);
+    for (const fn of onDisk) {
+      expect(inRegistry.includes(fn), `edge function '${fn}' exists on disk without a genome`).toBe(true);
+    }
+    for (const fn of inRegistry) {
+      expect(existsSync(resolve(repoRoot, `supabase/functions/${fn}`)), `genome 'edge-function:${fn}' has no function on disk`).toBe(true);
+    }
+  });
+
+  it('the 37 unknown seeders are maturity-locked at 0 with quarantine gates', () => {
+    const unknowns = CAPABILITY_GENOMES.filter((g) => g.classification === 'unknown');
+    expect(unknowns.length).toBe(SHADOW_SEEDERS.filter((s) => s.classification === 'unknown').length);
+    for (const g of unknowns) {
+      expect(g.maturity, g.id).toBe(0);
+      expect(g.outputs.every((o) => !o.writesProduction || !!o.approvalGate), g.id).toBe(true);
+    }
+  });
+
+  it('lineage: the flagship program permanently records its shadow-era descent', () => {
+    const flagship = getGenome('program:ai-scrum-master-v3')!;
+    expect(flagship.derivedFrom).toContain('edge-function:seed-scrum-course');
+    expect(flagship.supersedes).toContain('edge-function:seed-scrum-course');
+    expect(genomeExists('edge-function:seed-scrum-course')).toBe(true); // the ancestor remains discoverable
+  });
+
+  it('registry summary: unknown queue is risk-ordered, destructive first', () => {
+    const s = getRegistrySummary(new Date('2026-07-02'));
+    expect(s.total).toBe(CAPABILITY_GENOMES.length);
+    expect(s.unknownQueue.length).toBeGreaterThan(30);
+    const firstDestructive = s.unknownQueue.findIndex((q) => q.risk.includes('DESTRUCTIVE'));
+    const lastNonDestructive = s.unknownQueue.map((q) => q.risk.includes('DESTRUCTIVE')).lastIndexOf(false);
+    expect(firstDestructive).toBe(0);
+    expect(s.parityEnforcedClasses).toContain('edge-function');
+    expect(lastNonDestructive).toBeGreaterThan(firstDestructive);
+  });
+
+  it('the registry catalogs itself (a capability like any other)', () => {
+    const self = getGenome('service:institutional-registry')!;
+    expect(self.kpis).not.toBe('missing');
+    expect(self.referenceModel).toBe('docs/engineering/registry/01-reference-model.md');
+  });
+});

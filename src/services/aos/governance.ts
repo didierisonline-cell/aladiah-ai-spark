@@ -479,18 +479,21 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     purpose: 'The canonical 35-locus permanent identity of every institutional capability — lineage, canonical references, computed truth, lifecycle; no capability exists without a genome.',
     path: 'docs/governance/standards/capability-genome-standard.md',
     version: '2.0',
-    status: 'review', // FD-2026-004 amendments incorporated; ratification package delivered
+    status: 'ratified', // FOUNDER DECISION 2026-07-02: adopted into the Aladiah Canon
     owner: 'founder',
     authority: 'constitutional',
     parent: 'founder-standards',
     dependencies: ['launch-decision-principle', 'architecture-principle'],
     relatedDepartments: ['operations-platform', 'analytics-intelligence'],
     relatedAgents: ['operations-platform'],
+    reviewCadenceDays: 90,
     lastReview: '2026-07-02',
-    nextReview: '2026-07-16',
+    nextReview: '2026-10-02',
+    ratified: { on: '2026-07-02', by: 'founder' },
     history: [
       { on: '2026-07-02', kind: 'created', by: 'founder', note: 'v1.0 designed on founder commission as the foundation of the Institutional Registry.' },
       { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'v2.0 per FD-2026-004: Amendments I–VI (Lineage, Canonical References, Computed Truth, Lifecycle, Identity, Registry Conformance). Ratification package delivered; sent to review.' },
+      { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'FOUNDER DECISION: adopted as the official constitutional specification for institutional capability; part of the Aladiah Canon. Registry engineering authorized.' },
     ],
   }),
 
