@@ -675,20 +675,63 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     name: 'M05 — AI Workforce Management Manual',
     purpose: 'The governance of every AI employee, specialist, department, executive function, and future autonomous workforce: hiring, charter, operation, performance, learning, discipline, retirement.',
     path: 'docs/governance/management-system/manuals/M05-ai-workforce-management.md',
-    version: '1.0',
-    status: 'draft', // Permanent Rule step 5: Founder Review; M06 does not begin until approved
+    version: '1.1',
+    status: 'ratified', // FD-2026-014: binding doctrine; v1.1 adds the founder's Employee/Equality/Autonomy doctrine verbatim
     owner: 'operations-platform',
     authority: 'operational',
     parent: 'ams-framework',
-    dependencies: ['m04-company-brain', 'agent-operating-system'],
+    dependencies: ['m04-company-brain', 'agent-operating-system', 'founder-reserved-powers'],
     relatedDepartments: ['operations-platform', 'ceo-chief-of-staff', 'qa-authority'],
     relatedAgents: ['operations-platform', 'ceo-chief-of-staff'],
+    reviewCadenceDays: 90,
+    lastReview: '2026-07-02',
+    nextReview: '2026-10-02',
+    ratified: { on: '2026-07-02', by: 'founder' },
+    history: [
+      { on: '2026-07-02', kind: 'created', by: 'operations-platform', note: 'Authored under WO-0005 — the first work order to answer the Five Questions.' },
+      { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'FD-2026-014: adopted as binding institutional doctrine.' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'v1.1: the Employee Principle, the Institutional Equality Principle, and the Autonomy Doctrine appended verbatim (FD-2026-014).' },
+    ],
+  }),
+
+  doc({
+    key: 'm06-institutional-intelligence',
+    name: 'M06 — Institutional Intelligence & Decision Support Manual',
+    purpose: 'How the Institution knows, warns, forecasts, and supports decisions: dashboards, the KPI framework, reporting, early warnings, analytics, AI decision assistants, the strategic review.',
+    path: 'docs/governance/management-system/manuals/M06-institutional-intelligence.md',
+    version: '1.0',
+    status: 'draft', // Permanent Rule step 5: Founder Review; M07 does not begin until approved
+    owner: 'analytics-intelligence',
+    authority: 'operational',
+    parent: 'ams-framework',
+    dependencies: ['m05-ai-workforce-management', 'intelligence-architecture', 'launch-decision-principle'],
+    relatedDepartments: ['analytics-intelligence', 'ceo-chief-of-staff', 'operations-platform'],
+    relatedAgents: ['analytics-intelligence', 'ceo-chief-of-staff'],
     lastReview: '2026-07-02',
     nextReview: '2026-07-16',
-    history: [{ on: '2026-07-02', kind: 'created', by: 'operations-platform', note: 'Authored under WO-0005 — the first work order to answer the Five Questions (Engineering Law); Permanent Rule steps 1–4 recorded; step 5 presented.' }],
+    history: [{ on: '2026-07-02', kind: 'created', by: 'analytics-intelligence', note: 'Authored under WO-0006 (Five Questions answered §0); steps 1–4 recorded; step 5 presented.' }],
   }),
 
   // ---- The Founding Library (Directive 003) -----------------------------------
+  doc({
+    key: 'founder-reserved-powers',
+    name: "The Founder's Reserved Powers",
+    purpose: 'The nine powers permanently reserved to the Founder while living — never delegated to AI, never inferred, never assumed. Informs the Constitution and the Organizational Charter.',
+    path: 'docs/governance/constitution/founder-reserved-powers.md',
+    version: '1.0',
+    status: 'ratified', // founder-authored doctrine, constitutional authority on issuance (FD-2026-014)
+    owner: 'founder',
+    authority: 'constitutional',
+    parent: 'constitution',
+    reviewCadenceDays: 90,
+    lastReview: '2026-07-02',
+    nextReview: '2026-10-02',
+    ratified: { on: '2026-07-02', by: 'founder' },
+    history: [
+      { on: '2026-07-02', kind: 'created', by: 'founder', note: 'Issued verbatim in FD-2026-014.' },
+      { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'Constitutional authority on issuance; boundary no delegation may cross.' },
+    ],
+  }),
   doc({
     key: 'founding-library',
     name: 'The Aladiah Founding Library (catalog)',

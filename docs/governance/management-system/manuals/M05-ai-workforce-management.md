@@ -1,7 +1,6 @@
 # M05 — AI Workforce Management Manual
 
-**Version 1.0 · DRAFT — at step 5 (Founder Review) of the Permanent
-Management Rule, under WO-0005.** Inherits the M01 gold-standard structure.
+**Version 1.1 · RATIFIED (FD-2026-014) — binding institutional doctrine.** Inherits the M01 gold-standard structure.
 Registry key: `m05-ai-workforce-management` · Genome:
 `playbook:m05-ai-workforce-management`.
 
@@ -31,13 +30,13 @@ Registry key: `m05-ai-workforce-management` · Genome:
 | **Title** | AI Workforce Management Manual |
 | **Accession** | M05 (permanent) |
 | **Purpose** | The governance of every AI employee, specialist, department, executive function, and future autonomous workforce: hiring, charter, operation, performance, learning, discipline, retirement. |
-| **Version / Status** | 1.0 · Draft — Permanent Rule steps 1–4 complete, step 5 in progress |
+| **Version / Status** | 1.1 · Ratified (FD-2026-014) — founder doctrine appended verbatim |
 | **Authority Level** | operational |
 | **Owner** | operations-platform (workforce administration) · Constitutional oversight: founder |
 | **Governing canon** | Covenant Art. VI · Constitution Art. VI · AGENT_OPERATING_SYSTEM (ratified) · M04 P7 (AI learning rules) · AMS Framework v1.1 |
 | **Related manuals** | M01 (executive authority) · M04 (learning) · M08 Quality (pending) |
 | **Review cadence** | 90 days upon ratification |
-| **Ratification status** | Pending Founder Ratification (step 6) |
+| **Ratification status** | RATIFIED 2026-07-02 by the Founder (FD-2026-014) |
 
 **Lifecycle record (Permanent Rule):**
 | Step | Status | Evidence |
@@ -46,7 +45,10 @@ Registry key: `m05-ai-workforce-management` · Genome:
 | 2 Engineering Review | ✅ 2026-07-02 | every procedure maps to running machinery (bootstrap, registry, health, permissions, employee records); Founder Doctrine honored — extends, never parallels |
 | 3 QA Review | ✅ 2026-07-02 | procedures with entry/exit conditions; 6 KPIs well-formed; 85/85 green |
 | 4 Company Brain Review | ✅ 2026-07-02 | precedent honored: AOS canon §6 (how to add an agent), M04 P7, FD-2026-007 (every AI an employee), persona boundary (personas are product surfaces, not agents) |
-| 5 Founder Review | ⏳ this presentation | — |
+| 5 Founder Review | ✅ 2026-07-02 | FD-2026-014 |
+| 6 Ratification | ✅ 2026-07-02 | FD-2026-014 — binding institutional doctrine |
+| 7 Publication | ✅ 2026-07-02 | registered ratified; Brain mirror at next sync |
+| 8 Continuous Improvement | ⏳ | first 90-day review 2026-10-02 |
 
 ## 2. Mission Link
 
@@ -245,3 +247,35 @@ permissions framework (publish:false fleet-wide), health rollups,
 `getWorkforceIdentity` + `getEmployeeRecord`, `run.identity` logging,
 identity-coverage drift checks, PermissionError enforcement, pause/disable
 registry controls — all running; 85/85 tests.
+
+---
+
+## FOUNDER AMENDMENT — v1.1 (verbatim, FD-2026-014, 2026-07-02)
+
+### THE EMPLOYEE PRINCIPLE
+
+Every human employee and every AI employee shall be governed by the same institutional framework.
+
+Differences in capability shall never create differences in accountability.
+
+Every employee shall have: Identity · Charter · Authority · Responsibilities · Performance Metrics · Evidence · Lessons Learned · Continuous Improvement Record.
+
+No employee shall exist outside the Registry. No employee shall operate outside a Charter. No employee shall exercise authority not expressly delegated.
+
+### THE INSTITUTIONAL EQUALITY PRINCIPLE
+
+The Institution shall evaluate work, not origin.
+
+Whether a task is performed by a Founder, a human employee, an AI employee, or a future autonomous system, the same governance standards apply.
+
+Quality is universal. Evidence is universal. Accountability is universal.
+
+### AUTONOMY DOCTRINE
+
+Autonomy is a privilege. Autonomy is earned through evidence.
+
+Autonomy may be reduced, suspended, or revoked whenever institutional risk exceeds institutional benefit.
+
+Safety shall always prevail over automation.
+
+*(The Founder's Reserved Powers are filed at `../../constitution/founder-reserved-powers.md` — constitutional tier; referenced here as the boundary no delegation may cross.)*

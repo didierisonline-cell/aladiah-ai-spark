@@ -460,6 +460,7 @@ const FOUNDER_DIRECTIVES = [
   { slug: 'fd-2026-011-book-of-knowledge', note: 'M02 ratified. The Aladiah Book of Knowledge established: Books → Manuals → Standards → Procedures → Work Orders → Evidence → Brain → improved Standards — the permanent institutional learning loop. WO-0003 issued.' },
   { slug: 'fd-2026-012-constitutional-clarification', note: 'M03 ratified. Constitutional clarification: the spine is NOT amended; the Covenant remains supreme governing doctrine; permanent definitions — Covenant WHY · Constitution WHAT · Book of Knowledge WHAT IS KNOWN · Management System HOW · Company Brain HOW TO IMPROVE; the four shall never be merged. WO-0004 issued.' },
   { slug: 'fd-2026-013-phase-i-complete', note: 'M04 ratified; PHASE I DECLARED COMPLETE (Covenant, Constitution, Book of Knowledge, Management System, Registry, Brain). Founder Doctrine: implementation over expansion — improve, amend, strengthen; never parallel, duplicate, replace; simplicity is a constitutional value. Engineering Law: the Five Questions every work order must answer. WO-0005 issued. (Number assigned by sequence; directive arrived unnumbered.)' },
+  { slug: 'fd-2026-014-employee-equality-autonomy', note: 'M05 ratified (v1.1 with doctrine verbatim). The Employee Principle (same framework for human and AI; capability never changes accountability). The Institutional Equality Principle (evaluate work, not origin). The Founder Reserved Powers (nine, never delegated to AI, never inferred, never assumed). The Autonomy Doctrine (a privilege earned by evidence; safety prevails over automation). PHASE II opened: execution. WO-0006 issued.' },
 ];
 function directiveGenome(d: (typeof FOUNDER_DIRECTIVES)[number]): CapabilityGenome {
   return baseGenome({
@@ -704,11 +705,59 @@ const m05Manual = baseGenome({
     { agent: 'ceo-chief-of-staff', role: 'stewards' },
     { agent: 'qa-authority', role: 'reviews' },
   ],
-  lifecycle: 'governed', // step 5 (Founder Review)
+  lifecycle: 'implemented', // FD-2026-014: ratified as binding doctrine; v1.1 founder amendment
   parentCapability: 'playbook:m04-company-brain',
-  founderDirectives: ['WO-0005', 'FD-2026-013'],
+  founderDirectives: ['WO-0005', 'FD-2026-013', 'FD-2026-014 (ratification + doctrine)'],
+  ratifiedOn: D,
   evolution: [
-    { on: D, kind: 'created', by: 'operations-platform', evidence: 'WO-0005 — first work order under the Five Questions law; autonomy preconditions (P9) founder-gated and evidence-earned.' },
+    { on: D, kind: 'created', by: 'operations-platform', evidence: 'WO-0005 — first work order under the Five Questions law.' },
+    { on: D, kind: 'ratified', by: 'founder', evidence: 'FD-2026-014: binding institutional doctrine.' },
+    { on: D, kind: 'amended', by: 'founder', evidence: 'v1.1: Employee Principle, Institutional Equality Principle, Autonomy Doctrine appended verbatim.' },
+  ],
+});
+
+/** M06 — Institutional Intelligence & Decision Support (WO-0006), genome-first. */
+const m06Manual = baseGenome({
+  id: 'playbook:m06-institutional-intelligence',
+  mission: 'Truth pursued through evidence, delivered at the moment of decision — the Institution never knows things it cannot show (Covenant Art. II, III).',
+  purpose: 'Decision support: the KPI framework, dashboards, reporting, early warnings, honest forecasting, AI decision assistants (who inform, never decide), the strategic review.',
+  type: 'playbook',
+  classification: 'operational',
+  owner: 'analytics-intelligence',
+  department: 'analytics-intelligence',
+  authority: 'operational',
+  constitutionalAuthority: 'ams-framework',
+  constitutionVolumes: ['02'],
+  referenceModel: 'docs/governance/architecture/intelligence-architecture.md',
+  playbook: 'docs/governance/management-system/manuals/M06-institutional-intelligence.md',
+  standards: ['capability-genome-standard', 'launch-decision-principle', 'permanent-engineering-mission'],
+  dashboardSpec: 'src/pages/founder/FounderPortal.tsx',
+  workforceSpec: 'docs/agents/analytics-intelligence/AGENT_SPEC.md',
+  kpis: [
+    { key: 'executive-surface-honesty', formula: 'manually asserted values on executive surfaces', target: '0 (test-enforced)', owner: 'analytics-intelligence', cadence: 'continuous', source: 'computed-truth checks' },
+    { key: 'briefing-currency', formula: 'cadences current ÷ 5', target: '100%', owner: 'ceo-chief-of-staff', cadence: 'daily', source: 'staleness engine' },
+    { key: 'forecast-honesty', formula: 'forecasts with stated basis+horizon ÷ all', target: '100%', owner: 'analytics-intelligence', cadence: 'per forecast', source: 'briefs + reviews' },
+    { key: 'strategic-review-completion', formula: 'quarterly reviews held + Brain-recorded ÷ quarters', target: '100%', owner: 'founder', cadence: 'quarterly', source: 'brain' },
+  ],
+  inputs: [
+    { name: 'live telemetry, KPIs, events, Brain precedent', kind: 'data' },
+    { name: 'founder decisions (for outcome retrospectives)', kind: 'event' },
+  ],
+  outputs: [
+    { name: 'decision-intelligence packages (state + precedent + confidence + risk)', kind: 'artifact', writesProduction: false, approvalGate: null },
+    { name: 'early warnings + strategic reviews (Brain-recorded)', kind: 'data', writesProduction: false, approvalGate: null },
+  ],
+  security: { level: 'founder', posture: 'computed-only surfaces; basis markers mandatory; assistants inform, never decide (Reserved Powers)', gateChain: 'Permanent Management Rule (8-step)' },
+  workforce: [
+    { agent: 'analytics-intelligence', role: 'operates' },
+    { agent: 'ceo-chief-of-staff', role: 'operates' },
+    { agent: 'operations-platform', role: 'stewards' },
+  ],
+  lifecycle: 'governed', // step 5 (Founder Review)
+  parentCapability: 'playbook:m05-ai-workforce-management',
+  founderDirectives: ['WO-0006', 'FD-2026-014'],
+  evolution: [
+    { on: D, kind: 'created', by: 'analytics-intelligence', evidence: 'WO-0006 — forecasting honesty codified: a forecast without a stated basis is a fabricated number wearing a suit.' },
   ],
 });
 
@@ -732,6 +781,7 @@ export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   m03Manual,
   m04Manual,
   m05Manual,
+  m06Manual,
 ];
 
 export function getGenome(id: string): CapabilityGenome | undefined {
