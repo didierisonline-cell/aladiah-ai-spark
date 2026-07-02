@@ -473,6 +473,24 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     history: [{ on: '2026-07-01', kind: 'created', by: 'marketing-content', note: 'Scaffold indexing FOUNDER_STORY_CANON + brand assets; content pending.' }],
   }),
 
+  doc({
+    key: 'capability-genome-standard',
+    name: 'Capability Genome Standard',
+    purpose: 'The canonical 22-locus specification every institutional capability must carry — no capability exists without a genome.',
+    path: 'docs/governance/standards/capability-genome-standard.md',
+    version: '1.0',
+    status: 'draft',
+    owner: 'founder',
+    authority: 'constitutional',
+    parent: 'founder-standards',
+    dependencies: ['launch-decision-principle', 'architecture-principle'],
+    relatedDepartments: ['operations-platform', 'analytics-intelligence'],
+    relatedAgents: ['operations-platform'],
+    lastReview: '2026-07-02',
+    nextReview: '2026-07-16',
+    history: [{ on: '2026-07-02', kind: 'created', by: 'founder', note: 'Designed on founder commission as the foundation of the Institutional Registry; awaiting ratification before engineering proceeds.' }],
+  }),
+
   // ---- The Founding Library (Directive 003) -----------------------------------
   doc({
     key: 'founding-library',
