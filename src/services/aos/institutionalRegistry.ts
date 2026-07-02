@@ -801,11 +801,51 @@ const m07Manual = baseGenome({
     { agent: 'qa-authority', role: 'reviews' },
     { agent: 'interface-experience', role: 'reviews' },
   ],
-  lifecycle: 'governed', // step 5 (Founder Review)
+  lifecycle: 'implemented', // ratified in principle; published
   parentCapability: 'playbook:m06-institutional-intelligence',
-  founderDirectives: ['WO-0007', 'Master Operating Order (Priority B)'],
+  founderDirectives: ['WO-0007', 'Master Operating Order (Priority B)', 'Founder decision (ratification)'],
+  ratifiedOn: D,
   evolution: [
     { on: D, kind: 'created', by: 'ceo-chief-of-staff', evidence: 'WO-0007 — six ratified manuals already produced through this machinery; the manual codifies its own road.' },
+    { on: D, kind: 'ratified', by: 'founder', evidence: 'Ratified in principle; AVIS elevated in the same decision.' },
+  ],
+});
+
+/** AVIS — the Visual Intelligence capability (WO-0008), genome-first, lifecycle 'proposed' until blueprint approval. */
+const avisCapability = baseGenome({
+  id: 'service:avis',
+  mission: 'To strengthen understanding through visual intelligence (Covenant, Closing Affirmation; Art. I — teaching is transformation).',
+  purpose: 'The Aladiah Visual Intelligence System: governed visual learning as a foundational institutional capability — engine, asset registry, standards, and (future, gated) generation.',
+  type: 'service',
+  classification: 'strategic',
+  owner: 'interface-experience',
+  department: 'interface-experience',
+  authority: 'canonical',
+  constitutionalAuthority: 'avis-design-bible',
+  constitutionVolumes: ['02', '11'],
+  referenceModel: 'docs/engineering/avis/BLUEPRINT.md',
+  workforceSpec: 'docs/agents/interface-experience/AGENT_SPEC.md',
+  standards: ['capability-genome-standard', 'launch-decision-principle'],
+  inputs: [
+    { name: 'visual needs from content pipelines (Visual First rubric)', kind: 'event' },
+    { name: 'governed specs + versioned prompts', kind: 'document' },
+  ],
+  outputs: [
+    { name: 'governed visual assets (lesson visuals — production content)', kind: 'artifact',
+      writesProduction: true,
+      approvalGate: 'QA → accessibility → brand → founder/steward approval (declared per V5 BEFORE the engine exists — the anti-Shadow rule)' },
+  ],
+  security: { level: 'student', posture: 'server-side generation only (ai-proxy pattern); prompts compiled from governed specs, never raw user input; provenance mandatory', gateChain: 'QA→Accessibility→Brand→Approval' },
+  workforce: [
+    { agent: 'interface-experience', role: 'operates' },
+    { agent: 'curriculum-excellence', role: 'stewards' },
+    { agent: 'qa-authority', role: 'reviews' },
+  ],
+  lifecycle: 'proposed', // → 'governed' upon Founder approval of the blueprint
+  parentCapability: 'ai-role:interface-experience',
+  founderDirectives: ['WO-0008', 'Master Operating Order (Priority C)', 'Founder decision: AVIS is foundational, effective immediately'],
+  evolution: [
+    { on: D, kind: 'created', by: 'interface-experience', evidence: 'WO-0008 blueprint: 20 sections, design-only; gate chain declared at conception.' },
   ],
 });
 
@@ -831,6 +871,7 @@ export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   m05Manual,
   m06Manual,
   m07Manual,
+  avisCapability,
 ];
 
 export function getGenome(id: string): CapabilityGenome | undefined {
