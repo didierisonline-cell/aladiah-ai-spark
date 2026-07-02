@@ -584,16 +584,60 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     purpose: 'How governance is executed throughout the Institution: document/policy/standard lifecycles, directives, work orders, engineering decisions, amendments, escalations, audits.',
     path: 'docs/governance/management-system/manuals/M02-governance-operations.md',
     version: '1.0',
-    status: 'draft', // Permanent Rule step 5: Founder Review in progress; M03 does not begin until approved
+    status: 'ratified', // FD-2026-011: adopted; governance principles are binding institutional practice
     owner: 'founder',
     authority: 'operational',
     parent: 'ams-framework',
     dependencies: ['m01-executive-office', 'ratification-process', 'capability-genome-standard'],
     relatedDepartments: ['operations-platform', 'analytics-intelligence', 'qa-authority'],
     relatedAgents: ['operations-platform'],
+    reviewCadenceDays: 90,
+    lastReview: '2026-07-02',
+    nextReview: '2026-10-02',
+    ratified: { on: '2026-07-02', by: 'founder' },
+    history: [
+      { on: '2026-07-02', kind: 'created', by: 'founder', note: 'Authored under WO-0002 to the M01 gold-standard template; Permanent Rule steps 1–4 recorded in the manual.' },
+      { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'FD-2026-011: adopted into the AMS; its governance principles become binding institutional practice.' },
+    ],
+  }),
+
+  doc({
+    key: 'book-of-knowledge',
+    name: 'The Aladiah Book of Knowledge',
+    purpose: 'The permanent library of institutional knowledge: five Books shelving all governed doctrine, and the permanent learning loop (Books → Manuals → Standards → Procedures → Work Orders → Evidence → Brain → improved Standards).',
+    path: 'docs/governance/book-of-knowledge/README.md',
+    version: '1.0',
+    status: 'ratified', // established by FD-2026-011 on issuance
+    owner: 'founder',
+    authority: 'constitutional',
+    parent: 'constitution', // hierarchy: Founder → Constitution → Book of Knowledge → Management System
+    dependencies: ['founding-library', 'ams-framework'],
+    reviewCadenceDays: 90,
+    lastReview: '2026-07-02',
+    nextReview: '2026-10-02',
+    ratified: { on: '2026-07-02', by: 'founder' },
+    history: [
+      { on: '2026-07-02', kind: 'created', by: 'founder', note: 'Established by FD-2026-011: five Books, the organizing law, the operating hierarchy.' },
+      { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'Founder-established on issuance; organizing view only — no files move, nothing duplicated.' },
+    ],
+  }),
+
+  doc({
+    key: 'm03-registry-genome-operations',
+    name: 'M03 — Institutional Registry & Capability Genome Operations Manual',
+    purpose: 'How every institutional asset is registered, versioned, governed, traced, and retired — the operating procedures of the constitutional catalog.',
+    path: 'docs/governance/management-system/manuals/M03-registry-genome-operations.md',
+    version: '1.0',
+    status: 'draft', // Permanent Rule step 5: Founder Review; M04 does not begin until approved
+    owner: 'operations-platform',
+    authority: 'operational',
+    parent: 'ams-framework',
+    dependencies: ['m02-governance-operations', 'capability-genome-standard'],
+    relatedDepartments: ['operations-platform', 'analytics-intelligence', 'qa-authority'],
+    relatedAgents: ['operations-platform'],
     lastReview: '2026-07-02',
     nextReview: '2026-07-16',
-    history: [{ on: '2026-07-02', kind: 'created', by: 'founder', note: 'Authored under WO-0002 to the M01 gold-standard template; Permanent Rule steps 1–4 recorded in the manual; step 5 (Founder Review) presented.' }],
+    history: [{ on: '2026-07-02', kind: 'created', by: 'operations-platform', note: 'Authored under WO-0003 to the M01 gold-standard template; Permanent Rule steps 1–4 recorded; step 5 presented.' }],
   }),
 
   // ---- The Founding Library (Directive 003) -----------------------------------

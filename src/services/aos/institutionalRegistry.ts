@@ -455,6 +455,9 @@ const FOUNDER_DIRECTIVES = [
   { slug: 'fd-2026-004-genome-ratification', note: 'Six constitutional amendments; Capability Genome Standard v2.0 ratified.' },
   { slug: 'fd-2026-006-institutional-construction', note: 'Constitutional era complete; five priorities; implement rather than invent.' },
   { slug: 'fd-2026-007-operational-excellence', note: 'The Institution is the product. Five permanent loops; every AI a governed employee; every human a leader; knowledge compounds and is never lost.' },
+  { slug: 'fd-2026-009-management-system', note: 'Design the Aladiah Management System: framework + twenty permanent manuals; the operating system for decades of management.' },
+  { slug: 'fd-2026-010-m01-ratification', note: 'M01 adopted as AMS v1.0; the Permanent Management Rule (8-step manual lifecycle); WO-0002 issued.' },
+  { slug: 'fd-2026-011-book-of-knowledge', note: 'M02 ratified. The Aladiah Book of Knowledge established: Books → Manuals → Standards → Procedures → Work Orders → Evidence → Brain → improved Standards — the permanent institutional learning loop. WO-0003 issued.' },
 ];
 function directiveGenome(d: (typeof FOUNDER_DIRECTIVES)[number]): CapabilityGenome {
   return baseGenome({
@@ -558,11 +561,58 @@ const m02Manual = baseGenome({
     { agent: 'analytics-intelligence', role: 'stewards' },
     { agent: 'qa-authority', role: 'reviews' },
   ],
-  lifecycle: 'governed', // full package complete; at step 5 (Founder Review) of the Permanent Rule
+  lifecycle: 'implemented', // FD-2026-011: ratified; binding institutional practice
   parentCapability: 'playbook:m01-executive-office',
-  founderDirectives: ['WO-0002', 'FD-2026-010'],
+  founderDirectives: ['WO-0002', 'FD-2026-010', 'FD-2026-011 (ratification)'],
+  ratifiedOn: D,
   evolution: [
     { on: D, kind: 'created', by: 'founder', evidence: 'WO-0002 — authored to the M01 gold-standard template; steps 1–4 of the Permanent Rule recorded in §1.' },
+    { on: D, kind: 'ratified', by: 'founder', evidence: 'FD-2026-011: adopted; governance principles binding.' },
+  ],
+});
+
+/** M03 — Registry & Genome Operations (WO-0003), genome-first. */
+const m03Manual = baseGenome({
+  id: 'playbook:m03-registry-genome-operations',
+  mission: 'Every steward knows what was received and leaves it stronger — nothing improves untracked (Covenant Art. IX, XI).',
+  purpose: 'Operating procedures of the constitutional catalog: register, version, classify, trace, onboard parity classes, retire.',
+  type: 'playbook',
+  classification: 'operational',
+  owner: 'operations-platform',
+  department: 'operations-platform',
+  authority: 'operational',
+  constitutionalAuthority: 'ams-framework',
+  constitutionVolumes: ['02'],
+  referenceModel: 'docs/engineering/registry/01-reference-model.md',
+  playbook: 'docs/governance/management-system/manuals/M03-registry-genome-operations.md',
+  standards: ['capability-genome-standard', 'permanent-engineering-mission'],
+  dashboardSpec: 'src/components/founder/cockpit/InstitutionalRegistryPanel.tsx',
+  workforceSpec: 'docs/engineering/registry/05-ai-workforce-spec.md',
+  kpiDictionary: 'docs/engineering/registry/06-kpi-dictionary.md',
+  kpis: [
+    { key: 'registry-coverage', formula: 'discovered with genomes ÷ discovered (per enforced class)', target: '100% (CI)', owner: 'operations-platform', cadence: 'every CI run', source: 'parity tests' },
+    { key: 'unknown-queue-age', formula: 'max days a genome stays unknown', target: '≤14 days', owner: 'founder', cadence: 'daily brief', source: 'registry' },
+    { key: 'mean-maturity', formula: 'mean(maturity) across non-archived genomes', target: '≥3.0 within two quarters', owner: 'operations-platform', cadence: 'monthly', source: 'computed' },
+  ],
+  inputs: [
+    { name: 'discovered capabilities (manifests/scanner)', kind: 'data' },
+    { name: 'founder-walk evidence (Unknown resolutions)', kind: 'human-action' },
+  ],
+  outputs: [
+    { name: 'registered genomes (reviewed commits)', kind: 'artifact', writesProduction: false, approvalGate: null },
+    { name: 'classification + retirement records', kind: 'decision', writesProduction: false, approvalGate: null },
+  ],
+  security: { level: 'founder', posture: 'registry-as-code; reviewed commits; quarantine gates on Unknown production-writers', gateChain: 'Permanent Management Rule (8-step)' },
+  workforce: [
+    { agent: 'operations-platform', role: 'operates' },
+    { agent: 'analytics-intelligence', role: 'stewards' },
+    { agent: 'qa-authority', role: 'reviews' },
+  ],
+  lifecycle: 'governed', // step 5 (Founder Review) of the Permanent Rule
+  parentCapability: 'playbook:m02-governance-operations',
+  founderDirectives: ['WO-0003', 'FD-2026-011'],
+  evolution: [
+    { on: D, kind: 'created', by: 'operations-platform', evidence: 'WO-0003 — authored to the M01 gold-standard template; every procedure maps to running code.' },
   ],
 });
 
@@ -583,6 +633,7 @@ export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   registrySelf,
   m01Manual,
   m02Manual,
+  m03Manual,
 ];
 
 export function getGenome(id: string): CapabilityGenome | undefined {
