@@ -461,6 +461,7 @@ const FOUNDER_DIRECTIVES = [
   { slug: 'fd-2026-012-constitutional-clarification', note: 'M03 ratified. Constitutional clarification: the spine is NOT amended; the Covenant remains supreme governing doctrine; permanent definitions — Covenant WHY · Constitution WHAT · Book of Knowledge WHAT IS KNOWN · Management System HOW · Company Brain HOW TO IMPROVE; the four shall never be merged. WO-0004 issued.' },
   { slug: 'fd-2026-013-phase-i-complete', note: 'M04 ratified; PHASE I DECLARED COMPLETE (Covenant, Constitution, Book of Knowledge, Management System, Registry, Brain). Founder Doctrine: implementation over expansion — improve, amend, strengthen; never parallel, duplicate, replace; simplicity is a constitutional value. Engineering Law: the Five Questions every work order must answer. WO-0005 issued. (Number assigned by sequence; directive arrived unnumbered.)' },
   { slug: 'fd-2026-014-employee-equality-autonomy', note: 'M05 ratified (v1.1 with doctrine verbatim). The Employee Principle (same framework for human and AI; capability never changes accountability). The Institutional Equality Principle (evaluate work, not origin). The Founder Reserved Powers (nine, never delegated to AI, never inferred, never assumed). The Autonomy Doctrine (a privilege earned by evidence; safety prevails over automation). PHASE II opened: execution. WO-0006 issued.' },
+  { slug: 'master-operating-order-phase-ii', note: 'M06 ratified. Phase II Execution Campaign: Priorities A (resolve founder blockers incl. MERGE constitutional PRs, walk Unknowns, Brain sync, CI) · B (remaining manuals through the lifecycle) · C (AVIS — visual intelligence as constitutional capability; Visual First Principle) · D (Founder Command Center, computed-only) · E (complete workforce onboarding) · F (scale: nothing exists in isolation). Constitution/AMS/BoK/Genome/Brain declared STABLE — controlled amendments only.' },
 ];
 function directiveGenome(d: (typeof FOUNDER_DIRECTIVES)[number]): CapabilityGenome {
   return baseGenome({
@@ -753,11 +754,13 @@ const m06Manual = baseGenome({
     { agent: 'ceo-chief-of-staff', role: 'operates' },
     { agent: 'operations-platform', role: 'stewards' },
   ],
-  lifecycle: 'governed', // step 5 (Founder Review)
+  lifecycle: 'implemented', // Master Operating Order: ratified
   parentCapability: 'playbook:m05-ai-workforce-management',
-  founderDirectives: ['WO-0006', 'FD-2026-014'],
+  founderDirectives: ['WO-0006', 'FD-2026-014', 'Master Operating Order (ratification)'],
+  ratifiedOn: D,
   evolution: [
     { on: D, kind: 'created', by: 'analytics-intelligence', evidence: 'WO-0006 — forecasting honesty codified: a forecast without a stated basis is a fabricated number wearing a suit.' },
+    { on: D, kind: 'ratified', by: 'founder', evidence: 'Master Operating Order — Phase II Execution Campaign.' },
   ],
 });
 
@@ -843,6 +846,8 @@ export interface WorkforceIdentity {
   responsibilities: string; // the genome's purpose
   department: string;
   institute: string | null;
+  /** Daily-coordination manager (M05 RACI); the founder remains constitutional authority for all. */
+  manager: string;
   standards: string[];
   playbook: string;
   kpis: string; // 'own dictionary' | 'missing — department KPIs pending'
@@ -857,6 +862,7 @@ export function getWorkforceIdentity(agentSlug: string): WorkforceIdentity | nul
     responsibilities: g.purpose,
     department: g.department,
     institute: g.institute,
+    manager: agentSlug === 'ceo-chief-of-staff' ? 'founder' : 'ceo-chief-of-staff',
     standards: g.standards,
     playbook: typeof g.playbook === 'string' ? g.playbook : 'missing',
     kpis: g.kpis === 'missing' ? 'missing — department KPI dictionary pending' : `${(g.kpis as unknown[]).length} KPI(s) defined`,

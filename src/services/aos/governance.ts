@@ -700,16 +700,21 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     purpose: 'How the Institution knows, warns, forecasts, and supports decisions: dashboards, the KPI framework, reporting, early warnings, analytics, AI decision assistants, the strategic review.',
     path: 'docs/governance/management-system/manuals/M06-institutional-intelligence.md',
     version: '1.0',
-    status: 'draft', // Permanent Rule step 5: Founder Review; M07 does not begin until approved
+    status: 'ratified', // Master Operating Order (Phase II): ratified; proceed to execution
     owner: 'analytics-intelligence',
     authority: 'operational',
     parent: 'ams-framework',
     dependencies: ['m05-ai-workforce-management', 'intelligence-architecture', 'launch-decision-principle'],
     relatedDepartments: ['analytics-intelligence', 'ceo-chief-of-staff', 'operations-platform'],
     relatedAgents: ['analytics-intelligence', 'ceo-chief-of-staff'],
+    reviewCadenceDays: 90,
     lastReview: '2026-07-02',
-    nextReview: '2026-07-16',
-    history: [{ on: '2026-07-02', kind: 'created', by: 'analytics-intelligence', note: 'Authored under WO-0006 (Five Questions answered §0); steps 1–4 recorded; step 5 presented.' }],
+    nextReview: '2026-10-02',
+    ratified: { on: '2026-07-02', by: 'founder' },
+    history: [
+      { on: '2026-07-02', kind: 'created', by: 'analytics-intelligence', note: 'Authored under WO-0006 (Five Questions answered §0).' },
+      { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'Master Operating Order (Phase II Execution Campaign): ratified; the Institution proceeds to execution.' },
+    ],
   }),
 
   // ---- The Founding Library (Directive 003) -----------------------------------
