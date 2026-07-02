@@ -15,6 +15,7 @@ docs/governance/
 │   ├── changelog.md           ← constitutional amendment history
 │   └── ratification.md        ← how documents gain and lose authority
 ├── architecture/
+│   ├── ALADIAH_OPERATING_SYSTEM.md  ← the seven-level OS design (DRAFT v1.0)
 │   ├── enterprise-architecture.md   ← the whole-system view (DRAFT)
 │   ├── intelligence-architecture.md ← the intelligence layer (migrated here)
 │   └── diagrams.md            ← dependency + authority diagrams

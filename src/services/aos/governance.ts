@@ -218,6 +218,19 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     ratified: { on: '2026-06-21', by: 'founder' }, // named as operational registry by the ratified root principle
   },
   {
+    key: 'aladiah-operating-system',
+    name: 'The Aladiah Operating System (v1.0 design)',
+    path: 'docs/governance/architecture/ALADIAH_OPERATING_SYSTEM.md',
+    version: '1.0',
+    status: 'draft',
+    owner: 'founder',
+    authority: 'canonical',
+    parent: 'constitution',
+    lastReview: '2026-07-01',
+    nextReview: '2026-07-15',
+    ratified: null,
+  },
+  {
     key: 'ratification-process',
     name: 'Ratification Process',
     path: 'docs/governance/constitution/ratification.md',
