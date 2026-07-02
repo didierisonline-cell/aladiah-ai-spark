@@ -497,6 +497,28 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     ],
   }),
 
+  doc({
+    key: 'permanent-engineering-mission',
+    name: 'Permanent Engineering Mission (v1.0)',
+    purpose: 'Founder-issued standing doctrine governing all engineering activity: the engineering cycle, quality/knowledge/measurement principles, founder authority, self-improvement duty.',
+    path: 'docs/governance/manuals/PERMANENT_ENGINEERING_MISSION.md',
+    version: '1.0',
+    status: 'ratified', // founder-issued in force ("until amended by the Founder")
+    owner: 'founder',
+    authority: 'canonical',
+    parent: 'founder-standards',
+    dependencies: ['launch-decision-principle', 'capability-genome-standard'],
+    relatedDepartments: ['operations-platform'],
+    reviewCadenceDays: 90,
+    lastReview: '2026-07-02',
+    nextReview: '2026-10-02',
+    ratified: { on: '2026-07-02', by: 'founder' },
+    history: [
+      { on: '2026-07-02', kind: 'created', by: 'founder', note: 'Issued verbatim; supersedes individual engineering prompts.' },
+      { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'In force on issuance until amended by the Founder.' },
+    ],
+  }),
+
   // ---- The Founding Library (Directive 003) -----------------------------------
   doc({
     key: 'founding-library',
