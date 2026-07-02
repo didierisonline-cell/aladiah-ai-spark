@@ -235,6 +235,32 @@ describe('Institutional Registry — the constitutional catalog', () => {
     expect(getGenome('founder-directive:fd-2026-007-operational-excellence')).toBeTruthy();
   });
 
+  it('FD-2026-017 (Flagship Production Doctrine) is accessioned with its verbatim doctrine document', () => {
+    const g = getGenome('founder-directive:fd-2026-017-flagship-production-doctrine');
+    expect(g).toBeTruthy();
+    expect(g!.referenceModel).toBe('docs/governance/standards/flagship-production-doctrine.md');
+    // The fixed production order, in the founder's sequence, is part of the record.
+    for (const [i, program] of [
+      'AI Enterprise Scrum Master & Agile Transformation Leader',
+      'AI Enterprise Business Analyst & Business Transformation Specialist',
+      'AI Enterprise Project Manager & Strategic Delivery Leader',
+      'AI Data Analyst & Analytics Engineer',
+      'AI Enterprise Cybersecurity & Digital Trust Engineer',
+    ].entries()) {
+      expect(g!.purpose).toContain(`${i + 1} ${program}`);
+    }
+    expect(g!.authority).toBe('constitutional');
+    expect(g!.lifecycle).toBe('institutionalized');
+  });
+
+  it('FD-2026-018 (Product Era) is accessioned as a registry entry only — the governance moratorium honored', () => {
+    const g = getGenome('founder-directive:fd-2026-018-product-era');
+    expect(g).toBeTruthy();
+    expect(g!.purpose).toContain('Architecture exists to serve products');
+    // No new governance document: the directive rides the standing directive record.
+    expect(g!.referenceModel).toBe('docs/audits/FOUNDER_ENGINEERING_REPORT_FD2026.md');
+  });
+
   // ---- FD-2026-007: every AI is a governed employee ------------------------------
   it('canon-stated KPI dictionaries attach to their departments; none are invented', () => {
     const withKpis = ['analytics-intelligence', 'placement-authority', 'student-success', 'product-builder', 'admissions-authority', 'marketing-content', 'qa-authority', 'operations-platform', 'interface-experience'];

@@ -233,6 +233,27 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     nextReview: '2026-07-15',
     history: [{ on: '2026-07-01', kind: 'created', by: 'founder', note: 'Structural scaffold reserved — content is founder-authored, never invented.' }],
   }),
+  doc({
+    key: 'flagship-production-doctrine',
+    name: 'Flagship Production Doctrine',
+    purpose: 'Founder doctrine (FD-2026-017): one flagship program at a time in the fixed five-program order; each completed flagship becomes the institutional benchmark; capabilities inherit and compound — never lowered; the Platform evolves through flagships.',
+    path: 'docs/governance/standards/flagship-production-doctrine.md',
+    version: '1.0',
+    status: 'ratified',
+    owner: 'founder',
+    authority: 'constitutional',
+    parent: 'north-star', // orders the program portfolio that NORTH_STAR's career transformation is delivered through
+    dependencies: ['qa-standard'], // completion is judged by the ratified gates, never redefined here
+    relatedDepartments: ['curriculum-excellence'],
+    relatedAgents: ['curriculum-excellence'],
+    lastReview: '2026-07-02',
+    nextReview: '2026-10-02',
+    ratified: { on: '2026-07-02', by: 'founder' },
+    history: [
+      { on: '2026-07-02', kind: 'created', by: 'founder', note: 'Issued verbatim in the founder session of record; number FD-2026-017 assigned by sequence (directive arrived unnumbered).' },
+      { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'Founder doctrine carries authority on issuance. Production order: Scrum Master → Business Analyst → Project Manager → Data Analyst → Cybersecurity.' },
+    ],
+  }),
 
   // ---- Architecture (L3–L5) ---------------------------------------------------
   doc({

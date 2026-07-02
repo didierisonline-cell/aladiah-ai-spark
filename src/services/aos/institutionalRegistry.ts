@@ -463,15 +463,17 @@ const FOUNDER_DIRECTIVES = [
   { slug: 'fd-2026-014-employee-equality-autonomy', note: 'M05 ratified (v1.1 with doctrine verbatim). The Employee Principle (same framework for human and AI; capability never changes accountability). The Institutional Equality Principle (evaluate work, not origin). The Founder Reserved Powers (nine, never delegated to AI, never inferred, never assumed). The Autonomy Doctrine (a privilege earned by evidence; safety prevails over automation). PHASE II opened: execution. WO-0006 issued.' },
   { slug: 'fd-2026-016-avis-platform', note: 'AVIS expanded: the Institutional Visual Intelligence Platform — governs ALL visual assets (educational, portal, marketing, executive, dashboards, social, podcast, web, brand, presentations, publications). Open-Gen-AI adopted as primary rendering engine behind ai-proxy; THE RENDERER NEVER DEFINES STANDARDS — AVIS, the Design Bible, Brand Standards, and the Brain define; the renderer executes. Integration architecture ordered for Founder review before implementation.' },
   { slug: 'master-operating-order-phase-ii', note: 'M06 ratified. Phase II Execution Campaign: Priorities A (resolve founder blockers incl. MERGE constitutional PRs, walk Unknowns, Brain sync, CI) · B (remaining manuals through the lifecycle) · C (AVIS — visual intelligence as constitutional capability; Visual First Principle) · D (Founder Command Center, computed-only) · E (complete workforce onboarding) · F (scale: nothing exists in isolation). Constitution/AMS/BoK/Genome/Brain declared STABLE — controlled amendments only.' },
+  { slug: 'fd-2026-017-flagship-production-doctrine', note: 'The Flagship Production Doctrine (verbatim: docs/governance/standards/flagship-production-doctrine.md). One flagship program at a time, in the fixed production order — 1 AI Enterprise Scrum Master & Agile Transformation Leader · 2 AI Enterprise Business Analyst & Business Transformation Specialist · 3 AI Enterprise Project Manager & Strategic Delivery Leader · 4 AI Data Analyst & Analytics Engineer · 5 AI Enterprise Cybersecurity & Digital Trust Engineer. Each completed flagship becomes the institutional benchmark; no program exceeds its predecessor by lowering standards; each inherits every capability built before it and adds discipline-specific ones. The Platform evolves through flagships; every completed flagship improves the entire Institution.', ref: 'docs/governance/standards/flagship-production-doctrine.md' },
+  { slug: 'fd-2026-018-product-era', note: 'THE PRODUCT ERA. The constitutional architecture is mature. No additional constitutional books, doctrines, or permanent governance documents shall be introduced unless required by the Founder (this directive is accordingly recorded as a registry entry only — no new document). Engineering effort prioritizes student experience, employer experience, operational excellence, and measurable educational outcomes. Architecture exists to serve products.' },
 ];
-function directiveGenome(d: (typeof FOUNDER_DIRECTIVES)[number]): CapabilityGenome {
+function directiveGenome(d: (typeof FOUNDER_DIRECTIVES)[number] & { ref?: string }): CapabilityGenome {
   return baseGenome({
     id: `founder-directive:${d.slug}`,
     mission: 'Direct the Institution (founder authority of record).',
     purpose: d.note,
     type: 'founder-directive', classification: 'constitutional', owner: 'founder', department: 'founder',
     authority: 'constitutional', constitutionalAuthority: 'covenant',
-    referenceModel: 'docs/audits/FOUNDER_ENGINEERING_REPORT_FD2026.md',
+    referenceModel: d.ref ?? 'docs/audits/FOUNDER_ENGINEERING_REPORT_FD2026.md',
     standards: ['capability-genome-standard'],
     lifecycle: 'institutionalized',
     ratifiedOn: D,
