@@ -723,16 +723,60 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     purpose: 'The one governed road for institutional change: opened with purpose, gated by evidence, decided by authority, measured by outcome, remembered forever.',
     path: 'docs/governance/management-system/manuals/M07-work-order-execution.md',
     version: '1.0',
-    status: 'draft', // Permanent Rule step 5: Founder Review; M08 does not begin until approved
+    status: 'ratified', // Founder decision: ratified in principle; published via PR #103
     owner: 'ceo-chief-of-staff',
     authority: 'operational',
     parent: 'ams-framework',
     dependencies: ['m06-institutional-intelligence', 'm01-executive-office'],
     relatedDepartments: ['ceo-chief-of-staff', 'qa-authority', 'interface-experience'],
     relatedAgents: ['ceo-chief-of-staff'],
+    reviewCadenceDays: 90,
+    lastReview: '2026-07-02',
+    nextReview: '2026-10-02',
+    ratified: { on: '2026-07-02', by: 'founder' },
+    history: [
+      { on: '2026-07-02', kind: 'created', by: 'ceo-chief-of-staff', note: 'Authored under WO-0007; self-referential: the manual governs the instrument that produced it.' },
+      { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'Ratified in principle; published (PR #103). AVIS elevated to foundational institutional capability in the same decision; WO-0008 issued.' },
+    ],
+  }),
+
+  doc({
+    key: 'avis-blueprint',
+    name: 'AVIS — Complete Engineering Blueprint (Institutional Visual Intelligence Platform)',
+    purpose: 'The constitutional foundation for Visual Intelligence: architecture, engine, visual Brain, asset registry, standards (quality/prompt/accessibility/brand/signature), taxonomies, frameworks, and the design-only integration/security/cost models.',
+    path: 'docs/engineering/avis/BLUEPRINT.md',
+    version: '1.0',
+    status: 'review', // WO-0008 delivered; implementation begins only after Founder approval
+    owner: 'interface-experience',
+    authority: 'canonical',
+    parent: 'avis-design-bible',
+    dependencies: ['capability-genome-standard', 'm03-registry-genome-operations', 'launch-decision-principle'],
+    relatedDepartments: ['interface-experience', 'curriculum-excellence', 'marketing-content'],
+    relatedAgents: ['interface-experience'],
     lastReview: '2026-07-02',
     nextReview: '2026-07-16',
-    history: [{ on: '2026-07-02', kind: 'created', by: 'ceo-chief-of-staff', note: 'Authored under WO-0007 (Master Operating Order, Priority B); self-referential: the manual governs the instrument that produced it; steps 1–4 recorded.' }],
+    history: [
+      { on: '2026-07-02', kind: 'created', by: 'interface-experience', note: 'WO-0008: all 20 blueprint sections; design only.' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'FD-2026-016: AVIS becomes the Institutional Visual Intelligence Platform (all visual assets); Open-Gen-AI adopted as primary renderer behind ai-proxy — the renderer executes standards, never defines them. Integration Architecture added for Founder review.' },
+    ],
+  }),
+
+  doc({
+    key: 'avis-integration-architecture',
+    name: 'AVIS — Open-Gen-AI Integration Architecture',
+    purpose: 'The fifteen-section integration design (FD-2026-016): server-side rendering behind ai-proxy patterns, prompt compilation from governed specs, storage, metadata, gates, budgets, rate limits, and the renderer adapter seam — the renderer executes standards, never defines them.',
+    path: 'docs/engineering/avis/INTEGRATION_ARCHITECTURE.md',
+    version: '1.0',
+    status: 'review', // returned for Founder review before implementation
+    owner: 'interface-experience',
+    authority: 'canonical',
+    parent: 'avis-blueprint',
+    dependencies: ['avis-blueprint', 'capability-genome-standard'],
+    relatedDepartments: ['interface-experience', 'marketing-content', 'curriculum-excellence', 'operations-platform'],
+    relatedAgents: ['interface-experience'],
+    lastReview: '2026-07-02',
+    nextReview: '2026-07-16',
+    history: [{ on: '2026-07-02', kind: 'created', by: 'interface-experience', note: 'FD-2026-016: all fifteen sections; design only — not one API call until Founder approval.' }],
   }),
 
   // ---- The Founding Library (Directive 003) -----------------------------------

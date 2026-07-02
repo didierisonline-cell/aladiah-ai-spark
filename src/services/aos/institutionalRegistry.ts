@@ -461,6 +461,7 @@ const FOUNDER_DIRECTIVES = [
   { slug: 'fd-2026-012-constitutional-clarification', note: 'M03 ratified. Constitutional clarification: the spine is NOT amended; the Covenant remains supreme governing doctrine; permanent definitions — Covenant WHY · Constitution WHAT · Book of Knowledge WHAT IS KNOWN · Management System HOW · Company Brain HOW TO IMPROVE; the four shall never be merged. WO-0004 issued.' },
   { slug: 'fd-2026-013-phase-i-complete', note: 'M04 ratified; PHASE I DECLARED COMPLETE (Covenant, Constitution, Book of Knowledge, Management System, Registry, Brain). Founder Doctrine: implementation over expansion — improve, amend, strengthen; never parallel, duplicate, replace; simplicity is a constitutional value. Engineering Law: the Five Questions every work order must answer. WO-0005 issued. (Number assigned by sequence; directive arrived unnumbered.)' },
   { slug: 'fd-2026-014-employee-equality-autonomy', note: 'M05 ratified (v1.1 with doctrine verbatim). The Employee Principle (same framework for human and AI; capability never changes accountability). The Institutional Equality Principle (evaluate work, not origin). The Founder Reserved Powers (nine, never delegated to AI, never inferred, never assumed). The Autonomy Doctrine (a privilege earned by evidence; safety prevails over automation). PHASE II opened: execution. WO-0006 issued.' },
+  { slug: 'fd-2026-016-avis-platform', note: 'AVIS expanded: the Institutional Visual Intelligence Platform — governs ALL visual assets (educational, portal, marketing, executive, dashboards, social, podcast, web, brand, presentations, publications). Open-Gen-AI adopted as primary rendering engine behind ai-proxy; THE RENDERER NEVER DEFINES STANDARDS — AVIS, the Design Bible, Brand Standards, and the Brain define; the renderer executes. Integration architecture ordered for Founder review before implementation.' },
   { slug: 'master-operating-order-phase-ii', note: 'M06 ratified. Phase II Execution Campaign: Priorities A (resolve founder blockers incl. MERGE constitutional PRs, walk Unknowns, Brain sync, CI) · B (remaining manuals through the lifecycle) · C (AVIS — visual intelligence as constitutional capability; Visual First Principle) · D (Founder Command Center, computed-only) · E (complete workforce onboarding) · F (scale: nothing exists in isolation). Constitution/AMS/BoK/Genome/Brain declared STABLE — controlled amendments only.' },
 ];
 function directiveGenome(d: (typeof FOUNDER_DIRECTIVES)[number]): CapabilityGenome {
@@ -801,11 +802,52 @@ const m07Manual = baseGenome({
     { agent: 'qa-authority', role: 'reviews' },
     { agent: 'interface-experience', role: 'reviews' },
   ],
-  lifecycle: 'governed', // step 5 (Founder Review)
+  lifecycle: 'implemented', // ratified in principle; published
   parentCapability: 'playbook:m06-institutional-intelligence',
-  founderDirectives: ['WO-0007', 'Master Operating Order (Priority B)'],
+  founderDirectives: ['WO-0007', 'Master Operating Order (Priority B)', 'Founder decision (ratification)'],
+  ratifiedOn: D,
   evolution: [
     { on: D, kind: 'created', by: 'ceo-chief-of-staff', evidence: 'WO-0007 — six ratified manuals already produced through this machinery; the manual codifies its own road.' },
+    { on: D, kind: 'ratified', by: 'founder', evidence: 'Ratified in principle; AVIS elevated in the same decision.' },
+  ],
+});
+
+/** AVIS — the Visual Intelligence capability (WO-0008), genome-first, lifecycle 'proposed' until blueprint approval. */
+const avisCapability = baseGenome({
+  id: 'service:avis',
+  mission: 'To strengthen understanding through visual intelligence (Covenant, Closing Affirmation; Art. I — teaching is transformation).',
+  purpose: 'The Institutional Visual Intelligence Platform (FD-2026-016): governs ALL visual assets across the Institution — educational, portal, marketing, executive, brand, social, publications — with Open-Gen-AI adopted as primary rendering engine, subordinate to institutional standards.',
+  type: 'service',
+  classification: 'strategic',
+  owner: 'interface-experience',
+  department: 'interface-experience',
+  authority: 'canonical',
+  constitutionalAuthority: 'avis-design-bible',
+  constitutionVolumes: ['02', '11'],
+  referenceModel: 'docs/engineering/avis/BLUEPRINT.md',
+  workforceSpec: 'docs/agents/interface-experience/AGENT_SPEC.md',
+  standards: ['capability-genome-standard', 'launch-decision-principle'],
+  inputs: [
+    { name: 'visual needs from content pipelines (Visual First rubric)', kind: 'event' },
+    { name: 'governed specs + versioned prompts', kind: 'document' },
+  ],
+  outputs: [
+    { name: 'governed visual assets (lesson visuals — production content)', kind: 'artifact',
+      writesProduction: true,
+      approvalGate: 'QA → accessibility → brand → founder/steward approval (declared per V5 BEFORE the engine exists — the anti-Shadow rule)' },
+  ],
+  security: { level: 'student', posture: 'server-side generation only (ai-proxy pattern); prompts compiled from governed specs, never raw user input; provenance mandatory', gateChain: 'QA→Accessibility→Brand→Approval' },
+  workforce: [
+    { agent: 'interface-experience', role: 'operates' },
+    { agent: 'curriculum-excellence', role: 'stewards' },
+    { agent: 'qa-authority', role: 'reviews' },
+  ],
+  lifecycle: 'proposed', // → 'governed' upon Founder approval of the blueprint
+  parentCapability: 'ai-role:interface-experience',
+  founderDirectives: ['WO-0008', 'Master Operating Order (Priority C)', 'Founder decision: AVIS is foundational, effective immediately'],
+  evolution: [
+    { on: D, kind: 'created', by: 'interface-experience', evidence: 'WO-0008 blueprint: 20 sections, design-only; gate chain declared at conception.' },
+    { on: D, kind: 'amended', by: 'founder', evidence: 'FD-2026-016: scope expanded to ALL institutional visuals; Open-Gen-AI adopted as primary renderer (behind ai-proxy, subordinate to standards); integration architecture ordered for review.' },
   ],
 });
 
@@ -831,6 +873,7 @@ export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   m05Manual,
   m06Manual,
   m07Manual,
+  avisCapability,
 ];
 
 export function getGenome(id: string): CapabilityGenome | undefined {
