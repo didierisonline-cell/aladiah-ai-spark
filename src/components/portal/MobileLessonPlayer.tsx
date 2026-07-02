@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import ProfessorDidierTutor from '@/components/course/ProfessorDidierTutor';
 
 const C = { fg: '#f1f5f9', fm: '#94a3b8', fd: '#475569', blue: '#3b82f6', blue2: '#60a5fa', gold: '#f59e0b', green: '#22c55e', card: 'rgba(15,23,42,0.6)', border: 'rgba(96,165,250,0.15)' };
 
@@ -29,7 +30,7 @@ function Video({ url }: { url: string }) {
 
 /** Immersive single-column lesson player for phones (< 768px). No bottom tab bar. */
 export default function MobileLessonPlayer(p: LessonPlayerProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [showReading, setShowReading] = useState(true);
   const [showStudyGuide, setShowStudyGuide] = useState(false);
   const lesson = p.currentLesson;
@@ -123,6 +124,23 @@ export default function MobileLessonPlayer(p: LessonPlayerProps) {
             )}
           </div>
         </div>
+
+        {/* Professor Didier™ text tutor (WO-0015) — the written twin of the voice
+            session; on a phone in public, typing is usually the only option. */}
+        {lesson && (
+          <ProfessorDidierTutor
+            context={{
+              courseTitle: p.getTitle(p.course),
+              moduleTitle: p.getTitle(p.chapter),
+              lessonTitle: p.getTitle(lesson),
+              lessonTranscript: transcript || reading,
+              lessonNumber: (lesson?.order_index ?? 0) + 1,
+              lessonCount: p.videos.length,
+              nextStep: p.continueIsToQuiz ? 'quiz' : 'lesson',
+              language,
+            }}
+          />
+        )}
 
         {/* Study Guide */}
         {p.course && p.videos.length > 0 && (

@@ -858,6 +858,33 @@ const avisCapability = baseGenome({
   ],
 });
 
+/** Professor Didier™ v1 — the lesson-aware tutor (WO-0015, FEO-2026-001 step 4). */
+const professorDidier = baseGenome({
+  id: 'service:professor-didier',
+  mission: 'Every student learns with a professor beside them (the best Lesson 1 experience in the world).',
+  purpose: 'Lesson-aware AI tutor: text chat grounded in the FULL current lesson (written twin of the voice session), post-submission quiz coaching, next-step guidance, and the AVIS-safe word-picture fallback for visuals. Serves the Scrum Master flagship first; inherited by every subsequent flagship (FD-2026-017).',
+  type: 'service', classification: 'strategic', owner: 'curriculum-excellence', department: 'curriculum-excellence',
+  authority: 'operational', constitutionalAuthority: 'academic-canon',
+  constitutionVolumes: ['02', '11'],
+  referenceModel: 'docs/programs/AI_SCRUM_MASTER_PROGRAM.md',
+  standards: ['capability-genome-standard', 'competency-taxonomy'],
+  dependencies: ['service:avis'],
+  inputs: [{ name: 'current lesson (title + full transcript + module position)', kind: 'document' }],
+  outputs: [{ name: 'grounded tutoring replies (via ai-proxy, keys server-side)', kind: 'artifact', writesProduction: false, approvalGate: null }],
+  security: { level: 'student', posture: 'ai-proxy server-side keys; allowlisted model; prompt guardrails (quiz integrity, no fabrication, no navigation)', gateChain: 'reviewed commits' },
+  qaStatus: 'passing',
+  workforce: [
+    { agent: 'curriculum-excellence', role: 'stewards' },
+    { agent: 'student-success', role: 'reviews' },
+  ],
+  lifecycle: 'implemented',
+  parentCapability: 'ai-role:curriculum-excellence',
+  founderDirectives: ['FEO-2026-001 (Step 4 — Professor Didier v1)', 'WO-0015'],
+  evolution: [
+    { on: D, kind: 'created', by: 'curriculum-excellence', evidence: 'WO-0015: pure prompt core (professorDidier.ts) + tutor panel on both lesson surfaces + quiz coaching in the remediation review; guardrails test-asserted.' },
+  ],
+});
+
 // ---- The catalog --------------------------------------------------------------
 export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   ...SHADOW_SEEDERS.map(seederGenome),
@@ -882,6 +909,7 @@ export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   m06Manual,
   m07Manual,
   avisCapability,
+  professorDidier,
 ];
 
 export function getGenome(id: string): CapabilityGenome | undefined {

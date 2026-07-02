@@ -8,10 +8,12 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  ArrowLeft, ArrowRight, CheckCircle, XCircle, 
-  Trophy, RefreshCw, AlertTriangle, BookOpen
+import {
+  ArrowLeft, ArrowRight, CheckCircle, XCircle,
+  Trophy, RefreshCw, AlertTriangle, BookOpen, GraduationCap
 } from 'lucide-react';
+import { buildQuizCoachPrompt } from '@/services/tutor/professorDidier';
+import { askProfessorDidier } from '@/services/tutor/tutorClient';
 
 interface Question {
   id: string;
@@ -37,9 +39,11 @@ interface QuizProps {
   quizType: 'mini_video' | 'chapter_end';
   onComplete: (passed: boolean) => void;
   onBack: () => void;
+  /** Optional module framing for Prof. Didier's post-submission coaching (WO-0015). */
+  coachContext?: { courseTitle: string; moduleTitle: string };
 }
 
-const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
+const Quiz = ({ quizId, quizType, onComplete, onBack, coachContext }: QuizProps) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>([]);
@@ -50,8 +54,40 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [showingResults, setShowingResults] = useState(false);
+  // Prof. Didier post-submission coaching (WO-0015): one personalized
+  // explanation per missed question, fetched on demand and kept for the review.
+  const [coachReplies, setCoachReplies] = useState<Record<string, string>>({});
+  const [coachLoadingId, setCoachLoadingId] = useState<string | null>(null);
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+
+  const askCoach = async (q: Question, r: QuizResult) => {
+    if (coachReplies[q.id] || coachLoadingId) return;
+    setCoachLoadingId(q.id);
+    try {
+      const { system, userMessage } = buildQuizCoachPrompt(
+        {
+          courseTitle: coachContext?.courseTitle ?? '',
+          moduleTitle: coachContext?.moduleTitle ?? '',
+          language,
+        },
+        {
+          questionText: q.question_text,
+          scenarioContext: q.scenario_context,
+          options: q.options,
+          studentAnswerIndex: r.userAnswer,
+          correctAnswerIndex: r.correctAnswer,
+          baseExplanation: r.explanation,
+        },
+      );
+      const reply = await askProfessorDidier(system, [{ role: 'user', content: userMessage }]);
+      setCoachReplies(prev => ({ ...prev, [q.id]: reply }));
+    } catch {
+      toast({ title: 'Prof. Didier', description: t('quiz.err_load'), variant: 'destructive' });
+    } finally {
+      setCoachLoadingId(null);
+    }
+  };
 
   useEffect(() => {
     loadQuestions();
@@ -124,6 +160,9 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
         questionId: q.id,
         question_text: q.question_text,
         selectedAnswer: answers[idx],
+        // The review card reads userAnswer (QuizResult) — without it the student's
+        // wrong choice was never highlighted in the remediation view.
+        userAnswer: answers[idx],
         correctAnswer: q.correct_answer_index,
         isCorrect: answers[idx] === q.correct_answer_index,
         explanation: q.explanation || '',
@@ -435,6 +474,30 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
                     <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
                       <p className="text-sm font-medium text-primary mb-1">💡 {t('quiz.explanation')}:</p>
                       <p className="text-sm text-muted-foreground">{currentResult.explanation}</p>
+                    </div>
+                  )}
+
+                  {/* Prof. Didier coaching — only for missed questions, after submission */}
+                  {currentResult && !currentResult.isCorrect && currentQuestion && (
+                    <div className="mt-4">
+                      {coachReplies[currentQuestion.id] ? (
+                        <div className="bg-blue-500/5 border border-blue-500/25 rounded-lg p-4">
+                          <p className="text-sm font-medium text-blue-400 mb-1 flex items-center gap-2">
+                            <GraduationCap className="w-4 h-4" /> Prof. Didier
+                          </p>
+                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{coachReplies[currentQuestion.id]}</p>
+                        </div>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          className="w-full border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
+                          disabled={coachLoadingId !== null}
+                          onClick={() => askCoach(currentQuestion, currentResult)}
+                        >
+                          <GraduationCap className="w-4 h-4 mr-2" />
+                          {coachLoadingId === currentQuestion.id ? '…' : 'Ask Prof. Didier why'}
+                        </Button>
+                      )}
                     </div>
                   )}
 
