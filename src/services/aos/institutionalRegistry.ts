@@ -462,6 +462,7 @@ const FOUNDER_DIRECTIVES = [
   { slug: 'fd-2026-013-phase-i-complete', note: 'M04 ratified; PHASE I DECLARED COMPLETE (Covenant, Constitution, Book of Knowledge, Management System, Registry, Brain). Founder Doctrine: implementation over expansion — improve, amend, strengthen; never parallel, duplicate, replace; simplicity is a constitutional value. Engineering Law: the Five Questions every work order must answer. WO-0005 issued. (Number assigned by sequence; directive arrived unnumbered.)' },
   { slug: 'fd-2026-014-employee-equality-autonomy', note: 'M05 ratified (v1.1 with doctrine verbatim). The Employee Principle (same framework for human and AI; capability never changes accountability). The Institutional Equality Principle (evaluate work, not origin). The Founder Reserved Powers (nine, never delegated to AI, never inferred, never assumed). The Autonomy Doctrine (a privilege earned by evidence; safety prevails over automation). PHASE II opened: execution. WO-0006 issued.' },
   { slug: 'fd-2026-016-avis-platform', note: 'AVIS expanded: the Institutional Visual Intelligence Platform — governs ALL visual assets (educational, portal, marketing, executive, dashboards, social, podcast, web, brand, presentations, publications). Open-Gen-AI adopted as primary rendering engine behind ai-proxy; THE RENDERER NEVER DEFINES STANDARDS — AVIS, the Design Bible, Brand Standards, and the Brain define; the renderer executes. Integration architecture ordered for Founder review before implementation.' },
+  { slug: 'wo-0012-intelligence-engine', note: 'The Intelligence Era: design the Aladiah Intelligence Engine — the cognitive layer. Twenty components; learns only from governed evidence; never bypasses Constitution or Reserved Powers; explains every recommendation; vendor-independent. Blueprint only; Founder review before implementation. (AVIS steps 4–5 / WO-0010–0011 remain queued.)' },
   { slug: 'master-operating-order-phase-ii', note: 'M06 ratified. Phase II Execution Campaign: Priorities A (resolve founder blockers incl. MERGE constitutional PRs, walk Unknowns, Brain sync, CI) · B (remaining manuals through the lifecycle) · C (AVIS — visual intelligence as constitutional capability; Visual First Principle) · D (Founder Command Center, computed-only) · E (complete workforce onboarding) · F (scale: nothing exists in isolation). Constitution/AMS/BoK/Genome/Brain declared STABLE — controlled amendments only.' },
 ];
 function directiveGenome(d: (typeof FOUNDER_DIRECTIVES)[number]): CapabilityGenome {
@@ -851,6 +852,44 @@ const avisCapability = baseGenome({
   ],
 });
 
+/** AIE — the Aladiah Intelligence Engine (WO-0012), genome-first, 'proposed' until blueprint approval. */
+const aieCapability = baseGenome({
+  id: 'service:aie',
+  mission: 'The speed of truth discovery is the Institution\'s velocity — reason over governed evidence, explain everything, decide nothing (Covenant Art. II, VII; LDP).',
+  purpose: 'The cognitive layer: knowledge, graph, reasoning, decisions-as-packages, evidence, learning/calibration, recommendations with the Explanation Contract, analytics, forecasting — vendor-independent behind the CognitiveBackend seam.',
+  type: 'service',
+  classification: 'strategic',
+  owner: 'analytics-intelligence',
+  department: 'analytics-intelligence',
+  authority: 'canonical',
+  constitutionalAuthority: 'intelligence-architecture',
+  constitutionVolumes: ['02', '06'],
+  referenceModel: 'docs/engineering/aie/BLUEPRINT.md',
+  workforceSpec: 'docs/agents/analytics-intelligence/AGENT_SPEC.md',
+  standards: ['capability-genome-standard', 'launch-decision-principle', 'permanent-engineering-mission'],
+  dependencies: ['service:aos-brain', 'service:aos-intelligence', 'service:avis'],
+  inputs: [
+    { name: 'governed evidence ONLY (Brain, registries, telemetry, walk results, KPIs)', kind: 'data' },
+    { name: 'founder decisions + outcomes (calibration)', kind: 'event' },
+  ],
+  outputs: [
+    { name: 'decision packages + recommendations (Explanation Contract; humans decide)', kind: 'artifact', writesProduction: false, approvalGate: null },
+    { name: 'calibration + inference records (Brain)', kind: 'data', writesProduction: false, approvalGate: null },
+  ],
+  security: { level: 'founder', posture: 'Reserved-Powers subjects flagged founder-only at package creation; hypotheses never facts; server-side backends only; founder-enabled adapters', gateChain: 'blueprint approval → implementation work orders' },
+  workforce: [
+    { agent: 'analytics-intelligence', role: 'operates' },
+    { agent: 'operations-platform', role: 'stewards' },
+    { agent: 'qa-authority', role: 'reviews' },
+  ],
+  lifecycle: 'proposed', // → 'governed' upon Founder approval of the blueprint
+  parentCapability: 'ai-role:analytics-intelligence',
+  founderDirectives: ['WO-0012'],
+  evolution: [
+    { on: D, kind: 'created', by: 'analytics-intelligence', evidence: 'WO-0012 blueprint: 20 components; the Explanation Contract and the governed-evidence-only mouth designed before any cognition exists.' },
+  ],
+});
+
 // ---- The catalog --------------------------------------------------------------
 export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   ...SHADOW_SEEDERS.map(seederGenome),
@@ -874,6 +913,7 @@ export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   m06Manual,
   m07Manual,
   avisCapability,
+  aieCapability,
 ];
 
 export function getGenome(id: string): CapabilityGenome | undefined {
