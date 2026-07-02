@@ -24,7 +24,11 @@ export type AOSEventType =
   | 'work_order.rejected'
   | 'work_order.completed'
   | 'brain.decision.recorded'
-  | 'readiness.snapshot';
+  | 'readiness.snapshot'
+  | 'intelligence.cycle.completed'
+  | 'intelligence.recommendation'
+  | 'briefing.generated'
+  | 'impact.measured';
 
 export interface AOSEvent {
   id: string;

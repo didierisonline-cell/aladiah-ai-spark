@@ -15,6 +15,7 @@ import * as workOrders from './workOrders';
 import * as orchestration from './orchestration';
 import * as brain from './brain';
 import * as events from './events';
+import * as intelligence from './intelligence';
 import { ensureAOS } from './bootstrap';
 
 export const aos = {
@@ -31,6 +32,7 @@ export const aos = {
   orchestration,  // 10. Inter-agent pipeline (gates → founder approval)
   brain,          // 11. Company Brain (institutional memory)
   events,         // 12. Event Bus (typed broadcast over aos_messages)
+  intelligence,   // 13. Continuous Intelligence (observe → recommend → govern)
 };
 
 export { ensureAOS };
