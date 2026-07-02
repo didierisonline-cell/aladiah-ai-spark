@@ -18,7 +18,7 @@ interface TruthItem {
 }
 
 // Current honest state. "Proven" = verified with evidence already in hand.
-// "Hypothesis" = not yet walked on the live system (see FOUNDER_VALIDATION_RUNBOOK).
+// "Hypothesis" = not yet walked live (see docs/governance/manuals/FOUNDER_VALIDATION_MANUAL.md).
 // "Broken" = we have evidence it fails.
 const TRUTH: TruthItem[] = [
   // ✅ Proven Working

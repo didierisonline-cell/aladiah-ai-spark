@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import {
   GOVERNING_DOCUMENTS,
   childrenOf,
@@ -71,5 +73,63 @@ describe('Institutional Knowledge registry — integrity', () => {
     const kids = childrenOf('constitution').map((d) => d.key);
     expect(kids).toContain('north-star');
     expect(kids).toContain('launch-decision-principle');
+  });
+});
+
+// =============================================================================
+// Governance Registry Drift Check — runs in CI via `npm test`.
+// The registry is only trustworthy if it matches the repository: every
+// registered path must exist on disk, every review schedule must be sane,
+// and the governance tree itself must be present. A registry that lies is
+// worse than no registry (LAUNCH_DECISION_PRINCIPLE).
+// =============================================================================
+const repoRoot = resolve(__dirname, '../../..');
+
+describe('Governance drift check — registry vs repository', () => {
+  it('every registered document path exists on disk', () => {
+    for (const d of GOVERNING_DOCUMENTS) {
+      expect(existsSync(resolve(repoRoot, d.path)), `${d.key} → ${d.path}`).toBe(true);
+    }
+  });
+
+  it('review schedules are sane (nextReview strictly after lastReview)', () => {
+    for (const d of GOVERNING_DOCUMENTS) {
+      expect(
+        new Date(d.nextReview).getTime() > new Date(d.lastReview).getTime(),
+        `${d.key}: nextReview must follow lastReview`,
+      ).toBe(true);
+    }
+  });
+
+  it('the governance tree structure exists', () => {
+    for (const p of [
+      'docs/governance/README.md',
+      'docs/governance/constitution/constitution.md',
+      'docs/governance/constitution/changelog.md',
+      'docs/governance/constitution/ratification.md',
+      'docs/governance/architecture/enterprise-architecture.md',
+      'docs/governance/architecture/intelligence-architecture.md',
+      'docs/governance/architecture/diagrams.md',
+      'docs/governance/standards/README.md',
+      'docs/governance/manuals/README.md',
+      'docs/governance/manuals/FOUNDER_VALIDATION_MANUAL.md',
+      'docs/governance/manuals/LAUNCH_COMMAND_CENTER.md',
+      'docs/governance/departments/README.md',
+      'docs/governance/playbooks/README.md',
+    ]) {
+      expect(existsSync(resolve(repoRoot, p)), p).toBe(true);
+    }
+  });
+
+  it('every department in bootstrap has an AGENT_SPEC on disk', () => {
+    const DEPARTMENTS = [
+      'ceo-chief-of-staff', 'marketing-content', 'seo-strategy', 'product-builder',
+      'qa-authority', 'admissions-authority', 'student-success', 'placement-authority',
+      'analytics-intelligence', 'operations-platform', 'curriculum-excellence',
+      'interface-experience',
+    ];
+    for (const slug of DEPARTMENTS) {
+      expect(existsSync(resolve(repoRoot, `docs/agents/${slug}/AGENT_SPEC.md`)), slug).toBe(true);
+    }
   });
 });

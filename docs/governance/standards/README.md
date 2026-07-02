@@ -11,7 +11,7 @@ decision. This index gives them their place in the governance hierarchy.
 | Launch Decision Principle (root) | `/docs/standards/LAUNCH_DECISION_PRINCIPLE.md` | Ratified |
 | Architecture Principle | `/docs/standards/ARCHITECTURE_PRINCIPLE.md` | Ratified |
 | Competency Taxonomy | `/docs/standards/COMPETENCY_TAXONOMY.md` | Ratified |
-| Competency Taxonomy V2 | `/docs/standards/COMPETENCY_TAXONOMY_V2_FINAL.md` | **Review — overlaps V1; needs ratify-or-archive decision** |
+| Competency Taxonomy V2 (design rationale) | `/docs/standards/COMPETENCY_TAXONOMY_V2_FINAL.md` | Ratified-as-merged — canon §6–§11 is the source of truth; this file is the retained rationale (informational) |
 | QA Standard | `/docs/standards/QA_STANDARD.md` | Ratified |
 | Program Standard V1 | `/docs/standards/PROGRAM_STANDARD_V1.md` | Ratified |
 | Program Validation Gate | `/docs/standards/PROGRAM_VALIDATION_GATE.md` | Ratified |

@@ -17,7 +17,7 @@ this index gives them their governance home. Registry slugs match
 | 8 | Placement & Employer Relations | `placement-authority` | `/docs/agents/placement-authority/` |
 | 9 | Analytics & Executive Intelligence | `analytics-intelligence` | `/docs/agents/analytics-intelligence/` |
 | 10 | Operations & Platform | `operations-platform` | `/docs/agents/operations-platform/` |
-| 11 | Curriculum Excellence | `curriculum-excellence` | *(spec pending — gap)* |
+| 11 | Curriculum Excellence | `curriculum-excellence` | `/docs/agents/curriculum-excellence/` |
 | 12 | Interface & Experience Architect | `interface-experience` | `/docs/agents/interface-experience/` |
 | — | Prof. Didier (persona) | — | Product surface, not an AOS agent |
 | — | Career Simulation Engine (persona) | — | Product surface, not an AOS agent |

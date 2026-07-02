@@ -78,12 +78,15 @@ CONSTITUTION (draft — composes, does not replace, the ratified canon)
        └── ALADIAH_OPERATING_METRICS_FRAMEWORK (ops)
 ```
 
-**Overlaps found in the audit** (to resolve before Founder Standards):
-- `COMPETENCY_TAXONOMY.md` vs `COMPETENCY_TAXONOMY_V2_FINAL.md` — two taxonomy
-  files; V1 is the declared source of truth, V2 needs ratification or archival.
-- `docs/FOUNDER_VALIDATION_RUNBOOK.md` vs `docs/founder/VALIDATION_PLAYBOOK.md`
-  — overlapping validation guidance; consolidate under manuals/.
-- `LAUNCH_COMMAND_CENTER.md` lives at the repo root, outside any tree.
+**Overlaps found in the audit — resolved in the Founder Governance Review:**
+- Taxonomy V1/V2: **resolved by evidence** — V2's own header says it was merged
+  into canon (`COMPETENCY_TAXONOMY.md` §6–§11 is the source of truth); V2 is
+  retained as design rationale (authority: informational).
+- Validation guidance: **consolidated** into
+  `manuals/FOUNDER_VALIDATION_MANUAL.md` with both walks migrated intact as
+  chapters under `manuals/validation-walks/`.
+- `LAUNCH_COMMAND_CENTER.md`: **moved** from the repo root into
+  `manuals/` (git history preserved; canon reference updated).
 
 ## Change discipline
 

@@ -113,7 +113,7 @@ After this principle:
 ## Relationship to Other Canon Documents
 
 - **QA_STANDARD.md** — defines DoR/DoD evidence gates; feeds into this framework
-- **LAUNCH_COMMAND_CENTER.md** — operational registry; applies this principle daily
+- **LAUNCH_COMMAND_CENTER.md** (`docs/governance/manuals/`) — operational registry; applies this principle daily
 - **PROGRAM_VALIDATION_GATE.md** (future) — reuses this framework for curriculum gates
 
 This document is the meta-principle underneath them all.
