@@ -519,6 +519,36 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     ],
   }),
 
+  doc({
+    key: 'ams-framework',
+    name: 'Aladiah Management System — Framework',
+    purpose: 'The operating system by which the Institution is managed for decades: the universal manual template, governance/versioning/ownership/review/approval rules, and the bindings to genomes, Brain, KPIs, dashboards, and the AI workforce.',
+    path: 'docs/governance/management-system/FRAMEWORK.md',
+    version: '1.0',
+    status: 'review', // FD-2026-009 design delivered; awaiting Founder review before Manual 1
+    owner: 'founder',
+    authority: 'canonical',
+    parent: 'department-charters', // the Operational Policies tier of the spine
+    dependencies: ['capability-genome-standard', 'ratification-process', 'permanent-engineering-mission'],
+    lastReview: '2026-07-02',
+    nextReview: '2026-07-16',
+    history: [{ on: '2026-07-02', kind: 'created', by: 'founder', note: 'Framework designed per FD-2026-009; manuals await founder review of the framework.' }],
+  }),
+  doc({
+    key: 'ams-manual-catalog',
+    name: 'AMS Manual Catalog (M01–M20)',
+    purpose: 'The twenty permanent manuals: accession numbers, owners, scopes, evidence grounding, sequencing. Design only — no manual is written.',
+    path: 'docs/governance/management-system/MANUAL_CATALOG.md',
+    version: '1.0',
+    status: 'review',
+    owner: 'founder',
+    authority: 'canonical',
+    parent: 'ams-framework',
+    lastReview: '2026-07-02',
+    nextReview: '2026-07-16',
+    history: [{ on: '2026-07-02', kind: 'created', by: 'founder', note: 'Catalog designed per FD-2026-009.' }],
+  }),
+
   // ---- The Founding Library (Directive 003) -----------------------------------
   doc({
     key: 'founding-library',
