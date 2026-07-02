@@ -11,6 +11,7 @@ import CompanyBrainPanel from '@/components/founder/cockpit/CompanyBrainPanel';
 import EventFeed from '@/components/founder/cockpit/EventFeed';
 import IntelligencePanel from '@/components/founder/cockpit/IntelligencePanel';
 import BriefingsPanel from '@/components/founder/cockpit/BriefingsPanel';
+import GovernancePanel from '@/components/founder/cockpit/GovernancePanel';
 import { Button } from '@/components/ui/button';
 import { Crown, LayoutGrid, Play, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -127,11 +128,14 @@ const FounderPortal = () => {
             <BriefingsPanel />
           </div>
 
-          {/* 8 + 9. Company Brain + Event Bus */}
+          {/* 8 + 9. Governance + Company Brain */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+            <GovernancePanel />
             <CompanyBrainPanel />
-            <EventFeed />
           </div>
+
+          {/* 10. Event Bus */}
+          <EventFeed />
         </div>
       ) : null}
     </FounderShell>
