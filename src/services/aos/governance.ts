@@ -619,6 +619,7 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     history: [
       { on: '2026-07-02', kind: 'created', by: 'founder', note: 'Established by FD-2026-011: five Books, the organizing law, the operating hierarchy.' },
       { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'Founder-established on issuance; organizing view only — no files move, nothing duplicated.' },
+      { on: '2026-07-02', kind: 'amended', by: 'founder', note: 'FD-2026-012 constitutional clarification: spine NOT amended; Covenant supreme; permanent WHY/WHAT/WHAT-IS-KNOWN/HOW/HOW-TO-IMPROVE definitions; the four instruments never merge.' },
     ],
   }),
 
@@ -628,16 +629,39 @@ export const GOVERNING_DOCUMENTS: GoverningDocument[] = [
     purpose: 'How every institutional asset is registered, versioned, governed, traced, and retired — the operating procedures of the constitutional catalog.',
     path: 'docs/governance/management-system/manuals/M03-registry-genome-operations.md',
     version: '1.0',
-    status: 'draft', // Permanent Rule step 5: Founder Review; M04 does not begin until approved
+    status: 'ratified', // FD-2026-012: adopted; registry + capability management standards binding
     owner: 'operations-platform',
     authority: 'operational',
     parent: 'ams-framework',
     dependencies: ['m02-governance-operations', 'capability-genome-standard'],
     relatedDepartments: ['operations-platform', 'analytics-intelligence', 'qa-authority'],
     relatedAgents: ['operations-platform'],
+    reviewCadenceDays: 90,
+    lastReview: '2026-07-02',
+    nextReview: '2026-10-02',
+    ratified: { on: '2026-07-02', by: 'founder' },
+    history: [
+      { on: '2026-07-02', kind: 'created', by: 'operations-platform', note: 'Authored under WO-0003 to the M01 gold-standard template; Permanent Rule steps 1–4 recorded.' },
+      { on: '2026-07-02', kind: 'ratified', by: 'founder', note: 'FD-2026-012: adopted into the AMS; governance, registry, and capability management standards binding.' },
+    ],
+  }),
+
+  doc({
+    key: 'm04-company-brain',
+    name: 'M04 — Company Brain & Institutional Knowledge Management Manual',
+    purpose: 'How the Institution remembers, validates, retrieves, and learns: the Remember Invariant, knowledge/learning lifecycles, AI learning rules, evidence management, Brain governance.',
+    path: 'docs/governance/management-system/manuals/M04-company-brain.md',
+    version: '1.0',
+    status: 'draft', // Permanent Rule step 5: Founder Review; M05 does not begin until approved
+    owner: 'analytics-intelligence',
+    authority: 'operational',
+    parent: 'ams-framework',
+    dependencies: ['m03-registry-genome-operations', 'launch-decision-principle'],
+    relatedDepartments: ['analytics-intelligence', 'operations-platform'],
+    relatedAgents: ['analytics-intelligence'],
     lastReview: '2026-07-02',
     nextReview: '2026-07-16',
-    history: [{ on: '2026-07-02', kind: 'created', by: 'operations-platform', note: 'Authored under WO-0003 to the M01 gold-standard template; Permanent Rule steps 1–4 recorded; step 5 presented.' }],
+    history: [{ on: '2026-07-02', kind: 'created', by: 'analytics-intelligence', note: 'Authored under WO-0004; Permanent Rule steps 1–4 recorded incl. the Brain reviewing its own manual; step 5 presented.' }],
   }),
 
   // ---- The Founding Library (Directive 003) -----------------------------------

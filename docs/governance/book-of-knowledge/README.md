@@ -34,22 +34,33 @@ no duplicate copies**. Every item remains registered exactly once; the Book
 of Knowledge gives the registry its shelving system, as the Founding Library
 gave the constitutional volumes their accession numbers.
 
-## The Institutional Operating Hierarchy (FD-2026-011)
+## The Permanent Authority of the Institution (FD-2026-012, clarified)
 
 ```
-Founder → Constitution → Book of Knowledge → Management System
- → Executive Office → Institutes → Departments → AI Workforce
- → Projects → Quality Assurance → Evidence → Company Brain
- → Continuous Improvement
+Founder → Founder Covenant → Founder Constitution → Book of Knowledge
+ → Aladiah Management System → Executive Office → Institutes → Departments
+ → AI Workforce → Projects & Work Orders → Quality Assurance → Evidence
+ → Company Brain → Continuous Improvement
 ```
 
-**Relationship to the document-authority spine:** the ratified constitutional
-spine (Covenant-rooted, per the Founder Constitutional Decision of
-2026-07-02, CI-enforced) governs **document authority** — which text governs
-which text. The hierarchy above governs **operation** — how direction flows
-from the Founder through the Books into work, quality, evidence, and
-learning. The two are complementary; the Covenant remains the root of the
-Canon unless the Founder explicitly amends the spine.
+**Constitutional clarification (FD-2026-012):** the constitutional hierarchy
+is NOT amended; the earlier omission of the Covenant was not a constitutional
+amendment. **The Covenant remains the supreme governing doctrine while the
+Founder is living; the Constitution derives its authority from the Covenant**
+— exactly as the CI-enforced spine already records.
+
+## Permanent Definitions (FD-2026-012)
+
+| Instrument | Defines |
+|---|---|
+| **The Covenant** | WHY |
+| **The Constitution** | WHAT |
+| **The Book of Knowledge** | WHAT IS KNOWN |
+| **The Management System** | HOW |
+| **The Company Brain** | HOW TO IMPROVE |
+
+These four serve different purposes and **shall never be merged**. This
+distinction remains permanent unless amended by the Founder.
 
 ## Rules
 

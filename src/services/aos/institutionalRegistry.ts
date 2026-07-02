@@ -458,6 +458,7 @@ const FOUNDER_DIRECTIVES = [
   { slug: 'fd-2026-009-management-system', note: 'Design the Aladiah Management System: framework + twenty permanent manuals; the operating system for decades of management.' },
   { slug: 'fd-2026-010-m01-ratification', note: 'M01 adopted as AMS v1.0; the Permanent Management Rule (8-step manual lifecycle); WO-0002 issued.' },
   { slug: 'fd-2026-011-book-of-knowledge', note: 'M02 ratified. The Aladiah Book of Knowledge established: Books → Manuals → Standards → Procedures → Work Orders → Evidence → Brain → improved Standards — the permanent institutional learning loop. WO-0003 issued.' },
+  { slug: 'fd-2026-012-constitutional-clarification', note: 'M03 ratified. Constitutional clarification: the spine is NOT amended; the Covenant remains supreme governing doctrine; permanent definitions — Covenant WHY · Constitution WHAT · Book of Knowledge WHAT IS KNOWN · Management System HOW · Company Brain HOW TO IMPROVE; the four shall never be merged. WO-0004 issued.' },
 ];
 function directiveGenome(d: (typeof FOUNDER_DIRECTIVES)[number]): CapabilityGenome {
   return baseGenome({
@@ -608,11 +609,58 @@ const m03Manual = baseGenome({
     { agent: 'analytics-intelligence', role: 'stewards' },
     { agent: 'qa-authority', role: 'reviews' },
   ],
-  lifecycle: 'governed', // step 5 (Founder Review) of the Permanent Rule
+  lifecycle: 'implemented', // FD-2026-012: ratified; binding
   parentCapability: 'playbook:m02-governance-operations',
-  founderDirectives: ['WO-0003', 'FD-2026-011'],
+  founderDirectives: ['WO-0003', 'FD-2026-011', 'FD-2026-012 (ratification)'],
+  ratifiedOn: D,
   evolution: [
     { on: D, kind: 'created', by: 'operations-platform', evidence: 'WO-0003 — authored to the M01 gold-standard template; every procedure maps to running code.' },
+    { on: D, kind: 'ratified', by: 'founder', evidence: 'FD-2026-012: adopted; binding institutional practice.' },
+  ],
+});
+
+/** M04 — Company Brain & Knowledge Management (WO-0004), genome-first. */
+const m04Manual = baseGenome({
+  id: 'playbook:m04-company-brain',
+  mission: 'Knowledge preserved, corrections remembered, learning compounding forever (Covenant Art. II, VII, XI, XII).',
+  purpose: 'How the Institution remembers, validates, retrieves, and learns — the Brain governs improvement (Permanent Definitions: HOW TO IMPROVE).',
+  type: 'playbook',
+  classification: 'operational',
+  owner: 'analytics-intelligence',
+  department: 'analytics-intelligence',
+  authority: 'operational',
+  constitutionalAuthority: 'ams-framework',
+  constitutionVolumes: ['02'],
+  referenceModel: 'docs/agents/AGENT_OPERATING_SYSTEM.md',
+  playbook: 'docs/governance/management-system/manuals/M04-company-brain.md',
+  standards: ['capability-genome-standard', 'launch-decision-principle', 'permanent-engineering-mission'],
+  dashboardSpec: 'src/components/founder/cockpit/CompanyBrainPanel.tsx',
+  workforceSpec: 'docs/agents/analytics-intelligence/AGENT_SPEC.md',
+  kpis: [
+    { key: 'mirror-freshness', formula: 'current-version mirrors ÷ (genomes + governance docs)', target: '100% post-session', owner: 'analytics-intelligence', cadence: 'per founder session', source: 'sync markers' },
+    { key: 'precedent-citation', formula: 'decisions citing recalled precedent ÷ decisions on previously-decided subjects', target: '100% (M01 §12)', owner: 'founder', cadence: 'per decision seat', source: 'decision evidence' },
+    { key: 'consolidation-health', formula: 'promotable memories consolidated ÷ eligible', target: '≥95%', owner: 'operations-platform', cadence: 'weekly', source: 'consolidate() outcomes' },
+    { key: 'review-ingestion', formula: '90-day manual reviews citing lessons ÷ reviews', target: '100%', owner: 'analytics-intelligence', cadence: 'per review', source: 'Improvement Logs' },
+  ],
+  inputs: [
+    { name: 'decisions, ratifications, lessons, impact measures, walk evidence', kind: 'event' },
+    { name: 'genome + governance registries (mirrors)', kind: 'data' },
+  ],
+  outputs: [
+    { name: 'institutional memory (categorized, marked, provenanced)', kind: 'data', writesProduction: false, approvalGate: null },
+    { name: 'precedent + lesson retrieval for every decision and review', kind: 'data', writesProduction: false, approvalGate: null },
+  ],
+  security: { level: 'founder', posture: 'aos_agent_memory under admin RLS; append-organized; no hard deletes', gateChain: 'Permanent Management Rule (8-step)' },
+  workforce: [
+    { agent: 'analytics-intelligence', role: 'operates' },
+    { agent: 'operations-platform', role: 'stewards' },
+    { agent: 'qa-authority', role: 'reviews' },
+  ],
+  lifecycle: 'governed', // step 5 (Founder Review) of the Permanent Rule
+  parentCapability: 'playbook:m03-registry-genome-operations',
+  founderDirectives: ['WO-0004', 'FD-2026-012'],
+  evolution: [
+    { on: D, kind: 'created', by: 'analytics-intelligence', evidence: 'WO-0004 — the Brain reviewed its own manual (step 4); retention finding carried forward, not hidden.' },
   ],
 });
 
@@ -634,6 +682,7 @@ export const CAPABILITY_GENOMES: CapabilityGenome[] = [
   m01Manual,
   m02Manual,
   m03Manual,
+  m04Manual,
 ];
 
 export function getGenome(id: string): CapabilityGenome | undefined {
