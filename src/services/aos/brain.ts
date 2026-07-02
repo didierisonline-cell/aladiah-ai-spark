@@ -23,7 +23,8 @@ export type BrainCategory =
   | 'design-decision'
   | 'readiness-history'
   | 'executive-report'
-  | 'impact-measurement';
+  | 'impact-measurement'
+  | 'governance-record';
 
 export const BRAIN_CATEGORIES: { key: BrainCategory; label: string }[] = [
   { key: 'founder-decision', label: 'Founder Decisions' },
@@ -36,6 +37,7 @@ export const BRAIN_CATEGORIES: { key: BrainCategory; label: string }[] = [
   { key: 'readiness-history', label: 'Launch Readiness History' },
   { key: 'executive-report', label: 'Executive Reports' },
   { key: 'impact-measurement', label: 'Impact Measurements' },
+  { key: 'governance-record', label: 'Governance Records' },
 ];
 
 export interface BrainEntry {
