@@ -13,15 +13,15 @@ import {
   Trophy, RefreshCw, AlertTriangle, BookOpen
 } from 'lucide-react';
 
+// SECURITY: the client never receives correct_answer_index, explanation, or
+// competency — questions come from the get-quiz-questions edge function
+// (answers + explanations are post-submit-only, returned by submit-quiz).
 interface Question {
   id: string;
   question_text: string;
   scenario_context: string | null;
   options: string[];
-  correct_answer_index: number;
-  explanation: string | null;
   order_index: number;
-  competency: string | null;
 }
 
 interface QuizResult {
@@ -59,16 +59,16 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
 
   const loadQuestions = async () => {
     try {
-      const { data, error } = await supabase
-        .from('quiz_questions')
-        .select('*')
-        .eq('quiz_id', quizId)
-        .order('order_index');
+      // Server-side fetch: strips answer keys + explanations, serves only
+      // status='approved' questions. JWT required (portal is auth-gated).
+      const { data, error } = await supabase.functions.invoke('get-quiz-questions', {
+        body: { quizId },
+      });
 
       if (error) throw error;
 
       // Parse options if they're stored as JSON strings
-      const parsedQuestions = (data || []).map((q: any) => ({
+      const parsedQuestions = (data?.questions || []).map((q: any) => ({
         ...q,
         options: typeof q.options === 'string' ? JSON.parse(q.options) : (Array.isArray(q.options) ? q.options : [])
       }));
@@ -117,91 +117,42 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
     setSubmitting(true);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      // Server-side grading: the client holds no answer keys. submit-quiz
+      // grades against the served question set (map-mode: immune to ordering
+      // drift), writes the attempt + per-question capture + progress, and
+      // returns per-question results incl. correct answers + explanations
+      // (post-submit-only by design).
+      const answersMap: Record<string, number> = {};
+      questions.forEach((q, idx) => { answersMap[q.id] = answers[idx] as number; });
 
-      // Score locally against correct_answer_index
-      const results = questions.map((q, idx) => ({
-        questionId: q.id,
-        question_text: q.question_text,
-        selectedAnswer: answers[idx],
-        correctAnswer: q.correct_answer_index,
-        isCorrect: answers[idx] === q.correct_answer_index,
-        explanation: q.explanation || '',
-        options: q.options,
-      }));
+      const { data: graded, error: submitError } = await supabase.functions.invoke('submit-quiz', {
+        body: { quizId, answers: answersMap },
+      });
+      if (submitError) throw submitError;
+      if (!graded || !Array.isArray(graded.results)) throw new Error(graded?.error || 'Grading failed');
 
-      const correctCount = results.filter(r => r.isCorrect).length;
-      const score = Math.round((correctCount / questions.length) * 100);
+      // Map server results back into the CLIENT question order (by id).
+      const byId: Record<string, any> = {};
+      for (const r of graded.results) byId[r.questionId] = r;
+      const results = questions.map((q, idx) => {
+        const r = byId[q.id];
+        return {
+          questionId: q.id,
+          question_text: q.question_text,
+          // NOTE: the review screens read `userAnswer` (QuizResult) — the old
+          // code set `selectedAnswer`, so the student's wrong pick was never
+          // highlighted on the fail-review screen. Fixed here.
+          userAnswer: answers[idx] as number,
+          correctAnswer: r?.correctAnswer ?? -1,
+          isCorrect: r?.isCorrect ?? false,
+          explanation: r?.explanation || '',
+          options: q.options,
+        };
+      });
 
-      // Fetch quiz metadata once: passing threshold + chapter/course for progress
-      const { data: quizData } = await supabase
-        .from('quizzes')
-        .select('chapter_id, passing_score, chapters(course_id)')
-        .eq('id', quizId)
-        .single();
-
-      const passingScore = quizData?.passing_score ?? 100;
-      const passed = score >= passingScore; // was hardcoded >= 100
-      const chapter_id = quizData?.chapter_id || null;
-      const course_id = (quizData?.chapters as any)?.course_id || null;
-
-      // Persist attempt + per-question detail + progress (best-effort; never blocks results UI)
-      if (session) {
-        // 1) Intelligence-layer capture: attempt header + per-question rows
-        try {
-          const { data: attempt, error: attemptError } = await supabase
-            .from('quiz_attempts')
-            .insert({ user_id: session.user.id, quiz_id: quizId, answers, score, passed })
-            .select('id')
-            .single();
-          if (attemptError) throw attemptError;
-
-          const answerRows = results.map((r, idx) => ({
-            attempt_id: attempt.id,
-            question_id: r.questionId,
-            selected_index: r.selectedAnswer,
-            correct_index: r.correctAnswer,
-            is_correct: r.isCorrect, // reuse the already-graded value
-            competency: questions[idx].competency ?? null, // snapshot; aligned index
-          }));
-          const { error: answersError } = await (supabase as any)
-            .from('quiz_attempt_answers')
-            .insert(answerRows);
-          if (answersError) console.error('Attempt answers save error:', answersError);
-        } catch (e) {
-          console.error('Attempt save exception:', e);
-        }
-
-        // 2) Progress (unchanged behavior): upsert score/passed for this quiz
-        try {
-          // Check if already saved to avoid duplicates
-          const { data: existing } = await supabase
-            .from('user_progress')
-            .select('id')
-            .eq('user_id', session.user.id)
-            .eq('quiz_id', quizId)
-            .maybeSingle();
-
-          if (existing) {
-            await supabase.from('user_progress')
-              .update({ score, passed, completed_at: new Date().toISOString() })
-              .eq('id', existing.id);
-          } else {
-            const { error: insertError } = await supabase.from('user_progress').insert({
-              user_id: session.user.id,
-              quiz_id: quizId,
-              chapter_id,
-              course_id,
-              score,
-              passed,
-              completed_at: new Date().toISOString(),
-            });
-            if (insertError) console.error('Progress save error:', insertError);
-          }
-        } catch (e) {
-          console.error('Progress save exception:', e);
-        }
-      }
+      const score = graded.score as number;
+      const passed = graded.passed as boolean;
+      const passingScore = graded.passingScore ?? 100;
 
       setResults(results);
       setScore(score);
