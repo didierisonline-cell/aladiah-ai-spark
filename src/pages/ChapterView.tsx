@@ -546,7 +546,9 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       {!isPhone && (<>
       {/* Top Nav */}
       <div style={{ borderBottom: '1px solid rgba(96,165,250,0.12)', background: 'rgba(10,15,30,0.8)', backdropFilter: 'blur(12px)', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56, position: 'sticky', top: 0, zIndex: 50 }}>
-        <button onClick={() => navigate('/courses')} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: 14, fontWeight: 500 }}>
+        {/* Back = the program page the student came from (context preserved) —
+            NOT the public /courses catalog, which ejected students from the portal. */}
+        <button onClick={() => navigate(`/portal/course/${courseId}`)} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: 14, fontWeight: 500 }}>
           <ArrowLeft size={16} />{t('chapter.back')}
         </button>
 
