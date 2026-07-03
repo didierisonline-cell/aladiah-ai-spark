@@ -487,7 +487,9 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
               </span>
             </div>
             <div className="text-sm text-muted-foreground">
-              {quizType === 'chapter_end' ? t('quiz.q_count_chapter') : t('quiz.q_count_video')}
+              {/* Real loaded question count — never a hardcoded claim. */}
+              {(quizType === 'chapter_end' ? t('quiz.q_count_chapter') : t('quiz.q_count_video'))
+                .replace('{n}', String(questions.length))}
             </div>
           </div>
         </div>
