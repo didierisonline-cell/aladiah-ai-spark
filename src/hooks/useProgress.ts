@@ -45,7 +45,7 @@ export function useProgress(userId: string | undefined): StudentProgress {
             : Promise.resolve({ data: [] as { id: string }[] }),
           supabase.from('quizzes').select('id').eq('quiz_type', 'chapter_end'),
           supabase.from('user_progress')
-            .select('video_id, quiz_id, score, completed_at')
+            .select('video_id, quiz_id, score, passed, completed_at')
             .eq('user_id', userId),
         ]);
 
