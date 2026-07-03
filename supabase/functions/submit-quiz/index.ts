@@ -83,7 +83,7 @@ serve(async (req) => {
 
     let questionsQuery = supabaseAdmin
       .from("quiz_questions")
-      .select("id, correct_answer_index, explanation")
+      .select("id, correct_answer_index, explanation, competency")
       .eq("quiz_id", quizId);
 
     if (servedIds) {
@@ -96,7 +96,8 @@ serve(async (req) => {
     }
 
     const { data: questions, error: questionsError } = await questionsQuery
-      .order("order_index", { ascending: true });
+      .order("order_index", { ascending: true })
+      .order("id", { ascending: true }); // deterministic tiebreak — must match get-quiz-questions
 
     if (questionsError || !questions) {
       return new Response(
@@ -156,20 +157,56 @@ serve(async (req) => {
       );
     }
 
-    // If passed, record progress
-    if (passed) {
-      await supabaseAdmin
+    // Per-question capture for the intelligence layer (Phase-1 wiring, now
+    // authoritative server-side): competency snapshotted at grade time.
+    // Best-effort — a capture failure never blocks the student's result.
+    try {
+      const answerRows = results.map((r, idx) => ({
+        attempt_id: attempt.id,
+        question_id: r.questionId,
+        selected_index: r.userAnswer,
+        correct_index: r.correctAnswer,
+        is_correct: r.isCorrect,
+        competency: questions[idx].competency ?? null,
+      }));
+      const { error: answersError } = await supabaseAdmin
+        .from("quiz_attempt_answers")
+        .insert(answerRows);
+      if (answersError) console.error("Attempt answers save error:", answersError);
+    } catch (e) {
+      console.error("Attempt answers save exception:", e);
+    }
+
+    // Record progress on BOTH pass and fail, with score + passed — exactly the
+    // client's previous behavior. The canonical progress model counts only
+    // passed === true; a fail row is attempt history, not completion.
+    // Select-then-write (not upsert): no dependency on a unique constraint.
+    try {
+      const { data: existing } = await supabaseAdmin
         .from("user_progress")
-        .upsert({
+        .select("id")
+        .eq("user_id", userId)
+        .eq("quiz_id", quizId)
+        .maybeSingle();
+
+      const progressFields = {
+        score,
+        passed,
+        completed_at: new Date().toISOString(),
+      };
+      if (existing) {
+        await supabaseAdmin.from("user_progress").update(progressFields).eq("id", existing.id);
+      } else {
+        await supabaseAdmin.from("user_progress").insert({
           user_id: userId,
-          course_id: quiz.chapters?.course_id,
           quiz_id: quizId,
           chapter_id: quiz.chapter_id,
-          video_id: quiz.video_id,
-          completed_at: new Date().toISOString(),
-        }, {
-          onConflict: "user_id,quiz_id",
+          course_id: quiz.chapters?.course_id ?? null,
+          ...progressFields,
         });
+      }
+    } catch (e) {
+      console.error("Progress save exception:", e);
     }
 
     return new Response(

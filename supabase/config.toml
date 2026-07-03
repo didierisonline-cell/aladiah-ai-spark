@@ -23,3 +23,12 @@ entrypoint = "./functions/send-email/index.ts"
 # the caller. Strict service-role-only rejection deferred (see PHASE2_ANALYTICS_PLAN.md S4 auth).
 [functions.recompute-learning-profiles]
 verify_jwt = true
+
+# Quiz integrity (answer-key removal): students must be authenticated to load
+# questions or submit. get-quiz-questions strips answers + explanations;
+# submit-quiz grades server-side and owns all quiz writes.
+[functions.get-quiz-questions]
+verify_jwt = true
+
+[functions.submit-quiz]
+verify_jwt = true
