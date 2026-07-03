@@ -306,32 +306,35 @@ export default function StudentPortal() {
       const filtered = (coursesData as any[]).filter((c: any) => !EXCLUDED.some(e => c.title?.includes(e)));
       if (!filtered.length) return;
 
-      // Single bulk fetch instead of N+1 queries per course
+      // Single bulk fetch instead of N+1 queries per course.
+      // Per-course progress = PASSED chapter_end quizzes ÷ the course's chapter
+      // assessments — the same quiz-pass basis as the canonical progressModel.
+      // (The old video-based calc read 0% forever: nothing writes video_id.)
       const courseIds = filtered.map((c: any) => c.id);
       const [allChaps, allProg] = await Promise.all([
         sbFetch(supabase.from('chapters').select('id,course_id').in('course_id', courseIds), []),
-        sbFetch(supabase.from('user_progress').select('video_id,chapter_id').eq('user_id', user!.id).not('completed_at', 'is', null), []),
+        sbFetch(supabase.from('user_progress').select('quiz_id,chapter_id').eq('user_id', user!.id).eq('passed', true), []),
       ]);
       const chapIds = new Set((allChaps as any[]).map((c: any) => c.id));
-      const allVids = chapIds.size > 0
-        ? await sbFetch(supabase.from('videos').select('id,chapter_id').in('chapter_id', Array.from(chapIds)), [])
+      const allQuizzes = chapIds.size > 0
+        ? await sbFetch(supabase.from('quizzes').select('id,chapter_id').eq('quiz_type', 'chapter_end').in('chapter_id', Array.from(chapIds)), [])
         : [];
-      const doneVidIds = new Set((allProg as any[]).map((p: any) => p.video_id));
+      const passedQuizIds = new Set((allProg as any[]).map((p: any) => p.quiz_id).filter(Boolean));
 
       // Build lookup maps
       const chapToCourse: Record<string, string> = {};
       (allChaps as any[]).forEach((ch: any) => { chapToCourse[ch.id] = ch.course_id; });
-      const courseVidCount: Record<string, number> = {};
+      const courseQuizCount: Record<string, number> = {};
       const courseDoneCount: Record<string, number> = {};
-      (allVids as any[]).forEach((v: any) => {
-        const cid = chapToCourse[v.chapter_id];
+      (allQuizzes as any[]).forEach((q: any) => {
+        const cid = chapToCourse[q.chapter_id];
         if (!cid) return;
-        courseVidCount[cid] = (courseVidCount[cid] || 0) + 1;
-        if (doneVidIds.has(v.id)) courseDoneCount[cid] = (courseDoneCount[cid] || 0) + 1;
+        courseQuizCount[cid] = (courseQuizCount[cid] || 0) + 1;
+        if (passedQuizIds.has(q.id)) courseDoneCount[cid] = (courseDoneCount[cid] || 0) + 1;
       });
 
       const progData = filtered.map((course: any) => {
-        const total = courseVidCount[course.id] || 0;
+        const total = courseQuizCount[course.id] || 0;
         const doneCount = courseDoneCount[course.id] || 0;
         const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
         const titleLower = course.title?.toLowerCase() || '';
