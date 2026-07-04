@@ -1,45 +1,43 @@
 /**
- * ProfessorDidierLiveClassroom — test route only (/professor-live-test)
+ * ProfessorDidierLiveClassroom — Production Architecture
  *
- * MOCK DATA WARNING: Context below is static mock data for QA purposes.
- * Replace with real course/chapter/lesson props once the founder approves
- * this page for integration with the production ChapterView flow.
+ * Route: /professor-live-test (test) → /professor-live (production, future)
+ *
+ * MOCK CONTEXT: Static lesson data for the test route.
+ * When integrated with ChapterView, replace MOCK_* constants with props/context.
+ * All mock data is isolated in the MOCK DATA section below — nothing leaks out.
  */
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useProfessorDidierVoice, VoiceSessionContext } from '@/hooks/useProfessorDidierVoice';
-import ClassFlowPanel from '@/components/professor-live/ClassFlowPanel';
-import TeachingBoard from '@/components/professor-live/TeachingBoard';
-import VoiceControlPanel from '@/components/professor-live/VoiceControlPanel';
-import StudentPromptPanel from '@/components/professor-live/StudentPromptPanel';
 import { useToast } from '@/hooks/use-toast';
 
-// ── MOCK CONTEXT (test route only — never leaks to production) ───────────────
-const MOCK_CONTEXT = {
-  studentName: 'Founder Preview',
-  program: 'AI-Powered Scrum Master',
-  module: '1. Foundations of Scrum',
-  lesson: '1.1 What is Scrum?',
-  progress: 10,
-  language: 'English',
-};
+// Engines
+import { ProfessorPresenceEngine, AvisCanvasEngine } from '@/engines/classroom';
+import { useLessonOrchestrator } from '@/engines/classroom/useLessonOrchestrator';
+import { useStudentContext } from '@/engines/classroom/useStudentContext';
+import { useInteractionEngine, DEFAULT_VOICE_COMMANDS } from '@/engines/classroom/useInteractionEngine';
+import { useProfessorDidierVoice, VoiceSessionContext } from '@/hooks/useProfessorDidierVoice';
 
+// Components
+import ClassFlowPanel from '@/components/professor-live/ClassFlowPanel';
+import VoiceControlPanel from '@/components/professor-live/VoiceControlPanel';
+import StudentPromptPanel from '@/components/professor-live/StudentPromptPanel';
+
+// Scrum content (program-specific — swap for other programs)
+import { SCRUM_BOARD_CONTENT } from '@/content/scrum/ScrumBoardContent';
+
+// ── MOCK DATA (test route only) ──────────────────────────────────────────────
+const MOCK_PROGRAM = { id: 'ai-scrum-master', title: 'AI-Powered Scrum Master Certification', shortTitle: 'AI Scrum Master' };
+const MOCK_MODULE  = { index: 0, title: '1. Foundations of Scrum' };
 const MOCK_LESSONS = [
-  { index: 0, title: 'What is Scrum?' },
-  { index: 1, title: 'Scrum Values' },
-  { index: 2, title: 'Scrum Roles' },
-  { index: 3, title: 'Scrum Events' },
-  { index: 4, title: 'Scrum Artifacts' },
+  { index: 0, title: 'What is Scrum?',       description: 'A framework for developing, delivering, and sustaining complex products. Scrum uses iterative, incremental practices to optimize predictability and control risk.' },
+  { index: 1, title: 'Scrum Values',          description: 'The five Scrum values: Commitment, Courage, Focus, Openness, and Respect.' },
+  { index: 2, title: 'Scrum Roles',           description: 'Product Owner, Scrum Master, and Developers — the three accountabilities in Scrum.' },
+  { index: 3, title: 'Scrum Events',          description: 'Sprint, Sprint Planning, Daily Scrum, Sprint Review, and Sprint Retrospective.' },
+  { index: 4, title: 'Scrum Artifacts',       description: 'Product Backlog, Sprint Backlog, and Increment — with their commitments.' },
 ];
-
-const SCRUM_BOARD = {
-  id: 'scrum-foundations',
-  title: 'What is Scrum?',
-  subtitle: 'A framework for developing, delivering, and sustaining complex products.',
-  steps: 5, // 0=title, 1=backlog, 2=planning, 3=sprint+daily, 4=review+retro+increment
-};
-
-const SUGGESTED_PROMPTS = [
+const MOCK_STUDENT = { name: 'Founder Preview', progress: 10, language: 'English', languageCode: 'en' };
+const MOCK_PROMPTS = [
   'Explain Sprint Planning in detail',
   'Give me a real-world example',
   'Quiz me on Scrum Roles',
@@ -48,200 +46,69 @@ const SUGGESTED_PROMPTS = [
 ];
 // ────────────────────────────────────────────────────────────────────────────
 
-function formatTime(ms: number) {
-  const totalSec = Math.floor(ms / 1000);
-  const m = Math.floor(totalSec / 60).toString().padStart(2, '0');
-  const s = (totalSec % 60).toString().padStart(2, '0');
-  return `${m}:${s}`;
-}
-
-function ProfessorPresenceArea({
-  isConnected, isSpeaking, status, caption
-}: {
-  isConnected: boolean; isSpeaking: boolean; status: string; caption: string;
-}) {
-  const pulseStyle = isConnected && !isSpeaking ? 'listeningPulse' : '';
-
-  return (
-    <div style={{
-      width: 320, flexShrink: 0,
-      background: 'linear-gradient(180deg, #0A0F1E 0%, #0B111E 60%, #080E1A 100%)',
-      borderRight: '1px solid #1E2D47',
-      display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center',
-      position: 'relative', overflow: 'hidden',
-      padding: '24px 20px',
-    }}>
-      {/* Ambient glow */}
-      <div style={{
-        position: 'absolute', top: '30%', left: '50%', transform: 'translate(-50%,-50%)',
-        width: 280, height: 280, borderRadius: '50%',
-        background: isConnected
-          ? isSpeaking
-            ? 'radial-gradient(circle, rgba(74,144,245,.18) 0%, transparent 70%)'
-            : 'radial-gradient(circle, rgba(34,201,138,.12) 0%, transparent 70%)'
-          : 'radial-gradient(circle, rgba(74,144,245,.06) 0%, transparent 70%)',
-        transition: 'background 0.8s ease',
-        pointerEvents: 'none',
-      }} />
-
-      {/* LIVE badge */}
-      {isConnected && (
-        <div style={{
-          position: 'absolute', top: 16, right: 16,
-          display: 'flex', alignItems: 'center', gap: 5,
-          background: 'rgba(239,68,68,.15)', border: '1px solid rgba(239,68,68,.4)',
-          borderRadius: 99, padding: '3px 10px',
-        }}>
-          <div style={{
-            width: 6, height: 6, borderRadius: '50%', background: '#EF4444',
-            animation: 'dotPulse 1.2s infinite',
-          }} />
-          <span style={{ fontSize: 10, fontWeight: 800, color: '#EF4444', letterSpacing: '.08em' }}>LIVE</span>
-        </div>
-      )}
-
-      {/* Professor avatar — cinematic large */}
-      <div style={{ position: 'relative', marginBottom: 20 }}>
-        {/* Outer ring — animated when speaking */}
-        <div style={{
-          position: 'absolute', inset: -12,
-          borderRadius: '50%',
-          border: `2px solid ${isSpeaking ? 'rgba(74,144,245,.5)' : isConnected ? 'rgba(34,201,138,.3)' : 'rgba(74,144,245,.15)'}`,
-          animation: isConnected ? 'ringRotate 8s linear infinite' : 'none',
-          transition: 'border-color 0.5s',
-        }} />
-        <div style={{
-          position: 'absolute', inset: -6,
-          borderRadius: '50%',
-          border: `1px solid ${isSpeaking ? 'rgba(74,144,245,.3)' : 'rgba(74,144,245,.1)'}`,
-          animation: isConnected ? 'ringRotate 5s linear infinite reverse' : 'none',
-        }} />
-
-        {/* Avatar */}
-        <div style={{
-          width: 120, height: 120, borderRadius: '50%',
-          background: 'linear-gradient(135deg, #1E3A8A 0%, #9B59B6 50%, #4A90F5 100%)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 52, fontWeight: 900, color: '#fff',
-          boxShadow: isSpeaking
-            ? '0 0 40px rgba(74,144,245,.5), 0 0 80px rgba(74,144,245,.2)'
-            : isConnected
-            ? '0 0 24px rgba(34,201,138,.3)'
-            : '0 8px 32px rgba(0,0,0,.5)',
-          transition: 'box-shadow 0.5s ease',
-          position: 'relative', zIndex: 1,
-        }}>
-          D
-        </div>
-      </div>
-
-      {/* Professor name */}
-      <div style={{ textAlign: 'center', marginBottom: 8 }}>
-        <div style={{ fontSize: 18, fontWeight: 800, color: '#EDF2F7', marginBottom: 2 }}>
-          Professor Didier™
-        </div>
-        <div style={{ fontSize: 11, color: '#4A90F5', fontWeight: 600, letterSpacing: '.06em' }}>
-          Founder & Lead Professor · Aladiah Academy
-        </div>
-      </div>
-
-      {/* Status pill */}
-      <div style={{
-        display: 'inline-flex', alignItems: 'center', gap: 6,
-        background: isSpeaking
-          ? 'rgba(74,144,245,.12)' : isConnected
-          ? 'rgba(34,201,138,.1)' : 'rgba(139,150,173,.08)',
-        border: `1px solid ${isSpeaking ? 'rgba(74,144,245,.3)' : isConnected ? 'rgba(34,201,138,.25)' : '#1E2D47'}`,
-        borderRadius: 99, padding: '5px 14px', marginBottom: 20,
-        transition: 'all 0.4s',
-      }}>
-        <div style={{
-          width: 6, height: 6, borderRadius: '50%',
-          background: isSpeaking ? '#4A90F5' : isConnected ? '#22C98A' : '#8596AD',
-          animation: isConnected ? 'dotPulse 2s infinite' : 'none',
-        }} />
-        <span style={{
-          fontSize: 11, fontWeight: 700,
-          color: isSpeaking ? '#4A90F5' : isConnected ? '#22C98A' : '#8596AD',
-        }}>
-          {isSpeaking ? 'Speaking…' : isConnected ? 'Listening for you' : status === 'connecting' ? 'Connecting…' : 'Ready to teach'}
-        </span>
-      </div>
-
-      {/* Caption area */}
-      <div style={{
-        width: '100%',
-        background: 'rgba(8,14,26,.8)',
-        border: '1px solid #1E2D47',
-        borderRadius: 10, padding: '10px 14px',
-        minHeight: 64,
-        backdropFilter: 'blur(4px)',
-      }}>
-        {caption ? (
-          <p style={{ fontSize: 12, color: '#EDF2F7', lineHeight: 1.55, textAlign: 'center' }}>
-            {caption}
-          </p>
-        ) : (
-          <p style={{ fontSize: 11, color: '#4A5E7A', lineHeight: 1.5, textAlign: 'center' }}>
-            {isConnected ? 'Professor Didier is preparing to speak…' : 'Start the class to begin your live lesson'}
-          </p>
-        )}
-      </div>
-
-      <style>{`
-        @keyframes dotPulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: .6; transform: scale(.85); }
-        }
-        @keyframes ringRotate {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
-    </div>
-  );
+function formatHMS(ms: number) {
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600).toString().padStart(2, '0');
+  const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
+  const sec = (s % 60).toString().padStart(2, '0');
+  return `${h}:${m}:${sec}`;
 }
 
 export default function ProfessorDidierLiveClassroom() {
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // ── Engines ───────────────────────────────────────────────────────────────
+  const { ctx: student, setLanguage } = useStudentContext(MOCK_STUDENT);
+
+  const { state: lesson, dispatch } = useLessonOrchestrator({
+    totalModules: 1,
+    lessonsPerModule: [MOCK_LESSONS.length],
+    totalBoardSteps: SCRUM_BOARD_CONTENT.totalSteps,
+  });
+
   const voice = useProfessorDidierVoice();
 
-  const [boardStep, setBoardStep] = useState(0);
+  const { handleVoiceCommand, handleStudentPrompt } = useInteractionEngine({
+    onEvent: dispatch,
+    onQuickCommand: cmd => toast({ title: `Say: "${cmd}"`, description: 'Speak this to Professor Didier.' }),
+  });
+
+  // ── Local state ────────────────────────────────────────────────────────────
   const [isMuted, setIsMuted] = useState(false);
   const [notes, setNotes] = useState('');
-  const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
-  const [selectedLanguage, setSelectedLanguage] = useState('English');
-  const [showSettings, setShowSettings] = useState(false);
 
-  const sessionContext: VoiceSessionContext = {
-    lessonTitle: MOCK_LESSONS[currentLessonIndex].title,
-    lessonDescription: 'A framework for developing, delivering, and sustaining complex products. Scrum uses iterative, incremental practices to optimize predictability and control risk.',
-    moduleTitle: MOCK_CONTEXT.module,
-    programTitle: MOCK_CONTEXT.program,
-    progress: MOCK_CONTEXT.progress,
-    language: selectedLanguage,
-    studentName: MOCK_CONTEXT.studentName,
-    boardTopic: SCRUM_BOARD.title,
-    boardStep,
-  };
+  // ── Derived ───────────────────────────────────────────────────────────────
+  const currentLesson = MOCK_LESSONS[lesson.currentLessonIndex];
+  const latestCaption = voice.captions[voice.captions.length - 1] ?? '';
 
+  // ── Handlers ──────────────────────────────────────────────────────────────
   const handleConnect = useCallback(async () => {
+    const ctx: VoiceSessionContext = {
+      lessonTitle: currentLesson.title,
+      lessonDescription: currentLesson.description,
+      moduleTitle: MOCK_MODULE.title,
+      programTitle: MOCK_PROGRAM.title,
+      progress: student.progress,
+      language: student.language,
+      studentName: student.name,
+      boardTopic: SCRUM_BOARD_CONTENT.title,
+      boardStep: lesson.boardStep,
+    };
     try {
-      await voice.connect(sessionContext);
+      await voice.connect(ctx);
     } catch (err: any) {
       if (err.name === 'NotAllowedError') {
-        toast({ title: '🎤 Microphone required', description: 'Please allow microphone access and try again.', variant: 'destructive' });
+        toast({ title: '🎤 Microphone required', description: 'Allow microphone access and try again.', variant: 'destructive' });
       } else {
-        toast({ title: 'Connection failed', description: err.message || 'Could not start class', variant: 'destructive' });
+        toast({ title: 'Connection failed', description: err.message, variant: 'destructive' });
       }
     }
-  }, [voice, sessionContext, toast]);
+  }, [voice, currentLesson, student, lesson.boardStep, toast]);
 
   const handleDisconnect = useCallback(async () => {
     await voice.disconnect();
-    toast({ title: 'Session ended', description: 'Your class has been saved.' });
+    toast({ title: 'Session ended', description: 'Your notes have been saved.' });
   }, [voice, toast]);
 
   const handleEndSession = useCallback(async () => {
@@ -249,228 +116,242 @@ export default function ProfessorDidierLiveClassroom() {
     navigate(-1);
   }, [voice, navigate]);
 
-  const handleQuickCommand = useCallback((cmd: string) => {
-    toast({ title: `Voice command: "${cmd}"`, description: 'Say this to Professor Didier during the class.' });
-  }, [toast]);
-
-  const handleSelectPrompt = useCallback((prompt: string) => {
-    toast({ title: `Say: "${prompt}"`, description: 'Speak this to Professor Didier.' });
-  }, [toast]);
-
-  const latestCaption = voice.captions[voice.captions.length - 1] ?? '';
-
   const LANGUAGES = ['English', 'Spanish', 'French', 'German', 'Chinese', 'Arabic', 'Japanese'];
 
   return (
     <div style={{
       display: 'flex', flexDirection: 'column',
       height: '100vh', width: '100vw',
-      background: '#0B111E',
+      background: '#060D1C',
       fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-      overflow: 'hidden',
-      color: '#EDF2F7',
+      overflow: 'hidden', color: '#EDF2F7',
     }}>
 
-      {/* ── TOP BAR ─────────────────────────────────────────────── */}
+      {/* ── TOP BAR ───────────────────────────────────────────────── */}
       <div style={{
         height: 52, flexShrink: 0,
         display: 'flex', alignItems: 'center',
-        padding: '0 20px', gap: 16,
-        background: '#080E1A',
-        borderBottom: '1px solid #1E2D47',
+        padding: '0 18px', gap: 14,
+        background: '#07101E',
+        borderBottom: '1px solid #1A2840',
         zIndex: 10,
       }}>
         {/* Brand */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
           <div style={{
-            width: 28, height: 28, borderRadius: 8,
+            width: 30, height: 30, borderRadius: 8,
             background: 'linear-gradient(135deg, #4A90F5, #9B59B6)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 14, fontWeight: 900, color: '#fff',
-          }}>
-            A
-          </div>
+            fontSize: 15, fontWeight: 900, color: '#fff',
+          }}>A</div>
           <div>
-            <div style={{ fontSize: 10, fontWeight: 800, color: '#4A90F5', letterSpacing: '.08em', lineHeight: 1 }}>ALADIAH</div>
-            <div style={{ fontSize: 8, color: '#4A5E7A', letterSpacing: '.1em', fontWeight: 600 }}>ACADEMY</div>
+            <div style={{ fontSize: 9, fontWeight: 800, color: '#4A90F5', letterSpacing: '.1em' }}>ALADIAH</div>
+            <div style={{ fontSize: 7, color: '#2A3D5A', letterSpacing: '.12em', fontWeight: 700 }}>ACADEMY</div>
           </div>
         </div>
 
-        <div style={{ width: 1, height: 24, background: '#1E2D47' }} />
+        <div style={{ width: 1, height: 22, background: '#1A2840' }} />
 
-        {/* Title */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#4A90F5' }}>PROFESSOR DIDIER™ LIVE</span>
-          {voice.isConnected && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C98A', animation: 'dotPulse2 1.5s infinite' }} />
-              <span style={{ fontSize: 10, fontWeight: 700, color: '#22C98A', letterSpacing: '.06em' }}>LIVE</span>
-            </div>
-          )}
+        {/* Title + LIVE dot (always visible) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{
+            fontSize: 13, fontWeight: 800, letterSpacing: '.03em',
+            background: 'linear-gradient(90deg, #4A90F5, #9B59B6)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          }}>
+            PROFESSOR DIDIER™ LIVE
+          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <div style={{
+              width: 7, height: 7, borderRadius: '50%',
+              background: voice.isConnected ? '#22C98A' : '#4A5E7A',
+              boxShadow: voice.isConnected ? '0 0 6px #22C98A' : 'none',
+              animation: voice.isConnected ? 'topLive 1.5s infinite' : 'none',
+            }} />
+            <span style={{
+              fontSize: 9.5, fontWeight: 700, letterSpacing: '.07em',
+              color: voice.isConnected ? '#22C98A' : '#4A5E7A',
+            }}>
+              {voice.isConnected ? 'LIVE' : 'READY'}
+            </span>
+          </div>
         </div>
 
         {/* Program label */}
         <div style={{
-          marginLeft: 8, padding: '3px 12px',
-          background: '#111D30', border: '1px solid #1E2D47', borderRadius: 99,
-          fontSize: 11, color: '#8596AD', fontWeight: 600,
+          padding: '3px 12px',
+          background: '#0D1A2E', border: '1px solid #1A2840', borderRadius: 99,
+          fontSize: 10.5, color: '#8596AD', fontWeight: 500,
         }}>
-          {MOCK_CONTEXT.program}
+          {MOCK_PROGRAM.title}
         </div>
 
         <div style={{ flex: 1 }} />
 
-        {/* Language selector */}
-        <select
-          value={selectedLanguage}
-          onChange={e => setSelectedLanguage(e.target.value)}
-          disabled={voice.isConnected}
-          style={{
-            background: '#111D30', border: '1px solid #1E2D47', borderRadius: 8,
-            color: '#8596AD', fontSize: 11, padding: '4px 10px',
-            cursor: voice.isConnected ? 'not-allowed' : 'pointer',
-            outline: 'none',
-          }}
-        >
-          {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
-        </select>
-
-        {/* Professor mode label */}
-        <div style={{
-          padding: '4px 12px',
-          background: '#111D30', border: '1px solid rgba(74,144,245,.3)', borderRadius: 8,
-          fontSize: 11, color: '#4A90F5', fontWeight: 600,
-          display: 'flex', alignItems: 'center', gap: 6,
-        }}>
-          <span>👨‍🏫</span> Professor Mode
-        </div>
-
-        {/* Timer */}
-        {voice.isConnected && (
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#F5B81A', letterSpacing: '.06em', minWidth: 48 }}>
-            {formatTime(voice.elapsedMs)}
-          </div>
+        {/* Language selector (only when not connected) */}
+        {!voice.isConnected && (
+          <select
+            value={student.language}
+            onChange={e => setLanguage(e.target.value)}
+            style={{
+              background: '#0D1A2E', border: '1px solid #1A2840', borderRadius: 7,
+              color: '#8596AD', fontSize: 10.5, padding: '4px 10px', outline: 'none', cursor: 'pointer',
+            }}
+          >
+            {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
+          </select>
         )}
 
+        {/* Professor Mode dropdown */}
+        <div style={{ position: 'relative' }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            padding: '5px 12px',
+            background: '#0D1A2E', border: '1px solid rgba(74,144,245,.28)', borderRadius: 8,
+            fontSize: 10.5, color: '#4A90F5', fontWeight: 600, cursor: 'pointer',
+          }}>
+            <span>👨‍🏫</span>
+            <span>Professor Mode</span>
+            <span style={{ fontSize: 8, color: '#4A5E7A' }}>▼</span>
+          </div>
+        </div>
+
         {/* Settings */}
-        <button
-          onClick={() => setShowSettings(!showSettings)}
-          style={{
-            width: 32, height: 32, borderRadius: 8,
-            background: '#111D30', border: '1px solid #1E2D47',
-            color: '#8596AD', fontSize: 15, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}
-        >
-          ⚙️
+        <button style={{
+          width: 32, height: 32, borderRadius: 8,
+          background: '#0D1A2E', border: '1px solid #1A2840',
+          color: '#4A5E7A', fontSize: 14, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          ⚙
         </button>
       </div>
 
-      {/* ── CONTENT ROW ─────────────────────────────────────────── */}
+      {/* ── CONTENT ROW ───────────────────────────────────────────── */}
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden', minHeight: 0 }}>
 
         {/* Left sidebar */}
         <ClassFlowPanel
           status={voice.status}
           isConnected={voice.isConnected}
-          currentLessonIndex={currentLessonIndex}
+          isSpeaking={voice.isSpeaking}
+          currentLessonIndex={lesson.currentLessonIndex}
           lessons={MOCK_LESSONS}
-          program={MOCK_CONTEXT.program}
-          module={MOCK_CONTEXT.module}
-          lesson={MOCK_LESSONS[currentLessonIndex].title}
-          progress={MOCK_CONTEXT.progress}
+          program={MOCK_PROGRAM.shortTitle}
+          module={MOCK_MODULE.title}
+          lesson={currentLesson.title}
+          progress={student.progress}
           onEndSession={handleEndSession}
-          onQuickCommand={handleQuickCommand}
+          onQuickCommand={handleVoiceCommand}
         />
 
-        {/* Main classroom */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
+        {/* Main content — left column: professor | right column: board + prompts + notes */}
+        <div style={{ flex: 1, display: 'flex', overflow: 'hidden', minWidth: 0 }}>
 
-          {/* Professor + Board */}
-          <div style={{ flex: 1, display: 'flex', overflow: 'hidden', padding: 16, gap: 16 }}>
-            {/* Professor presence */}
-            <ProfessorPresenceArea
+          {/* LEFT COLUMN: Professor Presence (fills, cinematic) */}
+          <div style={{
+            flex: '0 0 55%', display: 'flex', flexDirection: 'column',
+            borderRight: '1px solid #1A2840', overflow: 'hidden', minHeight: 0,
+          }}>
+            <ProfessorPresenceEngine
+              status={voice.status}
               isConnected={voice.isConnected}
               isSpeaking={voice.isSpeaking}
-              status={voice.status}
               caption={latestCaption}
             />
-
-            {/* Teaching board */}
-            <TeachingBoard
-              lesson={SCRUM_BOARD}
-              step={boardStep}
-              onNextStep={() => setBoardStep(s => Math.min(s + 1, SCRUM_BOARD.steps - 1))}
-              onPrevStep={() => setBoardStep(s => Math.max(s - 1, 0))}
-              onReset={() => setBoardStep(0)}
-            />
           </div>
 
-          {/* Voice controls */}
-          <VoiceControlPanel
-            status={voice.status}
-            isConnected={voice.isConnected}
-            isSpeaking={voice.isSpeaking}
-            isMuted={isMuted}
-            onConnect={handleConnect}
-            onDisconnect={handleDisconnect}
-            onToggleMute={() => setIsMuted(m => !m)}
-            onShowDiagram={() => setBoardStep(s => Math.min(s + 1, SCRUM_BOARD.steps - 1))}
-            onNeedHelp={() => toast({ title: 'Help', description: 'Press the microphone and speak to Professor Didier. Use quick voice commands on the left.' })}
-          />
-        </div>
+          {/* RIGHT COLUMN: Board (top) + Prompts + Notes (bottom) */}
+          <div style={{
+            flex: '0 0 45%', display: 'flex', flexDirection: 'column',
+            overflow: 'hidden', minHeight: 0,
+            background: '#07101E',
+          }}>
+            {/* Teaching Board */}
+            <div style={{ flex: '0 0 58%', padding: '10px 10px 6px', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+              <AvisCanvasEngine
+                content={SCRUM_BOARD_CONTENT}
+                step={lesson.boardStep}
+                onNext={() => dispatch({ type: 'BOARD_NEXT' })}
+                onPrev={() => dispatch({ type: 'BOARD_PREV' })}
+                onReset={() => dispatch({ type: 'BOARD_RESET' })}
+              />
+            </div>
 
-        {/* Right panel */}
-        <StudentPromptPanel
-          prompts={SUGGESTED_PROMPTS}
-          onSelectPrompt={handleSelectPrompt}
-          notes={notes}
-          onNotesChange={setNotes}
-        />
+            {/* Prompts + Notes */}
+            <div style={{
+              flex: '0 0 42%', borderTop: '1px solid #1A2840',
+              overflow: 'hidden', minHeight: 0,
+            }}>
+              <StudentPromptPanel
+                prompts={MOCK_PROMPTS}
+                onSelectPrompt={p => {
+                  toast({ title: `Say: "${p}"`, description: 'Speak this to Professor Didier.' });
+                  handleStudentPrompt(p);
+                }}
+                notes={notes}
+                onNotesChange={setNotes}
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* ── BOTTOM STATUS BAR ────────────────────────────────────── */}
+      {/* ── VOICE DOCK (full width) ────────────────────────────────── */}
+      <VoiceControlPanel
+        status={voice.status}
+        isConnected={voice.isConnected}
+        isSpeaking={voice.isSpeaking}
+        isMuted={isMuted}
+        onConnect={handleConnect}
+        onDisconnect={handleDisconnect}
+        onToggleMute={() => setIsMuted(m => !m)}
+        onOpenWhiteboard={() => dispatch({ type: 'BOARD_NEXT' })}
+        onNeedHelp={() => toast({ title: 'Need Help?', description: 'Speak to Professor Didier — press the mic and ask your question.' })}
+      />
+
+      {/* ── STATUS BAR ────────────────────────────────────────────── */}
       <div style={{
-        height: 36, flexShrink: 0,
+        height: 32, flexShrink: 0,
         display: 'flex', alignItems: 'center',
-        padding: '0 20px', gap: 20,
-        background: '#080E1A',
-        borderTop: '1px solid #1E2D47',
-        fontSize: 10, color: '#4A5E7A', fontWeight: 600,
+        padding: '0 18px', gap: 18,
+        background: '#04090F',
+        borderTop: '1px solid #111D30',
+        fontSize: 10, color: '#2A3D5A', fontWeight: 600,
+        letterSpacing: '.04em',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: voice.isConnected ? '#22C98A' : '#4A5E7A' }} />
-          {voice.isConnected ? 'Live Session' : 'Session Ready'}
-        </div>
-        {voice.isConnected && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <span>⏱</span>
-            <span>{formatTime(voice.elapsedMs)}</span>
-          </div>
-        )}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-          <span style={{ color: '#4A90F5' }}>▪</span>
-          AI Professor Online
-        </div>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5 }}>
-          <span>❓</span>
-          <span>Need Help?</span>
+          <div style={{
+            width: 6, height: 6, borderRadius: '50%',
+            background: voice.isConnected ? '#22C98A' : '#2A3D5A',
+          }} />
+          <span style={{ color: voice.isConnected ? '#22C98A' : '#2A3D5A', fontWeight: 800 }}>
+            LIVE SESSION
+          </span>
         </div>
 
-        {/* TEST MODE banner */}
-        <div style={{
-          padding: '2px 10px', borderRadius: 99,
-          background: 'rgba(245,184,26,.12)', border: '1px solid rgba(245,184,26,.3)',
-          color: '#F5B81A', fontSize: 9, fontWeight: 800, letterSpacing: '.08em',
-        }}>
-          TEST ROUTE — /professor-live-test
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span>⏱</span>
+          <span style={{ fontFamily: 'monospace', color: '#4A5E7A' }}>
+            {formatHMS(voice.elapsedMs)}
+          </span>
+        </div>
+
+        <div style={{ width: 3, height: 14, borderRadius: 99, background: '#1A2840' }} />
+
+        <span style={{ color: '#4A5E7A' }}>AI Professor</span>
+        <span style={{ color: voice.isConnected ? '#22C98A' : '#2A3D5A' }}>
+          {voice.isConnected ? 'Online' : 'Ready'}
+        </span>
+
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5, color: '#4A5E7A' }}>
+          <span>?</span>
+          <span>Need Help</span>
         </div>
       </div>
 
       <style>{`
-        @keyframes dotPulse2 {
-          0%, 100% { opacity: 1; } 50% { opacity: .4; }
-        }
+        @keyframes topLive { 0%,100%{opacity:1} 50%{opacity:.4} }
       `}</style>
     </div>
   );
