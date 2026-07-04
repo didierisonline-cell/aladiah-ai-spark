@@ -90,8 +90,11 @@ export default function ChapterView() {
   const [transcript, setTranscript] = useState<{ role: 'user' | 'agent'; message: string }[]>([]);
   const [recapComplete, setRecapComplete] = useState(false); // UI-only: agent finished the oral recap (sentinel). Never navigates.
   const [duration, setDuration] = useState(0);
+  // Priority-One voice-cutoff diagnostic: the last early-disconnect reason,
+  // surfaced on-screen so the exact failure is captured without DevTools.
+  const [lastCutoff, setLastCutoff] = useState<{ code: string; reason: string; wasClean: boolean; elapsedMs: number; likelyCause: string } | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const keepAliveRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const sessionStartRef = useRef<number | null>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
   const isLive = convStatus === 'connected';
   const isStartingRef = useRef(false);
@@ -99,17 +102,34 @@ export default function ChapterView() {
   const conversation = useConversation({
     onConnect: () => {
       setConvStatus('connected');
+      setLastCutoff(null);
+      sessionStartRef.current = Date.now();
       timerRef.current = setInterval(() => setDuration(d => d + 1), 1000);
-      // Keep-alive: send silent ping every 8 seconds to prevent timeout
-      keepAliveRef.current = setInterval(() => {
-        try { conversation.sendUserAudio && conversation.sendUserAudio(new Float32Array(480)); } catch { }
-      }, 8000);
+      // NOTE: the previous "keep-alive" injected fake user audio
+      // (sendUserAudio(new Float32Array(480))) every 8 seconds. That was the
+      // ROOT CAUSE of the in-lesson cutoff — ElevenLabs reads inbound user
+      // audio as the student taking a turn, so every 8s the agent thought it
+      // was interrupted and stopped mid-sentence. ElevenLabs manages its own
+      // WebSocket keepalive; no client injection is needed. Removed.
     },
-    onDisconnect: () => {
+    onDisconnect: (details: any) => {
+      const elapsedMs = sessionStartRef.current ? Date.now() - sessionStartRef.current : 0;
+      const code = String(details?.code ?? details?.closeEvent?.code ?? 'n/a');
+      const reason = String(details?.reason ?? details?.message ?? details?.closeEvent?.reason ?? 'unknown');
+      const wasClean = Boolean(details?.wasClean ?? details?.closeEvent?.wasClean ?? false);
+      const early = elapsedMs > 0 && elapsedMs < 20000;
+      const likelyCause =
+        /override|unauthor|forbidden|4401|1008/i.test(`${code} ${reason}`) ? 'override-rejection-or-auth (check ElevenLabs agent security overrides)'
+        : /audio|mic|feedback|interrupt/i.test(reason) ? 'microphone/audio-feedback (self-interruption)'
+        : /network|1006|timeout|going away|1001/i.test(`${code} ${reason}`) ? 'network/timeout'
+        : early ? 'early-close, cause unclear — capture the code/reason above'
+        : 'normal';
+      console.log(`[LiveClass] onDisconnect code=${code} reason=${reason} wasClean=${wasClean} elapsedMs=${elapsedMs} likelyCause=${likelyCause}`);
       setConvStatus('idle');
       isStartingRef.current = false;
+      sessionStartRef.current = null;
       if (timerRef.current) clearInterval(timerRef.current);
-      if (keepAliveRef.current) clearInterval(keepAliveRef.current);
+      if (early) setLastCutoff({ code, reason, wasClean, elapsedMs, likelyCause });
     },
     onMessage: ({ message, source }: { message: string; source: string }) => {
       // Strip ElevenLabs persona XML tags e.g. <LaSean Pickens (EN/ES)>...</LaSean Pickens (EN/ES)>
@@ -135,7 +155,13 @@ export default function ChapterView() {
         setTimeout(() => conversation.endSession().catch(() => { }), 1500);
       }
     },
-    onError: () => setConvStatus('error'),
+    onError: (err: any) => {
+      const elapsedMs = sessionStartRef.current ? Date.now() - sessionStartRef.current : 0;
+      const reason = String(err?.message ?? err ?? 'unknown');
+      console.error(`[LiveClass] onError reason=${reason} elapsedMs=${elapsedMs}`, err);
+      setLastCutoff({ code: 'error', reason, wasClean: false, elapsedMs, likelyCause: 'session error — see reason' });
+      setConvStatus('error');
+    },
   });
 
   useEffect(() => { setIsSpeaking(conversation.isSpeaking); }, [conversation.isSpeaking]);
@@ -150,8 +176,12 @@ export default function ChapterView() {
     setRecapComplete(false);
     setDuration(0);
     try {
-      // Request mic BEFORE setting connecting state to avoid Safari blank screen
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Request mic BEFORE setting connecting state to avoid Safari blank screen.
+      // echoCancellation is essential: without it the agent's own voice loops
+      // into the mic and self-interrupts the professor mid-sentence.
+      await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      });
       // Unlock Safari WebAudio context BEFORE connecting ElevenLabs
       try {
         const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
@@ -791,6 +821,19 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
                       t('chapter.ready') + ' ' + getTitle(currentLesson)}
               </span>
             </div>
+
+            {/* Priority-One voice-cutoff diagnostic — visible only after an early
+                (<20s) disconnect so the exact failure is captured on-screen. */}
+            {lastCutoff && !isLive && (
+              <div style={{ margin: '12px 24px', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(245,158,11,0.35)', background: 'rgba(245,158,11,0.08)' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#fbbf24', marginBottom: 4 }}>Professor Didier™ voice session ended early</div>
+                <div style={{ fontSize: 11, color: '#fcd34d', lineHeight: 1.6 }}>
+                  code: {lastCutoff.code} · reason: {lastCutoff.reason} · clean: {String(lastCutoff.wasClean)} · after {(lastCutoff.elapsedMs / 1000).toFixed(1)}s<br />
+                  likely cause: <strong>{lastCutoff.likelyCause}</strong><br />
+                  next action: {/override|auth/i.test(lastCutoff.likelyCause) ? 'verify override whitelist in the ElevenLabs agent security settings.' : /feedback|interrupt/i.test(lastCutoff.likelyCause) ? 'use headphones and retry; echo cancellation is now on.' : 'retry; if it repeats, share this line.'}
+                </div>
+              </div>
+            )}
 
             {/* Transcript */}
             {transcript.length > 0 && (
