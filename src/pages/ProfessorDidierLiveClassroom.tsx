@@ -132,8 +132,9 @@ export default function ProfessorDidierLiveClassroom() {
         height: 52, flexShrink: 0,
         display: 'flex', alignItems: 'center',
         padding: '0 18px', gap: 14,
-        background: '#07101E',
-        borderBottom: '1px solid #1A2840',
+        background: '#050C1A',
+        borderBottom: '1px solid rgba(255,255,255,.06)',
+        boxShadow: '0 1px 14px rgba(0,0,0,.45)',
         zIndex: 10,
       }}>
         {/* Brand */}
@@ -143,16 +144,17 @@ export default function ProfessorDidierLiveClassroom() {
             background: 'linear-gradient(135deg, #4A90F5, #9B59B6)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 15, fontWeight: 900, color: '#fff',
+            boxShadow: '0 2px 10px rgba(74,144,245,.3)',
           }}>A</div>
           <div>
             <div style={{ fontSize: 9, fontWeight: 800, color: '#4A90F5', letterSpacing: '.1em' }}>ALADIAH</div>
-            <div style={{ fontSize: 7, color: '#2A3D5A', letterSpacing: '.12em', fontWeight: 700 }}>ACADEMY</div>
+            <div style={{ fontSize: 7, color: '#1E2D47', letterSpacing: '.12em', fontWeight: 700 }}>ACADEMY</div>
           </div>
         </div>
 
-        <div style={{ width: 1, height: 22, background: '#1A2840' }} />
+        <div style={{ width: 1, height: 22, background: 'rgba(255,255,255,.07)' }} />
 
-        {/* Title + LIVE dot (always visible) */}
+        {/* Title + LIVE dot */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{
             fontSize: 13, fontWeight: 800, letterSpacing: '.03em',
@@ -164,13 +166,15 @@ export default function ProfessorDidierLiveClassroom() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <div style={{
               width: 7, height: 7, borderRadius: '50%',
-              background: voice.isConnected ? '#22C98A' : '#4A5E7A',
-              boxShadow: voice.isConnected ? '0 0 6px #22C98A' : 'none',
-              animation: voice.isConnected ? 'topLive 1.5s infinite' : 'none',
+              background: voice.isConnected ? '#22C98A' : '#2A3D5A',
+              boxShadow: voice.isConnected ? '0 0 8px #22C98A' : 'none',
+              animation: voice.isConnected ? 'topbarLive 1.5s infinite' : 'none',
+              transition: 'all .4s',
             }} />
             <span style={{
-              fontSize: 9.5, fontWeight: 700, letterSpacing: '.07em',
-              color: voice.isConnected ? '#22C98A' : '#4A5E7A',
+              fontSize: 9.5, fontWeight: 700, letterSpacing: '.08em',
+              color: voice.isConnected ? '#22C98A' : '#2A3D5A',
+              transition: 'color .4s',
             }}>
               {voice.isConnected ? 'LIVE' : 'READY'}
             </span>
@@ -180,8 +184,8 @@ export default function ProfessorDidierLiveClassroom() {
         {/* Program label */}
         <div style={{
           padding: '3px 12px',
-          background: '#0D1A2E', border: '1px solid #1A2840', borderRadius: 99,
-          fontSize: 10.5, color: '#8596AD', fontWeight: 500,
+          background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.07)', borderRadius: 99,
+          fontSize: 10.5, color: '#5A7090', fontWeight: 500,
         }}>
           {MOCK_PROGRAM.title}
         </div>
@@ -194,37 +198,33 @@ export default function ProfessorDidierLiveClassroom() {
             value={student.language}
             onChange={e => setLanguage(e.target.value)}
             style={{
-              background: '#0D1A2E', border: '1px solid #1A2840', borderRadius: 7,
-              color: '#8596AD', fontSize: 10.5, padding: '4px 10px', outline: 'none', cursor: 'pointer',
+              background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 7,
+              color: '#5A7090', fontSize: 10.5, padding: '4px 10px', outline: 'none', cursor: 'pointer',
             }}
           >
             {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
           </select>
         )}
 
-        {/* Professor Mode dropdown */}
-        <div style={{ position: 'relative' }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '5px 12px',
-            background: '#0D1A2E', border: '1px solid rgba(74,144,245,.28)', borderRadius: 8,
-            fontSize: 10.5, color: '#4A90F5', fontWeight: 600, cursor: 'pointer',
-          }}>
-            <span>👨‍🏫</span>
-            <span>Professor Mode</span>
-            <span style={{ fontSize: 8, color: '#4A5E7A' }}>▼</span>
-          </div>
+        {/* Professor Mode */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          padding: '5px 12px',
+          background: 'rgba(74,144,245,.07)', border: '1px solid rgba(74,144,245,.2)', borderRadius: 8,
+          fontSize: 10.5, color: '#4A90F5', fontWeight: 600, cursor: 'pointer',
+        }}>
+          <span>👨‍🏫</span>
+          <span>Professor Mode</span>
+          <span style={{ fontSize: 8, color: '#2A3D5A' }}>▼</span>
         </div>
 
         {/* Settings */}
         <button style={{
           width: 32, height: 32, borderRadius: 8,
-          background: '#0D1A2E', border: '1px solid #1A2840',
-          color: '#4A5E7A', fontSize: 14, cursor: 'pointer',
+          background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.07)',
+          color: '#3A4E6A', fontSize: 14, cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          ⚙
-        </button>
+        }}>⚙</button>
       </div>
 
       {/* ── CONTENT ROW ───────────────────────────────────────────── */}
@@ -245,13 +245,16 @@ export default function ProfessorDidierLiveClassroom() {
           onQuickCommand={handleVoiceCommand}
         />
 
-        {/* Main content — left column: professor | right column: board + prompts + notes */}
+        {/* Main content */}
         <div style={{ flex: 1, display: 'flex', overflow: 'hidden', minWidth: 0 }}>
 
-          {/* LEFT COLUMN: Professor Presence (fills, cinematic) */}
+          {/* LEFT COLUMN — Professor cinematic hero (58%) */}
           <div style={{
-            flex: '0 0 55%', display: 'flex', flexDirection: 'column',
-            borderRight: '1px solid #1A2840', overflow: 'hidden', minHeight: 0,
+            flex: '0 0 58%',
+            display: 'flex', flexDirection: 'column',
+            overflow: 'hidden', minHeight: 0,
+            position: 'relative', zIndex: 1,
+            boxShadow: '6px 0 32px rgba(0,0,0,.6)',
           }}>
             <ProfessorPresenceEngine
               status={voice.status}
@@ -261,14 +264,18 @@ export default function ProfessorDidierLiveClassroom() {
             />
           </div>
 
-          {/* RIGHT COLUMN: Board (top) + Prompts + Notes (bottom) */}
+          {/* RIGHT COLUMN — Board + Prompts + Notes (42%) */}
           <div style={{
-            flex: '0 0 45%', display: 'flex', flexDirection: 'column',
+            flex: '0 0 42%', display: 'flex', flexDirection: 'column',
             overflow: 'hidden', minHeight: 0,
-            background: '#07101E',
+            background: '#070E1B',
           }}>
-            {/* Teaching Board */}
-            <div style={{ flex: '0 0 58%', padding: '10px 10px 6px', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            {/* Teaching Board — upper 62% */}
+            <div style={{
+              flex: '0 0 62%',
+              padding: '10px 10px 6px',
+              display: 'flex', flexDirection: 'column', minHeight: 0,
+            }}>
               <AvisCanvasEngine
                 content={SCRUM_BOARD_CONTENT}
                 step={lesson.boardStep}
@@ -278,9 +285,10 @@ export default function ProfessorDidierLiveClassroom() {
               />
             </div>
 
-            {/* Prompts + Notes */}
+            {/* Prompts + Notes — lower 38% */}
             <div style={{
-              flex: '0 0 42%', borderTop: '1px solid #1A2840',
+              flex: '0 0 38%',
+              borderTop: '1px solid rgba(255,255,255,.05)',
               overflow: 'hidden', minHeight: 0,
             }}>
               <StudentPromptPanel
@@ -297,7 +305,7 @@ export default function ProfessorDidierLiveClassroom() {
         </div>
       </div>
 
-      {/* ── VOICE DOCK (full width) ────────────────────────────────── */}
+      {/* ── VOICE DOCK ────────────────────────────────────────────── */}
       <VoiceControlPanel
         status={voice.status}
         isConnected={voice.isConnected}
@@ -315,43 +323,45 @@ export default function ProfessorDidierLiveClassroom() {
         height: 32, flexShrink: 0,
         display: 'flex', alignItems: 'center',
         padding: '0 18px', gap: 18,
-        background: '#04090F',
-        borderTop: '1px solid #111D30',
-        fontSize: 10, color: '#2A3D5A', fontWeight: 600,
+        background: '#03070F',
+        borderTop: '1px solid rgba(255,255,255,.04)',
+        fontSize: 10, color: '#1E2D47', fontWeight: 600,
         letterSpacing: '.04em',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
           <div style={{
             width: 6, height: 6, borderRadius: '50%',
-            background: voice.isConnected ? '#22C98A' : '#2A3D5A',
+            background: voice.isConnected ? '#22C98A' : '#1E2D47',
+            boxShadow: voice.isConnected ? '0 0 6px #22C98A' : 'none',
+            transition: 'all .4s',
           }} />
-          <span style={{ color: voice.isConnected ? '#22C98A' : '#2A3D5A', fontWeight: 800 }}>
+          <span style={{ color: voice.isConnected ? '#22C98A' : '#1E2D47', fontWeight: 800 }}>
             LIVE SESSION
           </span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>⏱</span>
-          <span style={{ fontFamily: 'monospace', color: '#4A5E7A' }}>
+          <span style={{ fontFamily: 'monospace', color: '#2A3D5A' }}>
             {formatHMS(voice.elapsedMs)}
           </span>
         </div>
 
-        <div style={{ width: 3, height: 14, borderRadius: 99, background: '#1A2840' }} />
+        <div style={{ width: 3, height: 14, borderRadius: 99, background: '#0E1A2C' }} />
 
-        <span style={{ color: '#4A5E7A' }}>AI Professor</span>
-        <span style={{ color: voice.isConnected ? '#22C98A' : '#2A3D5A' }}>
+        <span style={{ color: '#2A3D5A' }}>AI Professor</span>
+        <span style={{ color: voice.isConnected ? '#22C98A' : '#1E2D47', transition: 'color .4s' }}>
           {voice.isConnected ? 'Online' : 'Ready'}
         </span>
 
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5, color: '#4A5E7A' }}>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5, color: '#2A3D5A' }}>
           <span>?</span>
           <span>Need Help</span>
         </div>
       </div>
 
       <style>{`
-        @keyframes topLive { 0%,100%{opacity:1} 50%{opacity:.4} }
+        @keyframes topbarLive { 0%,100%{opacity:1} 50%{opacity:.35} }
       `}</style>
     </div>
   );
