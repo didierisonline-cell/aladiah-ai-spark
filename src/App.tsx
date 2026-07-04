@@ -84,6 +84,7 @@ import FlagshipProgram from "./pages/portal/FlagshipProgram";
 import MentorHub from "./pages/portal/MentorHub";
 import ProfileHub from "./pages/portal/ProfileHub";
 import PortalAvis from "./pages/PortalAvis";
+import ProfessorDidierLiveClassroom from "./pages/ProfessorDidierLiveClassroom";
 // Legal (public)
 import Terms from "./pages/legal/Terms";
 import Privacy from "./pages/legal/Privacy";
@@ -145,6 +146,8 @@ const AppContent = () => {
         <Route path="/portal/resources" element={<ProtectedRoute><PortalResources /></ProtectedRoute>} />
         <Route path="/portal/certifications" element={<ProtectedRoute><PortalCertifications /></ProtectedRoute>} />
         <Route path="/portal/avis" element={<ProtectedRoute><PortalAvis /></ProtectedRoute>} />
+        {/* Professor Didier™ Live Classroom — test route only, not yet production */}
+        <Route path="/professor-live-test" element={<ProtectedRoute><ProfessorDidierLiveClassroom /></ProtectedRoute>} />
         {/* Tools */}
         <Route path="/resume-studio" element={<ProtectedRoute><ResumeStudio /></ProtectedRoute>} />
         <Route path="/interview" element={<ProtectedRoute><InterviewSimulator /></ProtectedRoute>} />
