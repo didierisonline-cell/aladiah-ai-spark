@@ -8,17 +8,21 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  ArrowLeft, ArrowRight, CheckCircle, XCircle, 
+import {
+  ArrowLeft, ArrowRight, CheckCircle, XCircle,
   Trophy, RefreshCw, AlertTriangle, BookOpen
 } from 'lucide-react';
 
+// correct_answer_index is intentionally excluded — it is never exposed to
+// the client. Questions are loaded via the get-quiz-questions Edge Function
+// (which strips the answer column), and grading is done server-side by the
+// submit-quiz Edge Function. The correctAnswer field in QuizResult is
+// populated ONLY from the server response after submission.
 interface Question {
   id: string;
   question_text: string;
   scenario_context: string | null;
   options: string[];
-  correct_answer_index: number;
   explanation: string | null;
   order_index: number;
   competency: string | null;
@@ -59,20 +63,20 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
 
   const loadQuestions = async () => {
     try {
-      const { data, error } = await supabase
-        .from('quiz_questions')
-        .select('*')
-        .eq('quiz_id', quizId)
-        .order('order_index');
+      // Use the get-quiz-questions Edge Function, which strips correct_answer_index.
+      // Direct table queries are blocked by RLS (USING(false)) for students.
+      const { data, error } = await supabase.functions.invoke('get-quiz-questions', {
+        body: { quizId },
+      });
+      if (error) throw new Error(error.message || 'Failed to load questions');
+      if (data?.error) throw new Error(data.error);
 
-      if (error) throw error;
-
-      // Parse options if they're stored as JSON strings
-      const parsedQuestions = (data || []).map((q: any) => ({
+      const raw: any[] = data?.questions || [];
+      const parsedQuestions = raw.map((q: any) => ({
         ...q,
-        options: typeof q.options === 'string' ? JSON.parse(q.options) : (Array.isArray(q.options) ? q.options : [])
+        options: typeof q.options === 'string' ? JSON.parse(q.options) : (Array.isArray(q.options) ? q.options : []),
       }));
-      
+
       setQuestions(parsedQuestions);
       setAnswers(new Array(parsedQuestions.length).fill(null));
     } catch (error: any) {
@@ -117,91 +121,40 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
     setSubmitting(true);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      // Build answer map: { questionId: selectedAnswerIndex }
+      // submit-quiz grades server-side (has service-role access to correct_answer_index)
+      // and writes user_progress + quiz_attempts itself — no client-side grading needed.
+      const answerMap: Record<string, number> = {};
+      questions.forEach((q, idx) => {
+        if (answers[idx] !== null) answerMap[q.id] = answers[idx] as number;
+      });
 
-      // Score locally against correct_answer_index
-      const results = questions.map((q, idx) => ({
-        questionId: q.id,
-        question_text: q.question_text,
-        selectedAnswer: answers[idx],
-        correctAnswer: q.correct_answer_index,
-        isCorrect: answers[idx] === q.correct_answer_index,
-        explanation: q.explanation || '',
-        options: q.options,
-      }));
+      const { data, error } = await supabase.functions.invoke('submit-quiz', {
+        body: { quizId, answers: answerMap },
+      });
 
-      const correctCount = results.filter(r => r.isCorrect).length;
-      const score = Math.round((correctCount / questions.length) * 100);
+      if (error) throw new Error(error.message || 'Submission failed');
+      if (data?.error) throw new Error(data.error);
 
-      // Fetch quiz metadata once: passing threshold + chapter/course for progress
-      const { data: quizData } = await supabase
-        .from('quizzes')
-        .select('chapter_id, passing_score, chapters(course_id)')
-        .eq('id', quizId)
-        .single();
+      const { score, passed, results: serverResults, passingScore } = data as {
+        score: number;
+        passed: boolean;
+        results: Array<{ questionId: string; userAnswer: number | null; correctAnswer: number; isCorrect: boolean; explanation: string | null }>;
+        passingScore: number;
+      };
 
-      const passingScore = quizData?.passing_score ?? 100;
-      const passed = score >= passingScore; // was hardcoded >= 100
-      const chapter_id = quizData?.chapter_id || null;
-      const course_id = (quizData?.chapters as any)?.course_id || null;
-
-      // Persist attempt + per-question detail + progress (best-effort; never blocks results UI)
-      if (session) {
-        // 1) Intelligence-layer capture: attempt header + per-question rows
-        try {
-          const { data: attempt, error: attemptError } = await supabase
-            .from('quiz_attempts')
-            .insert({ user_id: session.user.id, quiz_id: quizId, answers, score, passed })
-            .select('id')
-            .single();
-          if (attemptError) throw attemptError;
-
-          const answerRows = results.map((r, idx) => ({
-            attempt_id: attempt.id,
-            question_id: r.questionId,
-            selected_index: r.selectedAnswer,
-            correct_index: r.correctAnswer,
-            is_correct: r.isCorrect, // reuse the already-graded value
-            competency: questions[idx].competency ?? null, // snapshot; aligned index
-          }));
-          const { error: answersError } = await (supabase as any)
-            .from('quiz_attempt_answers')
-            .insert(answerRows);
-          if (answersError) console.error('Attempt answers save error:', answersError);
-        } catch (e) {
-          console.error('Attempt save exception:', e);
-        }
-
-        // 2) Progress (unchanged behavior): upsert score/passed for this quiz
-        try {
-          // Check if already saved to avoid duplicates
-          const { data: existing } = await supabase
-            .from('user_progress')
-            .select('id')
-            .eq('user_id', session.user.id)
-            .eq('quiz_id', quizId)
-            .maybeSingle();
-
-          if (existing) {
-            await supabase.from('user_progress')
-              .update({ score, passed, completed_at: new Date().toISOString() })
-              .eq('id', existing.id);
-          } else {
-            const { error: insertError } = await supabase.from('user_progress').insert({
-              user_id: session.user.id,
-              quiz_id: quizId,
-              chapter_id,
-              course_id,
-              score,
-              passed,
-              completed_at: new Date().toISOString(),
-            });
-            if (insertError) console.error('Progress save error:', insertError);
-          }
-        } catch (e) {
-          console.error('Progress save exception:', e);
-        }
-      }
+      // Map server results (by questionId) to the order of questions as displayed
+      const resultMap = new Map((serverResults || []).map(r => [r.questionId, r]));
+      const results: QuizResult[] = questions.map(q => {
+        const sr = resultMap.get(q.id);
+        return {
+          questionId: q.id,
+          userAnswer: sr?.userAnswer ?? null,
+          correctAnswer: sr?.correctAnswer ?? 0,
+          isCorrect: sr?.isCorrect ?? false,
+          explanation: sr?.explanation || '',
+        };
+      });
 
       setResults(results);
       setScore(score);
@@ -218,7 +171,7 @@ const Quiz = ({ quizId, quizType, onComplete, onBack }: QuizProps) => {
       } else {
         toast({
           title: t('quiz.not_yet'),
-          description: t('quiz.not_yet_desc').replace('{score}', String(score)).replace('{pass}', String(passingScore)),
+          description: t('quiz.not_yet_desc').replace('{score}', String(score)).replace('{pass}', String(passingScore ?? 70)),
           variant: 'destructive',
         });
       }
