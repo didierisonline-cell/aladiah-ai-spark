@@ -66,12 +66,28 @@ const Enroll = () => {
       toast({ title: result.error.errors[0].message, variant: 'destructive' });
       return;
     }
+    const PLAN_PRICE_IDS: Record<string, string> = {
+      foundation:  import.meta.env.VITE_STRIPE_PRICE_FOUNDATION  || '',
+      accelerator: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TW7U21wgazWak4Atj7TblB3',
+      elite:       import.meta.env.VITE_STRIPE_PRICE_ELITE       || '',
+    };
+    const priceId = PLAN_PRICE_IDS[selectedPlan.id];
+    if (!priceId) {
+      toast({ title: 'Plan not available', description: 'Please contact support.', variant: 'destructive' });
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ ...result.data, plan: selectedPlan.id, price: selectedPlan.price }),
+        body: JSON.stringify({
+          priceId,
+          email: result.data.email,
+          successUrl: `${window.location.origin}/auth?payment=success`,
+          cancelUrl: window.location.href,
+        }),
       });
       const data = await resp.json();
       if (data.url) {

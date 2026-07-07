@@ -297,11 +297,11 @@ export default function StudentPortal() {
         sbFetch(supabase.from('student_points').select('points').eq('user_id', user!.id), []),
         sbFetch(supabase.from('student_labs').select('*').eq('user_id', user!.id), []),
         sbFetch(supabase.from('courses').select('id,title,translations').eq('is_published', true), []),
-        sbFetch(supabase.from('user_progress').select('id').eq('user_id', user!.id).not('completed_at', 'is', null), []),
+        sbFetch(supabase.from('course_certificates').select('id').eq('user_id', user!.id), []),
       ]);
       setTotalPoints((pointsData as any[]).reduce((s: number, p: any) => s + (p.points || 0), 0));
       setLabs(labsData as any[]);
-      setCertCount(Math.floor((certsData as any[]).length / 5));
+      setCertCount((certsData as any[]).length);
 
       const filtered = (coursesData as any[]).filter((c: any) => !EXCLUDED.some(e => c.title?.includes(e)));
       if (!filtered.length) return;
