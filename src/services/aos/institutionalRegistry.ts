@@ -855,6 +855,7 @@ const avisCapability = baseGenome({
     { on: D, kind: 'amended', by: 'founder', evidence: 'FD-2026-016: scope expanded to ALL institutional visuals; Open-Gen-AI adopted as primary renderer (behind ai-proxy, subordinate to standards).' },
     { on: D, kind: 'ratified', by: 'founder', evidence: 'AVIS v1.0 adopted; renderer abstraction permanent; five-step implementation approved (interface → compiler → quarantine → registry/Brain → diagram library).' },
     { on: D, kind: 'measured', by: 'interface-experience', evidence: 'Five-step roadmap COMPLETE (WO-0009/0010/0011): seam, compiler, quarantine, asset registry + Brain mirror, and the 7-diagram Enterprise Library — 23 AVIS tests green. Rendering awaits the founder-deployed edge function.' },
+    { on: D, kind: 'amended', by: 'interface-experience', evidence: 'WO-0014 (FEO-2026-001 step 3): the Visual Render Platform implemented — avis-render edge function (render + register), Open-Gen-AI as the FIRST adapter behind the permanent seam, server-authoritative compile, fingerprinting, cache, cost ledger, fail-closed rate/budget limits, quarantine + registry + Brain wiring. Activation awaits founder-applied deploy: SQL migration, Supabase secrets, function deploy.' },
   ],
 });
 

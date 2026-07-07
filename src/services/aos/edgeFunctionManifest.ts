@@ -50,6 +50,7 @@ export const OPERATIONAL_EDGE_FUNCTIONS: string[] = [
   'admin-analytics',
   'ai-grading',
   'ai-proxy',
+  'avis-render', // WO-0014: the Visual Render Platform (deploy is founder-applied)
   'create-checkout',
   'elevenlabs-conversation-token',
   'enrollment-chat',
