@@ -173,7 +173,8 @@ export default function PortalSettings() {
   };
 
   const handleBillingHistory = () => {
-    window.open('https://billing.stripe.com/p/login/test_eVq9AL0OuaMWazPgo41VK00', '_blank');
+    // Stripe customer portal URL is provisioned at launch; contact support@aladiahacademy.com for billing history
+    window.open('mailto:support@aladiahacademy.com?subject=Billing%20History%20Request', '_blank');
   };
 
 

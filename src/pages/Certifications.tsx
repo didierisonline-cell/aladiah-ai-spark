@@ -68,7 +68,7 @@ export default function Certifications() {
                     <div style={{ fontSize: 11, color: DS.fm, marginTop: 2 }}>{t('cert.level_of_7a')}{i+1}{t('cert.level_of_7b')}{lv.weeks}{t('cert.weeks')}</div>
                   </div>
                   <div style={{ fontSize: 12, color: DS.fm }}>{t(lv.reqKey)}</div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: lv.color, background: lv.color + '20', border: `1px solid ${lv.color}40`, borderRadius: 999, padding: '3px 12px', whiteSpace: 'nowrap' as const }}>{t('cert.active')}</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#8b9aae', background: 'rgba(139,154,174,.12)', border: '1px solid rgba(139,154,174,.25)', borderRadius: 999, padding: '3px 12px', whiteSpace: 'nowrap' as const }}>Coming Soon</div>
                 </div>
               ))}
             </div>

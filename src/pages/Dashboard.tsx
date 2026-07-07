@@ -33,7 +33,8 @@ const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { language, t } = useLanguage();
-  const { progress: overallProgress } = useProgress(user?.id);
+  const { chaptersCompleted, chaptersTotal } = useProgress(user?.id);
+  const overallProgress = chaptersTotal > 0 ? Math.round((chaptersCompleted / chaptersTotal) * 100) : 0;
 
   const [courseProgresses, setCourseProgresses] = useState<CourseProgress[]>([]);
   const [streak, setStreak] = useState(0);
