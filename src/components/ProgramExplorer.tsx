@@ -245,7 +245,7 @@ export const ProgramExplorer = ({ program, onClose }: Props) => {
                     </div>
                   </div>
                   <div style={{ fontSize: 11, color: DS.fm, textAlign: 'right' as const }}>
-                    <div>All 4 schools · 30+ programs</div>
+                    <div>All live programs · more coming soon</div>
                     <div>Cancel anytime</div>
                   </div>
                 </div>
