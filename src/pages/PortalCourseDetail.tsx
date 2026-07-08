@@ -9,6 +9,7 @@ import MobileCourse from '@/components/portal/MobileCourse';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { DEPRECATED_COURSE_REDIRECTS } from '@/lib/courseRedirects';
 import { roleForEmail } from '@/lib/roles';
+import { getProgramStatus } from '@/config/mvpCatalog';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', border:'#1E2D47', fg:'#EDF2F7', fm:'#8596AD',
@@ -44,7 +45,7 @@ export default function PortalCourseDetail() {
       return;
     }
     Promise.all([
-      supabase.from('courses').select('id, title, description, translations, is_published').eq('id', courseId).single(),
+      supabase.from('courses').select('id, title, description, translations, is_published, curriculum_version').eq('id', courseId).single(),
       supabase.from('chapters').select('id, title, description, order_index, translations').eq('course_id', courseId).order('order_index'),
     ]).then(([courseRes, chaptersRes]) => {
       // Guard: students must not open an unpublished course. Redirect to the
@@ -53,6 +54,11 @@ export default function PortalCourseDetail() {
       if (courseRes.data && courseRes.data.is_published === false && !isFounder) {
         const repl = DEPRECATED_COURSE_REDIRECTS[courseId];
         if (repl) { navigate(`/portal/course/${repl}`, { replace: true }); return; }
+        setUnavailable(true); setLoading(false); return;
+      }
+      // MVP gate (WO-P0-001): deep links to Preview / Coming Soon programs do
+      // not open a course experience. Founders may still inspect them.
+      if (courseRes.data && !isFounder && getProgramStatus(courseRes.data) !== 'active') {
         setUnavailable(true); setLoading(false); return;
       }
       if (courseRes.data) setCourse(courseRes.data);

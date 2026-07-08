@@ -19,17 +19,14 @@ export default function TalentNetwork() {
     { icon:'⭐', titleKey:'talent.feat0_title', descKey:'talent.feat0_desc' },
     { icon:'🗂️', titleKey:'talent.feat1_title', descKey:'talent.feat1_desc' },
     { icon:'🏢', titleKey:'talent.feat2_title', descKey:'talent.feat2_desc' },
-    { icon:'🌐', titleKey:'talent.feat3_title', descKey:'talent.feat3_desc' },
+    { icon:'🌐', titleKey:'talent.feat3_title', descKey:'mvp.talent.feat3_desc' },
     { icon:'📊', titleKey:'talent.feat4_title', descKey:'talent.feat4_desc' },
     { icon:'🤝', titleKey:'talent.feat5_title', descKey:'talent.feat5_desc' },
   ];
 
-  const STATS = [
-    { val:'150+', lblKey:'talent.stat0' },
-    { val:'94%',  lblKey:'talent.stat1' },
-    { val:'$127K', lblKey:'talent.stat2' },
-    { val:'62',   lblKey:'talent.stat3' },
-  ];
+  // WO-P0-001: fabricated network stats (150+ partners, 94% placement, $127K,
+  // 62 countries) removed — no placement statistics exist yet. Do not restore
+  // without verified data per LAUNCH_DECISION_PRINCIPLE.md.
 
   return (
     <div style={{ background: DS.bg, minHeight: '100vh', fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif", color: DS.fg }}>
@@ -38,11 +35,11 @@ export default function TalentNetwork() {
         {/* Hero */}
         <section style={{ padding: '5rem 0 3rem', background: 'linear-gradient(160deg,#0a1628 0%,#0d1f3c 60%,#0a1220 100%)', borderBottom: `1px solid ${DS.border}` }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem' }}>
-            <div style={{ display: 'inline-flex', fontSize: 11, fontWeight: 600, padding: '.28rem .75rem', borderRadius: 999, background: DS.grd, border: '1px solid rgba(34,201,138,.28)', color: DS.green, marginBottom: '1rem' }}>{t('talent.badge')}</div>
+            <div style={{ display: 'inline-flex', fontSize: 11, fontWeight: 600, padding: '.28rem .75rem', borderRadius: 999, background: DS.grd, border: '1px solid rgba(34,201,138,.28)', color: DS.green, marginBottom: '1rem' }}>{t('mvp.talent.badge')}</div>
             <h1 style={{ fontSize: 'clamp(2.2rem,4vw,3.2rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.5px', marginBottom: '1rem' }}>
               {t('talent.h1a')}<br /><span style={{ color: DS.green }}>{t('talent.h1b')}</span>
             </h1>
-            <p style={{ fontSize: '1rem', color: DS.fm, maxWidth: 560, lineHeight: 1.72, marginBottom: '2rem' }}>{t('talent.sub')}</p>
+            <p style={{ fontSize: '1rem', color: DS.fm, maxWidth: 560, lineHeight: 1.72, marginBottom: '2rem' }}>{t('mvp.talent.sub')}</p>
             <div style={{ display: 'flex', gap: '.75rem' }}>
               <button onClick={() => navigate('/pricing')} style={{ fontSize: 13, fontWeight: 700, padding: '.68rem 1.5rem', borderRadius: '.75rem', background: DS.green, color: '#0B111E', border: 'none', cursor: 'pointer' }}>{t('talent.join_btn')}</button>
               <button onClick={() => navigate('/employers')} style={{ fontSize: 13, fontWeight: 700, padding: '.68rem 1.5rem', borderRadius: '.75rem', background: 'transparent', color: DS.fg, border: `1px solid ${DS.border}`, cursor: 'pointer' }}>{t('talent.emp_btn')}</button>
@@ -50,15 +47,12 @@ export default function TalentNetwork() {
           </div>
         </section>
 
-        {/* Stats */}
-        <section style={{ padding: '3rem 0', borderBottom: `1px solid ${DS.border}` }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '1rem' }}>
-            {STATS.map(s => (
-              <div key={s.val} style={{ textAlign: 'center', padding: '1.5rem' }}>
-                <div style={{ fontSize: '2.2rem', fontWeight: 800, color: DS.green, lineHeight: 1, marginBottom: 4 }}>{s.val}</div>
-                <div style={{ fontSize: 12, color: DS.fm }}>{t(s.lblKey)}</div>
-              </div>
-            ))}
+        {/* In-development notice (replaces unverified network stats) */}
+        <section style={{ padding: '2rem 0', borderBottom: `1px solid ${DS.border}` }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem' }}>
+            <div style={{ fontSize: 13, color: DS.fm, background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', padding: '1rem 1.25rem', lineHeight: 1.7, textAlign: 'center' as const }}>
+              {t('mvp.talent.stat_note')}
+            </div>
           </div>
         </section>
 

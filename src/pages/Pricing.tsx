@@ -17,14 +17,17 @@ export default function Pricing() {
   const { t } = useLanguage();
   const [openFaq, setOpenFaq] = React.useState<number|null>(null);
 
+  // WO-P0-001: includes/FAQ reflect what is live at MVP launch — 4 programs
+  // now, more coming soon, certificates in development. mvp.* keys are the
+  // truthful EN copy every locale falls back to.
   const INCLUDES = [
-    t('pricing.inc0'), t('pricing.inc1'), t('pricing.inc2'), t('pricing.inc3'),
-    t('pricing.inc4'), t('pricing.inc5'), t('pricing.inc6'), t('pricing.inc7'),
+    t('mvp.pricing.inc0'), t('mvp.pricing.inc1'), t('pricing.inc2'), t('pricing.inc3'),
+    t('mvp.pricing.inc4'), t('mvp.pricing.inc5'), t('pricing.inc6'), t('pricing.inc7'),
   ];
 
   const FAQ = [
     { q: t('pricing.faq_q0'), a: t('pricing.faq_a0') },
-    { q: t('pricing.faq_q1'), a: t('pricing.faq_a1') },
+    { q: t('pricing.faq_q1'), a: t('mvp.pricing.faq_a1') },
     { q: t('pricing.faq_q2'), a: t('pricing.faq_a2') },
     { q: t('pricing.faq_q3'), a: t('pricing.faq_a3') },
     { q: t('pricing.faq_q4'), a: t('pricing.faq_a4') },
@@ -41,7 +44,7 @@ export default function Pricing() {
             <h1 style={{ fontSize: 'clamp(2.2rem,4vw,3.2rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.5px', marginBottom: '1rem' }}>
               {t('pricing.h1_line1')}<br />{t('pricing.h1_line2')}<br /><span style={{ color: DS.gold }}>{t('pricing.h1_line3')}</span>
             </h1>
-            <p style={{ fontSize: '1rem', color: DS.fm, maxWidth: 560, lineHeight: 1.72 }}>{t('pricing.sub')}</p>
+            <p style={{ fontSize: '1rem', color: DS.fm, maxWidth: 560, lineHeight: 1.72 }}>{t('mvp.pricing.sub')}</p>
           </div>
         </section>
 
