@@ -45,7 +45,10 @@ export default function Certifications() {
             <h1 style={{ fontSize: 'clamp(2.2rem,4vw,3.2rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.5px', marginBottom: '1rem' }}>
               {t('cert.h1a')}<br /><span style={{ color: DS.gold }}>{t('cert.h1b')}</span>
             </h1>
-            <p style={{ fontSize: '1rem', color: DS.fm, maxWidth: 560, lineHeight: 1.72 }}>{t('cert.sub')}</p>
+            <p style={{ fontSize: '1rem', color: DS.fm, maxWidth: 560, lineHeight: 1.72 }}>{t('mvp.cert.sub')}</p>
+            <div style={{ display: 'inline-block', marginTop: '1.1rem', fontSize: 12, color: DS.gold, background: DS.gd, border: `1px solid ${DS.gb}`, borderRadius: '.5rem', padding: '.5rem .85rem', lineHeight: 1.6, maxWidth: 560 }}>
+              {t('mvp.cert.coming_soon_note')}
+            </div>
           </div>
         </section>
 
@@ -68,7 +71,7 @@ export default function Certifications() {
                     <div style={{ fontSize: 11, color: DS.fm, marginTop: 2 }}>{t('cert.level_of_7a')}{i+1}{t('cert.level_of_7b')}{lv.weeks}{t('cert.weeks')}</div>
                   </div>
                   <div style={{ fontSize: 12, color: DS.fm }}>{t(lv.reqKey)}</div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: lv.color, background: lv.color + '20', border: `1px solid ${lv.color}40`, borderRadius: 999, padding: '3px 12px', whiteSpace: 'nowrap' as const }}>{t('cert.active')}</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#8b9aae', background: 'rgba(139,154,174,.12)', border: '1px solid rgba(139,154,174,.25)', borderRadius: 999, padding: '3px 12px', whiteSpace: 'nowrap' as const }}>Coming Soon</div>
                 </div>
               ))}
             </div>
@@ -98,10 +101,9 @@ export default function Certifications() {
         <div style={{ background: DS.card, borderTop: `1px solid ${DS.border}`, padding: '4.5rem 0', textAlign: 'center' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem' }}>
             <h2 style={{ fontSize: 'clamp(1.75rem,3vw,2.4rem)', fontWeight: 800, marginBottom: '.75rem' }}>{t('cert.cta_h2a')}<br /><span style={{ color: DS.gold }}>{t('cert.badge')}</span> {t('cert.cta_h2b')}</h2>
-            <p style={{ fontSize: 14, color: DS.fm, maxWidth: 440, margin: '0 auto 2rem', lineHeight: 1.7 }}>{t('cert.cta_sub')}</p>
+            <p style={{ fontSize: 14, color: DS.fm, maxWidth: 440, margin: '0 auto 2rem', lineHeight: 1.7 }}>{t('mvp.cert.cta_sub')}</p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '.75rem' }}>
               <button onClick={() => navigate('/pricing')} style={{ fontSize: 14, fontWeight: 700, padding: '.68rem 1.5rem', borderRadius: '.75rem', background: DS.gold, color: '#0B111E', border: 'none', cursor: 'pointer' }}>{t('cert.enroll_btn')}</button>
-              <button onClick={() => navigate('/portal')} style={{ fontSize: 14, fontWeight: 700, padding: '.68rem 1.5rem', borderRadius: '.75rem', background: 'transparent', color: DS.fg, border: `1px solid ${DS.border}`, cursor: 'pointer' }}>{t('cert.view_btn')}</button>
             </div>
           </div>
         </div>

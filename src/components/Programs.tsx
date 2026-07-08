@@ -75,7 +75,7 @@ const Programs = () => {
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/20 mb-6"
           >
             <Zap className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold text-primary">{t('pm.badge')}</span>
+            <span className="text-sm font-semibold text-primary">{t('mvp.pm.badge')}</span>
           </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
@@ -124,7 +124,7 @@ const Programs = () => {
                   className="ml-auto text-xs font-bold relative z-10 px-2.5 py-0.5 rounded-full"
                   style={{ color: "rgba(255,255,255,0.85)", background: "rgba(0,0,0,0.25)", border: "1px solid rgba(255,255,255,0.15)" }}
                 >
-                  {t('pm.count_programs').replace('{n}', String(school.count))}
+                  {t('mvp.pm.roadmap_chip')} · {t('pm.count_programs').replace('{n}', String(school.count))}
                 </span>
               </div>
 
@@ -167,6 +167,10 @@ const Programs = () => {
             </motion.div>
           ))}
         </div>
+
+        <p className="text-xs text-muted-foreground text-center max-w-2xl mx-auto mb-10 leading-relaxed">
+          {t('mvp.pm.salary_note')}
+        </p>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}

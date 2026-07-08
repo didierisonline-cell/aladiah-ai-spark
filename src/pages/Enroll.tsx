@@ -12,11 +12,21 @@ import WaitlistModal from '@/components/WaitlistModal';
 
 const SEAL_SVG = `<svg width="460" height="460" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"><circle cx="250" cy="250" r="248" fill="none" stroke="#C4A44A" stroke-width="3.5"/><circle cx="250" cy="250" r="243" fill="none" stroke="#C4A44A" stroke-width="1.2"/><circle cx="250" cy="250" r="230" fill="none" stroke="#C4A44A" stroke-width="2"/><circle cx="250" cy="250" r="160" fill="none" stroke="#C4A44A" stroke-width="1.5"/><text x="250" y="450" text-anchor="middle" dominant-baseline="central" fill="#C4A44A" font-family="Times New Roman, serif" font-weight="700" font-size="28" letter-spacing="5">2026</text><path d="M 188,160 L 188,280 Q 188,330 218,353 Q 234,365 250,373 Q 266,365 282,353 Q 312,330 312,280 L 312,160 Z" fill="none" stroke="#C4A44A" stroke-width="2.5"/><path d="M 190,162 L 190,197 Q 220,210 250,197 Q 280,210 310,197 L 310,162 Z" fill="#C4A44A" opacity="0.6"/></svg>`;
 
-const PLAN_DEFS = [
-  { id: 'foundation',  tier: 'TIER 1', color: '#3b82f6', price: 99,  featureCount: 6 },
-  { id: 'accelerator', tier: 'TIER 2', color: '#f59e0b', price: 299, featureCount: 7, popular: true },
-  { id: 'elite',       tier: 'TIER 3', color: '#8b5cf6', price: 499, featureCount: 7 },
-] as const;
+// WO-P0-001 (issue #117): /enroll matches /pricing exactly — one plan, one price.
+// Features reflect what is live at MVP launch; certificates are Coming Soon.
+const PLAN = {
+  name: 'Aladiah All-Access Pass',
+  price: 99.99,
+  color: '#C4A44A',
+  features: [
+    '4 AI career programs — live now',
+    'More programs coming soon',
+    'Prof. Didier AI — unlimited sessions',
+    'Enterprise simulations',
+    'Career tools & portfolio builder',
+    'Aladiah Certified™ — Coming Soon',
+  ],
+} as const;
 
 const enrollmentSchema = z.object({
   fullName: z.string().trim().min(1).max(100),
@@ -44,18 +54,9 @@ const Enroll = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const plans = PLAN_DEFS.map(p => ({
-    ...p,
-    name: t(`enroll.plan.${p.id}.name`),
-    features: Array.from({ length: p.featureCount }, (_, i) => t(`enroll.plan.${p.id}.f${i + 1}`)),
-  }));
-
-  const [selectedPlanId, setSelectedPlanId] = useState<string>('accelerator');
   const [waitlistOpen, setWaitlistOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ fullName: '', email: '', phone: '', company: '', jobTitle: '', country: '' });
-
-  const selectedPlan = plans.find(p => p.id === selectedPlanId) ?? plans[1];
 
   const updateField = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
 
@@ -68,10 +69,17 @@ const Enroll = () => {
     }
     setLoading(true);
     try {
+      // Same checkout contract as /pricing surfaces: server derives the tier
+      // from the priceId (SEC-002); no client-side plan/price fields.
       const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ ...result.data, plan: selectedPlan.id, price: selectedPlan.price }),
+        body: JSON.stringify({
+          priceId: import.meta.env.VITE_STRIPE_PRICE_ACCELERATOR || 'price_1TW7U21wgazWak4Atj7TblB3',
+          email: result.data.email,
+          successUrl: `${window.location.origin}/auth?payment=success`,
+          cancelUrl: window.location.href,
+        }),
       });
       const data = await resp.json();
       if (data.url) {
@@ -118,53 +126,37 @@ const Enroll = () => {
 
       <div className="relative z-10 container mx-auto px-4 py-10 max-w-6xl">
 
-        {/* Plan selector */}
+        {/* One plan — matches /pricing */}
         <div className="mb-10">
-          <h2 className="text-center text-white font-bold text-xl mb-2">{t('enroll.select_plan')}</h2>
-          <p className="text-center mb-6" style={{ color: 'rgba(196,164,74,0.7)', fontSize: 13 }}>{t('enroll.save_annual')}</p>
-          <div className="grid md:grid-cols-3 gap-4">
-            {plans.map(plan => (
-              <motion.div
-                key={plan.id}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setSelectedPlanId(plan.id)}
-                className="relative rounded-2xl p-5 cursor-pointer transition-all duration-300"
-                style={{
-                  border: selectedPlan.id === plan.id ? `2px solid ${plan.color}` : '2px solid rgba(255,255,255,0.08)',
-                  background: selectedPlan.id === plan.id ? `${plan.color}18` : 'rgba(255,255,255,0.03)',
-                  boxShadow: selectedPlan.id === plan.id ? `0 0 24px ${plan.color}33` : 'none',
-                }}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-bold" style={{ background: plan.color, color: '#fff' }}>
-                    {t('enroll.popular')}
-                  </div>
-                )}
-                <div className="text-xs font-bold mb-1" style={{ color: plan.color }}>{plan.tier}</div>
-                <div className="text-white font-bold text-lg mb-2">{plan.name}</div>
-                <div className="flex items-baseline gap-1 mb-4">
-                  <span style={{ color: plan.color, fontSize: 36, fontWeight: 800 }}>${plan.price}</span>
-                  <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>{t('enroll.per_month')}</span>
+          <h2 className="text-center text-white font-bold text-xl mb-2">One Platform. One Price.</h2>
+          <p className="text-center mb-6" style={{ color: 'rgba(196,164,74,0.7)', fontSize: 13 }}>
+            Every live program included — more programs and Aladiah Certified™ levels join your pass as they launch.
+          </p>
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            className="relative rounded-2xl p-6 max-w-md mx-auto text-center"
+            style={{
+              border: `2px solid ${PLAN.color}`,
+              background: `${PLAN.color}14`,
+              boxShadow: `0 0 28px ${PLAN.color}33`,
+            }}
+          >
+            <div className="text-white font-bold text-lg mb-2">{PLAN.name}</div>
+            <div className="flex items-baseline justify-center gap-1 mb-4">
+              <span style={{ color: PLAN.color, fontSize: 40, fontWeight: 800 }}>$99</span>
+              <span style={{ color: PLAN.color, fontSize: 20, fontWeight: 700 }}>.99</span>
+              <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>{t('enroll.per_month')}</span>
+            </div>
+            <div className="space-y-1.5 text-left inline-block">
+              {PLAN.features.map((f, i) => (
+                <div key={i} className="flex items-center gap-2 text-xs" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                  <CheckCircle className="w-3 h-3 flex-shrink-0" style={{ color: PLAN.color }} />
+                  {f}
                 </div>
-                <div className="space-y-1.5">
-                  {plan.features.slice(0, 4).map((f, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs" style={{ color: 'rgba(255,255,255,0.65)' }}>
-                      <CheckCircle className="w-3 h-3 flex-shrink-0" style={{ color: plan.color }} />
-                      {f}
-                    </div>
-                  ))}
-                  {plan.features.length > 4 && (
-                    <div className="text-xs" style={{ color: plan.color }}>+{plan.features.length - 4} {t('enroll.more_benefits')}</div>
-                  )}
-                </div>
-                {selectedPlan.id === plan.id && (
-                  <div className="mt-3 flex items-center gap-1 text-xs font-semibold" style={{ color: plan.color }}>
-                    <CheckCircle className="w-3.5 h-3.5" /> {t('enroll.selected')}
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </div>
+              ))}
+            </div>
+            <div className="mt-4 text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>Cancel anytime</div>
+          </motion.div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -213,7 +205,7 @@ const Enroll = () => {
                 <div className="pt-4">
                   <button type="submit" disabled={loading} className="w-full py-4 rounded-2xl font-bold text-base text-white transition-all duration-300 flex items-center justify-center gap-2"
                     style={{ background: loading ? 'rgba(196,164,74,0.3)' : 'linear-gradient(135deg, #C4A44A, #f0d060, #C4A44A)', color: '#0a0f1e', boxShadow: loading ? 'none' : '0 4px 24px rgba(196,164,74,0.4)' }}>
-                    {loading ? t('enroll.processing') : <>{t('enroll.proceed')} — ${selectedPlan.price}/mo <ArrowRight className="w-4 h-4" /></>}
+                    {loading ? t('enroll.processing') : <>{t('enroll.proceed')} — $99.99/mo <ArrowRight className="w-4 h-4" /></>}
                   </button>
                 </div>
               </form>
@@ -222,29 +214,29 @@ const Enroll = () => {
 
           {/* Sidebar */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-5">
-            {/* Selected plan summary */}
-            <div className="rounded-2xl p-5" style={{ background: `${selectedPlan.color}12`, border: `1px solid ${selectedPlan.color}40` }}>
+            {/* Plan summary */}
+            <div className="rounded-2xl p-5" style={{ background: `${PLAN.color}12`, border: `1px solid ${PLAN.color}40` }}>
               <div className="flex items-center gap-3 mb-4">
                 <div style={{ width: 40, height: 40 }} dangerouslySetInnerHTML={{ __html: SEAL_SVG.replace('width="460" height="460"', 'width="40" height="40"') }} />
                 <div>
-                  <div className="text-white font-bold text-sm">{selectedPlan.name}</div>
-                  <div className="text-xs" style={{ color: selectedPlan.color }}>{selectedPlan.tier}</div>
+                  <div className="text-white font-bold text-sm">{PLAN.name}</div>
+                  <div className="text-xs" style={{ color: PLAN.color }}>Every live program included</div>
                 </div>
               </div>
               <div className="flex justify-between items-center py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                 <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>{t('enroll.monthly_total')}</span>
-                <span className="font-bold text-2xl" style={{ color: selectedPlan.color }}>${selectedPlan.price}/mo</span>
+                <span className="font-bold text-2xl" style={{ color: PLAN.color }}>$99.99/mo</span>
               </div>
-              <div className="text-xs mt-1" style={{ color: 'rgba(196,164,74,0.6)' }}>✓ {t('enroll.save_annual_plan')}</div>
+              <div className="text-xs mt-1" style={{ color: 'rgba(196,164,74,0.6)' }}>✓ Cancel anytime</div>
             </div>
 
             {/* What's included */}
             <div className="rounded-2xl p-5" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
               <h4 className="text-white font-semibold text-sm mb-3">{t('enroll.whats_included')}</h4>
               <div className="space-y-2">
-                {selectedPlan.features.map((f, i) => (
+                {PLAN.features.map((f, i) => (
                   <div key={i} className="flex items-start gap-2 text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                    <CheckCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: selectedPlan.color }} />
+                    <CheckCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: PLAN.color }} />
                     {f}
                   </div>
                 ))}
@@ -255,6 +247,11 @@ const Enroll = () => {
             <div className="flex items-center gap-3 text-xs px-2" style={{ color: 'rgba(255,255,255,0.35)' }}>
               <Shield className="w-4 h-4 flex-shrink-0" style={{ color: '#C4A44A' }} />
               {t('enroll.security')}
+            </div>
+
+            {/* Outcome disclaimer (WO-P0-001) */}
+            <div className="text-xs px-2" style={{ color: 'rgba(255,255,255,0.35)', lineHeight: 1.6 }}>
+              Aladiah provides career-focused training and portfolio building. It does not guarantee employment, placement, or salary outcomes.
             </div>
           </motion.div>
         </div>

@@ -17,10 +17,10 @@ export default function Employers() {
 
   const BENEFITS = [
     { icon:'📊', titleKey:'employers.b0_title', descKey:'employers.b0_desc' },
-    { icon:'✅', titleKey:'employers.b1_title', descKey:'employers.b1_desc' },
+    { icon:'✅', titleKey:'employers.b1_title', descKey:'mvp.employers.b1_desc' },
     { icon:'🎯', titleKey:'employers.b2_title', descKey:'employers.b2_desc' },
     { icon:'🤖', titleKey:'employers.b3_title', descKey:'employers.b3_desc' },
-    { icon:'🌍', titleKey:'employers.b4_title', descKey:'employers.b4_desc' },
+    { icon:'🌍', titleKey:'employers.b4_title', descKey:'mvp.employers.b4_desc' },
     { icon:'⚡', titleKey:'employers.b5_title', descKey:'employers.b5_desc' },
   ];
 
@@ -30,11 +30,11 @@ export default function Employers() {
       <div style={{ paddingTop: 70 }}>
         <section style={{ padding: '5rem 0 3rem', background: 'linear-gradient(160deg,#0a1628 0%,#0d1f3c 60%,#0a1220 100%)', borderBottom: `1px solid ${DS.border}` }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem' }}>
-            <div style={{ display: 'inline-flex', fontSize: 11, fontWeight: 600, padding: '.28rem .75rem', borderRadius: 999, background: DS.od, border: `1px solid ${DS.ob}`, color: DS.orange, marginBottom: '1rem' }}>{t('employers.badge')}</div>
+            <div style={{ display: 'inline-flex', fontSize: 11, fontWeight: 600, padding: '.28rem .75rem', borderRadius: 999, background: DS.od, border: `1px solid ${DS.ob}`, color: DS.orange, marginBottom: '1rem' }}>{t('mvp.employers.badge')}</div>
             <h1 style={{ fontSize: 'clamp(2.2rem,4vw,3.2rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.5px', marginBottom: '1rem' }}>
               {t('employers.h1a')}<br /><span style={{ color: DS.orange }}>{t('employers.h1b')}</span>
             </h1>
-            <p style={{ fontSize: '1rem', color: DS.fm, maxWidth: 560, lineHeight: 1.72, marginBottom: '2rem' }}>{t('employers.sub')}</p>
+            <p style={{ fontSize: '1rem', color: DS.fm, maxWidth: 560, lineHeight: 1.72, marginBottom: '2rem' }}>{t('mvp.employers.sub')}</p>
             <div style={{ display: 'flex', gap: '.75rem' }}>
               <a href="mailto:partners@aladiahacademy.com" style={{ fontSize: 13, fontWeight: 700, padding: '.68rem 1.5rem', borderRadius: '.75rem', background: DS.orange, color: '#fff', border: 'none', cursor: 'pointer', textDecoration: 'none' }}>{t('employers.partner_btn')}</a>
               <button onClick={() => navigate('/talent-network')} style={{ fontSize: 13, fontWeight: 700, padding: '.68rem 1.5rem', borderRadius: '.75rem', background: 'transparent', color: DS.fg, border: `1px solid ${DS.border}`, cursor: 'pointer' }}>{t('employers.browse_btn')}</button>
