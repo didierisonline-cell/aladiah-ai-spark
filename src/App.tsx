@@ -85,6 +85,7 @@ import MentorHub from "./pages/portal/MentorHub";
 import ProfileHub from "./pages/portal/ProfileHub";
 import PortalAvis from "./pages/PortalAvis";
 import ProfessorDidierLiveClassroom from "./pages/ProfessorDidierLiveClassroom";
+import ClassroomTestPage from "./pages/ClassroomTestPage";
 // Legal (public)
 import Terms from "./pages/legal/Terms";
 import Privacy from "./pages/legal/Privacy";
@@ -94,7 +95,7 @@ const queryClient = new QueryClient();
 
 const RouterAwareFloat = () => {
   const { pathname } = useLocation();
-  const isPortal = pathname.startsWith("/portal") || pathname.startsWith("/course") || pathname.startsWith("/chapter") || pathname.startsWith("/dashboard");
+  const isPortal = pathname.startsWith("/portal") || pathname.startsWith("/course") || pathname.startsWith("/chapter") || pathname.startsWith("/dashboard") || pathname.startsWith("/classroom-test");
   return isPortal ? null : <HomepageBot />;
 };
 
@@ -148,6 +149,8 @@ const AppContent = () => {
         <Route path="/portal/avis" element={<ProtectedRoute><PortalAvis /></ProtectedRoute>} />
         {/* Professor Didier™ Live Classroom — test route only, not yet production */}
         <Route path="/professor-live-test" element={<ProtectedRoute><ProfessorDidierLiveClassroom /></ProtectedRoute>} />
+        {/* WO-UX-CLASSROOM-001: Founder review prototype — static, public, no production wiring */}
+        <Route path="/classroom-test" element={<ClassroomTestPage />} />
         {/* Tools */}
         <Route path="/resume-studio" element={<ProtectedRoute><ResumeStudio /></ProtectedRoute>} />
         <Route path="/interview" element={<ProtectedRoute><InterviewSimulator /></ProtectedRoute>} />
