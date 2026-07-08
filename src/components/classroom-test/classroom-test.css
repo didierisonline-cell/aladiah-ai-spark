@@ -1,0 +1,123 @@
+/* =============================================================================
+ * classroom-test.css — SCOPED styles for the /classroom-test preview route only.
+ * WO-UX-CLASSROOM-001. Everything is prefixed `.ct-` so nothing leaks into the
+ * rest of the app. Imported only by ClassroomTest.tsx.
+ * ========================================================================== */
+
+/* Handwriting marker font for the digital whiteboard (matches the mock). */
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap");
+
+.ct-font-marker {
+  font-family: "Caveat", "Comic Sans MS", cursive;
+}
+
+/* Root ambient background: near-black navy with soft violet/blue glows. */
+.ct-root {
+  background:
+    radial-gradient(1200px 600px at 78% -8%, rgba(124, 58, 237, 0.16), transparent 60%),
+    radial-gradient(900px 500px at 8% 6%, rgba(37, 99, 235, 0.12), transparent 55%),
+    radial-gradient(1000px 700px at 50% 120%, rgba(168, 85, 247, 0.10), transparent 60%),
+    #05070e;
+}
+
+/* Premium glass card surface used across the classroom panels. */
+.ct-card {
+  background: linear-gradient(160deg, rgba(23, 30, 54, 0.72) 0%, rgba(10, 14, 26, 0.72) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+  box-shadow: 0 18px 50px -24px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+}
+
+.ct-card-glow {
+  box-shadow:
+    0 18px 50px -24px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(124, 58, 237, 0.14),
+    0 0 34px -10px rgba(124, 58, 237, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-color: rgba(139, 92, 246, 0.28);
+}
+
+/* Small uppercase section label (CLASS FLOW, SESSION CONTEXT, ...) */
+.ct-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #6f9bef;
+}
+
+/* Purple gradient wordmark for "PROFESSOR DIDIER™ LIVE" */
+.ct-didier-live {
+  background: linear-gradient(92deg, #c084fc 0%, #a855f7 45%, #e879f9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---- Animated equalizer / voice waveform ---- */
+.ct-wave {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 100%;
+}
+.ct-wave-bar {
+  width: 2.5px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #e879f9 0%, #a855f7 50%, #6366f1 100%);
+  transform-origin: center;
+  animation: ct-wave-anim 1.1s ease-in-out infinite;
+}
+@keyframes ct-wave-anim {
+  0%, 100% { transform: scaleY(0.22); opacity: 0.55; }
+  50%      { transform: scaleY(1);    opacity: 1; }
+}
+/* Paused (not speaking) state */
+.ct-wave.is-idle .ct-wave-bar { animation-play-state: paused; transform: scaleY(0.2); opacity: 0.4; }
+
+/* ---- Mic button pulsing glow ring ---- */
+.ct-mic-glow { position: relative; }
+.ct-mic-glow::before,
+.ct-mic-glow::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 999px;
+  border: 2px solid rgba(139, 92, 246, 0.55);
+  animation: ct-mic-ring 2.4s ease-out infinite;
+}
+.ct-mic-glow::after { animation-delay: 1.2s; }
+@keyframes ct-mic-ring {
+  0%   { transform: scale(0.9); opacity: 0.8; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+
+/* Slow float for the professor figure so the stage feels alive */
+@keyframes ct-float-slow {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+.ct-float-slow { animation: ct-float-slow 6s ease-in-out infinite; }
+
+/* Live dot pulse */
+@keyframes ct-live-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5); }
+  50%      { box-shadow: 0 0 0 5px rgba(34, 197, 94, 0); }
+}
+.ct-live-dot { animation: ct-live-pulse 1.8s ease-in-out infinite; }
+
+/* Thin custom scrollbars inside classroom panels */
+.ct-scroll { scrollbar-width: thin; scrollbar-color: rgba(139,92,246,0.35) transparent; }
+.ct-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.ct-scroll::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.35); border-radius: 999px; }
+.ct-scroll::-webkit-scrollbar-track { background: transparent; }
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .ct-wave-bar,
+  .ct-mic-glow::before,
+  .ct-mic-glow::after,
+  .ct-float-slow,
+  .ct-live-dot { animation: none !important; }
+}

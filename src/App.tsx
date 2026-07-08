@@ -59,11 +59,14 @@ import AdmissionsTruth from "./pages/founder/AdmissionsTruth";
 import MarketingTruth from "./pages/founder/MarketingTruth";
 import AttributionTruth from "./pages/founder/AttributionTruth";
 import CeoTruthDashboard from "./pages/founder/CeoTruthDashboard";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { captureFirstTouch } from "@/lib/attribution";
 import ResumeStudio from "./pages/ResumeStudio";
 import InterviewSimulator from "./pages/InterviewSimulator";
 import NotFound from "./pages/NotFound";
+// WO-UX-CLASSROOM-001 / 003 — AI Classroom Portal (TEST MODE prototype; Founder review only).
+// Lazy-loaded so its animated media never enters the main app bundle.
+const ClassroomTest = lazy(() => import("./pages/ClassroomTest"));
 import HomepageBot from "@/components/HomepageBot";
 import FounderModeBadge from "@/components/founder/FounderModeBadge";
 import { useLocation } from "react-router-dom";
@@ -93,7 +96,7 @@ const queryClient = new QueryClient();
 
 const RouterAwareFloat = () => {
   const { pathname } = useLocation();
-  const isPortal = pathname.startsWith("/portal") || pathname.startsWith("/course") || pathname.startsWith("/chapter") || pathname.startsWith("/dashboard");
+  const isPortal = pathname.startsWith("/portal") || pathname.startsWith("/course") || pathname.startsWith("/chapter") || pathname.startsWith("/dashboard") || pathname.startsWith("/classroom-test");
   return isPortal ? null : <HomepageBot />;
 };
 
@@ -109,6 +112,8 @@ const AppContent = () => {
         <Route path="/auth" element={<Auth />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/pricing" element={<Pricing />} />
+        {/* WO-UX-CLASSROOM-001 — AI Classroom Portal (TEST MODE, Founder review only; not linked from nav) */}
+        <Route path="/classroom-test" element={<Suspense fallback={<div className="min-h-screen bg-[#05070e]" />}><ClassroomTest /></Suspense>} />
         <Route path="/schools" element={<Schools />} />
         <Route path="/certifications" element={<Certifications />} />
         <Route path="/talent-network" element={<TalentNetwork />} />

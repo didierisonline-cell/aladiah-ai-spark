@@ -9,6 +9,7 @@ import MobileCourse from '@/components/portal/MobileCourse';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { DEPRECATED_COURSE_REDIRECTS } from '@/lib/courseRedirects';
 import { roleForEmail } from '@/lib/roles';
+import { isPreviewOnlyCourse } from '@/config/coursePolicy';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', border:'#1E2D47', fg:'#EDF2F7', fm:'#8596AD',
@@ -32,6 +33,8 @@ export default function PortalCourseDetail() {
   const { t, language } = useLanguage();
   const { isPhone } = useBreakpoint();
   const isFounder = roleForEmail(user?.email) === 'founder';
+  // P1-B: preview-only courses (e.g. Business Analyst) show as Preview and cannot be entered.
+  const previewOnly = isPreviewOnlyCourse(courseId) && !isFounder;
 
   useEffect(() => {
     if (!user || !courseId) return;
@@ -134,6 +137,13 @@ export default function PortalCourseDetail() {
             </div>
           )}
 
+          {/* P1-B: Business Analyst preview lock (code-side; DB is_published unchanged). */}
+          {previewOnly && (
+            <div style={{ marginBottom: '1.25rem', padding: '.85rem 1.1rem', borderRadius: '.6rem', background: DS.od, border: `1px solid ${DS.ob}`, color: DS.gold, fontSize: 13, fontWeight: 700 }}>
+              🔒 This program is in Preview — full lessons unlock soon.
+            </div>
+          )}
+
           {/* Course Hero */}
           {course && (
             <div style={{ marginBottom: '2rem' }}>
@@ -166,12 +176,13 @@ export default function PortalCourseDetail() {
               return (
                 <div
                   key={ch.id}
-                  onClick={() => navigate(`/course/${courseId}/chapter/${ch.id}`)}
+                  onClick={() => { if (previewOnly) return; navigate(`/course/${courseId}/chapter/${ch.id}`); }}
                   style={{
                     display: 'flex', alignItems: 'center', gap: '1rem',
                     padding: '1.25rem 1.5rem',
                     background: DS.card, border: `1px solid ${DS.border}`,
-                    borderRadius: '.875rem', cursor: 'pointer', transition: 'all .18s',
+                    borderRadius: '.875rem', cursor: previewOnly ? 'default' : 'pointer', transition: 'all .18s',
+                    opacity: previewOnly ? 0.6 : 1,
                   }}
                   onMouseEnter={e => {
                     (e.currentTarget as HTMLElement).style.borderColor = DS.bb;
@@ -211,8 +222,8 @@ export default function PortalCourseDetail() {
                     )}
                   </div>
 
-                  {/* Arrow */}
-                  <div style={{ color: DS.fm, fontSize: 18, flexShrink: 0 }}>→</div>
+                  {/* Arrow (lock when preview-only) */}
+                  <div style={{ color: DS.fm, fontSize: 18, flexShrink: 0 }}>{previewOnly ? '🔒' : '→'}</div>
                 </div>
               );
             })}

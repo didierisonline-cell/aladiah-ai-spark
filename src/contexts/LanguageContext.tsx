@@ -35,6 +35,27 @@ export const languageNames: Record<Language, string> = {
 
 const translations: Record<Language, Record<string, string>> = {
   en: {
+    // Official Classroom static chrome labels (P1-C). English baseline; other
+    // languages gracefully fall back to English via t() until translated.
+    'classroom.class_flow': "Class Flow",
+    'classroom.session_context': "Session Context",
+    'classroom.quick_voice': "Quick Voice Commands",
+    'classroom.you_can_say': "You Can Say",
+    'classroom.student_notes': "Student Notes",
+    'classroom.mute': "Mute",
+    'classroom.share_screen': "Share Screen",
+    'classroom.tap_to_speak': "Tap to Speak",
+    'classroom.open_whiteboard': "Open Whiteboard",
+    'classroom.need_help': "Need Help?",
+    'classroom.professor_mode': "Professor Mode",
+    'classroom.live_session': "LIVE SESSION",
+    'classroom.end_session': "End Session",
+    'classroom.online': "Online",
+    'classroom.speaking': "Speaking",
+    'classroom.listening': "Listening",
+    'classroom.ready': "Ready",
+    'classroom.on_air': "ON AIR",
+    'classroom.connecting': "Connecting",
     'chapter.visual_breakdown': "Visual Breakdown",
     'chapter.generating_visuals': "Generating visual diagrams...",
     'chapter.diagram': "Diagram",
