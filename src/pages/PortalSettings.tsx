@@ -287,7 +287,7 @@ export default function PortalSettings() {
 
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1rem' }}>
                   <div>
-                    <div style={{ fontSize:14, fontWeight:700, color:DS.gold }}>Aladiah All-Access Pass™</div>
+                    <div style={{ fontSize:14, fontWeight:700, color:DS.gold }}>Aladiah All-Access Pass</div>
                     <div style={{ fontSize:12, color:DS.fm }}>$99.99/month · Renews June 26, 2026</div>
                   </div>
                   <span style={{ fontSize:11, fontWeight:700, padding:'4px 12px', borderRadius:999, background:DS.grd, color:DS.green, border:'1px solid rgba(34,201,138,.28)' }}>{t('portal.settings.active')}</span>

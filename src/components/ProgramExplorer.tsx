@@ -239,7 +239,7 @@ export const ProgramExplorer = ({ program, onClose }: Props) => {
               <>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '.85rem', flexWrap: 'wrap' as const, gap: '.5rem' }}>
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: DS.gold, letterSpacing: .5 }}>ALADIAH ALL-ACCESS PASS™</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: DS.gold, letterSpacing: .5 }}>ALADIAH ALL-ACCESS PASS</div>
                     <div style={{ fontSize: '1.5rem', fontWeight: 800, color: DS.fg, lineHeight: 1 }}>
                       $99<span style={{ fontSize: '.9rem', color: DS.fm, fontWeight: 400 }}>.99/mo</span>
                     </div>
