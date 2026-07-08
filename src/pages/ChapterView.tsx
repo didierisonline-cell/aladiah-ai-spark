@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo, lazy, Suspense } from 'react';
 import { getLocalizedField } from '@/lib/i18nData';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -15,6 +15,10 @@ import { isFounderEmail } from '@/lib/roles';
 import { DEPRECATED_COURSE_REDIRECTS } from '@/lib/courseRedirects';
 import { founderModeOn } from '@/hooks/useFounderMode';
 import MobileLessonPlayer from '@/components/portal/MobileLessonPlayer';
+import { OFFICIAL_CLASSROOM } from '@/config/classroomFlag';
+// Official Aladiah Classroom (approved UI). Lazy so its media bundle never enters
+// the main app chunk — it loads only when a lesson is opened with the flag ON.
+const OfficialClassroom = lazy(() => import('@/components/classroom-test/OfficialClassroom'));
 
 const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string;
 
@@ -181,6 +185,7 @@ You are Prof. Didier at Aladiah Academy. Solo Excelencia — only excellence.
 Lesson: "${lessonTitle}" | Module: "${chapterTitle}".
 Lesson outline: ${transcriptSnippet}
 Teach using Socratic method: ask questions, guide discovery, section by section.
+Teaching style: be conversational, warm, premium, practical, intelligent, direct and human — like a live one-on-one professor, not a generic assistant. Use natural phrasing such as "Let's look at what this means in a real company…", "Notice the board here…", "Here's what usually happens at work…", "Let me make this simpler…", and "Now I want you to think about this…". Reference the on-screen board/visual when it helps and give a concrete workplace example. Stay grounded ONLY in THIS lesson and its approved outline; if the student drifts off-topic, gently steer back. Never invent curriculum beyond the lesson outline.
 If student asks questions, answer fully then resume. Say "continue" to proceed.
 After teaching all sections, conduct an ORAL RECAP ASSESSMENT: ask exactly 5 recap questions one by one, waiting for the student's answer to each before asking the next, giving brief feedback. Do not skip ahead. While asking these questions, never say "module complete", "ready for the next level", "congratulations", or "Solo Excelencia" — keep all closing language for the very end.
 Only after the student has answered the 5th question and you have given final feedback, say one warm closing sentence to the student in ${lang}, then end your message with this exact tag on its own, in English, verbatim: aladiah-module-complete-confirmed
@@ -428,6 +433,27 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
     ? Math.round((passedQuizzes.filter(id => quizzes.some(q => q.id === id)).length / videos.length) * 100)
     : 0;
 
+  // Lesson-specific "You can say" prompts for the official classroom (program-aware).
+  const suggestedPrompts = useMemo<string[]>(() => {
+    const titleLc = (course?.title || '').toLowerCase();
+    const domain = titleLc.includes('scrum') ? 'Scrum'
+      : titleLc.includes('project') ? 'project management'
+      : titleLc.includes('business anal') ? 'business analysis'
+      : titleLc.includes('data') ? 'data analytics'
+      : (titleLc.includes('cyber') || titleLc.includes('security')) ? 'cybersecurity'
+      : 'this field';
+    return [
+      'Explain this lesson again',
+      'Give me a real-world example',
+      'Quiz me on this lesson',
+      'Show me the board',
+      'Simplify this concept',
+      `How does this apply at work in ${domain}?`,
+      'What should I remember for the exam?',
+      'What portfolio artifact should I create?',
+    ];
+  }, [course]);
+
   const mainPoints: string[] = [];
 
   // ── Spec A: app-owned ordered step list for this module ──────────────────────
@@ -530,6 +556,24 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
         </div>
       )}
 
+      {/* OFFICIAL ALADIAH CLASSROOM (flag ON) — the approved premium classroom is the
+          student lesson experience. Flag OFF → the legacy phone/desktop blocks below
+          (kept as fallback). The paywall overlay and Quiz modal are siblings, unchanged,
+          so gates/quiz/progress/Stripe behave exactly as before. */}
+      {OFFICIAL_CLASSROOM && currentLesson ? (
+        <Suspense fallback={<div style={{ minHeight: '100vh', background: '#05070e' }} />}>
+          <OfficialClassroom
+            course={course} chapter={chapter} currentLesson={currentLesson}
+            videos={videos} quizzes={quizzes} passedQuizzes={passedQuizzes}
+            progress={progress} continueIsToQuiz={continueIsToQuiz} recapComplete={recapComplete}
+            isLive={isLive} isSpeaking={isSpeaking} convStatus={convStatus} transcript={transcript} duration={duration}
+            lessonVisuals={lessonVisuals} suggestedPrompts={suggestedPrompts}
+            fmt={fmt} getTitle={getTitle} getDescription={getDescription} getTranscript={getTranscript}
+            onSelectLesson={setCurrentLesson} onOpenQuiz={(id: string) => setActiveQuizId(id)} onContinue={handleContinue}
+            onStart={startSession} onEnd={endSession} onBack={() => navigate(`/portal/course/${courseId}`)}
+          />
+        </Suspense>
+      ) : (<>
       {/* Phone (< 768px): immersive single-column lesson player. */}
       {isPhone && currentLesson && (
         <MobileLessonPlayer
@@ -1013,6 +1057,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
           </div>
         </div>
       </div>
+      </>)}
       </>)}
       {/* Quiz Modal */}
       {activeQuizId && (
