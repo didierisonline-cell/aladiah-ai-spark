@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import MobileLearn from '@/components/portal/MobileLearn';
+import { getProgramStatus, type ProgramStatus } from '@/config/mvpCatalog';
 
 const DS = {
   bg:'#0B111E', card:'#111D30', border:'#1E2D47', fg:'#EDF2F7', fm:'#8596AD',
@@ -106,7 +107,9 @@ export default function PortalCourses() {
     return (a.title as string).localeCompare(b.title as string);
   });
 
-  if (isPhone) return <MobileLearn courses={orderedCourses} loading={loading} selectedId={selectedId} />;
+  // MVP gating (WO-P0-001): only Active programs are enterable. Preview and
+  // Coming Soon programs stay visible (nothing is unpublished) but do not open.
+  if (isPhone) return <MobileLearn courses={orderedCourses.filter((c) => getProgramStatus(c) === 'active')} loading={loading} selectedId={selectedId} />;
 
   return (
     <PortalShell background={DS.bg}>
@@ -131,26 +134,36 @@ export default function PortalCourses() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
               {orderedCourses.map((c) => {
                 const icon = COURSE_ICONS[c.title] || '📖';
-                const isSelected = c.id === selectedId;
+                const status: ProgramStatus = getProgramStatus(c);
+                const enterable = status === 'active';
+                const isSelected = enterable && c.id === selectedId;
+                const statusChip = status === 'active'
+                  ? { label: 'Active', color: DS.green, bg: 'rgba(34,201,138,.12)', bd: 'rgba(34,201,138,.28)' }
+                  : status === 'preview'
+                    ? { label: 'Preview', color: '#F5B81A', bg: 'rgba(245,184,26,.12)', bd: 'rgba(245,184,26,.28)' }
+                    : { label: 'Coming Soon', color: DS.fm, bg: 'rgba(133,150,173,.12)', bd: 'rgba(133,150,173,.25)' };
                 return (
                   <div
                     key={c.id}
-                    onClick={() => navigate(`/portal/course/${c.id}`)}
-                    style={{ background: DS.card, border: `1px solid ${isSelected ? DS.blue : DS.border}`, borderRadius: '.875rem', padding: '1.5rem', cursor: 'pointer', transition: 'all .18s', boxShadow: isSelected ? '0 0 0 1px rgba(74,144,245,.35)' : 'none' }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = DS.bb; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 24px rgba(0,0,0,.25)'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = isSelected ? DS.blue : DS.border; (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = isSelected ? '0 0 0 1px rgba(74,144,245,.35)' : 'none'; }}
+                    onClick={enterable ? () => navigate(`/portal/course/${c.id}`) : undefined}
+                    style={{ background: DS.card, border: `1px solid ${isSelected ? DS.blue : DS.border}`, borderRadius: '.875rem', padding: '1.5rem', cursor: enterable ? 'pointer' : 'default', transition: 'all .18s', boxShadow: isSelected ? '0 0 0 1px rgba(74,144,245,.35)' : 'none', opacity: enterable ? 1 : 0.6 }}
+                    onMouseEnter={enterable ? e => { (e.currentTarget as HTMLElement).style.borderColor = DS.bb; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 24px rgba(0,0,0,.25)'; } : undefined}
+                    onMouseLeave={enterable ? e => { (e.currentTarget as HTMLElement).style.borderColor = isSelected ? DS.blue : DS.border; (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = isSelected ? '0 0 0 1px rgba(74,144,245,.35)' : 'none'; } : undefined}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '.75rem' }}>
                       <div style={{ fontSize: 32 }}>{icon}</div>
-                      {isSelected && <span style={{ fontSize: 10, fontWeight: 800, color: DS.blue, background: 'rgba(74,144,245,.12)', border: `1px solid ${DS.bb}`, borderRadius: 99, padding: '3px 10px', letterSpacing: '.04em' }}>{t('courses.your_program')}</span>}
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <span style={{ fontSize: 10, fontWeight: 800, color: statusChip.color, background: statusChip.bg, border: `1px solid ${statusChip.bd}`, borderRadius: 99, padding: '3px 10px', letterSpacing: '.04em' }}>{statusChip.label}</span>
+                        {isSelected && <span style={{ fontSize: 10, fontWeight: 800, color: DS.blue, background: 'rgba(74,144,245,.12)', border: `1px solid ${DS.bb}`, borderRadius: 99, padding: '3px 10px', letterSpacing: '.04em' }}>{t('courses.your_program')}</span>}
+                      </div>
                     </div>
                     <div style={{ fontSize: 14, fontWeight: 700, marginBottom: '.4rem', lineHeight: 1.3 }}>{getLocalizedField(c, language, 'title')}</div>
                     <div style={{ fontSize: 12, color: DS.fm, lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>
                       {getLocalizedField(c, language, 'description')}
                     </div>
                     <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: 11, color: DS.green, fontWeight: 600 }}>{t('courses.access_pass')}</span>
-                      <span style={{ fontSize: 12, color: isSelected ? DS.blue : DS.fm, fontWeight: isSelected ? 700 : 400 }}>{isSelected ? t('courses.continue') : t('courses.start')}</span>
+                      <span style={{ fontSize: 11, color: enterable ? DS.green : DS.fm, fontWeight: 600 }}>{enterable ? t('courses.access_pass') : statusChip.label}</span>
+                      <span style={{ fontSize: 12, color: isSelected ? DS.blue : DS.fm, fontWeight: isSelected ? 700 : 400 }}>{enterable ? (isSelected ? t('courses.continue') : t('courses.start')) : '🔒'}</span>
                     </div>
                   </div>
                 );

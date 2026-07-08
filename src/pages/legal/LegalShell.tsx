@@ -13,9 +13,10 @@ export type LegalSection = { h: string; body: string[] };
 
 /**
  * Shared shell for public legal pages (Terms / Privacy / Contact).
- * Renders the brand header/footer, a mandatory draft-review banner, the
- * document title, and the section list. Copy is passed in as plain data so the
- * pages stay translation-ready (sections can later be sourced from t()).
+ * Renders the brand header/footer, the document title, and the section list.
+ * Copy is passed in as plain data so the pages stay translation-ready
+ * (sections can later be sourced from t()). Interim-review status is carried
+ * in each page's `lastUpdated`/intro copy, not a scare banner (WO-P0-001).
  */
 export default function LegalShell({
   title, lastUpdated, intro, sections, children,
@@ -31,17 +32,8 @@ export default function LegalShell({
       <Header />
       <main style={{ paddingTop: 70 }}>
         <div style={{ maxWidth: 860, margin: '0 auto', padding: '3rem 1.5rem 4rem' }}>
-          {/* Draft-review banner — required until founder/legal sign-off */}
-          <div role="note" style={{
-            background: DS.gd, border: `1px solid ${DS.gb}`, borderRadius: '0.6rem',
-            padding: '0.9rem 1.1rem', marginBottom: '2rem', fontSize: 13, lineHeight: 1.6, color: DS.gold,
-          }}>
-            ⚠️ <strong>Draft placeholder — requires Founder/legal review before public launch.</strong>{' '}
-            <span style={{ color: DS.fm }}>This page is provided for structure only and is not legal advice.</span>
-          </div>
-
           <h1 style={{ fontSize: 34, fontWeight: 800, margin: '0 0 0.4rem', letterSpacing: '-0.5px' }}>{title}</h1>
-          <div style={{ fontSize: 12, color: DS.fm, marginBottom: '2rem' }}>Last updated: {lastUpdated} · Draft</div>
+          <div style={{ fontSize: 12, color: DS.fm, marginBottom: '2rem' }}>Last updated: {lastUpdated}</div>
 
           {intro && <p style={{ fontSize: 15, lineHeight: 1.75, color: DS.fm, marginBottom: '2rem' }}>{intro}</p>}
 

@@ -256,6 +256,11 @@ const Enroll = () => {
               <Shield className="w-4 h-4 flex-shrink-0" style={{ color: '#C4A44A' }} />
               {t('enroll.security')}
             </div>
+
+            {/* Outcome disclaimer (WO-P0-001) */}
+            <div className="text-xs px-2" style={{ color: 'rgba(255,255,255,0.35)', lineHeight: 1.6 }}>
+              Aladiah provides career-focused training and portfolio building. It does not guarantee employment, placement, or salary outcomes.
+            </div>
           </motion.div>
         </div>
       </div>
