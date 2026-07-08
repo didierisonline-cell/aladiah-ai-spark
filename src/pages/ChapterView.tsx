@@ -16,6 +16,7 @@ import { DEPRECATED_COURSE_REDIRECTS } from '@/lib/courseRedirects';
 import { founderModeOn } from '@/hooks/useFounderMode';
 import MobileLessonPlayer from '@/components/portal/MobileLessonPlayer';
 import { OFFICIAL_CLASSROOM } from '@/config/classroomFlag';
+import { isPreviewOnlyCourse } from '@/config/coursePolicy';
 // Official Aladiah Classroom (approved UI). Lazy so its media bundle never enters
 // the main app chunk — it loads only when a lesson is opened with the flag ON.
 const OfficialClassroom = lazy(() => import('@/components/classroom-test/OfficialClassroom'));
@@ -334,6 +335,13 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
           return;
         }
       }
+      // P1-B: Business Analyst (and any preview-only course) stays PREVIEW regardless of
+      // DB is_published — code-side lock. Non-founders cannot open it as a full active
+      // course; return them to the catalog (where it renders as Preview). DB untouched.
+      if (isPreviewOnlyCourse(courseId) && !(guardUser && isFounderEmail(guardUser.email))) {
+        navigate('/portal/courses', { replace: true });
+        return;
+      }
       // Fetch each query individually with retry to avoid abort errors
       const fetchWithRetry = async (fn: () => Promise<any>, retries = 3): Promise<any> => {
         for (let i = 0; i < retries; i++) {
@@ -383,7 +391,14 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               setLoading(false);
               return;
             }
-            if (chapterData && chapterData.order_index > 0) {
+            // P1-A: the FIRST module is the lowest-order chapter for THIS course
+            // (courses are inconsistently 0- or 1-indexed). A starter/free user may
+            // open ONLY their free course's first module; Module 2+ stays locked.
+            // Determined by sorted chapter order, never by assuming order_index===0.
+            const orderedForGate = [...(allChaptersData || [])].sort((a: any, b: any) => a.order_index - b.order_index);
+            const firstChapterId = orderedForGate.length > 0 ? orderedForGate[0].id : null;
+            const isFirstModule = firstChapterId ? chapterData?.id === firstChapterId : (chapterData?.order_index === 0);
+            if (chapterData && !isFirstModule) {
               setPaywallReason('module_locked');
               setLoading(false);
               return;

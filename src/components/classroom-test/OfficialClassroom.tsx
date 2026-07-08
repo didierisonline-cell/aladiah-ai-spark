@@ -40,6 +40,7 @@ import "@/components/classroom-test/classroom-test.css";
 import ProfessorMedia from "./ProfessorMedia";
 import Waveform from "./Waveform";
 import { professorAvatar } from "./media/professorAssets";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 /* ============================================================================
  * OfficialClassroom — PURE PRESENTATIONAL component (WO-UX-CLASSROOM production).
@@ -161,6 +162,7 @@ function deriveKeyConcepts(text: string): string[] {
 }
 
 export default function OfficialClassroom(props: OfficialClassroomProps) {
+  const { t } = useLanguage();
   const {
     course,
     chapter,
@@ -213,16 +215,16 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
   const lessonComplete = (v: Video) =>
     passedQuizzes.some((id) => quizzes.some((q) => q.id === id && q.chapter_id === v.chapter_id));
 
-  const statusText = isSpeaking ? "Speaking…" : isLive ? "Listening…" : "Ready";
-  const stageBadge = isSpeaking ? "ON AIR" : isLive ? "LISTENING" : "READY";
+  const statusText = isSpeaking ? `${t('classroom.speaking')}…` : isLive ? `${t('classroom.listening')}…` : t('classroom.ready');
+  const stageBadge = isSpeaking ? t('classroom.on_air') : isLive ? "LISTENING" : "READY";
   const micLabel =
     convStatus === "connecting"
-      ? "Connecting…"
+      ? `${t('classroom.connecting')}…`
       : isLive
         ? isSpeaking
-          ? "Speaking…"
-          : "Listening…"
-        : "Tap to Speak";
+          ? `${t('classroom.speaking')}…`
+          : `${t('classroom.listening')}…`
+        : t('classroom.tap_to_speak');
   const continueLabel = continueIsToQuiz ? "Continue to Quiz" : "Continue";
 
   const boardTitle = getTitle(currentLesson) || "Live Lesson";
@@ -268,7 +270,7 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
             className="mt-3 flex items-center gap-2 rounded-full border border-red-500/40 bg-red-500/[0.06] px-4 py-1.5 text-xs font-semibold text-red-300 transition hover:bg-red-500/15"
           >
             <Volume2 className="h-3.5 w-3.5" />
-            End Session
+            {t('classroom.end_session')}
           </button>
         )}
       </div>
@@ -277,7 +279,7 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
 
       {/* Class Flow */}
       <div className="px-4 pt-1">
-        <div className="ct-label mb-2 px-1">Class Flow</div>
+        <div className="ct-label mb-2 px-1">{t('classroom.class_flow')}</div>
         <ul className="space-y-0.5">
           {sortedVideos.map((v, i) => {
             const active = v.id === currentLesson?.id;
@@ -331,7 +333,7 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
 
       {/* Session Context */}
       <div className="px-4 pt-4">
-        <div className="ct-label mb-2.5 px-1">Session Context</div>
+        <div className="ct-label mb-2.5 px-1">{t('classroom.session_context')}</div>
         <div className="space-y-2">
           {[
             { label: "Program", value: getTitle(course) },
@@ -363,7 +365,7 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
 
       {/* Quick Voice Commands */}
       <div className="px-4 pt-4">
-        <div className="ct-label mb-2 px-1">Quick Voice Commands</div>
+        <div className="ct-label mb-2 px-1">{t('classroom.quick_voice')}</div>
         <ul className="space-y-0.5">
           {prompts.map((cmd) => (
             <li key={cmd}>
@@ -443,7 +445,7 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
         {/* Professor Mode (static) */}
         <button className="ml-auto flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2 text-sm font-medium text-white/90 transition hover:border-violet-400/30 hover:bg-white/[0.06] lg:ml-0">
           <Presentation className="h-4 w-4 text-violet-300" />
-          <span className="hidden sm:inline">Professor Mode</span>
+          <span className="hidden sm:inline">{t('classroom.professor_mode')}</span>
           <ChevronDown className="h-4 w-4 text-white/50" />
         </button>
 
@@ -484,7 +486,7 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
               onClick={() => setDrawerOpen(true)}
               className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-white/80"
             >
-              <Menu className="h-4 w-4" /> Class Flow
+              <Menu className="h-4 w-4" /> {t('classroom.class_flow')}
             </button>
           </div>
 
@@ -661,7 +663,7 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
             {/* You Can Say */}
             <div className="min-h-[220px] lg:min-h-0">
               <div className="ct-card flex h-full min-h-0 flex-col p-4">
-                <div className="ct-label mb-2.5 px-1">You Can Say</div>
+                <div className="ct-label mb-2.5 px-1">{t('classroom.you_can_say')}</div>
                 <ul className="ct-scroll min-h-0 flex-1 space-y-1.5 overflow-auto pr-1">
                   {prompts.map((prompt) => (
                     <li key={prompt}>
@@ -682,7 +684,7 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
             {/* Student Notes (local state only) */}
             <div className="min-h-[220px] lg:min-h-0">
               <div className="ct-card flex h-full min-h-0 flex-col p-4">
-                <div className="ct-label mb-2.5 px-1">Student Notes</div>
+                <div className="ct-label mb-2.5 px-1">{t('classroom.student_notes')}</div>
                 <div className="flex min-h-0 flex-1 flex-col rounded-xl border border-dashed border-white/[0.14] bg-black/20 p-3">
                   <textarea
                     value={notes}
@@ -719,13 +721,13 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
                 >
                   {muted ? <MicOff className="h-[18px] w-[18px]" /> : <Mic className="h-[18px] w-[18px]" />}
                 </span>
-                <span className="text-[11px] font-medium text-white/55">Mute</span>
+                <span className="text-[11px] font-medium text-white/55">{t('classroom.mute')}</span>
               </button>
               <button className="flex flex-col items-center gap-1.5">
                 <span className="grid h-11 w-11 place-items-center rounded-full border border-white/[0.08] bg-white/[0.04] text-white/70 transition hover:bg-white/[0.08]">
                   <ScreenShare className="h-[18px] w-[18px]" />
                 </span>
-                <span className="text-[11px] font-medium text-white/55">Share Screen</span>
+                <span className="text-[11px] font-medium text-white/55">{t('classroom.share_screen')}</span>
               </button>
             </div>
 
@@ -750,13 +752,13 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
                 <span className="grid h-11 w-11 place-items-center rounded-full border border-white/[0.08] bg-white/[0.04] text-white/70 transition hover:bg-white/[0.08]">
                   <Pencil className="h-[18px] w-[18px]" />
                 </span>
-                <span className="text-[11px] font-medium text-white/55">Open Whiteboard</span>
+                <span className="text-[11px] font-medium text-white/55">{t('classroom.open_whiteboard')}</span>
               </button>
               <button className="flex flex-col items-center gap-1.5">
                 <span className="grid h-11 w-11 place-items-center rounded-full border border-white/[0.08] bg-white/[0.04] text-white/70 transition hover:bg-white/[0.08]">
                   <HelpCircle className="h-[18px] w-[18px]" />
                 </span>
-                <span className="text-[11px] font-medium text-white/55">Need Help?</span>
+                <span className="text-[11px] font-medium text-white/55">{t('classroom.need_help')}</span>
               </button>
             </div>
           </div>
@@ -767,7 +769,7 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
       <div className="flex shrink-0 items-center gap-4 border-t border-white/[0.06] bg-[#05070e] px-4 py-2 text-[11.5px] sm:px-6">
         <div className="flex items-center gap-1.5">
           <span className="ct-live-dot h-2 w-2 rounded-full bg-emerald-400" />
-          <span className="font-semibold tracking-wide text-emerald-300">LIVE SESSION</span>
+          <span className="font-semibold tracking-wide text-emerald-300">{t('classroom.live_session')}</span>
         </div>
         <div className="flex items-center gap-1.5 text-white/60">
           <Clock className="h-3.5 w-3.5" />
@@ -778,10 +780,10 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
         <div className="ml-auto flex items-center gap-3">
           <span className="hidden text-white/50 sm:inline">AI Professor</span>
           <span className="rounded-full border border-violet-400/30 bg-violet-500/15 px-2.5 py-0.5 font-medium text-violet-200">
-            Online
+            {t('classroom.online')}
           </span>
           <button className="flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.04] px-2.5 py-0.5 text-white/70">
-            <HelpCircle className="h-3.5 w-3.5" /> Need Help?
+            <HelpCircle className="h-3.5 w-3.5" /> {t('classroom.need_help')}
           </button>
         </div>
       </div>
