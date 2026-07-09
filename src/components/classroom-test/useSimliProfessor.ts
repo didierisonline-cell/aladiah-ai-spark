@@ -157,22 +157,38 @@ export function useSimliProfessor(): SimliProfessor {
         return;
       }
       const SimliClient = mod.SimliClient || mod.default?.SimliClient || mod.default;
-      const generateSimliSessionToken = mod.generateSimliSessionToken || mod.default?.generateSimliSessionToken;
       if (!SimliClient) { fail("Simli SDK loaded but no client export was found."); return; }
 
-      const cfg = { faceId: SIMLI_FACE_ID, handleSilence: true, maxSessionLength: 3600, maxIdleTime: 300 };
       let client: any;
       try {
-        if (typeof generateSimliSessionToken === "function") {
-          // Newer token-based API (docs.simli.com).
-          const tok = await generateSimliSessionToken({ apiKey: SIMLI_API_KEY, config: cfg });
-          const sessionToken = tok?.session_token || tok;
-          client = new SimliClient(sessionToken, videoRef.current, audioRef.current, null);
+        const hasInitialize = typeof SimliClient?.prototype?.Initialize === "function";
+        if (hasInitialize) {
+          // npm simli-client API: Initialize(apiKey + faceID). Internally mints the
+          // session via /startAudioToVideoSession — the endpoint verified to work with
+          // this key + face (HTTP 200 + session_token).
+          client = new SimliClient();
+          client.Initialize({
+            apiKey: SIMLI_API_KEY,
+            faceID: SIMLI_FACE_ID,
+            handleSilence: true,
+            maxSessionLength: 3600,
+            maxIdleTime: 300,
+            videoRef: videoRef.current,
+            audioRef: audioRef.current,
+            enableConsoleLogs: true,
+          });
           await client.start();
         } else {
-          // Older Initialize-based API (npm simli-client README).
-          client = new SimliClient();
-          client.Initialize({ apiKey: SIMLI_API_KEY, faceID: SIMLI_FACE_ID, ...cfg, videoRef: videoRef.current, audioRef: audioRef.current });
+          // Token-based constructor: mint the session token from the VERIFIED REST
+          // endpoint ourselves, then hand it to the client (avoids SDK endpoint drift).
+          const tokRes = await fetch("https://api.simli.ai/startAudioToVideoSession", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ apiKey: SIMLI_API_KEY, faceId: SIMLI_FACE_ID, handleSilence: true, maxSessionLength: 3600, maxIdleTime: 300 }),
+          });
+          const sessionToken = (await tokRes.json())?.session_token;
+          if (!sessionToken) { fail("Simli session token request failed (check API key / face id / quota)."); return; }
+          client = new SimliClient(sessionToken, videoRef.current, audioRef.current, null);
           await client.start();
         }
       } catch (e: unknown) {
