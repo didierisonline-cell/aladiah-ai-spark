@@ -461,6 +461,34 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
     else setActiveQuizId(nextStep.quizId);
   };
 
+  // Module completion from the LIVE class (replaces the chapter_end quiz pass).
+  // Preserves the tier logic: free tier completes the free course + shows the
+  // upgrade paywall; paid tier advances to the next module (or back to /portal).
+  const handleModuleComplete = useCallback(async () => {
+    try {
+      const { data: { user: u } } = await supabase.auth.getUser();
+      if (!u) { navigate('/portal'); return; }
+      const { data: profile } = await supabase.from('profiles').select('tier').eq('user_id', u.id).maybeSingle();
+      if (profile?.tier === 'starter') {
+        localStorage.setItem(`starter-course-done-${u.id}`, 'true');
+        supabase.from('profiles').update({ free_course_completed: true }).eq('user_id', u.id).then(() => { });
+        supabase.from('profiles').select('preferred_language, full_name').eq('user_id', u.id).maybeSingle().then(({ data: prof }) => {
+          fetch('https://vgujnkxylipfwmkpwzvb.supabase.co/functions/v1/send-email', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: 'free_course_completed', student: { name: prof?.full_name || 'Student', email: u.email, course: course?.title, language: prof?.preferred_language || 'en' } }),
+          }).catch(() => { });
+        });
+        setPaywallReason('module_locked');
+      } else {
+        const currentIdx = allChapters.findIndex(c => c.id === chapterId);
+        const nextChapter = allChapters[currentIdx + 1];
+        navigate(nextChapter ? `/course/${courseId}/chapter/${nextChapter.id}` : '/portal');
+      }
+    } catch {
+      navigate('/portal');
+    }
+  }, [allChapters, chapterId, courseId, course, navigate]);
+
   if (loading) return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg,#0a0f1e,#0d1b3e)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ textAlign: 'center', color: '#60a5fa' }}>
@@ -494,6 +522,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
         lessons={liveLessons}
         initialLessonId={currentLesson.id}
         onClose={() => navigate(`/portal/course/${courseId}`)}
+        onComplete={handleModuleComplete}
       />
     );
   }

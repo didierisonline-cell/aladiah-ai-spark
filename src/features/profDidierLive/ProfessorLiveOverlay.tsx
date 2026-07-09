@@ -23,6 +23,8 @@ export interface ProfessorLiveOverlayProps {
   lessons: OverlayLesson[];
   initialLessonId?: string;
   onClose: () => void;
+  /** When provided, shows a "Complete" control that marks the module done and advances. */
+  onComplete?: () => void;
 }
 
 const LANG_NAME: Record<string, string> = { en: "English", es: "Spanish", fr: "French", de: "German", zh: "Chinese", ar: "Arabic", ja: "Japanese" };
@@ -45,7 +47,7 @@ function Wave({ active, bars = 40 }: { active: boolean; bars?: number }) {
   );
 }
 
-export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lessons, initialLessonId, onClose }: ProfessorLiveOverlayProps) {
+export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lessons, initialLessonId, onClose, onComplete }: ProfessorLiveOverlayProps) {
   const { language } = useLanguage();
   const didier = getProfessorById("didier");
   const langName = LANG_NAME[language] || "English";
@@ -281,6 +283,16 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
         </button>
         <button className="pd-ctrl" disabled title="Coming soon"><span className="pd-ctrl-ic">✎</span><span>Whiteboard</span></button>
         <button className="pd-ctrl" disabled title="Coming soon"><span className="pd-ctrl-ic">?</span><span>Need Help</span></button>
+        {onComplete && (
+          <button
+            className="pd-ctrl"
+            onClick={() => { void stopLive(); onComplete(); }}
+            title="Mark this module complete and continue"
+          >
+            <span className="pd-ctrl-ic" style={{ borderColor: "rgba(53,214,122,0.6)", color: "#35d67a" }}>✓</span>
+            <span style={{ color: "#35d67a" }}>Complete</span>
+          </button>
+        )}
       </footer>
     </div>
   );
