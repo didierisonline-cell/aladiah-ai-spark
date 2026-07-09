@@ -227,11 +227,22 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
         },
       };
       if (signedUrl) opts.signedUrl = signedUrl; else opts.agentId = agentId;
-      await conversation.startSession(opts);
+      // Watchdog: never hang on "Connecting…". If the WebSocket to ElevenLabs
+      // doesn't establish within 15s, surface an actionable error.
+      await Promise.race([
+        conversation.startSession(opts),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("connect-timeout")), 15000)),
+      ]);
       stream.getTracks().forEach((t) => t.stop());
-    } catch (err) {
+    } catch (err: any) {
       console.error("[ProfessorLiveOverlay] startLive error:", err);
-      setAudioError("Could not start the live class. Check your connection and mic permissions, then tap Speak again.");
+      if (err?.message === "connect-timeout") {
+        setAudioError(
+          "Couldn't reach Professor Didier's voice within 15s. This is almost always the microphone permission for THIS site — click the 🎤/lock icon in the address bar → Allow → tap Speak again. (Captions and typing work meanwhile.)"
+        );
+      } else {
+        setAudioError("Could not start the live class. Check your connection and mic permissions, then tap Speak again.");
+      }
     } finally {
       setConnecting(false);
     }
