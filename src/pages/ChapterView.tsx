@@ -15,6 +15,7 @@ import { isFounderEmail } from '@/lib/roles';
 import { DEPRECATED_COURSE_REDIRECTS } from '@/lib/courseRedirects';
 import { founderModeOn } from '@/hooks/useFounderMode';
 import MobileLessonPlayer from '@/components/portal/MobileLessonPlayer';
+import ProfessorLiveOverlay, { type OverlayLesson } from '@/features/profDidierLive/ProfessorLiveOverlay';
 
 const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string;
 
@@ -83,6 +84,7 @@ export default function ChapterView() {
   const [freeCourseName, setFreeCourseName] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [allChapters, setAllChapters] = useState<Chapter[]>([]);
+  const [liveOpen, setLiveOpen] = useState(false); // Professor Didier LIVE overlay
 
   // Prof. Didier conversation state
   const [convStatus, setConvStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
@@ -530,6 +532,27 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
         </div>
       )}
 
+      {/* Professor Didier LIVE — full-screen immersive overlay, seeded with this
+          module's real lessons and the current lesson. Speech-only; never navigates. */}
+      {liveOpen && currentLesson && (
+        <ProfessorLiveOverlay
+          programTitle={getTitle(course)}
+          moduleTitle={getTitle(chapter)}
+          lessons={videos.map((v) => {
+            const desc = (getDescription(v) || getTranscript(v) || '').replace(/\s+/g, ' ').trim();
+            return {
+              id: v.id,
+              title: getTitle(v),
+              focus: desc.slice(0, 500),
+              board: { headline: getTitle(v), definition: desc.slice(0, 180) },
+              suggestions: ['Explain this simply', 'Give me a real-world example', 'Quiz me on this', 'How does this show up on the exam?'],
+            } as OverlayLesson;
+          })}
+          initialLessonId={currentLesson.id}
+          onClose={() => setLiveOpen(false)}
+        />
+      )}
+
       {/* Phone (< 768px): immersive single-column lesson player. */}
       {isPhone && currentLesson && (
         <MobileLessonPlayer
@@ -602,9 +625,17 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               <BookOpen size={18} color="#3b82f6" />
               <span style={{ fontSize: 12, color: '#3b82f6', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('chapter.lesson')} {(currentLesson?.order_index ?? 0) + 1}</span>
             </div>
-            <h1 style={{ fontSize: 28, fontWeight: 700, color: '#f1f5f9', margin: '0 0 24px', lineHeight: 1.3 }}>
+            <h1 style={{ fontSize: 28, fontWeight: 700, color: '#f1f5f9', margin: '0 0 16px', lineHeight: 1.3 }}>
               {getTitle(currentLesson)}
             </h1>
+
+            {/* Go LIVE with Professor Didier — opens the immersive live-class overlay for this lesson */}
+            <button
+              onClick={() => setLiveOpen(true)}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 10, margin: '0 0 24px', padding: '12px 20px', borderRadius: 999, border: '1px solid rgba(139,92,255,0.5)', background: 'linear-gradient(135deg,#8b5cff,#ec5cd0)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 8px 26px rgba(139,92,255,0.35)' }}
+            >
+              <span style={{ fontSize: 16 }}>🎙️</span> Go LIVE with Professor Didier
+            </button>
 
             {/* Key Points */}
             {mainPoints.length > 0 && (
