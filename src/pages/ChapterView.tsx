@@ -468,6 +468,16 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
     try {
       const { data: { user: u } } = await supabase.auth.getUser();
       if (!u) { navigate('/portal'); return; }
+      // Persist canonical module completion (a passed chapter_end row) so the course
+      // overview %, Talent Score, and green highlights update — mirrors the quiz path.
+      const chapterEndQuiz = quizzes.find((q) => q.quiz_type === 'chapter_end');
+      if (chapterEndQuiz) {
+        try {
+          await supabase.from('user_progress').insert({
+            user_id: u.id, quiz_id: chapterEndQuiz.id, chapter_id: chapterId, passed: true, score: 100, completed_at: new Date().toISOString(),
+          });
+        } catch (e) { console.warn('[lesson] completion write failed', e); }
+      }
       const { data: profile } = await supabase.from('profiles').select('tier').eq('user_id', u.id).maybeSingle();
       if (profile?.tier === 'starter') {
         localStorage.setItem(`starter-course-done-${u.id}`, 'true');
@@ -487,7 +497,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
     } catch {
       navigate('/portal');
     }
-  }, [allChapters, chapterId, courseId, course, navigate]);
+  }, [allChapters, chapterId, courseId, course, navigate, quizzes]);
 
   if (loading) return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg,#0a0f1e,#0d1b3e)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -506,21 +516,28 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
   // in the block below instead of showing the class.
   if (!paywallReason && currentLesson) {
     const liveLessons: OverlayLesson[] = videos.map((v) => {
-      const desc = (getDescription(v) || getTranscript(v) || '').replace(/\s+/g, ' ').trim();
+      const desc = (getDescription(v) || '').replace(/\s+/g, ' ').trim();
+      const focusSrc = (getDescription(v) || getTranscript(v) || '').replace(/\s+/g, ' ').trim();
       return {
         id: v.id,
         title: getTitle(v),
-        focus: desc.slice(0, 500),
-        board: { headline: getTitle(v), definition: desc.slice(0, 180) },
-        suggestions: ['Explain this simply', 'Give me a real-world example', 'Quiz me on this', 'How does this show up on the exam?'],
+        focus: focusSrc.slice(0, 600),
+        // Full lesson description (no mid-word truncation like "…which you can e").
+        board: { headline: getTitle(v), definition: desc || focusSrc.slice(0, 240) },
+        suggestions: ['Explain this simply', 'Give me a real-world example', 'Show me a diagram', 'Quiz me on this'],
       };
     });
+    // Green highlight: when the module's chapter_end quiz is passed, its lessons are done.
+    const chapterEndQuiz = quizzes.find((q) => q.quiz_type === 'chapter_end');
+    const moduleDone = chapterEndQuiz ? passedQuizzes.includes(chapterEndQuiz.id) : false;
+    const completedLessonIds = moduleDone ? videos.map((v) => v.id) : [];
     return (
       <ProfessorLiveOverlay
         programTitle={getTitle(course)}
         moduleTitle={getTitle(chapter)}
         lessons={liveLessons}
         initialLessonId={currentLesson.id}
+        completedLessonIds={completedLessonIds}
         onClose={() => navigate(`/portal/course/${courseId}`)}
         onComplete={handleModuleComplete}
       />
