@@ -15,6 +15,8 @@ import StudentNotesPanel from "@/components/classroom-test/StudentNotesPanel";
 import VoiceControlBar from "@/components/classroom-test/VoiceControlBar";
 import { SESSION } from "@/components/classroom-test/classroomData";
 import { useClassroomVoice } from "@/components/classroom-test/useClassroomVoice";
+import { useSimliProfessor } from "@/components/classroom-test/useSimliProfessor";
+import { SIMLI_ENABLED } from "@/components/classroom-test/simliConfig";
 
 function SignalBars() {
   return (
@@ -59,13 +61,20 @@ function RailContent({ speaking }: { speaking: boolean }) {
  * Still test-only: no Supabase schema, no Stripe, no production release wiring.
  */
 export default function ClassroomTest() {
-  const voice = useClassroomVoice();
-  const [muted, setMuted] = useState(true); // professor video track is silent; real audio is ElevenLabs
+  const optionA = useClassroomVoice();
+  const simli = useSimliProfessor();
+  // Option B (Simli avatar) is used ONLY when both Preview env vars are present AND it
+  // hasn't errored; otherwise the classroom automatically falls back to Option A (the
+  // audio-reactive clip). With no env vars this is always Option A — unchanged behavior.
+  const simliMode = SIMLI_ENABLED && simli.status !== "error";
+  const voice = simliMode ? simli : optionA; // ACTIVE source — drives every control below
+
+  const [muted, setMuted] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const isConnecting = voice.status === "connecting";
   const isLive = voice.status === "connected";
-  // The professor's "speaking" animation follows the live agent audio.
+  // The professor's "speaking" state follows the live agent audio (both modes expose it).
   const speaking = isLive && voice.isSpeaking;
 
   // Central mic / Tap to Speak: start a live session, or end it if already live.
@@ -113,6 +122,16 @@ export default function ClassroomTest() {
     <div className="ct-root flex min-h-[100dvh] flex-col text-white lg:h-[100dvh] lg:overflow-hidden">
       <ClassroomHeader />
 
+      {/* Option B (Simli) fell back to Option A — tell the tester why; the class still works. */}
+      {SIMLI_ENABLED && simli.status === "error" && (
+        <div className="mx-3 mt-3 flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-200 sm:mx-6">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+          <span className="flex-1 leading-snug">
+            Live avatar (Simli) unavailable — using the standard professor. {simli.error}
+          </span>
+        </div>
+      )}
+
       {/* Visible voice error — so the preview explains WHY voice didn't start. */}
       {voice.error && (
         <div className="mx-3 mt-3 flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-200 sm:mx-6">
@@ -154,7 +173,14 @@ export default function ClassroomTest() {
 
           {/* Stage */}
           <div className="min-h-[280px] p-3 sm:min-h-[340px] lg:min-h-0 lg:flex-[1.55] lg:pb-1.5">
-            <ProfessorStage speaking={speaking} muted={muted} getLevel={voice.getOutputVolume} />
+            <ProfessorStage
+              speaking={speaking}
+              muted={muted}
+              getLevel={optionA.getOutputVolume}
+              simliActive={simliMode}
+              simliVideoRef={simli.videoRef}
+              simliAudioRef={simli.audioRef}
+            />
           </div>
 
           {/* Lower panels */}

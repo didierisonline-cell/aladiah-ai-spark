@@ -1,11 +1,16 @@
+import type { RefObject } from "react";
 import ProfessorMedia from "./ProfessorMedia";
 import DigitalWhiteboard from "./DigitalWhiteboard";
 
 interface Props {
   speaking: boolean;
   muted: boolean;
-  /** live TTS output level 0..1 → drives audio-reactive mouth pacing */
+  /** live TTS output level 0..1 → drives audio-reactive mouth pacing (Option A) */
   getLevel?: () => number;
+  /** Option B: when true, render the live Simli avatar video instead of the clip. */
+  simliActive?: boolean;
+  simliVideoRef?: RefObject<HTMLVideoElement>;
+  simliAudioRef?: RefObject<HTMLAudioElement>;
 }
 
 /**
@@ -14,12 +19,20 @@ interface Props {
  * right. On tablet/mobile the figure collapses and the whiteboard takes the full
  * width.
  */
-export default function ProfessorStage({ speaking, muted, getLevel }: Props) {
+export default function ProfessorStage({ speaking, muted, getLevel, simliActive, simliVideoRef, simliAudioRef }: Props) {
   return (
     <div className="relative flex h-full min-h-0 w-full overflow-hidden rounded-2xl border border-white/[0.07] bg-[#070a12]">
       {/* Animated professor figure zone */}
       <div className="relative hidden w-[38%] max-w-[420px] shrink-0 overflow-hidden lg:block xl:w-[34%]">
-        <ProfessorMedia speaking={speaking} muted={muted} getLevel={getLevel} />
+        {simliActive ? (
+          <>
+            {/* Option B — live Simli talking-head (lip-synced to the ElevenLabs voice) */}
+            <video ref={simliVideoRef} autoPlay playsInline className="h-full w-full object-cover object-top" />
+            <audio ref={simliAudioRef} autoPlay />
+          </>
+        ) : (
+          <ProfessorMedia speaking={speaking} muted={muted} getLevel={getLevel} />
+        )}
         {/* blend the figure into the board area */}
         <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-r from-transparent to-[#070a12]" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#070a12] to-transparent" />
