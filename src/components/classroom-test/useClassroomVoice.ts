@@ -42,6 +42,7 @@ export function useClassroomVoice(): ClassroomVoice {
   const [error, setError] = useState<string | null>(null);
   const [transcript, setTranscript] = useState<{ role: "user" | "agent"; message: string }[]>([]);
   const startingRef = useRef(false);
+  const stoppingRef = useRef(false);
 
   const conversation = useConversation({
     onConnect: () => {
@@ -49,9 +50,22 @@ export function useClassroomVoice(): ClassroomVoice {
       setError(null);
       startingRef.current = false;
     },
-    onDisconnect: () => {
-      setStatus("idle");
+    onDisconnect: (details?: unknown) => {
       startingRef.current = false;
+      // If the session dropped on its own (not a user tap on End), surface WHY on
+      // screen instead of silently going idle — e.g. an ElevenLabs 1008 close whose
+      // reason is "Override for field 'X' is not allowed by config."
+      if (!stoppingRef.current) {
+        const d = details as { reason?: string; message?: string; context?: { reason?: string; code?: number } };
+        const why = d?.message || d?.context?.reason || (typeof d?.reason === "string" ? d.reason : "");
+        if (why) {
+          setError(`Professor Didier disconnected: ${why}`);
+          setStatus("error");
+          return;
+        }
+      }
+      stoppingRef.current = false;
+      setStatus("idle");
     },
     onMessage: ({ message, source }: { message: string; source: string }) => {
       const cleaned = (message || "").replace(/<[^>]+>/g, "").trim();
@@ -152,13 +166,19 @@ export function useClassroomVoice(): ClassroomVoice {
 
       // 4) Start the session with the constrained lesson prompt + Professor Didier™ voice.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // IMPORTANT: only send overrides the agent's config actually allows. The
+      // Professor Didier agent whitelists prompt, language, and tts.voiceId — but
+      // NOT stability / similarityBoost. Sending those makes ElevenLabs accept the
+      // init and then immediately close the socket with code 1008
+      // ("Override for field 'stability' is not allowed by config."), which reads as
+      // "connects for a second then drops." Keep this override set minimal.
       const sessionOpts: any = {
         overrides: {
           agent: {
             prompt: { prompt: buildProfessorSystemPrompt(CURRENT_LESSON) },
             language: "en",
           },
-          tts: { voiceId: DIDIER_VOICE_EN, stability: 0.71, similarityBoost: 0.55 },
+          tts: { voiceId: DIDIER_VOICE_EN },
         },
       };
       if (signedUrl) sessionOpts.signedUrl = signedUrl;
@@ -177,6 +197,7 @@ export function useClassroomVoice(): ClassroomVoice {
   }, [conversation, status]);
 
   const stop = useCallback(async () => {
+    stoppingRef.current = true; // mark this as a user-initiated end so onDisconnect stays quiet
     try {
       await conversation.endSession();
     } catch {
