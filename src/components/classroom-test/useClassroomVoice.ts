@@ -23,6 +23,13 @@ export type ClassroomVoiceStatus = "idle" | "connecting" | "connected" | "error"
 // Official Professor Didier™ English voice id (same one the production lesson uses).
 const DIDIER_VOICE_EN = "bQxW1c7YCr6VQgQhw8KX";
 
+// The agent has no auto-greeting, and first_message override is disallowed by its
+// config. So once the socket is live we nudge Prof. Didier to greet the student and
+// start the lesson OUT LOUD — otherwise he connects and silently waits for the
+// student to speak first, which reads as "connected but no sound".
+const KICKOFF_MESSAGE =
+  "I've just joined the classroom and I'm ready to begin. Please welcome me warmly and start teaching today's lesson — \"What is Scrum?\" — right now, out loud.";
+
 const TOKEN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-conversation-token`;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
 const FALLBACK_AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string | undefined;
@@ -43,12 +50,25 @@ export function useClassroomVoice(): ClassroomVoice {
   const [transcript, setTranscript] = useState<{ role: "user" | "agent"; message: string }[]>([]);
   const startingRef = useRef(false);
   const stoppingRef = useRef(false);
+  // Ref to the live conversation so onConnect (declared before `conversation`) can
+  // call its methods (e.g. sendUserMessage for the kickoff).
+  const convRef = useRef<{ sendUserMessage?: (t: string) => void } | null>(null);
 
   const conversation = useConversation({
     onConnect: () => {
       setStatus("connected");
       setError(null);
       startingRef.current = false;
+      // Kick the professor into greeting + teaching immediately (see KICKOFF_MESSAGE).
+      // Small delay so the agent is ready to accept the message after init.
+      setTimeout(() => {
+        try {
+          convRef.current?.sendUserMessage?.(KICKOFF_MESSAGE);
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.warn("[classroom-preview] kickoff sendUserMessage failed:", e);
+        }
+      }, 400);
     },
     onDisconnect: (details?: unknown) => {
       startingRef.current = false;
@@ -82,6 +102,9 @@ export function useClassroomVoice(): ClassroomVoice {
       startingRef.current = false;
     },
   });
+
+  // Keep the ref pointed at the current conversation so onConnect can drive it.
+  convRef.current = conversation as unknown as { sendUserMessage?: (t: string) => void };
 
   // Always tear the session down when the preview unmounts.
   useEffect(() => {
