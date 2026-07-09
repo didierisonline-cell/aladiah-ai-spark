@@ -99,6 +99,10 @@ export default function ChapterView() {
   const conversation = useConversation({
     onConnect: () => {
       setConvStatus('connected');
+      // Kick Prof Didier into greeting + teaching immediately. The agent has no
+      // auto-greeting and first_message override is disallowed, so without this nudge
+      // he connects but stays silent.
+      setTimeout(() => { try { (conversation as any).sendUserMessage?.("I've just joined the lesson and I'm ready to begin. Please greet me warmly and start teaching this lesson now, out loud."); } catch { } }, 400);
       timerRef.current = setInterval(() => setDuration(d => d + 1), 1000);
       // Keep-alive: send silent ping every 8 seconds to prevent timeout
       keepAliveRef.current = setInterval(() => {
@@ -198,12 +202,6 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       // Prof. Didier IS the lesson body — if the ElevenLabs agent can't start, the
       // whole class reads as "empty". Fail loud, and prefer a signed URL (works with
       // PRIVATE agents) with a fallback to the public agentId — mirrors LiveClassroom.
-      if (!AGENT_ID) {
-        console.error('[lesson] VITE_ELEVENLABS_AGENT_ID is not set — Prof. Didier cannot start.');
-        setConvStatus('error');
-        isStartingRef.current = false;
-        return;
-      }
       let signedUrl: string | null = null;
       try {
         const tokenRes = await fetch(
@@ -214,6 +212,13 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
         if (tokenData.signed_url) signedUrl = tokenData.signed_url;
       } catch (e) {
         console.warn('[lesson] signed URL unavailable, falling back to agentId:', e);
+      }
+      // Need EITHER a signed URL (preferred) OR a public agent id to connect.
+      if (!signedUrl && !AGENT_ID) {
+        console.error('[lesson] No signed URL and VITE_ELEVENLABS_AGENT_ID unset — Prof. Didier cannot start.');
+        setConvStatus('error');
+        isStartingRef.current = false;
+        return;
       }
       // Voice output: the agent whitelists override voices — without a tts.voiceId the
       // text streams but the audio can come back silent (LiveClassroom sends this; the
@@ -226,7 +231,9 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       const sessionOpts: any = {
         overrides: {
           agent: { prompt: { prompt: systemPrompt }, language: langCode },
-          tts: { voiceId: DIDIER_VOICES[language] || 'bQxW1c7YCr6VQgQhw8KX', stability: 0.71, similarityBoost: 0.55 },
+          // Only voiceId is sent — the agent config disallows stability/similarityBoost
+          // overrides and closes the socket (code 1008) if they are present.
+          tts: { voiceId: DIDIER_VOICES[language] || 'bQxW1c7YCr6VQgQhw8KX' },
         },
       };
       if (signedUrl) sessionOpts.signedUrl = signedUrl; else sessionOpts.agentId = AGENT_ID;
