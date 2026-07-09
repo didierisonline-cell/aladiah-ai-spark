@@ -471,6 +471,33 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
     </div>
   );
 
+  // ── LIVE-only lesson experience ──────────────────────────────────────────
+  // The text-reading lesson page + quiz have been replaced by the immersive
+  // Professor Didier LIVE class. The access/paywall gate is preserved: when a
+  // module is gated (paywallReason set) we fall through to the paywall overlay
+  // in the block below instead of showing the class.
+  if (!paywallReason && currentLesson) {
+    const liveLessons: OverlayLesson[] = videos.map((v) => {
+      const desc = (getDescription(v) || getTranscript(v) || '').replace(/\s+/g, ' ').trim();
+      return {
+        id: v.id,
+        title: getTitle(v),
+        focus: desc.slice(0, 500),
+        board: { headline: getTitle(v), definition: desc.slice(0, 180) },
+        suggestions: ['Explain this simply', 'Give me a real-world example', 'Quiz me on this', 'How does this show up on the exam?'],
+      };
+    });
+    return (
+      <ProfessorLiveOverlay
+        programTitle={getTitle(course)}
+        moduleTitle={getTitle(chapter)}
+        lessons={liveLessons}
+        initialLessonId={currentLesson.id}
+        onClose={() => navigate(`/portal/course/${courseId}`)}
+      />
+    );
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg,#0a0f1e 0%,#0d1b3e 50%,#0a0f1e 100%)', fontFamily: 'system-ui,-apple-system,sans-serif' }}>
 
