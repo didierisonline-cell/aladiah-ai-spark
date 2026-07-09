@@ -91,8 +91,9 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
     },
     onMessage: (props: any) => { if (props?.source === "ai" && props?.message) setCaption(String(props.message).replace(/<[^>]+>/g, "").trim()); },
     onError: (err: any) => {
+      const reason = err?.message ? String(err.message).slice(0, 160) : "connection lost";
       console.error("[ProfessorLiveOverlay] voice error:", err);
-      setAudioError("Voice connection failed. Check your connection or mic — you can keep going by typing below.");
+      setAudioError(`Voice error: ${reason} — captions/typing still work.`);
     },
   });
 
@@ -220,19 +221,35 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
         return;
       }
 
-      const opts: any = {
-        overrides: {
-          agent: { language: NAME_TO_CODE[langName] || "en", prompt: { prompt: buildPrompt() }, firstMessage: `Hello! Welcome to today's class on "${lesson.title}". I'm Professor Didier — let's begin!` },
-          tts: { voiceId: DIDIER_VOICES[langName] || DIDIER_VOICES.English, stability: 0.71, similarityBoost: 0.55 },
-        },
+      // Build session options with or without client overrides. ElevenLabs
+      // closes the socket if the agent hasn't enabled a field we try to
+      // override, so we attempt WITH overrides first, then self-heal WITHOUT.
+      const buildOpts = (withOverrides: boolean) => {
+        const o: any = signedUrl ? { signedUrl } : { agentId };
+        if (withOverrides) {
+          o.overrides = {
+            agent: { language: NAME_TO_CODE[langName] || "en", prompt: { prompt: buildPrompt() }, firstMessage: `Hello! Welcome to today's class on "${lesson.title}". I'm Professor Didier — let's begin!` },
+            tts: { voiceId: DIDIER_VOICES[langName] || DIDIER_VOICES.English, stability: 0.71, similarityBoost: 0.55 },
+          };
+        }
+        return o;
       };
-      if (signedUrl) opts.signedUrl = signedUrl; else opts.agentId = agentId;
-      // Watchdog: never hang on "Connecting…". If the WebSocket to ElevenLabs
-      // doesn't establish within 15s, surface an actionable error.
-      await Promise.race([
-        conversation.startSession(opts),
+      // Watchdog: never hang on "Connecting…" — reject if not established in 15s.
+      const startOnce = (o: any) => Promise.race([
+        conversation.startSession(o),
         new Promise((_, reject) => setTimeout(() => reject(new Error("connect-timeout")), 15000)),
       ]);
+
+      try {
+        await startOnce(buildOpts(true));
+      } catch (overrideErr) {
+        // Self-heal: connect with the agent's built-in prompt/voice so class
+        // audio still works even if overrides are rejected/misconfigured.
+        console.warn("[ProfessorLiveOverlay] start with overrides failed; retrying without overrides", overrideErr);
+        try { await conversation.endSession(); } catch { /* ignore */ }
+        await startOnce(buildOpts(false)); // if this also fails, the outer catch handles it
+        console.warn("[ProfessorLiveOverlay] connected WITHOUT overrides — enable Prompt/First message/Language/Voice overrides on the ElevenLabs agent for lesson-specific teaching.");
+      }
       stream.getTracks().forEach((t) => t.stop());
     } catch (err: any) {
       console.error("[ProfessorLiveOverlay] startLive error:", err);
