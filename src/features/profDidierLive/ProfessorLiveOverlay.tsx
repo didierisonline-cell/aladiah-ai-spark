@@ -73,9 +73,22 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
 
   const historyRef = useRef<{ role: string; content: string }[]>([]);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const keepAliveRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const completed = useMemo(() => new Set(completedLessonIds), [completedLessonIds]);
 
   const conversation = useConversation({
+    onConnect: () => {
+      // Force full output volume + keep the socket alive (silent ping) so the
+      // session can't silently drop mid-class (mirrors ChapterView).
+      try { (conversation as any).setVolume?.({ volume: 1 }); } catch { /* ignore */ }
+      if (keepAliveRef.current) clearInterval(keepAliveRef.current);
+      keepAliveRef.current = setInterval(() => {
+        try { (conversation as any).sendUserAudio?.(new Float32Array(480)); } catch { /* ignore */ }
+      }, 8000);
+    },
+    onDisconnect: () => {
+      if (keepAliveRef.current) { clearInterval(keepAliveRef.current); keepAliveRef.current = null; }
+    },
     onMessage: (props: any) => { if (props?.source === "ai" && props?.message) setCaption(String(props.message).replace(/<[^>]+>/g, "").trim()); },
     onError: (err: any) => {
       console.error("[ProfessorLiveOverlay] voice error:", err);
@@ -104,8 +117,9 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
 
   useEffect(() => { const t = setInterval(() => setSessionSeconds((s) => s + 1), 1000); return () => clearInterval(t); }, []);
   useEffect(() => { try { const s = localStorage.getItem("aladiah:pdlive:notes"); if (s) setNotes(s); } catch { /* ignore */ } }, []);
-  useEffect(() => () => { // unmount: end session + close audio context
+  useEffect(() => () => { // unmount: end session + close audio context + stop keep-alive
     try { void conversation.endSession(); } catch { /* ignore */ }
+    try { if (keepAliveRef.current) clearInterval(keepAliveRef.current); } catch { /* ignore */ }
     try { void audioCtxRef.current?.close(); } catch { /* ignore */ }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -172,21 +186,22 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
   const startLive = useCallback(async () => {
     setAudioError(null);
     setConnecting(true);
+    // CRITICAL — do this FIRST, synchronously inside the tap gesture, BEFORE any
+    // await: create + resume an AudioContext so the browser's autoplay policy
+    // lets the agent's audio play. Deferring it until after `await getUserMedia`
+    // can lose the user-activation window on Safari/iOS → the session connects
+    // and streams text but is completely silent.
+    try {
+      const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (AC) {
+        if (!audioCtxRef.current) audioCtxRef.current = new AC();
+        if (audioCtxRef.current.state === "suspended") void audioCtxRef.current.resume();
+      }
+    } catch { /* non-fatal */ }
     try {
       let stream: MediaStream;
       try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
-      catch { setAudioError("Microphone access is needed for live voice. Allow the mic (or use the same output device as your headphones), or type below."); return; }
-
-      // CRITICAL: unlock/resume an AudioContext after the user gesture so output
-      // audio actually plays (esp. Safari/iOS/mobile). Without this the session
-      // connects and streams text but produces no sound.
-      try {
-        const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-        if (AC) {
-          if (!audioCtxRef.current) audioCtxRef.current = new AC();
-          if (audioCtxRef.current.state === "suspended") await audioCtxRef.current.resume();
-        }
-      } catch { /* non-fatal */ }
+      catch { setAudioError("Microphone access is needed for live voice. Allow the mic (or switch your system output to your headphones), or type below."); return; }
 
       const agentId = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string | undefined;
       let signedUrl: string | null = null;
