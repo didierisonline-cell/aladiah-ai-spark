@@ -42,6 +42,10 @@ export interface ClassroomVoice {
   start: () => void;
   stop: () => void;
   clearError: () => void;
+  /** Live TTS output level 0..1 — drives the audio-reactive professor mouth. */
+  getOutputVolume: () => number;
+  /** Mute/unmute the professor's ElevenLabs audio output (not the video clip). */
+  setMuted: (m: boolean) => void;
 }
 
 export function useClassroomVoice(): ClassroomVoice {
@@ -231,6 +235,26 @@ export function useClassroomVoice(): ClassroomVoice {
 
   const clearError = useCallback(() => setError(null), []);
 
+  // Live output level (0..1) of the professor's ElevenLabs audio, for the
+  // audio-reactive mouth. Returns 0 when not connected / unavailable.
+  const getOutputVolume = useCallback(() => {
+    try {
+      const v = (conversation as unknown as { getOutputVolume?: () => number }).getOutputVolume?.();
+      return typeof v === "number" && Number.isFinite(v) ? v : 0;
+    } catch {
+      return 0;
+    }
+  }, [conversation]);
+
+  // Mute/unmute the professor's VOICE (ElevenLabs output), not the muted video clip.
+  const setMuted = useCallback((m: boolean) => {
+    try {
+      (conversation as unknown as { setVolume?: (o: { volume: number }) => void }).setVolume?.({ volume: m ? 0 : 1 });
+    } catch {
+      /* ignore */
+    }
+  }, [conversation]);
+
   return {
     status,
     isSpeaking: conversation.isSpeaking,
@@ -239,6 +263,8 @@ export function useClassroomVoice(): ClassroomVoice {
     start,
     stop,
     clearError,
+    getOutputVolume,
+    setMuted,
   };
 }
 

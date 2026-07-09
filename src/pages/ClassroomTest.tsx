@@ -154,7 +154,7 @@ export default function ClassroomTest() {
 
           {/* Stage */}
           <div className="min-h-[280px] p-3 sm:min-h-[340px] lg:min-h-0 lg:flex-[1.55] lg:pb-1.5">
-            <ProfessorStage speaking={speaking} muted={muted} />
+            <ProfessorStage speaking={speaking} muted={muted} getLevel={voice.getOutputVolume} />
           </div>
 
           {/* Lower panels */}
@@ -176,7 +176,13 @@ export default function ClassroomTest() {
             centerLabel={centerLabel}
             onToggleMic={handleMicTap}
             muted={muted}
-            onToggleMute={() => setMuted((v) => !v)}
+            onToggleMute={() =>
+              setMuted((v) => {
+                const next = !v;
+                voice.setMuted(next); // mute the ElevenLabs voice, not the (silent) clip
+                return next;
+              })
+            }
           />
         </main>
       </div>
