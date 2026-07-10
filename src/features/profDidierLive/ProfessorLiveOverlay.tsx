@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useConversation } from "@elevenlabs/react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage, languageNames } from "@/contexts/LanguageContext";
 import { getProfessorById } from "@/data/professors";
 import { supabase } from "@/integrations/supabase/client";
 import { professorHero, professorHeadshot } from "@/features/profDidierLive/professorImage";
+import { deriveBoard, BoardDiagram } from "@/features/profDidierLive/boardDiagrams";
 import "@/features/profDidierLive/profDidierLive.css";
 
 // A self-contained, full-screen "Professor Didier LIVE" class overlay. Parameterized
@@ -28,12 +29,25 @@ export interface ProfessorLiveOverlayProps {
   onComplete?: () => void;
 }
 
-const LANG_NAME: Record<string, string> = { en: "English", es: "Spanish", fr: "French", de: "German", zh: "Chinese", ar: "Arabic", ja: "Japanese" };
-const NAME_TO_CODE: Record<string, string> = { English: "en", Spanish: "es", French: "fr", German: "de", Chinese: "zh", Arabic: "ar", Japanese: "ja" };
-const DIDIER_VOICES: Record<string, string> = {
-  English: "bQxW1c7YCr6VQgQhw8KX", Spanish: "bQxW1c7YCr6VQgQhw8KX", French: "IBGoh6rlxdauchOCULhL",
-  German: "WPbK7Qv9rbyhvUDiwJ0A", Chinese: "pU9NaAwkoR3v0Mrg3uKz", Arabic: "Ojb0nFbyzZn95u0i5a5p", Japanese: "Mv8AjrYZCBkdsmDHNwcB",
+// English names used in the professor's spoken-language instruction (matches the
+// lesson player's own map, e.g. zh → "Mandarin Chinese").
+const LANG_EN_NAME: Record<string, string> = {
+  en: "English", es: "Spanish", zh: "Mandarin Chinese", ar: "Arabic", fr: "French", de: "German",
+  ja: "Japanese", pt: "Portuguese", hi: "Hindi", ko: "Korean", it: "Italian", ru: "Russian",
+  nl: "Dutch", pl: "Polish", tr: "Turkish", sw: "Swahili", yo: "Yoruba", ha: "Hausa",
+  ig: "Igbo", vi: "Vietnamese", th: "Thai",
 };
+// Professor Didier's ElevenLabs voice per language. Languages without a dedicated
+// voice fall back to his primary multilingual voice, so he still sounds like himself.
+const DIDIER_VOICE_DEFAULT = "bQxW1c7YCr6VQgQhw8KX";
+const DIDIER_VOICES: Record<string, string> = {
+  en: DIDIER_VOICE_DEFAULT, es: DIDIER_VOICE_DEFAULT, fr: "IBGoh6rlxdauchOCULhL",
+  de: "WPbK7Qv9rbyhvUDiwJ0A", zh: "pU9NaAwkoR3v0Mrg3uKz", ar: "Ojb0nFbyzZn95u0i5a5p", ja: "Mv8AjrYZCBkdsmDHNwcB",
+};
+// Languages offered in the in-class picker (every app-supported language).
+const LANG_OPTIONS: string[] = [
+  "en", "es", "fr", "de", "pt", "it", "nl", "pl", "ru", "tr", "ar", "zh", "ja", "ko", "hi", "vi", "th", "sw", "yo", "ha", "ig",
+];
 const QUICK_COMMANDS = ["Repeat that", "Explain another way", "Show me a diagram", "Quiz me on this", "What should I focus on?"];
 
 function fmt(sec: number): string {
@@ -49,13 +63,15 @@ function Wave({ active, bars = 40 }: { active: boolean; bars?: number }) {
 }
 
 export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lessons, initialLessonId, completedLessonIds = [], onClose, onComplete }: ProfessorLiveOverlayProps) {
-  const { language } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const didier = getProfessorById("didier");
-  const langName = LANG_NAME[language] || "English";
+  const langName = LANG_EN_NAME[language] || "English";       // spoken-language name for the prompt
+  const langNative = languageNames[language] || langName;     // native name for the UI
 
   const startIdx = Math.max(0, lessons.findIndex((l) => l.id === initialLessonId));
   const [lessonIndex, setLessonIndex] = useState(startIdx === -1 ? 0 : startIdx);
   const lesson = lessons[lessonIndex] ?? lessons[0];
+  const boardModel = useMemo(() => deriveBoard(lesson), [lesson]);
 
   const [caption, setCaption] = useState("Welcome to class. Tap “Speak” to start a live voice lesson, or type a question below.");
   const [notes, setNotes] = useState("");
@@ -75,11 +91,11 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
   const audioCtxRef = useRef<AudioContext | null>(null);
   const keepAliveRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const connectedAtRef = useRef<number>(0);
-  const usedOverridesRef = useRef(false);
-  const bareRetriedRef = useRef(false);
+  // Current override stage: 0 = full lesson overrides, 1 = language-only, 2 = bare.
+  const stageRef = useRef(0);
   const userEndedRef = useRef(false);
   const endpointRef = useRef<{ signedUrl: string | null; agentId?: string }>({ signedUrl: null });
-  const connectRef = useRef<((withOverrides: boolean) => Promise<void>) | null>(null);
+  const connectRef = useRef<((stage: number) => Promise<void>) | null>(null);
   const completed = useMemo(() => new Set(completedLessonIds), [completedLessonIds]);
 
   const conversation = useConversation({
@@ -98,14 +114,17 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
       const wasBrief = connectedAtRef.current > 0 && Date.now() - connectedAtRef.current < 4000;
       connectedAtRef.current = 0;
       if (userEndedRef.current) return; // intentional stop / lesson switch / unmount
-      if (wasBrief && usedOverridesRef.current && !bareRetriedRef.current) {
-        // Connected then dropped almost instantly WITH overrides → the agent
-        // rejected an override. Reconnect on the agent's built-in prompt/voice.
-        bareRetriedRef.current = true;
-        setAudioError("Reconnecting with Professor Didier's default voice (the agent rejected the lesson override)…");
-        setTimeout(() => { void connectRef.current?.(false); }, 400);
+      if (wasBrief && stageRef.current < 2) {
+        // Connected then dropped almost instantly → the agent rejected an override.
+        // Step down (full → language-only → bare) so we keep the chosen language as
+        // long as possible and still guarantee a connection.
+        const next = stageRef.current + 1;
+        setAudioError(next === 1
+          ? "Adjusting… reconnecting in your language on Professor Didier's default voice."
+          : "Adjusting… reconnecting on the agent's default settings.");
+        setTimeout(() => { void connectRef.current?.(next); }, 400);
       } else if (wasBrief) {
-        setAudioError("Connected but the session dropped immediately — an ElevenLabs agent-side config issue (is the agent published? are its overrides/voices valid?), not the app. Captions/typing still work.");
+        setAudioError("Connected but the session keeps dropping — the ElevenLabs agent needs its Language / Prompt / Voice overrides enabled in its Security tab. Captions and typing still work meanwhile.");
       }
     },
     onMessage: (props: any) => { if (props?.source === "ai" && props?.message) setCaption(String(props.message).replace(/<[^>]+>/g, "").trim()); },
@@ -170,6 +189,10 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
 
   // ── Live board diagrams for the current lesson ───────────────────────────
   const loadVisuals = useCallback(async () => {
+    // Built-in diagrams are the board by default. The AI SVG generator is an optional
+    // enhancement — only call it when explicitly enabled (VITE_ENABLE_AI_VISUALS) and
+    // the server has ANTHROPIC_API_KEY, so the console stays clean when it isn't set.
+    if (import.meta.env.VITE_ENABLE_AI_VISUALS !== "true") { setVisuals([]); setVisualsLoading(false); return; }
     const key = `${lesson.id}::${language}`;
     if (!lesson.id || key === visualsKeyRef.current) return;
     visualsKeyRef.current = key;
@@ -191,7 +214,7 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
         setVisuals(res.data.svgs);
         supabase.from("lesson_visuals").upsert({ lesson_id: key, svgs: res.data.svgs }).then(() => { }, () => { });
       }
-    } catch (e) { console.warn("[ProfessorLiveOverlay] visuals error", e); }
+    } catch { /* silent — the built-in diagram remains the board */ }
     setVisualsLoading(false);
   }, [lesson.id, lesson.title, lesson.focus, programTitle, language]);
 
@@ -206,28 +229,35 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
 
   // Single place that opens the ElevenLabs session (used by the initial tap AND
   // the auto-reconnect on override rejection). 15s watchdog so it can't hang.
-  const connect = useCallback(async (withOverrides: boolean) => {
+  const connect = useCallback(async (stage: number) => {
     const { signedUrl, agentId } = endpointRef.current;
     const o: any = signedUrl ? { signedUrl } : { agentId };
-    if (withOverrides) {
+    const code = language;
+    if (stage === 0) {
+      // Full lesson overrides: language + Didier voice + lesson prompt + greeting.
       o.overrides = {
-        agent: { language: NAME_TO_CODE[langName] || "en", prompt: { prompt: buildPrompt() }, firstMessage: `Hello! Welcome to today's class on "${lesson.title}". I'm Professor Didier — let's begin!` },
-        tts: { voiceId: DIDIER_VOICES[langName] || DIDIER_VOICES.English, stability: 0.71, similarityBoost: 0.55 },
+        agent: { language: code, prompt: { prompt: buildPrompt() }, firstMessage: `Hello! Welcome to today's class on "${lesson.title}". I'm Professor Didier — let's begin!` },
+        tts: { voiceId: DIDIER_VOICES[code] || DIDIER_VOICE_DEFAULT, stability: 0.71, similarityBoost: 0.55 },
       };
+    } else if (stage === 1) {
+      // Language-only: keeps the class in the chosen language even if the agent
+      // rejects the prompt/voice overrides.
+      o.overrides = { agent: { language: code } };
     }
-    usedOverridesRef.current = withOverrides;
+    // stage 2 → bare (agent defaults), guaranteed to connect.
+    stageRef.current = stage;
     await Promise.race([
       conversation.startSession(o),
       new Promise((_, reject) => setTimeout(() => reject(new Error("connect-timeout")), 15000)),
     ]);
-  }, [conversation, langName, buildPrompt, lesson.title]);
+  }, [conversation, language, buildPrompt, lesson.title]);
   useEffect(() => { connectRef.current = connect; }, [connect]);
 
   const startLive = useCallback(async () => {
     setAudioError(null);
     setConnecting(true);
     userEndedRef.current = false;
-    bareRetriedRef.current = false;
+    stageRef.current = 0;
     // CRITICAL — do this FIRST, synchronously inside the tap gesture, BEFORE any
     // await: create + resume an AudioContext so the browser's autoplay policy
     // lets the agent's audio play. Deferring it until after `await getUserMedia`
@@ -263,15 +293,20 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
       }
 
       endpointRef.current = { signedUrl, agentId };
-      // Attempt WITH lesson overrides; if startSession rejects, self-heal by
-      // reconnecting WITHOUT overrides. (If it instead connects-then-drops, the
-      // onDisconnect handler performs the same self-heal.)
+      // Try full lesson overrides; if startSession rejects, step down to language-only,
+      // then bare. (A connect-then-drop is healed the same way in onDisconnect.)
       try {
-        await connect(true);
-      } catch (overrideErr) {
-        console.warn("[ProfessorLiveOverlay] start with overrides failed; retrying without overrides", overrideErr);
+        await connect(0);
+      } catch (e0) {
+        console.warn("[ProfessorLiveOverlay] full overrides rejected; retrying language-only", e0);
         try { await conversation.endSession(); } catch { /* ignore */ }
-        await connect(false);
+        try {
+          await connect(1);
+        } catch (e1) {
+          console.warn("[ProfessorLiveOverlay] language override rejected; retrying bare", e1);
+          try { await conversation.endSession(); } catch { /* ignore */ }
+          await connect(2);
+        }
       }
       stream.getTracks().forEach((t) => t.stop());
     } catch (err: any) {
@@ -301,6 +336,26 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonIndex]);
 
+  // In-class language switch: changing the app language re-seeds the board text in
+  // that language; if a session is live we reconnect so the professor immediately
+  // starts speaking the newly selected language.
+  const prevLangRef = useRef(language);
+  useEffect(() => {
+    if (prevLangRef.current === language) return;
+    prevLangRef.current = language;
+    const native = languageNames[language] || LANG_EN_NAME[language] || "the selected language";
+    const wasActive = isLive || connecting;
+    setCaption(wasActive ? `Switching the class to ${native}…` : `Language set to ${native}. Tap “Speak” to start the class in ${native}.`);
+    if (wasActive) {
+      userEndedRef.current = true;
+      (async () => {
+        try { await conversation.endSession(); } catch { /* ignore */ }
+        setTimeout(() => { void startLive(); }, 500);
+      })();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language]);
+
   const ask = useCallback(async (text: string) => {
     const t = text.trim();
     if (!t) return;
@@ -325,8 +380,6 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
   const onNotes = (v: string) => { setNotes(v); try { localStorage.setItem("aladiah:pdlive:notes", v); } catch { /* ignore */ } };
   const close = useCallback(() => { void stopLive(); onClose(); }, [stopLive, onClose]);
 
-  const board = lesson.board;
-  const flowLen = board.flow?.length ?? 0;
   const railStatusClass = phase === "speaking" ? "speaking" : phase === "listening" ? "listening" : "";
 
   return (
@@ -339,6 +392,14 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
         </div>
         <div className="pd-program-pill">{programTitle}</div>
         <div className="pd-header-right">
+          <label className="pd-lang-select" title="Class language">
+            <span className="pd-lang-globe" aria-hidden="true">🌐</span>
+            <select value={language} onChange={(e) => setLanguage(e.target.value as typeof language)} aria-label="Class language">
+              {LANG_OPTIONS.map((code) => (
+                <option key={code} value={code}>{languageNames[code as keyof typeof languageNames] || code}</option>
+              ))}
+            </select>
+          </label>
           <span className={`pd-audio-pill tone-${audioVibe.tone}`} title="Audio status">
             <i />{audioVibe.label}
           </span>
@@ -375,7 +436,7 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
               <div><dt>Program</dt><dd>{programTitle}</dd></div>
               <div><dt>Module</dt><dd>{moduleTitle}</dd></div>
               <div><dt>Lesson</dt><dd>{lesson.title}</dd></div>
-              <div><dt>Language</dt><dd>{langName}</dd></div>
+              <div><dt>Language</dt><dd>{langNative}{langNative !== langName ? ` · ${langName}` : ""}</dd></div>
             </dl>
           </div>
 
@@ -406,10 +467,11 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
             <section className="pd-board">
               <div className="pd-board-toolbar" aria-hidden="true"><span>▷</span><span className="active">✎</span><span>△</span><span>T</span><span>▢</span><span>◯</span></div>
               <div className="pd-board-canvas">
-                <h2 className="pd-board-headline">{board.headline}</h2>
-                {board.definition && <p className="pd-board-def">{board.definition}</p>}
+                <h2 className="pd-board-headline">{boardModel.headline}</h2>
+                {boardModel.definition && <p className="pd-board-def">{boardModel.definition}</p>}
 
-                {/* Live generated diagrams for this lesson */}
+                {/* AI-generated SVGs (only when enabled + available) layer above the
+                    built-in diagram; otherwise the built-in diagram IS the board. */}
                 {visualsLoading && (
                   <div className="pd-board-loading"><span className="pd-spin" /> Projecting a diagram for “{lesson.title}”…</div>
                 )}
@@ -417,19 +479,10 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
                   <div key={i} className="pd-board-visual" dangerouslySetInnerHTML={{ __html: svg }} />
                 ))}
 
-                {/* Fallback structured board when no diagram is available yet */}
-                {!visualsLoading && visuals.length === 0 && board.flow && flowLen > 0 && (
-                  <div className="pd-flow-diagram">
-                    {board.flow.map((n, i) => (
-                      <span key={n} style={{ display: "contents" }}>
-                        <span className="pd-flow-node">{n}</span>
-                        {i < flowLen - 1 && <span className="pd-flow-arrow">→</span>}
-                      </span>
-                    ))}
-                  </div>
-                )}
-                {!visualsLoading && visuals.length === 0 && board.points && board.points.length > 0 && (
-                  <ul className="pd-board-points">{board.points.map((p) => <li key={p}>{p}</li>)}</ul>
+                {!visualsLoading && visuals.length === 0 && <BoardDiagram spec={boardModel.diagram} />}
+
+                {boardModel.keyPoints.length > 0 && (
+                  <ul className="pd-board-points">{boardModel.keyPoints.map((p) => <li key={p}>{p}</li>)}</ul>
                 )}
               </div>
             </section>

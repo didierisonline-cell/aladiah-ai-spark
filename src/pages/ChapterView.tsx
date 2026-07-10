@@ -286,8 +286,12 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
   };
 
   useEffect(() => {
+    // When the LIVE overlay is the lesson experience (no paywall + a current lesson),
+    // ChapterView renders only the overlay — its own study-guide visuals are never
+    // shown, so skip the generate-visuals call to avoid needless work + console noise.
+    if (!paywallReason && currentLesson) return;
     if (currentLesson && course) loadVisuals(currentLesson, course.title);
-  }, [currentLesson?.id, course?.id, language]);
+  }, [currentLesson?.id, course?.id, language, paywallReason]);
 
   // Auto-reset Prof. Didier when student clicks a different lesson
   const activeLessonIdRef = useRef<string>('');
