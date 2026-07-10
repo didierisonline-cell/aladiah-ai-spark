@@ -158,7 +158,9 @@ export default function ChapterView() {
     setDuration(0);
     try {
       // Request mic BEFORE setting connecting state to avoid Safari blank screen
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Explicit constraints — iPad/Safari can reject bare { audio: true } (this is why
+      // the /classroom-test path, which used explicit constraints, connected but this did not).
+      await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
       // Unlock Safari WebAudio context BEFORE connecting ElevenLabs
       try {
         const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
