@@ -37,7 +37,8 @@ import {
 } from "lucide-react";
 
 import "@/components/classroom-test/classroom-test.css";
-import ProfessorMedia from "./ProfessorMedia";
+import RotatingGlobe from "./RotatingGlobe";
+import ScrumBoardVisual from "./ScrumBoardVisual";
 import Waveform from "./Waveform";
 import { professorAvatar } from "./media/professorAssets";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -498,8 +499,8 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
             <div className="relative flex h-full min-h-0 w-full overflow-hidden rounded-2xl border border-white/[0.07] bg-[#070a12]">
               {/* Animated professor figure zone (hidden below lg, like the prototype) */}
               <div className="relative hidden w-[38%] max-w-[420px] shrink-0 overflow-hidden lg:block xl:w-[34%]">
-                {/* ALWAYS muted — visual layer only; real voice is ElevenLabs elsewhere */}
-                <ProfessorMedia speaking={isSpeaking} muted={true} getLevel={getLevel} />
+                {/* Classy rotating globe (replaces the professor figure beside the board) */}
+                <RotatingGlobe speaking={isSpeaking} />
                 <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-r from-transparent to-[#070a12]" />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#070a12] to-transparent" />
                 <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full border border-white/10 bg-black/40 px-2.5 py-1 backdrop-blur-md">
@@ -560,7 +561,9 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
                       />
                     ) : (
                       <>
-                        <p className="ct-font-marker mx-auto mt-2 max-w-[560px] text-center text-lg leading-snug text-white/85 sm:text-xl">
+                        {/* Premium built-in Scrum diagram — the board is a real teaching surface */}
+                        <ScrumBoardVisual />
+                        <p className="ct-font-marker mx-auto mt-6 max-w-[560px] text-center text-lg leading-snug text-white/85 sm:text-xl">
                           Key concepts for this lesson
                         </p>
                         <ul className="mx-auto mt-5 w-full max-w-[560px] space-y-3">
