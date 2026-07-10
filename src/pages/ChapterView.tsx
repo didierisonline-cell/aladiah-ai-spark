@@ -90,6 +90,7 @@ export default function ChapterView() {
 
   // Prof. Didier conversation state
   const [convStatus, setConvStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
+  const [voiceError, setVoiceError] = useState<string | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState<{ role: 'user' | 'agent'; message: string }[]>([]);
   const [recapComplete, setRecapComplete] = useState(false); // UI-only: agent finished the oral recap (sentinel). Never navigates.
@@ -103,6 +104,7 @@ export default function ChapterView() {
   const conversation = useConversation({
     onConnect: () => {
       setConvStatus('connected');
+      setVoiceError(null);
       // Kick Prof Didier into greeting + teaching immediately (agent has no auto-greeting
       // and first_message override is disallowed), else he connects but stays silent.
       setTimeout(() => { try { (conversation as any).sendUserMessage?.("I've just joined the lesson and I'm ready to begin. Please greet me warmly and start teaching this lesson now, out loud."); } catch { } }, 400);
@@ -142,7 +144,7 @@ export default function ChapterView() {
         setTimeout(() => conversation.endSession().catch(() => { }), 1500);
       }
     },
-    onError: () => setConvStatus('error'),
+    onError: (e: any) => { setConvStatus('error'); setVoiceError(typeof e === 'string' ? e : (e?.message || e?.reason || 'ElevenLabs connection error')); },
   });
 
   useEffect(() => { setIsSpeaking(conversation.isSpeaking); }, [conversation.isSpeaking]);
@@ -244,9 +246,10 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       };
       if (signedUrl) sessionOpts.signedUrl = signedUrl; else sessionOpts.agentId = AGENT_ID;
       await conversation.startSession(sessionOpts);
-    } catch (e) {
+    } catch (e: any) {
       console.error('[lesson] Prof. Didier startSession failed:', e);
       setConvStatus('error');
+      setVoiceError(`${e?.name ? e.name + ': ' : ''}${e?.message || String(e)}`);
       isStartingRef.current = false;
     }
   }, [conversation, currentLesson, chapter, language]);
@@ -587,6 +590,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
             onSelectLesson={setCurrentLesson} onOpenQuiz={(id: string) => setActiveQuizId(id)} onContinue={handleContinue}
             onStart={startSession} onEnd={endSession} onBack={() => navigate(`/portal/course/${courseId}`)}
             getLevel={() => { try { return (conversation as any).getOutputVolume?.() ?? 0; } catch { return 0; } }}
+            voiceError={voiceError}
           />
         </Suspense>
       ) : (<>

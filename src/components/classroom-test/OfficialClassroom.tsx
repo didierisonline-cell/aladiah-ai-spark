@@ -117,6 +117,7 @@ export interface OfficialClassroomProps {
   onStart: () => void;
   onEnd: () => void;
   onBack: () => void;
+  voiceError?: string | null;
 }
 
 const DEFAULT_PROMPTS = [
@@ -194,6 +195,7 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
     onStart,
     onEnd,
     onBack,
+    voiceError,
   } = props;
 
   // UI-only local state (no side-effects on the app).
@@ -410,6 +412,12 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
 
   return (
     <div className="ct-root flex min-h-[100dvh] flex-col text-white lg:h-[100dvh] lg:overflow-hidden">
+      {/* Visible voice diagnostic — surfaces the exact reason if Prof Didier can't connect */}
+      {voiceError && (
+        <div className="fixed left-1/2 top-3 z-[60] w-[92%] max-w-xl -translate-x-1/2 rounded-lg border border-red-500/40 bg-red-500/15 px-4 py-2 text-center text-sm text-red-100 shadow-lg backdrop-blur-md">
+          🎙️ Voice couldn't start — {voiceError}
+        </div>
+      )}
       {/* ================= Header ================= */}
       <header className="relative z-30 flex h-16 shrink-0 items-center gap-4 border-b border-white/[0.06] bg-[#070a12]/80 px-4 backdrop-blur-md sm:px-6">
         {/* Back + brand + live status */}
