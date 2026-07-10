@@ -74,12 +74,19 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
   const historyRef = useRef<{ role: string; content: string }[]>([]);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const keepAliveRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const connectedAtRef = useRef<number>(0);
+  const usedOverridesRef = useRef(false);
+  const bareRetriedRef = useRef(false);
+  const userEndedRef = useRef(false);
+  const endpointRef = useRef<{ signedUrl: string | null; agentId?: string }>({ signedUrl: null });
+  const connectRef = useRef<((withOverrides: boolean) => Promise<void>) | null>(null);
   const completed = useMemo(() => new Set(completedLessonIds), [completedLessonIds]);
 
   const conversation = useConversation({
     onConnect: () => {
-      // Force full output volume + keep the socket alive (silent ping) so the
-      // session can't silently drop mid-class (mirrors ChapterView).
+      connectedAtRef.current = Date.now();
+      setAudioError(null);
+      // Force full output volume + keep the socket alive (silent ping).
       try { (conversation as any).setVolume?.({ volume: 1 }); } catch { /* ignore */ }
       if (keepAliveRef.current) clearInterval(keepAliveRef.current);
       keepAliveRef.current = setInterval(() => {
@@ -88,6 +95,18 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
     },
     onDisconnect: () => {
       if (keepAliveRef.current) { clearInterval(keepAliveRef.current); keepAliveRef.current = null; }
+      const wasBrief = connectedAtRef.current > 0 && Date.now() - connectedAtRef.current < 4000;
+      connectedAtRef.current = 0;
+      if (userEndedRef.current) return; // intentional stop / lesson switch / unmount
+      if (wasBrief && usedOverridesRef.current && !bareRetriedRef.current) {
+        // Connected then dropped almost instantly WITH overrides → the agent
+        // rejected an override. Reconnect on the agent's built-in prompt/voice.
+        bareRetriedRef.current = true;
+        setAudioError("Reconnecting with Professor Didier's default voice (the agent rejected the lesson override)…");
+        setTimeout(() => { void connectRef.current?.(false); }, 400);
+      } else if (wasBrief) {
+        setAudioError("Connected but the session dropped immediately — an ElevenLabs agent-side config issue (is the agent published? are its overrides/voices valid?), not the app. Captions/typing still work.");
+      }
     },
     onMessage: (props: any) => { if (props?.source === "ai" && props?.message) setCaption(String(props.message).replace(/<[^>]+>/g, "").trim()); },
     onError: (err: any) => {
@@ -119,6 +138,7 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
   useEffect(() => { const t = setInterval(() => setSessionSeconds((s) => s + 1), 1000); return () => clearInterval(t); }, []);
   useEffect(() => { try { const s = localStorage.getItem("aladiah:pdlive:notes"); if (s) setNotes(s); } catch { /* ignore */ } }, []);
   useEffect(() => () => { // unmount: end session + close audio context + stop keep-alive
+    userEndedRef.current = true;
     try { void conversation.endSession(); } catch { /* ignore */ }
     try { if (keepAliveRef.current) clearInterval(keepAliveRef.current); } catch { /* ignore */ }
     try { void audioCtxRef.current?.close(); } catch { /* ignore */ }
@@ -184,9 +204,30 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
     `Speak in ${langName}. Keep it conversational. Do not navigate or change the app; only teach by speaking.`,
     [didier.systemPrompt, programTitle, moduleTitle, lesson.title, lesson.focus, langName]);
 
+  // Single place that opens the ElevenLabs session (used by the initial tap AND
+  // the auto-reconnect on override rejection). 15s watchdog so it can't hang.
+  const connect = useCallback(async (withOverrides: boolean) => {
+    const { signedUrl, agentId } = endpointRef.current;
+    const o: any = signedUrl ? { signedUrl } : { agentId };
+    if (withOverrides) {
+      o.overrides = {
+        agent: { language: NAME_TO_CODE[langName] || "en", prompt: { prompt: buildPrompt() }, firstMessage: `Hello! Welcome to today's class on "${lesson.title}". I'm Professor Didier — let's begin!` },
+        tts: { voiceId: DIDIER_VOICES[langName] || DIDIER_VOICES.English, stability: 0.71, similarityBoost: 0.55 },
+      };
+    }
+    usedOverridesRef.current = withOverrides;
+    await Promise.race([
+      conversation.startSession(o),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("connect-timeout")), 15000)),
+    ]);
+  }, [conversation, langName, buildPrompt, lesson.title]);
+  useEffect(() => { connectRef.current = connect; }, [connect]);
+
   const startLive = useCallback(async () => {
     setAudioError(null);
     setConnecting(true);
+    userEndedRef.current = false;
+    bareRetriedRef.current = false;
     // CRITICAL — do this FIRST, synchronously inside the tap gesture, BEFORE any
     // await: create + resume an AudioContext so the browser's autoplay policy
     // lets the agent's audio play. Deferring it until after `await getUserMedia`
@@ -221,34 +262,16 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
         return;
       }
 
-      // Build session options with or without client overrides. ElevenLabs
-      // closes the socket if the agent hasn't enabled a field we try to
-      // override, so we attempt WITH overrides first, then self-heal WITHOUT.
-      const buildOpts = (withOverrides: boolean) => {
-        const o: any = signedUrl ? { signedUrl } : { agentId };
-        if (withOverrides) {
-          o.overrides = {
-            agent: { language: NAME_TO_CODE[langName] || "en", prompt: { prompt: buildPrompt() }, firstMessage: `Hello! Welcome to today's class on "${lesson.title}". I'm Professor Didier — let's begin!` },
-            tts: { voiceId: DIDIER_VOICES[langName] || DIDIER_VOICES.English, stability: 0.71, similarityBoost: 0.55 },
-          };
-        }
-        return o;
-      };
-      // Watchdog: never hang on "Connecting…" — reject if not established in 15s.
-      const startOnce = (o: any) => Promise.race([
-        conversation.startSession(o),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("connect-timeout")), 15000)),
-      ]);
-
+      endpointRef.current = { signedUrl, agentId };
+      // Attempt WITH lesson overrides; if startSession rejects, self-heal by
+      // reconnecting WITHOUT overrides. (If it instead connects-then-drops, the
+      // onDisconnect handler performs the same self-heal.)
       try {
-        await startOnce(buildOpts(true));
+        await connect(true);
       } catch (overrideErr) {
-        // Self-heal: connect with the agent's built-in prompt/voice so class
-        // audio still works even if overrides are rejected/misconfigured.
         console.warn("[ProfessorLiveOverlay] start with overrides failed; retrying without overrides", overrideErr);
         try { await conversation.endSession(); } catch { /* ignore */ }
-        await startOnce(buildOpts(false)); // if this also fails, the outer catch handles it
-        console.warn("[ProfessorLiveOverlay] connected WITHOUT overrides — enable Prompt/First message/Language/Voice overrides on the ElevenLabs agent for lesson-specific teaching.");
+        await connect(false);
       }
       stream.getTracks().forEach((t) => t.stop());
     } catch (err: any) {
@@ -263,9 +286,9 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
     } finally {
       setConnecting(false);
     }
-  }, [conversation, lesson.title, langName, buildPrompt]);
+  }, [connect, conversation]);
 
-  const stopLive = useCallback(async () => { try { await conversation.endSession(); } catch { /* ignore */ } }, [conversation]);
+  const stopLive = useCallback(async () => { userEndedRef.current = true; try { await conversation.endSession(); } catch { /* ignore */ } }, [conversation]);
   const toggleLive = useCallback(() => { if (isLive) void stopLive(); else void startLive(); }, [isLive, startLive, stopLive]);
 
   // Keep voice + board in sync: switching lessons ends the current session so the
@@ -274,7 +297,7 @@ export default function ProfessorLiveOverlay({ programTitle, moduleTitle, lesson
   useEffect(() => {
     if (!didMountRef.current) { didMountRef.current = true; return; }
     setCaption(`Now on “${lesson.title}”. Tap Speak to go live on this lesson, or type a question.`);
-    if (isLive) void conversation.endSession();
+    if (isLive) { userEndedRef.current = true; void conversation.endSession(); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonIndex]);
 
