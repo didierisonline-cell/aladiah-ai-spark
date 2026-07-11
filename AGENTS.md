@@ -18,13 +18,22 @@
   warning is expected and not an error).
 
 ### Non-obvious caveats
-- **Supabase key gotcha:** `src/integrations/supabase/client.ts` falls back to a
+- **Supabase config:** `src/integrations/supabase/client.ts` falls back to a
   hardcoded Supabase URL + anon key when `VITE_*` env vars are unset. That
-  committed fallback key is **currently rejected by Supabase ("Invalid API
-  key")**, so anything that hits Supabase (sign-up/login, courses, simulations,
-  AI features) fails until you supply a valid `VITE_SUPABASE_URL` +
-  `VITE_SUPABASE_PUBLISHABLE_KEY` in `.env` (see `.env.example`). The app still
-  boots and renders without them.
+  committed fallback anon key is **stale/rejected ("Invalid API key")**, so real
+  Supabase flows (sign-up/login, courses, simulations, AI) need valid values in
+  a local **`.env`** (gitignored; copy from `.env.example`): at minimum
+  `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. The app still boots
+  and renders without them. Verified working: sign-up creates a user and shows
+  the "Check Your Email" confirmation.
+- **`VITE_SUPABASE_URL` must be the bare project origin**
+  `https://<project-ref>.supabase.co` with **no path**. A value containing an
+  extra path segment (e.g. a trailing `/rest/v1`) makes `supabase-js` build
+  `/auth/v1/*` URLs that get misrouted to PostgREST, which returns
+  `PGRST125 "Invalid path specified in request URL"` (surfaces in the UI as
+  "Invalid path specified in request").
+- New-style publishable keys (`sb_publishable_…`) work with the installed
+  `@supabase/supabase-js` (≥2.91).
 - **Port collision:** `aladiah-talent-hub` also defaults to 8080. Run one at a
   time, or start the other with `npm run dev -- --port <n>`.
 - Build uses esbuild only (no `tsc`); `tsconfig.app.json` has `strict: false`.
