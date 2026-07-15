@@ -22,11 +22,13 @@ const Hero = () => {
   const { t } = useLanguage();
   const [storyOpen, setStoryOpen] = useState(false);
 
+  // WO-P0-001: stats must be verifiable at launch. No student counts, success
+  // rates, or partner counts until real numbers exist (LAUNCH_DECISION_PRINCIPLE).
   const stats = [
-    { icon: Users, value: '500+', label: t('hero.stats.students') },
-    { icon: TrendingUp, value: '95%', label: t('hero.stats.rate') },
-    { icon: Building2, value: '20+', label: t('hero.stats.partners') },
-    { icon: GraduationCap, value: '30+', label: t('hero.stats.programs') },
+    { icon: GraduationCap, value: '4', label: t('mvp.hero.stats.programs_live') },
+    { icon: TrendingUp, value: '18+', label: t('mvp.hero.stats.modules') },
+    { icon: Users, value: '24/7', label: t('mvp.hero.stats.ai_professor') },
+    { icon: Building2, value: '21', label: t('mvp.hero.stats.languages') },
   ];
 
   const exploreProgrames = () => {

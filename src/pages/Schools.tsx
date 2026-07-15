@@ -89,11 +89,14 @@ export default function Schools() {
         <section style={{ padding: '5rem 0 3rem', background: 'linear-gradient(160deg,#0a1628 0%,#0d1f3c 60%,#0a1220 100%)', borderBottom: `1px solid ${DS.border}`, position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle,rgba(74,144,245,.07) 0%,transparent 65%)', top: -200, right: -100 }} />
           <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', position: 'relative' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '.35rem', fontSize: 11, fontWeight: 600, padding: '.28rem .75rem', borderRadius: 999, background: DS.bd, border: `1px solid ${DS.bb}`, color: DS.blue, marginBottom: '1rem' }}>{t('schools.badge')}</div>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '.35rem', fontSize: 11, fontWeight: 600, padding: '.28rem .75rem', borderRadius: 999, background: DS.bd, border: `1px solid ${DS.bb}`, color: DS.blue, marginBottom: '1rem' }}>{t('mvp.schools.badge')}</div>
             <h1 style={{ fontSize: 'clamp(2.2rem,4vw,3.2rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.5px', marginBottom: '1rem' }}>
               {t('schools.h1a')}<br /><span style={{ color: DS.blue }}>{t('schools.h1b')}</span>
             </h1>
-            <p style={{ fontSize: '1rem', color: DS.fm, maxWidth: 560, lineHeight: 1.72, marginBottom: '2rem' }}>{t('schools.sub')}</p>
+            <p style={{ fontSize: '1rem', color: DS.fm, maxWidth: 560, lineHeight: 1.72, marginBottom: '1rem' }}>{t('mvp.schools.sub')}</p>
+            <div style={{ display: 'inline-block', fontSize: 12, color: DS.gold, background: DS.gd, border: `1px solid ${DS.gb}`, borderRadius: '.5rem', padding: '.5rem .85rem', lineHeight: 1.6, maxWidth: 560, marginBottom: '2rem' }}>
+              {t('mvp.schools.roadmap_note')}
+            </div>
             <div style={{ display: 'flex', gap: '.75rem', flexWrap: 'wrap' }}>
               {SCHOOLS.map(s => (
                 <a key={s.id} href={`#${s.id}`} style={{ fontSize: 13, fontWeight: 700, padding: '.68rem 1.5rem', borderRadius: '.75rem', background: s.id === 'engineering' ? DS.blue : 'transparent', color: s.id === 'engineering' ? '#fff' : DS.fg, border: s.id === 'engineering' ? 'none' : `1px solid ${DS.border}`, textDecoration: 'none', transition: 'all .2s' }}>{t(s.labelKey)}</a>
@@ -122,7 +125,10 @@ export default function Schools() {
                     <div key={prog.name} onClick={() => navigate('/pricing')} style={{ background: DS.card, border: `1px solid ${DS.border}`, borderRadius: '.75rem', padding: '1.5rem', transition: 'all .2s', cursor: 'pointer' }}
                       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = school.colorB; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
                       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = DS.border; (e.currentTarget as HTMLElement).style.transform = ''; }}>
-                      <div style={{ fontSize: 20, marginBottom: '.6rem' }}>{prog.icon}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '.6rem' }}>
+                        <span style={{ fontSize: 20 }}>{prog.icon}</span>
+                        <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.05em', color: DS.fm, background: 'rgba(133,150,173,.12)', border: '1px solid rgba(133,150,173,.25)', borderRadius: 999, padding: '2px 8px', textTransform: 'uppercase' as const }}>{t('mvp.schools.coming_soon')}</span>
+                      </div>
                       <div style={{ fontSize: 13, fontWeight: 700, color: DS.fg, marginBottom: '.25rem' }}>{prog.name}</div>
                       <div style={{ fontSize: 11, color: DS.fm, lineHeight: 1.5 }}>{prog.desc}</div>
                       <div style={{ fontSize: 10, fontWeight: 700, color: school.color, marginTop: '.65rem', letterSpacing: '.5px' }}>{t('schools.level_range')}{prog.weeks}{t('schools.weeks_suffix')}</div>
@@ -138,8 +144,8 @@ export default function Schools() {
         <div style={{ background: DS.card, borderTop: `1px solid ${DS.border}`, borderBottom: `1px solid ${DS.border}`, padding: '4.5rem 0', textAlign: 'center' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem' }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' as const, color: DS.blue, marginBottom: '.85rem' }}>{t('schools.cta_label')}</div>
-            <h2 style={{ fontSize: 'clamp(1.75rem,3vw,2.5rem)', fontWeight: 800, marginBottom: '.75rem' }}>{t('schools.cta_h2a')}<br /><span style={{ color: DS.gold }}>{t('schools.cta_price')}</span></h2>
-            <p style={{ fontSize: 14, color: DS.fm, maxWidth: 480, margin: '0 auto 2rem', lineHeight: 1.7 }}>{t('schools.cta_sub')}</p>
+            <h2 style={{ fontSize: 'clamp(1.75rem,3vw,2.5rem)', fontWeight: 800, marginBottom: '.75rem' }}>{t('mvp.schools.cta_h2a')}<br /><span style={{ color: DS.gold }}>{t('schools.cta_price')}</span></h2>
+            <p style={{ fontSize: 14, color: DS.fm, maxWidth: 480, margin: '0 auto 2rem', lineHeight: 1.7 }}>{t('mvp.schools.cta_sub')}</p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '.75rem', flexWrap: 'wrap' }}>
               <button onClick={() => navigate('/pricing')} style={{ fontSize: 14, fontWeight: 700, padding: '.68rem 1.5rem', borderRadius: '.75rem', background: DS.gold, color: '#0B111E', border: 'none', cursor: 'pointer' }}>{t('schools.pricing_btn')}</button>
               <button onClick={() => navigate('/auth')} style={{ fontSize: 14, fontWeight: 700, padding: '.68rem 1.5rem', borderRadius: '.75rem', background: 'transparent', color: DS.fg, border: `1px solid ${DS.border}`, cursor: 'pointer' }}>{t('schools.free_btn')}</button>

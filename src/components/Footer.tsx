@@ -34,7 +34,7 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
           <div>
             <img src={aladiahLogo} alt="Aladiah Academy" style={{ height: 40, width: 'auto', objectFit: 'contain', marginBottom: '0.4rem' }} />
             <div style={{ fontSize: 11, color: '#8596AD', fontStyle: 'italic', marginBottom: '0.75rem' }}>"Solo Excelencia" — {t('footer.tagline')}</div>
-            <p style={{ fontSize: 11, color: '#8596AD', lineHeight: 1.6, maxWidth: 250 }}>{t('footer.blurb')}</p>
+            <p style={{ fontSize: 11, color: '#8596AD', lineHeight: 1.6, maxWidth: 250 }}>{t('mvp.footer.blurb')}</p>
             <div style={{ marginTop: '0.85rem' }}>
               <a href="https://www.aladiahmanagement.com" target="_blank" rel="noopener noreferrer"
                 style={{ fontSize: 11, fontWeight: 700, color: '#F0622A', border: '1px solid rgba(240,98,42,.28)', padding: '4px 12px', borderRadius: '0.4rem', textDecoration: 'none' }}>
