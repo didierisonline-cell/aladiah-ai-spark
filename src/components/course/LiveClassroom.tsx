@@ -80,6 +80,9 @@ const LiveClassroom = ({
   const [captions, setCaptions] = useState<string[]>([]);
   const [showCC, setShowCC] = useState(true);
   const sessionStartTime = useRef<number | null>(null);
+  // Voice-cutoff diagnosis: the last early-disconnect reason, kept so a QA
+  // tester (or the founder) can read the exact failure without DevTools.
+  const [lastCutoff, setLastCutoff] = useState<{ durationMs: number; reason: string; details: string } | null>(null);
   const { toast } = useToast();
   const professorName = PROFESSOR_NAMES[agentKey] || "Professor Didier";
 
@@ -97,17 +100,30 @@ const LiveClassroom = ({
     },
     onDisconnect: (details: any) => {
       const duration = sessionStartTime.current ? Date.now() - sessionStartTime.current : 0;
-      console.log("[LiveClass] onDisconnect fired. Duration ms:", duration, "Details:", details);
+      // Instrumentation (voice-cutoff diagnosis): extract the structured close
+      // reason so an early disconnect names its own cause instead of vanishing.
+      // ElevenLabs passes { reason, message, code } shapes across SDK versions.
+      const reason = details?.reason ?? details?.message ?? details?.code ?? null;
+      const detailStr = (() => { try { return JSON.stringify(details); } catch { return String(details); } })();
+      console.log(`[LiveClass] onDisconnect. duration_ms=${duration} reason=${reason} details=${detailStr}`);
       sessionStartTime.current = null;
       setSessionStarted(false);
       if (duration > 20000) {
         setShowQuizCTA(true);
         onComplete();
+      } else if (duration > 0 && duration < 20000) {
+        // The Founder's Priority-One symptom: speaks, then cuts off early.
+        // Surface the exact reason on-screen so the failure point is captured
+        // without needing DevTools open.
+        setLastCutoff({ durationMs: duration, reason: reason ?? "unknown", details: detailStr });
+        toast({ title: "Voice ended early", description: `Reason: ${reason ?? "unknown"} · after ${(duration / 1000).toFixed(1)}s`, variant: "destructive" });
       }
     },
     onError: (error: any) => {
-      console.error("[LiveClass] onError:", error);
-      toast({ title: "Connection error", description: "Could not connect. Please try again.", variant: "destructive" });
+      const errStr = (() => { try { return JSON.stringify(error); } catch { return String(error?.message ?? error); } })();
+      console.error("[LiveClass] onError:", errStr, error);
+      setLastCutoff({ durationMs: sessionStartTime.current ? Date.now() - sessionStartTime.current : 0, reason: `error:${error?.message ?? "unknown"}`, details: errStr });
+      toast({ title: "Connection error", description: String(error?.message ?? "Could not connect. Please try again."), variant: "destructive" });
     },
     onStatusChange: ({ status }: { status: string }) => {
       console.log("[LiveClass] status changed:", status);
@@ -122,7 +138,15 @@ const LiveClassroom = ({
       // Verify mic works before connecting to ElevenLabs
       let stream: MediaStream;
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // echoCancellation is the #1 defense against the "speaks then cuts off"
+        // symptom on laptop speakers: without it the agent's own voice loops
+        // into the mic, the VAD reads it as the student interrupting, and the
+        // agent stops mid-sentence. noiseSuppression + autoGainControl harden
+        // the same path. (Was `{ audio: true }` — browser defaults are not
+        // guaranteed to enable these.)
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+        });
         // Keep the stream alive — pass it to the SDK so there's no second getUserMedia call
       } catch (micError: any) {
         if (micError.name === "NotAllowedError" || micError.name === "PermissionDeniedError") {
@@ -360,6 +384,14 @@ INSTRUCTIONS:
                 <span className="text-red-300 text-xs font-bold">LIVE</span>
               </div>}
             </div>
+            {/* Voice-cutoff diagnostic readout (Priority One). Visible only after
+                an early disconnect so a tester can capture the exact reason. */}
+            {!isActive && lastCutoff && (
+              <div className="mb-3 max-w-md text-center rounded-lg border border-amber-400/30 bg-amber-500/10 px-3 py-2">
+                <p className="text-amber-300 text-xs font-semibold">Voice ended after {(lastCutoff.durationMs / 1000).toFixed(1)}s — reason: {lastCutoff.reason}</p>
+                <p className="text-amber-200/60 text-[10px] mt-0.5 break-all">{lastCutoff.details}</p>
+              </div>
+            )}
             {isActive && (
               <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium mb-2 ${conversation.isSpeaking ? "bg-secondary/20 text-secondary border border-secondary/30" : "bg-green-500/20 text-green-400 border border-green-400/30"}`}>
                 <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${conversation.isSpeaking ? "bg-secondary" : "bg-green-400"}`} />
