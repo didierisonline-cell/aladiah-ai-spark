@@ -15,6 +15,7 @@ import { isFounderEmail } from '@/lib/roles';
 import { DEPRECATED_COURSE_REDIRECTS } from '@/lib/courseRedirects';
 import { founderModeOn } from '@/hooks/useFounderMode';
 import MobileLessonPlayer from '@/components/portal/MobileLessonPlayer';
+import ProfessorLiveOverlay, { type OverlayLesson } from '@/features/profDidierLive/ProfessorLiveOverlay';
 
 const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string;
 
@@ -83,6 +84,7 @@ export default function ChapterView() {
   const [freeCourseName, setFreeCourseName] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [allChapters, setAllChapters] = useState<Chapter[]>([]);
+  const [liveOpen, setLiveOpen] = useState(false); // Professor Didier LIVE overlay
 
   // Prof. Didier conversation state
   const [convStatus, setConvStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
@@ -284,8 +286,12 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
   };
 
   useEffect(() => {
+    // When the LIVE overlay is the lesson experience (no paywall + a current lesson),
+    // ChapterView renders only the overlay — its own study-guide visuals are never
+    // shown, so skip the generate-visuals call to avoid needless work + console noise.
+    if (!paywallReason && currentLesson) return;
     if (currentLesson && course) loadVisuals(currentLesson, course.title);
-  }, [currentLesson?.id, course?.id, language]);
+  }, [currentLesson?.id, course?.id, language, paywallReason]);
 
   // Auto-reset Prof. Didier when student clicks a different lesson
   const activeLessonIdRef = useRef<string>('');
@@ -459,6 +465,44 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
     else setActiveQuizId(nextStep.quizId);
   };
 
+  // Module completion from the LIVE class (replaces the chapter_end quiz pass).
+  // Preserves the tier logic: free tier completes the free course + shows the
+  // upgrade paywall; paid tier advances to the next module (or back to /portal).
+  const handleModuleComplete = useCallback(async () => {
+    try {
+      const { data: { user: u } } = await supabase.auth.getUser();
+      if (!u) { navigate('/portal'); return; }
+      // Persist canonical module completion (a passed chapter_end row) so the course
+      // overview %, Talent Score, and green highlights update — mirrors the quiz path.
+      const chapterEndQuiz = quizzes.find((q) => q.quiz_type === 'chapter_end');
+      if (chapterEndQuiz) {
+        try {
+          await supabase.from('user_progress').insert({
+            user_id: u.id, quiz_id: chapterEndQuiz.id, chapter_id: chapterId, passed: true, score: 100, completed_at: new Date().toISOString(),
+          });
+        } catch (e) { console.warn('[lesson] completion write failed', e); }
+      }
+      const { data: profile } = await supabase.from('profiles').select('tier').eq('user_id', u.id).maybeSingle();
+      if (profile?.tier === 'starter') {
+        localStorage.setItem(`starter-course-done-${u.id}`, 'true');
+        supabase.from('profiles').update({ free_course_completed: true }).eq('user_id', u.id).then(() => { });
+        supabase.from('profiles').select('preferred_language, full_name').eq('user_id', u.id).maybeSingle().then(({ data: prof }) => {
+          fetch('https://vgujnkxylipfwmkpwzvb.supabase.co/functions/v1/send-email', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: 'free_course_completed', student: { name: prof?.full_name || 'Student', email: u.email, course: course?.title, language: prof?.preferred_language || 'en' } }),
+          }).catch(() => { });
+        });
+        setPaywallReason('module_locked');
+      } else {
+        const currentIdx = allChapters.findIndex(c => c.id === chapterId);
+        const nextChapter = allChapters[currentIdx + 1];
+        navigate(nextChapter ? `/course/${courseId}/chapter/${nextChapter.id}` : '/portal');
+      }
+    } catch {
+      navigate('/portal');
+    }
+  }, [allChapters, chapterId, courseId, course, navigate, quizzes]);
+
   if (loading) return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg,#0a0f1e,#0d1b3e)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ textAlign: 'center', color: '#60a5fa' }}>
@@ -468,6 +512,41 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       </div>
     </div>
   );
+
+  // ── LIVE-only lesson experience ──────────────────────────────────────────
+  // The text-reading lesson page + quiz have been replaced by the immersive
+  // Professor Didier LIVE class. The access/paywall gate is preserved: when a
+  // module is gated (paywallReason set) we fall through to the paywall overlay
+  // in the block below instead of showing the class.
+  if (!paywallReason && currentLesson) {
+    const liveLessons: OverlayLesson[] = videos.map((v) => {
+      const desc = (getDescription(v) || '').replace(/\s+/g, ' ').trim();
+      const focusSrc = (getDescription(v) || getTranscript(v) || '').replace(/\s+/g, ' ').trim();
+      return {
+        id: v.id,
+        title: getTitle(v),
+        focus: focusSrc.slice(0, 600),
+        // Full lesson description (no mid-word truncation like "…which you can e").
+        board: { headline: getTitle(v), definition: desc || focusSrc.slice(0, 240) },
+        suggestions: ['Explain this simply', 'Give me a real-world example', 'Show me a diagram', 'Quiz me on this'],
+      };
+    });
+    // Green highlight: when the module's chapter_end quiz is passed, its lessons are done.
+    const chapterEndQuiz = quizzes.find((q) => q.quiz_type === 'chapter_end');
+    const moduleDone = chapterEndQuiz ? passedQuizzes.includes(chapterEndQuiz.id) : false;
+    const completedLessonIds = moduleDone ? videos.map((v) => v.id) : [];
+    return (
+      <ProfessorLiveOverlay
+        programTitle={getTitle(course)}
+        moduleTitle={getTitle(chapter)}
+        lessons={liveLessons}
+        initialLessonId={currentLesson.id}
+        completedLessonIds={completedLessonIds}
+        onClose={() => navigate(`/portal/course/${courseId}`)}
+        onComplete={handleModuleComplete}
+      />
+    );
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg,#0a0f1e 0%,#0d1b3e 50%,#0a0f1e 100%)', fontFamily: 'system-ui,-apple-system,sans-serif' }}>
@@ -528,6 +607,27 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '12px' }}>🔒 {t('paywall.secure')}</p>
           </div>
         </div>
+      )}
+
+      {/* Professor Didier LIVE — full-screen immersive overlay, seeded with this
+          module's real lessons and the current lesson. Speech-only; never navigates. */}
+      {liveOpen && currentLesson && (
+        <ProfessorLiveOverlay
+          programTitle={getTitle(course)}
+          moduleTitle={getTitle(chapter)}
+          lessons={videos.map((v) => {
+            const desc = (getDescription(v) || getTranscript(v) || '').replace(/\s+/g, ' ').trim();
+            return {
+              id: v.id,
+              title: getTitle(v),
+              focus: desc.slice(0, 500),
+              board: { headline: getTitle(v), definition: desc.slice(0, 180) },
+              suggestions: ['Explain this simply', 'Give me a real-world example', 'Quiz me on this', 'How does this show up on the exam?'],
+            } as OverlayLesson;
+          })}
+          initialLessonId={currentLesson.id}
+          onClose={() => setLiveOpen(false)}
+        />
       )}
 
       {/* Phone (< 768px): immersive single-column lesson player. */}
@@ -602,9 +702,17 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               <BookOpen size={18} color="#3b82f6" />
               <span style={{ fontSize: 12, color: '#3b82f6', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('chapter.lesson')} {(currentLesson?.order_index ?? 0) + 1}</span>
             </div>
-            <h1 style={{ fontSize: 28, fontWeight: 700, color: '#f1f5f9', margin: '0 0 24px', lineHeight: 1.3 }}>
+            <h1 style={{ fontSize: 28, fontWeight: 700, color: '#f1f5f9', margin: '0 0 16px', lineHeight: 1.3 }}>
               {getTitle(currentLesson)}
             </h1>
+
+            {/* Go LIVE with Professor Didier — opens the immersive live-class overlay for this lesson */}
+            <button
+              onClick={() => setLiveOpen(true)}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 10, margin: '0 0 24px', padding: '12px 20px', borderRadius: 999, border: '1px solid rgba(139,92,255,0.5)', background: 'linear-gradient(135deg,#8b5cff,#ec5cd0)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 8px 26px rgba(139,92,255,0.35)' }}
+            >
+              <span style={{ fontSize: 16 }}>🎙️</span> Go LIVE with Professor Didier
+            </button>
 
             {/* Key Points */}
             {mainPoints.length > 0 && (

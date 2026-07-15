@@ -14,7 +14,7 @@ const MODES = [
   { icon: '🧭', labelKey: 'mentor.m_career', subKey: 'mentor.m_career_sub', to: '/portal/my-career-path' },
   { icon: '🎮', labelKey: 'mentor.m_sim', subKey: 'mentor.m_sim_sub', to: '/portal/simulations' },
   { icon: '💬', labelKey: 'mentor.m_chat', subKey: 'mentor.m_chat_sub', soon: true },
-  { icon: '🗣️', labelKey: 'mentor.m_voice', subKey: 'mentor.m_voice_sub', soon: true },
+  { icon: '🗣️', labelKey: 'mentor.m_voice', subKey: 'mentor.m_voice_sub', to: '/portal/prof-didier-live' },
   { icon: '🎥', labelKey: 'mentor.m_video', subKey: 'mentor.m_video_sub', soon: true },
   { icon: '🧠', labelKey: 'mentor.m_psych', subKey: 'mentor.m_psych_sub', soon: true },
 ];
