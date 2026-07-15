@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Users, TrendingUp, Building2, GraduationCap, Play, ArrowRight } from 'lucide-react';
+import { Users, TrendingUp, Building2, GraduationCap, Play, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import HeroBackground from '@/components/hero/HeroBackground';
@@ -111,10 +111,6 @@ const Hero = () => {
             className="relative hidden lg:block"
           >
             <HeroStoryReel />
-
-            <div className="absolute -top-4 -right-4 p-3.5 bg-card rounded-2xl shadow-medium animate-float border border-border/30">
-              <Sparkles className="w-5 h-5 text-secondary" />
-            </div>
           </motion.div>
         </div>
       </div>
