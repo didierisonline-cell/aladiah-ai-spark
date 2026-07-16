@@ -84,6 +84,7 @@ import PortalCertifications from "./pages/PortalCertifications";
 import FlagshipProgram from "./pages/portal/FlagshipProgram";
 import MentorHub from "./pages/portal/MentorHub";
 import ProfileHub from "./pages/portal/ProfileHub";
+import ClassroomTestPage from "./pages/ClassroomTestPage";
 // Legal (public)
 import Terms from "./pages/legal/Terms";
 import Privacy from "./pages/legal/Privacy";
@@ -93,7 +94,7 @@ const queryClient = new QueryClient();
 
 const RouterAwareFloat = () => {
   const { pathname } = useLocation();
-  const isPortal = pathname.startsWith("/portal") || pathname.startsWith("/course") || pathname.startsWith("/chapter") || pathname.startsWith("/dashboard");
+  const isPortal = pathname.startsWith("/portal") || pathname.startsWith("/course") || pathname.startsWith("/chapter") || pathname.startsWith("/dashboard") || pathname.startsWith("/classroom-test");
   return isPortal ? null : <HomepageBot />;
 };
 
@@ -144,6 +145,8 @@ const AppContent = () => {
         <Route path="/portal/simulations" element={<ProtectedRoute><PortalSimulations /></ProtectedRoute>} />
         <Route path="/portal/resources" element={<ProtectedRoute><PortalResources /></ProtectedRoute>} />
         <Route path="/portal/certifications" element={<ProtectedRoute><PortalCertifications /></ProtectedRoute>} />
+        {/* WO-UX-CLASSROOM-001: Founder review prototype — static, public, no production wiring */}
+        <Route path="/classroom-test" element={<ClassroomTestPage />} />
         {/* Tools */}
         <Route path="/resume-studio" element={<ProtectedRoute><ResumeStudio /></ProtectedRoute>} />
         <Route path="/interview" element={<ProtectedRoute><InterviewSimulator /></ProtectedRoute>} />
