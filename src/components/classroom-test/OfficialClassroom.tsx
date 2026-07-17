@@ -570,7 +570,7 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
                     ) : (
                       <>
                         {/* Course-aware signature diagram — the board teaches THIS program */}
-                        <CourseBoardVisual courseTitle={course?.title || getTitle(course)} />
+                        <CourseBoardVisual courseTitle={course?.title || getTitle(course)} moduleIndex={chapter?.order_index} />
                         <p className="ct-font-marker mx-auto mt-6 max-w-[560px] text-center text-lg leading-snug text-white/85 sm:text-xl">
                           Key concepts for this lesson
                         </p>

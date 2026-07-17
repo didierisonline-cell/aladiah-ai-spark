@@ -15,6 +15,7 @@
  * no diagram (the key-concepts list carries the board).
  */
 import ScrumBoardVisual from "./ScrumBoardVisual";
+import { getModuleBoard, type ProgramKey } from "./moduleBoards";
 
 /* ── Cybersecurity: DEFENSE IN DEPTH — concentric rings + CIA triangle ────── */
 function CyberBoardVisual() {
@@ -292,14 +293,33 @@ function BABoardVisual() {
   );
 }
 
-/** Pick the program's signature diagram from the canonical course title. */
-export default function CourseBoardVisual({ courseTitle }: { courseTitle?: string | null }) {
+function programKeyFor(courseTitle?: string | null): ProgramKey | null {
   const t = (courseTitle || "").toLowerCase();
-  if (t.includes("scrum") || t.includes("agile")) return <ScrumBoardVisual />;
-  if (t.includes("cyber") || t.includes("security") || t.includes("digital trust")) return <CyberBoardVisual />;
-  if (t.includes("project manager") || t.includes("delivery leader") || t.includes("project management")) return <PMBoardVisual />;
-  if (t.includes("data analyst") || t.includes("analytics") || t.includes("decision intelligence")) return <DataBoardVisual />;
-  if (t.includes("business analyst") || t.includes("business transformation") || t.includes("product discovery")) return <BABoardVisual />;
-  // Unknown program — no wrong diagram; the key-concepts list carries the board.
+  if (t.includes("scrum") || t.includes("agile")) return "scrum";
+  if (t.includes("cyber") || t.includes("security") || t.includes("digital trust")) return "cyber";
+  if (t.includes("project manager") || t.includes("delivery leader") || t.includes("project management")) return "pm";
+  if (t.includes("data analyst") || t.includes("analytics") || t.includes("decision intelligence")) return "da";
+  if (t.includes("business analyst") || t.includes("business transformation") || t.includes("product discovery")) return "ba";
   return null;
+}
+
+const SIGNATURES: Record<ProgramKey, () => JSX.Element> = {
+  scrum: () => <ScrumBoardVisual />,
+  cyber: () => <CyberBoardVisual />,
+  pm: () => <PMBoardVisual />,
+  da: () => <DataBoardVisual />,
+  ba: () => <BABoardVisual />,
+};
+
+/**
+ * FOUNDER RULE — module-level uniqueness: try the module's own board first
+ * (moduleBoards registry); the program signature covers the module(s) it
+ * belongs to (e.g. DA's star schema = its Relational Modeling module).
+ */
+export default function CourseBoardVisual({ courseTitle, moduleIndex }: { courseTitle?: string | null; moduleIndex?: number | null }) {
+  const program = programKeyFor(courseTitle);
+  if (!program) return null; // unknown program — key-concepts list carries the board
+  const moduleBoard = getModuleBoard(program, moduleIndex);
+  if (moduleBoard) return <>{moduleBoard}</>;
+  return SIGNATURES[program]();
 }
