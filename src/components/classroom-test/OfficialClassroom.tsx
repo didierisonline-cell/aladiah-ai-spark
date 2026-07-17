@@ -38,7 +38,7 @@ import {
 
 import "@/components/classroom-test/classroom-test.css";
 import RotatingGlobe from "./RotatingGlobe";
-import ScrumBoardVisual from "./ScrumBoardVisual";
+import CourseBoardVisual from "./CourseBoardVisual";
 import Waveform from "./Waveform";
 import { professorAvatar } from "./media/professorAssets";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -569,8 +569,8 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
                       />
                     ) : (
                       <>
-                        {/* Premium built-in Scrum diagram — the board is a real teaching surface */}
-                        <ScrumBoardVisual />
+                        {/* Course-aware signature diagram — the board teaches THIS program */}
+                        <CourseBoardVisual courseTitle={course?.title || getTitle(course)} />
                         <p className="ct-font-marker mx-auto mt-6 max-w-[560px] text-center text-lg leading-snug text-white/85 sm:text-xl">
                           Key concepts for this lesson
                         </p>
