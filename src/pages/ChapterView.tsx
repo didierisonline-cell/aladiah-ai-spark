@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo, lazy, Suspense } from 'react';
 import { getLocalizedField } from '@/lib/i18nData';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -15,6 +15,10 @@ import { isFounderEmail } from '@/lib/roles';
 import { DEPRECATED_COURSE_REDIRECTS } from '@/lib/courseRedirects';
 import { founderModeOn } from '@/hooks/useFounderMode';
 import MobileLessonPlayer from '@/components/portal/MobileLessonPlayer';
+import { isOfficialClassroomCourse } from '@/config/classroomFlag';
+// Official Aladiah Classroom (approved UI). Lazy so its media bundle never enters
+// the main app chunk — it loads only when a lesson is opened with the flag ON.
+const OfficialClassroom = lazy(() => import('@/components/classroom-test/OfficialClassroom'));
 
 const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string;
 
@@ -86,6 +90,7 @@ export default function ChapterView() {
 
   // Prof. Didier conversation state
   const [convStatus, setConvStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
+  const [voiceError, setVoiceError] = useState<string | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState<{ role: 'user' | 'agent'; message: string }[]>([]);
   const [recapComplete, setRecapComplete] = useState(false); // UI-only: agent finished the oral recap (sentinel). Never navigates.
@@ -99,6 +104,10 @@ export default function ChapterView() {
   const conversation = useConversation({
     onConnect: () => {
       setConvStatus('connected');
+      setVoiceError(null);
+      // Kick Prof Didier into greeting + teaching immediately (agent has no auto-greeting
+      // and first_message override is disallowed), else he connects but stays silent.
+      setTimeout(() => { try { (conversation as any).sendUserMessage?.("I've just joined the lesson and I'm ready to begin. Please greet me warmly and start teaching this lesson now, out loud."); } catch { } }, 400);
       timerRef.current = setInterval(() => setDuration(d => d + 1), 1000);
       // Keep-alive: send silent ping every 8 seconds to prevent timeout
       keepAliveRef.current = setInterval(() => {
@@ -135,7 +144,7 @@ export default function ChapterView() {
         setTimeout(() => conversation.endSession().catch(() => { }), 1500);
       }
     },
-    onError: () => setConvStatus('error'),
+    onError: (e: any) => { setConvStatus('error'); setVoiceError(typeof e === 'string' ? e : (e?.message || e?.reason || 'ElevenLabs connection error')); },
   });
 
   useEffect(() => { setIsSpeaking(conversation.isSpeaking); }, [conversation.isSpeaking]);
@@ -151,7 +160,9 @@ export default function ChapterView() {
     setDuration(0);
     try {
       // Request mic BEFORE setting connecting state to avoid Safari blank screen
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Explicit constraints — iPad/Safari can reject bare { audio: true } (this is why
+      // the /classroom-test path, which used explicit constraints, connected but this did not).
+      await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
       // Unlock Safari WebAudio context BEFORE connecting ElevenLabs
       try {
         const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
@@ -181,6 +192,7 @@ You are Prof. Didier at Aladiah Academy. Solo Excelencia — only excellence.
 Lesson: "${lessonTitle}" | Module: "${chapterTitle}".
 Lesson outline: ${transcriptSnippet}
 Teach using Socratic method: ask questions, guide discovery, section by section.
+Teaching style: be conversational, warm, premium, practical, intelligent, direct and human — like a live one-on-one professor, not a generic assistant. Use natural phrasing such as "Let's look at what this means in a real company…", "Notice the board here…", "Here's what usually happens at work…", "Let me make this simpler…", and "Now I want you to think about this…". Reference the on-screen board/visual when it helps and give a concrete workplace example. Stay grounded ONLY in THIS lesson and its approved outline; if the student drifts off-topic, gently steer back. Never invent curriculum beyond the lesson outline.
 If student asks questions, answer fully then resume. Say "continue" to proceed.
 After teaching all sections, conduct an ORAL RECAP ASSESSMENT: ask exactly 5 recap questions one by one, waiting for the student's answer to each before asking the next, giving brief feedback. Do not skip ahead. While asking these questions, never say "module complete", "ready for the next level", "congratulations", or "Solo Excelencia" — keep all closing language for the very end.
 Only after the student has answered the 5th question and you have given final feedback, say one warm closing sentence to the student in ${lang}, then end your message with this exact tag on its own, in English, verbatim: aladiah-module-complete-confirmed
@@ -198,12 +210,6 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       // Prof. Didier IS the lesson body — if the ElevenLabs agent can't start, the
       // whole class reads as "empty". Fail loud, and prefer a signed URL (works with
       // PRIVATE agents) with a fallback to the public agentId — mirrors LiveClassroom.
-      if (!AGENT_ID) {
-        console.error('[lesson] VITE_ELEVENLABS_AGENT_ID is not set — Prof. Didier cannot start.');
-        setConvStatus('error');
-        isStartingRef.current = false;
-        return;
-      }
       let signedUrl: string | null = null;
       try {
         const tokenRes = await fetch(
@@ -214,6 +220,13 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
         if (tokenData.signed_url) signedUrl = tokenData.signed_url;
       } catch (e) {
         console.warn('[lesson] signed URL unavailable, falling back to agentId:', e);
+      }
+      // Need EITHER a signed URL (preferred) OR a public agent id to connect.
+      if (!signedUrl && !AGENT_ID) {
+        console.error('[lesson] No signed URL and VITE_ELEVENLABS_AGENT_ID unset — Prof. Didier cannot start.');
+        setConvStatus('error');
+        isStartingRef.current = false;
+        return;
       }
       // Voice output: the agent whitelists override voices — without a tts.voiceId the
       // text streams but the audio can come back silent (LiveClassroom sends this; the
@@ -226,14 +239,17 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
       const sessionOpts: any = {
         overrides: {
           agent: { prompt: { prompt: systemPrompt }, language: langCode },
-          tts: { voiceId: DIDIER_VOICES[language] || 'bQxW1c7YCr6VQgQhw8KX', stability: 0.71, similarityBoost: 0.55 },
+          // Only voiceId is sent — the agent config disallows stability/similarityBoost
+          // overrides and closes the socket (code 1008) if they are present.
+          tts: { voiceId: DIDIER_VOICES[language] || 'bQxW1c7YCr6VQgQhw8KX' },
         },
       };
       if (signedUrl) sessionOpts.signedUrl = signedUrl; else sessionOpts.agentId = AGENT_ID;
       await conversation.startSession(sessionOpts);
-    } catch (e) {
+    } catch (e: any) {
       console.error('[lesson] Prof. Didier startSession failed:', e);
       setConvStatus('error');
+      setVoiceError(`${e?.name ? e.name + ': ' : ''}${e?.message || String(e)}`);
       isStartingRef.current = false;
     }
   }, [conversation, currentLesson, chapter, language]);
@@ -378,7 +394,14 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
               setLoading(false);
               return;
             }
-            if (chapterData && chapterData.order_index > 0) {
+            // P1-A: the FIRST module is the lowest-order chapter for THIS course
+            // (courses are inconsistently 0- or 1-indexed). A starter/free user may
+            // open ONLY their free course's first module; Module 2+ stays locked.
+            // Determined by sorted chapter order, never by assuming order_index===0.
+            const orderedForGate = [...(allChaptersData || [])].sort((a: any, b: any) => a.order_index - b.order_index);
+            const firstChapterId = orderedForGate.length > 0 ? orderedForGate[0].id : null;
+            const isFirstModule = firstChapterId ? chapterData?.id === firstChapterId : (chapterData?.order_index === 0);
+            if (chapterData && !isFirstModule) {
               setPaywallReason('module_locked');
               setLoading(false);
               return;
@@ -427,6 +450,27 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
   const progress = videos.length > 0
     ? Math.round((passedQuizzes.filter(id => quizzes.some(q => q.id === id)).length / videos.length) * 100)
     : 0;
+
+  // Lesson-specific "You can say" prompts for the official classroom (program-aware).
+  const suggestedPrompts = useMemo<string[]>(() => {
+    const titleLc = (course?.title || '').toLowerCase();
+    const domain = titleLc.includes('scrum') ? 'Scrum'
+      : titleLc.includes('project') ? 'project management'
+      : titleLc.includes('business anal') ? 'business analysis'
+      : titleLc.includes('data') ? 'data analytics'
+      : (titleLc.includes('cyber') || titleLc.includes('security')) ? 'cybersecurity'
+      : 'this field';
+    return [
+      'Explain this lesson again',
+      'Give me a real-world example',
+      'Quiz me on this lesson',
+      'Show me the board',
+      'Simplify this concept',
+      `How does this apply at work in ${domain}?`,
+      'What should I remember for the exam?',
+      'What portfolio artifact should I create?',
+    ];
+  }, [course]);
 
   const mainPoints: string[] = [];
 
@@ -530,6 +574,26 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
         </div>
       )}
 
+      {/* OFFICIAL ALADIAH CLASSROOM (flag ON) — the approved premium classroom is the
+          student lesson experience. Flag OFF → the legacy phone/desktop blocks below
+          (kept as fallback). The paywall overlay and Quiz modal are siblings, unchanged,
+          so gates/quiz/progress/Stripe behave exactly as before. */}
+      {isOfficialClassroomCourse(courseId) && currentLesson ? (
+        <Suspense fallback={<div style={{ minHeight: '100vh', background: '#05070e' }} />}>
+          <OfficialClassroom
+            course={course} chapter={chapter} currentLesson={currentLesson}
+            videos={videos} quizzes={quizzes} passedQuizzes={passedQuizzes}
+            progress={progress} continueIsToQuiz={continueIsToQuiz} recapComplete={recapComplete}
+            isLive={isLive} isSpeaking={isSpeaking} convStatus={convStatus} transcript={transcript} duration={duration}
+            lessonVisuals={lessonVisuals} suggestedPrompts={suggestedPrompts}
+            fmt={fmt} getTitle={getTitle} getDescription={getDescription} getTranscript={getTranscript}
+            onSelectLesson={setCurrentLesson} onOpenQuiz={(id: string) => setActiveQuizId(id)} onContinue={handleContinue}
+            onStart={startSession} onEnd={endSession} onBack={() => navigate(`/portal/course/${courseId}`)}
+            getLevel={() => { try { return (conversation as any).getOutputVolume?.() ?? 0; } catch { return 0; } }}
+            voiceError={voiceError}
+          />
+        </Suspense>
+      ) : (<>
       {/* Phone (< 768px): immersive single-column lesson player. */}
       {isPhone && currentLesson && (
         <MobileLessonPlayer
@@ -1013,6 +1077,7 @@ Start: greet warmly IN ${lang}, ask what student knows about "${lessonTitle}".`;
           </div>
         </div>
       </div>
+      </>)}
       </>)}
       {/* Quiz Modal */}
       {activeQuizId && (
