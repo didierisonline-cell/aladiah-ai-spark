@@ -16,19 +16,18 @@ export type ProgramStatus = 'active' | 'preview' | 'coming_soon';
 export const CERTIFICATES_ENABLED = false;
 
 // ACTIVE — verified, enterable programs.
-const ACTIVE_VERSIONS = new Set(['v3.0', 'pm-v1', 'cyber-v1', 'da-v1']);
+const ACTIVE_VERSIONS = new Set(['v3.0', 'pm-v1', 'cyber-v1', 'da-v1', 'ba-v1']);
 const ACTIVE_ID_PREFIXES = [
   'f46d8fc2', // AI Enterprise Scrum Master & Agile Transformation Leader
   'c9177a56', // AI Enterprise Project Manager & Strategic Delivery Leader
   '1181ed06', // AI Data Analyst & Analytics Engineer
   '1d16d2c1', // AI Enterprise Cybersecurity & Digital Trust Engineer
+  '8b36ab1f', // AI Business Analyst — ACTIVATED per Founder gate (docs/qa/BA_ACTIVATION_VERIFICATION.sql)
 ];
 
 // PREVIEW — visible, not enterable until DB verification passes.
-const PREVIEW_VERSIONS = new Set(['ba-v1']);
-const PREVIEW_ID_PREFIXES = [
-  '8b36ab1f', // AI Enterprise Business Analyst & Business Transformation Specialist
-];
+const PREVIEW_VERSIONS = new Set<string>([]);
+const PREVIEW_ID_PREFIXES: string[] = [];
 
 export const MVP_ACTIVE_COUNT = ACTIVE_ID_PREFIXES.length;
 
