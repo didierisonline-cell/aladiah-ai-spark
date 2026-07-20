@@ -10,6 +10,7 @@ supabase/.temp/
 # One-off SQL scripts
 *.sql
 !supabase/migrations/*.sql
+!docs/qa/*.sql
 .vercel
 translations_output.json
 *.bak*
