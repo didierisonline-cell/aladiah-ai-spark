@@ -40,6 +40,7 @@ This file is the model every future program extends — append a new Axis-1 sect
 | `scrum:artifacts` | Artifacts & Commitments | Product Backlog, Sprint Backlog, Increment — and their commitments: Product Goal, Sprint Goal, Definition of Done. |
 | `scrum:empiricism` | Empiricism & Agile Principles | The empirical pillars (transparency, inspection, adaptation), the Scrum values, and the underlying Agile/lean principles. |
 | `scrum:team-dynamics` | Team Dynamics & Facilitation | Servant/facilitative leadership, coaching vs. mentoring, conflict resolution, self-management, emotional intelligence, building a healthy team. |
+| `scrum:ai-augmentation` | AI Augmentation for the Scrum Master | Using AI tools to amplify facilitation, forecasting and coaching; human-AI collaboration boundaries; the augmented-not-replaced Scrum Master. Ratified 2026-07-18. |
 | `scrum:stakeholders` | Stakeholder & Organizational Engagement | Working with stakeholders and the Product Owner, organizational change, and removing impediments beyond the immediate team. |
 | `scrum:delivery-metrics` | Delivery & Flow Metrics | Velocity, burndown/burnup, flow and forecasting, and using metrics to support continuous improvement (not as performance targets). |
 
@@ -113,6 +114,7 @@ Meta-category keys are deliberately generic so other programs map into the same 
 | `scrum:events` | `process-execution` |
 | `scrum:artifacts` | `artifacts-tooling` |
 | `scrum:team-dynamics` | `people-leadership` |
+| `scrum:ai-augmentation` | `ai-collaboration` |
 | `scrum:stakeholders` | `stakeholder-engagement` |
 | `scrum:delivery-metrics` | `measurement-outcomes` |
 | `ba:foundations` | `foundations` |
