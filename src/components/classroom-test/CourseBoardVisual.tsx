@@ -293,7 +293,7 @@ function BABoardVisual() {
   );
 }
 
-function programKeyFor(courseTitle?: string | null): ProgramKey | null {
+export function programKeyFor(courseTitle?: string | null): ProgramKey | null {
   const t = (courseTitle || "").toLowerCase();
   if (t.includes("scrum") || t.includes("agile")) return "scrum";
   if (t.includes("cyber") || t.includes("security") || t.includes("digital trust")) return "cyber";
