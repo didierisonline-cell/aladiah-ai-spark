@@ -39,7 +39,8 @@ import {
 
 import "@/components/classroom-test/classroom-test.css";
 import RotatingGlobe from "./RotatingGlobe";
-import CourseBoardVisual from "./CourseBoardVisual";
+import CourseBoardVisual, { programKeyFor } from "./CourseBoardVisual";
+import { getLessonBoard } from "./LessonBoardVisual";
 import Waveform from "./Waveform";
 import { professorAvatar } from "./media/professorAssets";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -582,8 +583,24 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
                       />
                     ) : (
                       <>
-                        {/* Course-aware signature diagram — the board teaches THIS program */}
-                        <CourseBoardVisual courseTitle={course?.title || getTitle(course)} moduleIndex={chapter?.order_index} />
+                        {/* FOUNDER RULE: every lesson gets its own board. Lesson 1 shows the
+                            curated module board; lessons 2+ render a unique geometry drawn
+                            from this lesson's own key concepts. */}
+                        {(() => {
+                          const prog = programKeyFor(course?.title || getTitle(course));
+                          const lessonBoard = prog
+                            ? getLessonBoard({
+                                program: prog,
+                                moduleIndex: chapter?.order_index ?? 0,
+                                lessonIndex: currentLesson?.order_index ?? 0,
+                                lessonTitle: getTitle(currentLesson) || "",
+                                concepts: keyConcepts,
+                              })
+                            : null;
+                          return lessonBoard ?? (
+                            <CourseBoardVisual courseTitle={course?.title || getTitle(course)} moduleIndex={chapter?.order_index} />
+                          );
+                        })()}
                         <p className="ct-font-marker mx-auto mt-6 max-w-[560px] text-center text-lg leading-snug text-white/85 sm:text-xl">
                           Key concepts for this lesson
                         </p>
