@@ -28,6 +28,7 @@ import {
   Minus,
   Plus,
   Maximize2,
+  Minimize2,
   Bold,
   Italic,
   Underline,
@@ -203,6 +204,15 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
   const [notes, setNotes] = useState("");
   const [muted, setMuted] = useState(true); // visual mute — real audio is elsewhere
   const [drawerOpen, setDrawerOpen] = useState(false);
+  // Student-controlled board zoom + fullscreen (Founder: students control this)
+  const [boardZoom, setBoardZoom] = useState(100);
+  const [boardFull, setBoardFull] = useState(false);
+  useEffect(() => {
+    if (!boardFull) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setBoardFull(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [boardFull]);
 
   // Auto-scroll the transcript to the newest line.
   const transcriptRef = useRef<HTMLDivElement>(null);
@@ -533,7 +543,9 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
                   <ChevronRight className="h-3.5 w-3.5" />
                 </button>
 
-                <div className="relative flex h-full w-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080b14] shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_30px_60px_-30px_rgba(0,0,0,0.9)]">
+                <div className={boardFull
+                  ? "fixed inset-2 z-[130] flex overflow-hidden rounded-2xl border border-white/[0.14] bg-[#080b14] shadow-2xl sm:inset-4"
+                  : "relative flex h-full w-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080b14] shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_30px_60px_-30px_rgba(0,0,0,0.9)]"}>
                   {/* Left tool rail (visual only) */}
                   <div className="hidden w-11 shrink-0 flex-col items-center gap-1 border-r border-white/[0.06] bg-black/30 py-3 sm:flex">
                     {WB_TOOLS.map((tool, i) => (
@@ -557,8 +569,9 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
                     </button>
                   </div>
 
-                  {/* Board content */}
+                  {/* Board content — student-zoomable */}
                   <div className="ct-scroll relative flex min-w-0 flex-1 flex-col overflow-auto px-5 py-5 sm:px-8">
+                    <div style={{ zoom: boardZoom / 100 }}>
                     <h2 className="ct-font-marker text-center text-3xl font-bold text-sky-300 sm:text-4xl">
                       {boardTitle}
                     </h2>
@@ -614,9 +627,10 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
                         </p>
                       </>
                     )}
+                    </div>
                   </div>
 
-                  {/* Bottom zoom / palette control bar (visual only) */}
+                  {/* Bottom board controls — zoom and fullscreen are live */}
                   <div className="absolute bottom-3 left-1/2 hidden -translate-x-1/2 items-center gap-3 rounded-full border border-white/10 bg-black/50 px-3 py-1.5 backdrop-blur-md sm:flex">
                     <div className="flex items-center gap-1.5">
                       {WB_SWATCHES.map((c, i) => (
@@ -633,17 +647,35 @@ export default function OfficialClassroom(props: OfficialClassroomProps) {
                     </div>
                     <div className="h-4 w-px bg-white/15" />
                     <div className="flex items-center gap-2 text-white/70">
-                      <button className="grid h-5 w-5 place-items-center rounded transition hover:bg-white/10">
+                      <button
+                        onClick={() => setBoardZoom((z) => Math.max(50, z - 25))}
+                        disabled={boardZoom <= 50}
+                        aria-label="Zoom out"
+                        className="grid h-5 w-5 place-items-center rounded transition hover:bg-white/10 disabled:opacity-30"
+                      >
                         <Minus className="h-3.5 w-3.5" />
                       </button>
-                      <span className="text-xs font-medium tabular-nums">100%</span>
-                      <button className="grid h-5 w-5 place-items-center rounded transition hover:bg-white/10">
+                      <button
+                        onClick={() => setBoardZoom(100)}
+                        title="Reset zoom"
+                        className="text-xs font-medium tabular-nums transition hover:text-white"
+                      >{boardZoom}%</button>
+                      <button
+                        onClick={() => setBoardZoom((z) => Math.min(200, z + 25))}
+                        disabled={boardZoom >= 200}
+                        aria-label="Zoom in"
+                        className="grid h-5 w-5 place-items-center rounded transition hover:bg-white/10 disabled:opacity-30"
+                      >
                         <Plus className="h-3.5 w-3.5" />
                       </button>
                     </div>
                     <div className="h-4 w-px bg-white/15" />
-                    <button className="grid h-5 w-5 place-items-center rounded text-white/70 transition hover:bg-white/10">
-                      <Maximize2 className="h-3.5 w-3.5" />
+                    <button
+                      onClick={() => setBoardFull((f) => !f)}
+                      aria-label={boardFull ? "Exit fullscreen" : "Fullscreen board"}
+                      className="grid h-5 w-5 place-items-center rounded text-white/70 transition hover:bg-white/10"
+                    >
+                      {boardFull ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
                     </button>
                   </div>
                 </div>
