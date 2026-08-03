@@ -88,6 +88,11 @@ import ProfileHub from "./pages/portal/ProfileHub";
 import Terms from "./pages/legal/Terms";
 import Privacy from "./pages/legal/Privacy";
 import Contact from "./pages/legal/Contact";
+// Wholesale real-estate platform (self-contained)
+import WholesaleDashboard from "./pages/wholesale/Dashboard";
+import WholesaleLeads from "./pages/wholesale/Leads";
+import WholesaleDealAnalyzer from "./pages/wholesale/DealAnalyzer";
+import WholesaleBuyers from "./pages/wholesale/Buyers";
 
 const queryClient = new QueryClient();
 
@@ -183,6 +188,11 @@ const AppContent = () => {
         <Route path="/admin/curriculum-excellence" element={<FounderRoute><CurriculumExcellence /></FounderRoute>} />
         <Route path="/admin/content" element={<FounderRoute><ContentStudio /></FounderRoute>} />
         <Route path="/admin/production" element={<FounderRoute><Production /></FounderRoute>} />
+        {/* Wholesale real-estate platform */}
+        <Route path="/wholesale" element={<WholesaleDashboard />} />
+        <Route path="/wholesale/leads" element={<WholesaleLeads />} />
+        <Route path="/wholesale/analyzer" element={<WholesaleDealAnalyzer />} />
+        <Route path="/wholesale/buyers" element={<WholesaleBuyers />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       </ErrorBoundary>
