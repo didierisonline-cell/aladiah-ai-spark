@@ -77,7 +77,7 @@ The pipeline **Kanban** mirrors stages 1→9 as lead statuses.
 ```
 
 ### Design invariants
-1. **Provider abstraction is absolute.** Business logic imports *interfaces*, never a vendor SDK. Going live = implement an interface + add a key + flip `config.liveProviders`. Zero logic/UI change. (Validated in Phase 0.)
+1. **Provider abstraction is absolute.** Business logic imports *interfaces*, never a vendor SDK. Going live = implement an interface behind the edge proxy + set `VITE_WHOLESALE_EDGE_BASE`. Zero logic/UI change. Vendor keys live server-side in the edge proxy, never in the bundle. (Validated in Phase 0/1.)
 2. **Money & rules math is pure and tested.** `dealAnalyzer`, `leadScoring`, and the compliance rule engine are side-effect-free and unit-tested. Correctness of the spread and of legal gates is non-negotiable.
 3. **Compliance can't be bypassed.** Every outbound message routes through `lib/compliance` gates before a provider is called. The mock comms adapter already models the A2P/consent/DNC/quiet-hours gate so live integration can't "forget" it.
 4. **Every number is evidence.** Underwriting is snapshotted onto the lead at analysis time (never backfilled) — same discipline as the Aladiah competency-snapshot rule.
@@ -158,4 +158,3 @@ routes touched in `App.tsx`, and zero imports from education code.
 
 The compounding wedge: an **AI acquisitions rep** on an **evidence-backed data
 model**, sold as **one affordable subscription**. That's the "fully automated" moat.
-</content>

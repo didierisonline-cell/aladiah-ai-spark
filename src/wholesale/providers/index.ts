@@ -2,16 +2,18 @@
 //
 // Every external dependency sits behind an interface with a mock adapter that
 // works today. To go live: implement the same interface against a real API
-// (ATTOM, BatchData, Twilio, …), add keys to env, and flip config.liveProviders.
+// (ReAPI, BatchData, Twilio, …) behind the edge proxy and set the edge base URL.
 // No UI or business-logic code changes.
 
 import type { Address, OwnerContact, Property, PropertyType } from "../types";
-import { WHOLESALE_CONFIG } from "../config";
+import { hasLiveProviders } from "../env";
 import {
   MockPropertyDataProvider,
   MockSkipTraceProvider,
   MockCommsProvider,
 } from "./mock";
+import { RealEstateApiPropertyProvider } from "./live/realEstateApi";
+import { BatchDataSkipTraceProvider } from "./live/batchData";
 
 // ---------------------------------------------------------------------------
 // Property data — list building & comps
@@ -67,29 +69,24 @@ export interface CommsProvider {
 // Factories — swap point between mock and live
 // ---------------------------------------------------------------------------
 
+// Live adapters are used automatically once the edge proxy is configured
+// (VITE_WHOLESALE_EDGE_BASE). Until then everything runs on mocks — no spend,
+// works today. See src/wholesale/env.ts.
+
 export function getPropertyDataProvider(): PropertyDataProvider {
-  if (WHOLESALE_CONFIG.liveProviders) {
-    throw new Error(
-      "Live property-data provider not wired yet. Implement PropertyDataProvider (e.g. ATTOM/BatchData) and register it here.",
-    );
-  }
-  return new MockPropertyDataProvider();
+  return hasLiveProviders()
+    ? new RealEstateApiPropertyProvider()
+    : new MockPropertyDataProvider();
 }
 
 export function getSkipTraceProvider(): SkipTraceProvider {
-  if (WHOLESALE_CONFIG.liveProviders) {
-    throw new Error(
-      "Live skip-trace provider not wired yet. Implement SkipTraceProvider (e.g. BatchSkipTracing/IDI) and register it here.",
-    );
-  }
-  return new MockSkipTraceProvider();
+  return hasLiveProviders()
+    ? new BatchDataSkipTraceProvider()
+    : new MockSkipTraceProvider();
 }
 
 export function getCommsProvider(): CommsProvider {
-  if (WHOLESALE_CONFIG.liveProviders) {
-    throw new Error(
-      "Live comms provider not wired yet. Implement CommsProvider (e.g. Twilio A2P 10DLC) and register it here.",
-    );
-  }
+  // Live comms (Twilio A2P 10DLC) lands in Phase 2 with the compliance engine.
+  // Until then the mock enforces the same TCPA/DNC/A2P gates so logic is real.
   return new MockCommsProvider();
 }

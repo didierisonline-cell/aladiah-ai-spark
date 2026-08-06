@@ -156,4 +156,3 @@ Scored 1–5 across five criteria (judgments derived from cited evidence). Data 
 - REsimpli/Carrot official pricing pages returned **HTTP 403** — third-party figures.
 - AI-newcomer pricing is quote-based — **unverified**.
 - Legal landscape is moving quarterly; several 2025–26 bills are lightly litigated — **confirm statute text + effective dates with counsel** before hard-coding rulesets.
-</content>

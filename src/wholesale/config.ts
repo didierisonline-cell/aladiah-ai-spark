@@ -24,11 +24,9 @@ export const WHOLESALE_CONFIG = {
     defaultAssignmentFee: 10_000,
   },
 
-  /**
-   * When false, the app runs entirely on mock adapters (works today, no spend).
-   * When true, factories return live provider clients (require API keys in env).
-   */
-  liveProviders: false,
+  // Mock vs. live is resolved at runtime from the environment (see env.ts):
+  // set VITE_WHOLESALE_EDGE_BASE to route through the live edge proxy. Absent ⇒
+  // the app runs entirely on mock adapters (works today, no spend).
 } as const;
 
 export type WholesaleConfig = typeof WHOLESALE_CONFIG;

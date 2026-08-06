@@ -106,7 +106,7 @@ export function WholesaleLayout({ children, title, subtitle }: { children: React
           })}
         </nav>
         <div style={{ position: "absolute", bottom: "1.5rem", left: "1rem", right: "1rem", fontSize: 10, color: WS.fm, lineHeight: 1.5 }}>
-          Running on mock data.<br />Flip <code style={{ color: WS.gold }}>liveProviders</code> to go live.
+          Running on mock data.<br />Set <code style={{ color: WS.gold }}>VITE_WHOLESALE_EDGE_BASE</code> to go live.
         </div>
       </aside>
 
