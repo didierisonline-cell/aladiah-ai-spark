@@ -5,9 +5,9 @@ import type { Comp, RepairTier } from "@/wholesale/types";
 
 // A quick, editable comp set the operator can tweak to model a deal.
 const DEFAULT_COMPS: Comp[] = [
-  { address: { line1: "Comp A", city: "Atlanta", state: "GA", zip: "30301" }, soldPrice: 285_000, soldDate: "2026-06-01", sqft: 1500, beds: 3, baths: 2, distanceMiles: 0.4 },
-  { address: { line1: "Comp B", city: "Atlanta", state: "GA", zip: "30301" }, soldPrice: 320_000, soldDate: "2026-05-10", sqft: 1650, beds: 3, baths: 2, distanceMiles: 0.7 },
-  { address: { line1: "Comp C", city: "Atlanta", state: "GA", zip: "30301" }, soldPrice: 260_000, soldDate: "2026-07-02", sqft: 1400, beds: 3, baths: 2, distanceMiles: 1.1 },
+  { address: { line1: "Comp A", city: "Tampa", state: "FL", zip: "33602" }, soldPrice: 285_000, soldDate: "2026-06-01", sqft: 1500, beds: 3, baths: 2, distanceMiles: 0.4 },
+  { address: { line1: "Comp B", city: "Tampa", state: "FL", zip: "33602" }, soldPrice: 320_000, soldDate: "2026-05-10", sqft: 1650, beds: 3, baths: 2, distanceMiles: 0.7 },
+  { address: { line1: "Comp C", city: "Tampa", state: "FL", zip: "33602" }, soldPrice: 260_000, soldDate: "2026-07-02", sqft: 1400, beds: 3, baths: 2, distanceMiles: 1.1 },
 ];
 
 const TIERS: RepairTier[] = ["cosmetic", "moderate", "heavy", "gut"];
@@ -17,7 +17,7 @@ export default function WholesaleDealAnalyzer() {
   const [tier, setTier] = useState<RepairTier>("moderate");
   const [arvPercent, setArvPercent] = useState(70);
   const [fee, setFee] = useState(10_000);
-  const [state, setState] = useState("GA");
+  const [state, setState] = useState("FL");
   const [comps, setComps] = useState<Comp[]>(DEFAULT_COMPS);
 
   const result = useMemo(
@@ -87,7 +87,7 @@ export default function WholesaleDealAnalyzer() {
             </div>
           ))}
           <button
-            onClick={() => setComps((p) => [...p, { address: { line1: `Comp ${String.fromCharCode(65 + p.length)}`, city: "Atlanta", state, zip: "30301" }, soldPrice: 280_000, soldDate: "2026-06-01", sqft: 1500, beds: 3, baths: 2, distanceMiles: 1 }])}
+            onClick={() => setComps((p) => [...p, { address: { line1: `Comp ${String.fromCharCode(65 + p.length)}`, city: "Tampa", state, zip: "33602" }, soldPrice: 280_000, soldDate: "2026-06-01", sqft: 1500, beds: 3, baths: 2, distanceMiles: 1 }])}
             style={{ fontSize: 11, fontWeight: 700, padding: ".45rem .8rem", borderRadius: ".5rem", background: "transparent", border: `1px dashed ${WS.border}`, color: WS.fm, cursor: "pointer", marginTop: ".3rem" }}
           >+ Add comp</button>
         </Card>

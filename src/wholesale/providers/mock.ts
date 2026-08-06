@@ -36,6 +36,12 @@ const FIRST = ["James", "Mary", "Robert", "Patricia", "John", "Linda", "Michael"
 const LAST = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis"];
 const TYPES: PropertyType[] = ["single_family", "single_family", "townhouse", "multi_family", "condo"];
 
+// Rough ZIP + area-code prefixes per state so mock data looks local.
+const ZIP_PREFIX: Record<string, string> = { FL: "336", GA: "303", TX: "770", OH: "441" };
+const AREA_CODE: Record<string, string> = { FL: "813", GA: "404", TX: "713", OH: "216" };
+const zipFor = (state: string) => ZIP_PREFIX[state.toUpperCase()] ?? "336";
+const areaFor = (state: string) => AREA_CODE[state.toUpperCase()] ?? "813";
+
 export class MockPropertyDataProvider implements PropertyDataProvider {
   readonly name = "mock-property-data";
 
@@ -56,7 +62,7 @@ export class MockPropertyDataProvider implements PropertyDataProvider {
         line1: `${100 + Math.floor(rng() * 8900)} ${STREETS[Math.floor(rng() * STREETS.length)]}`,
         city,
         state: filter.state,
-        zip: `30${(300 + Math.floor(rng() * 99)).toString().padStart(3, "0")}`,
+        zip: `${zipFor(filter.state)}${(10 + Math.floor(rng() * 89)).toString()}`,
       };
       props.push({
         id: `prop_${filter.state}_${i}_${Math.floor(rng() * 1e6)}`,
@@ -131,8 +137,9 @@ export class MockSkipTraceProvider implements SkipTraceProvider {
   async skipTrace(property: Property): Promise<OwnerContact> {
     const rng = mulberry32(hashStr(property.id));
     const name = `${FIRST[Math.floor(rng() * FIRST.length)]} ${LAST[Math.floor(rng() * LAST.length)]}`;
+    const area = areaFor(property.address.state);
     const mkPhone = () =>
-      `404${Math.floor(1000000 + rng() * 8999999).toString().slice(0, 7)}`;
+      `${area}${Math.floor(1000000 + rng() * 8999999).toString().slice(0, 7)}`;
     return {
       fullName: name,
       phones: [

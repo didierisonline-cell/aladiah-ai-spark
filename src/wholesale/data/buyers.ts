@@ -10,8 +10,8 @@ export const MOCK_BUYERS: Buyer[] = [
     phone: "4045550101",
     email: "marcus@reedcapital.com",
     buyBox: {
-      states: ["GA"],
-      cities: ["Atlanta", "Decatur"],
+      states: ["FL"],
+      cities: ["Tampa", "St. Petersburg"],
       propertyTypes: ["single_family", "townhouse"],
       minBeds: 3,
       maxPrice: 250_000,
@@ -30,7 +30,7 @@ export const MOCK_BUYERS: Buyer[] = [
     phone: "4045550102",
     email: "priya@evergreenrentals.com",
     buyBox: {
-      states: ["GA"],
+      states: ["FL"],
       propertyTypes: ["single_family", "multi_family"],
       minBeds: 2,
       maxPrice: 400_000,
@@ -49,8 +49,8 @@ export const MOCK_BUYERS: Buyer[] = [
     phone: "4045550103",
     email: "dom@flipcity.com",
     buyBox: {
-      states: ["GA", "AL"],
-      cities: ["Atlanta", "Marietta", "College Park"],
+      states: ["FL"],
+      cities: ["Tampa", "Clearwater", "Brandon"],
       propertyTypes: ["single_family"],
       maxPrice: 200_000,
       minRoiPct: 20,

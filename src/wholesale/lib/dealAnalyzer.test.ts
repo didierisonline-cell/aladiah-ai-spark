@@ -4,6 +4,7 @@ import {
   calcMAO,
   estimateARV,
   estimateRepairs,
+  wholesaleStateTier,
   DEFAULT_ARV_PERCENT,
 } from "./dealAnalyzer";
 import type { Comp } from "../types";
@@ -88,5 +89,24 @@ describe("analyzeDeal", () => {
       state: "IL",
     });
     expect(r.warnings.some((w) => w.includes("IL"))).toBe(true);
+  });
+
+  it("does not warn for a clean-legality launch state (FL)", () => {
+    const r = analyzeDeal({
+      subjectSqft: 1500,
+      comps: [comp(300_000, 1500), comp(320_000, 1600), comp(290_000, 1450)],
+      state: "FL",
+    });
+    expect(r.warnings.some((w) => w.toLowerCase().includes("wholesal"))).toBe(false);
+  });
+});
+
+describe("wholesaleStateTier", () => {
+  it("classifies each regulatory tier", () => {
+    expect(wholesaleStateTier("SC")).toBe("restricted");
+    expect(wholesaleStateTier("il")).toBe("restricted"); // case-insensitive
+    expect(wholesaleStateTier("PA")).toBe("register");
+    expect(wholesaleStateTier("TX")).toBe("disclosure");
+    expect(wholesaleStateTier("FL")).toBeNull(); // launch market — clean
   });
 });

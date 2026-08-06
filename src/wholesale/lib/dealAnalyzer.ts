@@ -24,11 +24,31 @@ export const DEFAULT_ARV_PERCENT = 0.7;
 export const DEFAULT_ASSIGNMENT_FEE = 10_000;
 
 /**
- * States that restrict or regulate unlicensed wholesaling. Deals here get a
- * warning so the operator confirms the equitable-interest disclosure / license
- * posture before proceeding. Not legal advice — a prompt to verify locally.
+ * State wholesaling-regulation tiers (2024-2026). See
+ * docs/wholesale/COMPETITIVE_RESEARCH.md §2 for statutes/citations. This is a
+ * design input, NOT legal advice — a prompt to verify with counsel, and the
+ * seed for the Phase 2 `lib/compliance` engine. The landscape changes
+ * quarterly; confirm statute text + effective dates before relying on it.
  */
-export const RESTRICTED_WHOLESALE_STATES = new Set(["IL", "OK", "SC"]);
+export const WHOLESALE_STATE_TIERS = {
+  /** License required / near-ban for unlicensed operators. */
+  restricted: new Set(["SC", "IL"]),
+  /** Registration or license + disclosures required. */
+  register: new Set(["OK", "PA", "KY", "CT"]),
+  /** Written equitable-interest disclosure + a seller right-to-cancel. */
+  disclosure: new Set(["OH", "MD", "TN", "ND", "TX", "IN", "VA", "IA", "WI"]),
+} as const;
+
+/** Tier lookup for a state code, or null if no known restriction. */
+export function wholesaleStateTier(
+  state: string,
+): keyof typeof WHOLESALE_STATE_TIERS | null {
+  const s = state.toUpperCase();
+  if (WHOLESALE_STATE_TIERS.restricted.has(s)) return "restricted";
+  if (WHOLESALE_STATE_TIERS.register.has(s)) return "register";
+  if (WHOLESALE_STATE_TIERS.disclosure.has(s)) return "disclosure";
+  return null;
+}
 
 /**
  * Estimate After-Repair Value from comparable sales using a
@@ -121,10 +141,22 @@ export function analyzeDeal(input: DealAnalysisInput): DealAnalysis {
   if (mao <= 0) {
     warnings.push("MAO is zero or negative — no room for a deal at these numbers.");
   }
-  if (input.state && RESTRICTED_WHOLESALE_STATES.has(input.state.toUpperCase())) {
-    warnings.push(
-      `${input.state.toUpperCase()} regulates wholesaling — confirm license/disclosure posture before contracting.`,
-    );
+  if (input.state) {
+    const tier = wholesaleStateTier(input.state);
+    const st = input.state.toUpperCase();
+    if (tier === "restricted") {
+      warnings.push(
+        `${st} treats wholesaling as brokerage / caps unlicensed deals — likely requires a license. Confirm with counsel before contracting.`,
+      );
+    } else if (tier === "register") {
+      warnings.push(
+        `${st} requires registration/license + disclosures (and may set a right-to-cancel window). Confirm posture before contracting.`,
+      );
+    } else if (tier === "disclosure") {
+      warnings.push(
+        `${st} requires written equitable-interest disclosure and a seller right-to-cancel. Generate the disclosure before marketing.`,
+      );
+    }
   }
   if (repairEstimate > arv * 0.5 && arv > 0) {
     warnings.push("Repairs exceed 50% of ARV — heavy-rehab risk; double-check the scope.");
